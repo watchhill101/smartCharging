@@ -12,3 +12,43 @@
     margin: 20px 0;
   }
 }
+
+// 全局安全按钮样式
+.safe-button {
+  padding: 12px 24px;
+  background: #f0f0f0;
+  color: #333;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  font-size: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+  
+  &:hover {
+    background: #e6e6e6;
+    border-color: #ccc;
+  }
+  
+  &:active {
+    background: #d9d9d9;
+  }
+  
+  // Primary 样式
+  &--primary {
+    background: #1989fa;
+    color: white;
+    border-color: #1989fa;
+    
+    &:hover {
+      background: #0c7ae8;
+      border-color: #0c7ae8;
+    }
+    
+    &:active {
+      background: #096dd9;
+      border-color: #096dd9;
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import { View, Text } from '@tarojs/components'
 import { useLoad } from '@tarojs/taro'
 import './index.scss'
-import { Button } from '@nutui/nutui-react-taro'
+import { SafeButton } from '../../utils/platform'
 
 export default function Index () {
   useLoad(() => {
@@ -11,9 +11,11 @@ export default function Index () {
   return (
     <View className='index'>
       <Text className='welcome-text'>智能充电</Text>
-      <Button type="primary" className='demo-button'>
+      
+      {/* 使用安全的按钮组件，自动适配不同平台 */}
+      <SafeButton type='primary' className='demo-button'>
         开始使用
-      </Button>
+      </SafeButton>
     </View>
   )
 }
