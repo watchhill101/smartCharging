@@ -1,0 +1,444 @@
+/* 登录页面样式 */
+.login-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+}
+
+/* 背景装饰 */
+.login-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: float 6s ease-in-out infinite;
+}
+
+.circle-1 {
+  width: 200px;
+  height: 200px;
+  top: -100px;
+  right: -50px;
+  animation-delay: 0s;
+}
+
+.circle-2 {
+  width: 150px;
+  height: 150px;
+  bottom: -75px;
+  left: -50px;
+  animation-delay: 2s;
+}
+
+.circle-3 {
+  width: 100px;
+  height: 100px;
+  top: 50%;
+  left: -25px;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-20px) rotate(10deg);
+  }
+}
+
+/* 登录容器 */
+.login-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  animation: slideUp 0.8s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 头部区域 */
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.logo-icon {
+  font-size: 40px;
+  color: #fff;
+}
+
+.app-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.app-subtitle {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 24px;
+}
+
+/* 登录表单 */
+.login-form {
+  margin-bottom: 32px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.form-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 32px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 输入组 */
+.input-group {
+  margin-bottom: 24px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.input-wrapper:focus-within {
+  border-color: #1890ff;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+}
+
+.input-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #666666;
+  background: rgba(24, 144, 255, 0.1);
+}
+
+.form-input {
+  flex: 1;
+  padding: 16px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #333333;
+  background: transparent;
+}
+
+.input-placeholder {
+  color: #999999;
+}
+
+.password-toggle {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #666666;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.password-toggle:active {
+  color: #1890ff;
+}
+
+/* 表单选项 */
+.form-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d9d9d9;
+  border-radius: 4px;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.checkbox-wrapper.checked .checkbox {
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+.checkbox-icon {
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.checkbox-label {
+  font-size: 14px;
+  color: #666666;
+}
+
+.forgot-password {
+  font-size: 14px;
+  color: #1890ff;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.forgot-password:active {
+  color: #096dd9;
+}
+
+/* 登录按钮 */
+.login-btn {
+  width: 100%;
+  height: 50px;
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(24, 144, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.login-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+}
+
+.login-btn:active::before {
+  left: 100%;
+}
+
+.login-btn.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.login-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 滑块验证容器 */
+.slider-verify-container {
+  margin: 20px 0;
+  padding: 12px;
+  background: rgba(24, 144, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid rgba(24, 144, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.slider-verify-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #1890ff 0%, #40a9ff 100%);
+  border-radius: 8px 8px 0 0;
+  opacity: 0.6;
+}
+
+/* 验证状态提示 */
+.verify-status {
+  margin: 16px 0;
+  padding: 10px 16px;
+  background: rgba(82, 196, 26, 0.08);
+  border-radius: 6px;
+  text-align: center;
+  border: 1px solid rgba(82, 196, 26, 0.15);
+  position: relative;
+}
+
+.verify-status::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #52c41a 0%, #73d13d 100%);
+  border-radius: 6px 6px 0 0;
+}
+
+.verify-success-text {
+  color: #52c41a;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* 登录按钮禁用状态 */
+.login-btn.disabled {
+  opacity: 0.5;
+  background: linear-gradient(135deg, #bfbfbf 0%, #8c8c8c 100%);
+  cursor: not-allowed;
+  box-shadow: 0 4px 15px rgba(191, 191, 191, 0.2);
+}
+
+.login-btn.disabled:active {
+  transform: none;
+  box-shadow: 0 4px 15px rgba(191, 191, 191, 0.2);
+}
+
+/* 重新验证按钮 */
+.reverify-container {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.reverify-btn {
+  font-size: 13px;
+  color: #1890ff;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 4px 8px;
+  border-radius: 4px;
+  opacity: 0.8;
+}
+
+.reverify-btn:active {
+  color: #096dd9;
+  background: rgba(24, 144, 255, 0.05);
+  opacity: 1;
+}
+
+/* 登录页脚 */
+.login-footer {
+  text-align: center;
+}
+
+.register-text {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 24px;
+}
+
+.register-link {
+  color: #fff;
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .login-page {
+    padding: 12px;
+  }
+
+  .form-card {
+    padding: 24px;
+  }
+
+  .app-title {
+    font-size: 28px;
+  }
+
+  .logo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .logo-icon {
+    font-size: 30px;
+  }
+
+  .slider-verify-container {
+    margin: 16px 0;
+    padding: 8px;
+  }
+}
