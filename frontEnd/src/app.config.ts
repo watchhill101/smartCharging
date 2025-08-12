@@ -3,7 +3,8 @@ export default defineAppConfig({
     'pages/index/index',
     'pages/map/index',
     'pages/charging/index',
-    'pages/profile/index'
+    'pages/profile/index',
+    'pages/aiserver/index'  // 新增 Ai客服 页面
   ],
   window: {
     backgroundTextStyle: 'light',
