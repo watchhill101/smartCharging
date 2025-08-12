@@ -5,6 +5,7 @@ export const notFound = (req: Request, res: Response, next: NextFunction) => {
     success: false,
     errorCode: 'NOT_FOUND',
     message: `Route ${req.originalUrl} not found`,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    requestId: req.headers['x-request-id'] || 'unknown'
   });
 };

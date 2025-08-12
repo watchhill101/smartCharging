@@ -21,8 +21,12 @@
       "node_modules/@types"
     ],
     "paths": {
-      // TS5090 leading './'
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/pages/*": ["./src/pages/*"],
+      "@/utils/*": ["./src/utils/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/assets/*": ["./src/assets/*"]
     }
   },
   "include": ["./src", "./types", "./config"],
