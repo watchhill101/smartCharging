@@ -1,0 +1,27 @@
+# Terraform变量配置文件示例
+# 复制此文件为 terraform.tfvars 并填入实际值
+
+# 阿里云认证信息
+access_key = "your-access-key-here"
+secret_key = "your-secret-key-here"
+
+# 基础配置
+region       = "cn-beijing"
+project_name = "smart-charging"
+environment  = "production"
+
+# 域名配置
+domain_name = "smartcharging.com"
+
+# 数据库密码
+mongodb_password = "YourStrongMongoDBPassword2024!"
+redis_password   = "YourStrongRedisPassword2024!"
+
+# ECS实例配置
+web_instance_type = "ecs.c6.large"
+app_instance_type = "ecs.c6.xlarge"
+
+# 存储配置
+oss_static_acl  = "public-read"
+oss_uploads_acl = "private"
+oss_backup_acl  = "private"

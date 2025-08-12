@@ -7,9 +7,16 @@ export const connectRedis = async (): Promise<void> => {
     const redisURL = process.env.REDIS_URL || 'redis://localhost:6379';
     
     redisClient = createClient({
-      url: redisURL
+      url: redisURL,
+      socket: {
+        connectTimeout: 5000,
+        lazyConnect: true,
+      },
+      retry_delay_on_failover: 100,
+      retry_delay_on_cluster_down: 300,
     });
 
+    // 错误处理
     redisClient.on('error', (error) => {
       console.error('Redis connection error:', error);
     });
@@ -18,18 +25,16 @@ export const connectRedis = async (): Promise<void> => {
       console.log('Redis connected successfully');
     });
 
-    redisClient.on('disconnect', () => {
-      console.log('Redis disconnected');
+    redisClient.on('reconnecting', () => {
+      console.log('Redis reconnecting...');
+    });
+
+    redisClient.on('ready', () => {
+      console.log('Redis ready for commands');
     });
 
     await redisClient.connect();
-
-    // 优雅关闭
-    process.on('SIGINT', async () => {
-      await redisClient.quit();
-      console.log('Redis connection closed through app termination');
-    });
-
+    
   } catch (error) {
     console.error('Redis connection failed:', error);
     throw error;
@@ -38,35 +43,74 @@ export const connectRedis = async (): Promise<void> => {
 
 export const getRedisClient = (): RedisClientType => {
   if (!redisClient) {
-    throw new Error('Redis client not initialized');
+    throw new Error('Redis client not initialized. Call connectRedis() first.');
   }
   return redisClient;
 };
 
-// Redis工具函数
-export const redisUtils = {
-  async set(key: string, value: string, expireInSeconds?: number): Promise<void> {
+export const disconnectRedis = async (): Promise<void> => {
+  try {
+    if (redisClient) {
+      await redisClient.quit();
+      console.log('Redis disconnected successfully');
+    }
+  } catch (error) {
+    console.error('Error disconnecting from Redis:', error);
+    throw error;
+  }
+};
+
+// Redis缓存工具函数
+export const cacheUtils = {
+  // 设置缓存
+  async set(key: string, value: any, ttl?: number): Promise<void> {
     const client = getRedisClient();
-    if (expireInSeconds) {
-      await client.setEx(key, expireInSeconds, value);
+    const serializedValue = JSON.stringify(value);
+    
+    if (ttl) {
+      await client.setEx(key, ttl, serializedValue);
     } else {
-      await client.set(key, value);
+      await client.set(key, serializedValue);
     }
   },
 
-  async get(key: string): Promise<string | null> {
+  // 获取缓存
+  async get<T>(key: string): Promise<T | null> {
     const client = getRedisClient();
-    return await client.get(key);
+    const value = await client.get(key);
+    
+    if (!value) return null;
+    
+    try {
+      return JSON.parse(value) as T;
+    } catch (error) {
+      console.error('Error parsing cached value:', error);
+      return null;
+    }
   },
 
+  // 删除缓存
   async del(key: string): Promise<void> {
     const client = getRedisClient();
     await client.del(key);
   },
 
+  // 检查键是否存在
   async exists(key: string): Promise<boolean> {
     const client = getRedisClient();
     const result = await client.exists(key);
     return result === 1;
+  },
+
+  // 设置过期时间
+  async expire(key: string, ttl: number): Promise<void> {
+    const client = getRedisClient();
+    await client.expire(key, ttl);
+  },
+
+  // 获取剩余过期时间
+  async ttl(key: string): Promise<number> {
+    const client = getRedisClient();
+    return await client.ttl(key);
   }
 };

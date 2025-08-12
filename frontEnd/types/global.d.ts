@@ -23,6 +23,16 @@ declare namespace NodeJS {
      * @see https://taro-docs.jd.com/docs/next/env-mode-config#特殊环境变量-taro_app_id
      */
     TARO_APP_ID: string
+    /** API基础URL */
+    TARO_APP_API_BASE_URL: string
+    /** WebSocket基础URL */
+    TARO_APP_WS_BASE_URL: string
+    /** 高德地图API Key */
+    TARO_APP_AMAP_KEY: string
+    /** 调试模式 */
+    TARO_APP_DEBUG: string
+    /** 日志级别 */
+    TARO_APP_LOG_LEVEL: string
   }
 }
 
