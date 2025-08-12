@@ -10,48 +10,45 @@ import './login.scss'
 interface LoginForm {
   username: string
   password: string
-  rememberMe: boolean
 }
 
 export default function Login() {
   const [form, setForm] = useState<LoginForm>({
     username: '',
-    password: '',
-    rememberMe: false
+    password: ''
   })
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [verifyToken, setVerifyToken] = useState<string | null>(null)
-  const [showSliderVerify, setShowSliderVerify] = useState(false)
 
   useLoad(() => {
     console.log('登录页面加载')
     // 检查是否已记住用户名
     try {
-      const rememberedUsername = Taro.getStorageSync(STORAGE_KEYS.REMEMBERED_USERNAME) as string
+      const rememberedUsername = Taro.getStorageSync(STORAGE_KEYS.REMEMBERED_USERNAME)
       if (rememberedUsername) {
-        setForm(prev => ({ ...prev, username: rememberedUsername, rememberMe: true }))
+        setForm(prev => ({ ...prev, username: rememberedUsername }))
       }
     } catch (error) {
       console.log('获取记住的用户名失败:', error)
     }
   })
 
-  const handleInputChange = (field: keyof LoginForm, value: string | boolean) => {
+  const handleInputChange = (field: keyof LoginForm, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }))
   }
 
   const validateForm = () => {
     if (!form.username.trim()) {
-      Taro.showToast({ title: '请输入用户名', icon: 'none' })
+      console.log('请输入用户名')
       return false
     }
     if (!form.password.trim()) {
-      Taro.showToast({ title: '请输入密码', icon: 'none' })
+      console.log('请输入密码')
       return false
     }
     if (form.password.length < 6) {
-      Taro.showToast({ title: '密码至少6位', icon: 'none' })
+      console.log('密码至少6位')
       return false
     }
     return true
@@ -59,68 +56,142 @@ export default function Login() {
 
   // 处理滑块验证成功
   const handleSliderSuccess = (token: string) => {
+    console.log('滑块验证成功，令牌:', token)
     setVerifyToken(token)
-    setShowSliderVerify(false)
-    Taro.showToast({ title: '验证成功，可以登录', icon: 'success' })
+    console.log('安全验证通过，可以登录')
   }
 
   // 处理滑块验证失败
   const handleSliderError = (error: string) => {
-    Taro.showToast({ title: error, icon: 'none' })
+    console.log('滑块验证失败:', error)
+    console.log(error)
+  }
+
+  // 重置验证状态
+  const resetVerification = () => {
+    console.log('重置验证状态')
+    setVerifyToken(null)
   }
 
   const handleLogin = async () => {
-    if (!validateForm()) return
+    console.log('=== 开始登录流程 ===')
 
-    // 检查是否已通过滑块验证
-    if (!verifyToken) {
-      setShowSliderVerify(true)
-      Taro.showToast({ title: '请先完成滑块验证', icon: 'none' })
+    if (!validateForm()) {
+      console.log('❌ 表单验证失败')
       return
     }
 
+    // 检查是否已通过滑块验证
+    if (!verifyToken) {
+      console.log('❌ 未通过滑块验证')
+      console.log('请先完成安全验证')
+      return
+    }
+
+    console.log('✅ 准备发送登录请求:', {
+      username: form.username,
+      password: '***',
+      verifyToken: verifyToken ? '已获取' : '未获取'
+    })
+
     setLoading(true)
     try {
+      console.log('🚀 发送POST请求到 /auth/login')
+
+      // 添加超时和重试机制
       const response = await post('/auth/login', {
         username: form.username,
         password: form.password,
-        verifyToken // 附带验证令牌
+        verifyToken
       })
 
-      if (response.success && response.data) {
+      console.log('📡 服务器响应:', response)
+
+      if (response?.success && response?.data) {
+        console.log('✅ 登录成功，保存用户信息')
+
         // 保存登录信息
-        Taro.setStorageSync(STORAGE_KEYS.USER_TOKEN, response.data.token)
-        Taro.setStorageSync(STORAGE_KEYS.USER_INFO, response.data.user)
+        try {
+          Taro.setStorageSync(STORAGE_KEYS.USER_TOKEN, response.data.token)
+          Taro.setStorageSync(STORAGE_KEYS.USER_INFO, response.data.user)
 
-        // 记住用户名
-        if (form.rememberMe) {
+          // 保存刷新令牌
+          if (response.data.refreshToken) {
+            Taro.setStorageSync('refresh_token', response.data.refreshToken)
+          }
+
+          // 保存用户名以便下次使用
           Taro.setStorageSync(STORAGE_KEYS.REMEMBERED_USERNAME, form.username)
-        } else {
-          Taro.removeStorageSync(STORAGE_KEYS.REMEMBERED_USERNAME)
+
+          console.log('👤 用户信息已保存:', response.data.user)
+
+          // 跳转到首页
+          setTimeout(() => {
+            console.log('🏠 跳转到首页')
+            Taro.switchTab({ url: '/pages/index/index' })
+          }, 1000) // 减少延迟时间
+
+        } catch (storageError) {
+          console.error('💾 存储失败:', storageError)
+          console.log('登录成功但数据保存失败')
         }
-
-        Taro.showToast({ title: '登录成功', icon: 'success' })
-
-        // 跳转到首页
-        setTimeout(() => {
-          Taro.switchTab({ url: '/pages/index/index' })
-        }, 1500)
+      } else {
+        console.log('❌ 登录失败，响应数据无效:', response)
+        console.log(response?.message || '登录失败，请检查用户名和密码')
+        resetVerification()
       }
-    } catch (error) {
-      console.error('登录失败:', error)
+    } catch (error: any) {
+      console.error('💥 登录请求异常:', error)
+
+      // 详细的错误分析
+      let errorMessage = '网络错误，请检查网络连接'
+
+      if (error.response) {
+        console.log('🌐 HTTP错误详情:', {
+          status: error.response.status,
+          statusText: error.response.statusText,
+          data: error.response.data
+        })
+
+        switch (error.response.status) {
+          case 401:
+            errorMessage = '用户名或密码错误'
+            break
+          case 403:
+            errorMessage = '账户被禁用'
+            break
+          case 404:
+            errorMessage = '服务不可用，请稍后重试'
+            break
+          case 500:
+            errorMessage = '服务器错误，请稍后重试'
+            break
+          default:
+            errorMessage = error.response.data?.message || `HTTP ${error.response.status} 错误`
+        }
+      } else if (error.message) {
+        console.log('🔌 网络错误:', error.message)
+        if (error.message.includes('Network Error')) {
+          errorMessage = '无法连接到服务器，请检查网络连接'
+        } else if (error.message.includes('timeout')) {
+          errorMessage = '请求超时，请重试'
+        } else {
+          errorMessage = error.message
+        }
+      }
+
+      console.log('错误信息:', errorMessage)
+
       // 登录失败时重置验证状态
-      setVerifyToken(null)
+      resetVerification()
     } finally {
+      console.log('🏁 登录流程结束')
       setLoading(false)
     }
   }
 
   const handleRegister = () => {
-    Taro.showToast({ title: '注册功能开发中', icon: 'none' })
-  }
-
-  const handleForgotPassword = () => {
-    Taro.showToast({ title: '忘记密码功能开发中', icon: 'none' })
+    console.log('注册功能开发中')
   }
 
   return (
@@ -179,62 +250,88 @@ export default function Login() {
               </View>
             </View>
 
-            {/* 滑块验证 */}
-            {showSliderVerify && (
+            {/* 安全验证模块 */}
+            <View className='security-verify-section'>
+              <View className='verify-title'>
+                <Text className='verify-title-text'>安全验证</Text>
+                <Text className='verify-desc'>请拖动滑块完成验证</Text>
+              </View>
+
               <View className='slider-verify-container'>
                 <SliderVerify
                   onSuccess={handleSliderSuccess}
                   onError={handleSliderError}
+                  width={248}
                   height={42}
                 />
               </View>
-            )}
 
-            {/* 验证状态提示 */}
-            {verifyToken && (
-              <View className='verify-status'>
-                <Text className='verify-success-text'>✓ 安全验证已通过</Text>
-              </View>
-            )}
-
-            <View className='form-options'>
-              <View
-                className={`checkbox-wrapper ${form.rememberMe ? 'checked' : ''}`}
-                onClick={() => handleInputChange('rememberMe', !form.rememberMe)}
-              >
-                <View className='checkbox'>
-                  {form.rememberMe && <Text className='checkbox-icon'>✓</Text>}
+              {/* 验证状态提示 */}
+              {verifyToken && (
+                <View className='verify-status'>
+                  <Text className='verify-success-text'>✓ 安全验证已通过</Text>
                 </View>
-                <Text className='checkbox-label'>记住用户名</Text>
-              </View>
-
-              <Text className='forgot-password' onClick={handleForgotPassword}>
-                忘记密码？
-              </Text>
+              )}
             </View>
 
             <Button
               className={`login-btn ${loading ? 'loading' : ''} ${!verifyToken ? 'disabled' : ''}`}
               onClick={handleLogin}
-              disabled={loading}
+              disabled={loading || !verifyToken}
             >
-              {loading ? '登录中...' : '登录'}
+              {loading ? '登录中...' : verifyToken ? '登录' : '请先完成验证'}
             </Button>
 
             {/* 重新验证按钮 */}
-            {verifyToken && !showSliderVerify && (
+            {verifyToken && (
               <View className='reverify-container'>
                 <Text
                   className='reverify-btn'
-                  onClick={() => {
-                    setVerifyToken(null)
-                    setShowSliderVerify(true)
-                  }}
+                  onClick={resetVerification}
                 >
                   重新验证
                 </Text>
               </View>
             )}
+
+            {/* 测试按钮 */}
+            <View className='test-container'>
+              <Text
+                className='test-btn'
+                onClick={() => {
+                  console.log('🧪 测试网络连接')
+                  console.log('测试功能正常！')
+                }}
+              >
+                测试功能
+              </Text>
+
+              <Text
+                className='test-btn ml-md'
+                onClick={async () => {
+                  console.log('🌐 测试网络连接...')
+                  console.log('正在测试网络连接...')
+
+                  try {
+                    const response = await post('/auth/slider-verify', {
+                      slideDistance: 100,
+                      puzzleOffset: 100,
+                      accuracy: 5,
+                      duration: 1000,
+                      verifyPath: [0, 50, 100],
+                      trackData: []
+                    })
+                    console.log('✅ 网络连接正常:', response)
+                    console.log('网络连接正常')
+                  } catch (error) {
+                    console.error('❌ 网络连接失败:', error)
+                    console.log('网络连接失败，请检查后端服务')
+                  }
+                }}
+              >
+                测试网络
+              </Text>
+            </View>
           </View>
         </View>
 

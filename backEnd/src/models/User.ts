@@ -82,7 +82,7 @@ const UserSchema = new Schema<IUser>({
 }, {
   timestamps: true,
   toJSON: {
-    transform: function(doc, ret) {
+    transform: function (doc, ret) {
       delete ret.__v;
       delete ret.faceFeatures;
       return ret;
@@ -95,17 +95,17 @@ UserSchema.index({ phone: 1 });
 UserSchema.index({ createdAt: -1 });
 
 // 实例方法
-UserSchema.methods.addVehicle = function(vehicle: IVehicle) {
+UserSchema.methods.addVehicle = function (vehicle: IVehicle) {
   this.vehicles.push(vehicle);
   return this.save();
 };
 
-UserSchema.methods.removeVehicle = function(licensePlate: string) {
+UserSchema.methods.removeVehicle = function (licensePlate: string) {
   this.vehicles = this.vehicles.filter(v => v.licensePlate !== licensePlate);
   return this.save();
 };
 
-UserSchema.methods.updateBalance = function(amount: number) {
+UserSchema.methods.updateBalance = function (amount: number) {
   this.balance += amount;
   return this.save();
 };

@@ -204,60 +204,7 @@
   color: #1890ff;
 }
 
-/* 表单选项 */
-.form-options {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 32px;
-}
 
-.checkbox-wrapper {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
-}
-
-.checkbox {
-  width: 20px;
-  height: 20px;
-  border: 2px solid #d9d9d9;
-  border-radius: 4px;
-  margin-right: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.checkbox-wrapper.checked .checkbox {
-  background: #1890ff;
-  border-color: #1890ff;
-}
-
-.checkbox-icon {
-  color: #fff;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.checkbox-label {
-  font-size: 14px;
-  color: #666666;
-}
-
-.forgot-password {
-  font-size: 14px;
-  color: #1890ff;
-  cursor: pointer;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.forgot-password:active {
-  color: #096dd9;
-}
 
 /* 登录按钮 */
 .login-btn {
@@ -307,9 +254,32 @@
   transform: none;
 }
 
+/* 安全验证模块 */
+.security-verify-section {
+  margin: 24px 0;
+}
+
+.verify-title {
+  margin-bottom: 16px;
+}
+
+.verify-title-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.verify-desc {
+  font-size: 13px;
+  color: #8c8c8c;
+  display: block;
+}
+
 /* 滑块验证容器 */
 .slider-verify-container {
-  margin: 20px 0;
+  margin: 16px 0;
   padding: 12px;
   background: rgba(24, 144, 255, 0.03);
   border-radius: 8px;
@@ -332,7 +302,7 @@
 
 /* 验证状态提示 */
 .verify-status {
-  margin: 16px 0;
+  margin: 12px 0 0 0;
   padding: 10px 16px;
   background: rgba(82, 196, 26, 0.08);
   border-radius: 6px;
@@ -395,6 +365,32 @@
   opacity: 1;
 }
 
+/* 测试容器 */
+.test-container {
+  margin-top: 12px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.test-btn {
+  font-size: 13px;
+  color: #52c41a;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 4px 8px;
+  border-radius: 4px;
+  opacity: 0.8;
+}
+
+.test-btn:active {
+  color: #389e0d;
+  background: rgba(82, 196, 26, 0.05);
+  opacity: 1;
+}
+
 /* 登录页脚 */
 .login-footer {
   text-align: center;
@@ -440,5 +436,13 @@
   .slider-verify-container {
     margin: 16px 0;
     padding: 8px;
+  }
+
+  .security-verify-section {
+    margin: 20px 0;
+  }
+
+  .verify-title-text {
+    font-size: 15px;
   }
 }

@@ -1,6 +1,43 @@
 import Taro from '@tarojs/taro'
 import { API_CONFIG, STORAGE_KEYS, ERROR_CODES } from './constants'
-import { showToast } from './index'
+
+// 显示提示信息的工具函数（临时禁用）
+const showToast = (title: string, icon: 'success' | 'error' | 'loading' | 'none' = 'none') => {
+  console.log(`Toast: ${title} (${icon})`)
+  // Taro.showToast({
+  //   title,
+  //   icon: icon === 'error' ? 'none' : icon,
+  //   duration: 2000
+  // })
+}
+
+// 获取存储的工具函数
+const getStorageSync = (key: string) => {
+  try {
+    return Taro.getStorageSync(key)
+  } catch (error) {
+    console.error('获取存储失败:', error)
+    return null
+  }
+}
+
+// 设置存储的工具函数
+const setStorageSync = (key: string, value: any) => {
+  try {
+    return Taro.setStorageSync(key, value)
+  } catch (error) {
+    console.error('设置存储失败:', error)
+  }
+}
+
+// 移除存储的工具函数
+const removeStorageSync = (key: string) => {
+  try {
+    return Taro.removeStorageSync(key)
+  } catch (error) {
+    console.error('移除存储失败:', error)
+  }
+}
 
 // 请求接口类型定义
 export interface RequestOptions {
@@ -36,7 +73,7 @@ const requestInterceptor = (options: RequestOptions) => {
   }
 
   // 添加认证token
-  const token = Taro.getStorageSync(STORAGE_KEYS.USER_TOKEN)
+  const token = getStorageSync(STORAGE_KEYS.USER_TOKEN)
   if (token) {
     defaultHeaders['Authorization'] = `Bearer ${token}`
   }
@@ -94,10 +131,10 @@ const handleBusinessError = (data: ApiResponse, options: RequestOptions) => {
     case ERROR_CODES.INVALID_TOKEN:
     case ERROR_CODES.TOKEN_EXPIRED:
       // 清除token并跳转到登录页
-      Taro.removeStorageSync(STORAGE_KEYS.USER_TOKEN)
-      Taro.removeStorageSync(STORAGE_KEYS.USER_INFO)
+      removeStorageSync(STORAGE_KEYS.USER_TOKEN)
+      removeStorageSync(STORAGE_KEYS.USER_INFO)
       Taro.reLaunch({
-        url: '/pages/login/index'
+        url: '/pages/login/login'
       })
       break
     case ERROR_CODES.PERMISSION_DENIED:

@@ -73,7 +73,7 @@ export const debounce = <T extends (...args: any[]) => any>(
   wait: number
 ): ((...args: Parameters<T>) => void) => {
   let timeout: NodeJS.Timeout | null = null
-  
+
   return (...args: Parameters<T>) => {
     if (timeout) {
       clearTimeout(timeout)
@@ -93,11 +93,11 @@ export const throttle = <T extends (...args: any[]) => any>(
 ): ((...args: Parameters<T>) => void) => {
   let timeout: NodeJS.Timeout | null = null
   let previous = 0
-  
+
   return (...args: Parameters<T>) => {
     const now = Date.now()
     const remaining = wait - (now - previous)
-    
+
     if (remaining <= 0 || remaining > wait) {
       if (timeout) {
         clearTimeout(timeout)
@@ -123,15 +123,15 @@ export const deepClone = <T>(obj: T): T => {
   if (obj === null || typeof obj !== 'object') {
     return obj
   }
-  
+
   if (obj instanceof Date) {
     return new Date(obj.getTime()) as unknown as T
   }
-  
+
   if (obj instanceof Array) {
     return obj.map(item => deepClone(item)) as unknown as T
   }
-  
+
   if (typeof obj === 'object') {
     const clonedObj = {} as T
     for (const key in obj) {
@@ -141,7 +141,7 @@ export const deepClone = <T>(obj: T): T => {
     }
     return clonedObj
   }
-  
+
   return obj
 }
 
@@ -205,32 +205,44 @@ export const calculateDistance = (
   return R * c
 }
 
-/**
- * 显示Toast消息
- * @param title 消息内容
- * @param icon 图标类型
- */
+// 显示提示信息
 export const showToast = (title: string, icon: 'success' | 'error' | 'loading' | 'none' = 'none') => {
-  Taro.showToast({
+  console.log(`Toast: ${title} (${icon})`)
+  // Taro.showToast({
+  //   title,
+  //   icon: icon === 'error' ? 'none' : icon,
+  //   duration: 2000
+  // })
+}
+
+// 显示加载中
+export const showLoading = (title: string = '加载中...') => {
+  Taro.showLoading({
     title,
-    icon,
-    duration: 2000
+    mask: true
   })
 }
 
-/**
- * 显示加载中
- * @param title 加载文本
- */
-export const showLoading = (title = '加载中...') => {
-  Taro.showLoading({ title })
-}
-
-/**
- * 隐藏加载中
- */
+// 隐藏加载
 export const hideLoading = () => {
   Taro.hideLoading()
+}
+
+// 显示模态框
+export const showModal = (options: {
+  title?: string
+  content: string
+  showCancel?: boolean
+  confirmText?: string
+  cancelText?: string
+}) => {
+  return Taro.showModal({
+    title: options.title || '提示',
+    content: options.content,
+    showCancel: options.showCancel !== false,
+    confirmText: options.confirmText || '确定',
+    cancelText: options.cancelText || '取消'
+  })
 }
 
 /**

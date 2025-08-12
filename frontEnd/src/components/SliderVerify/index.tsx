@@ -20,7 +20,7 @@ interface TouchPosition {
 export default function SliderVerify({
   onSuccess,
   onError,
-  width,
+  width = 248,
   height = 42
 }: SliderVerifyProps) {
   const [isMoving, setIsMoving] = useState(false)
@@ -29,7 +29,6 @@ export default function SliderVerify({
   const [slideDistance, setSlideDistance] = useState(0)
   const [puzzleOffset, setPuzzleOffset] = useState(0)
   const [verifyPath, setVerifyPath] = useState<number[]>([])
-  const [containerWidth, setContainerWidth] = useState(248)
 
   const sliderRef = useRef<any>(null)
   const startTimeRef = useRef<number>(0)
@@ -37,13 +36,13 @@ export default function SliderVerify({
 
   // 生成随机拼图位置
   const generatePuzzlePosition = useCallback(() => {
-    const effectiveWidth = width || containerWidth
+    const effectiveWidth = width
     const minOffset = effectiveWidth * 0.25
     const maxOffset = effectiveWidth * 0.7
     const offset = Math.random() * (maxOffset - minOffset) + minOffset
     setPuzzleOffset(offset)
     return offset
-  }, [width, containerWidth])
+  }, [width])
 
   // 初始化验证
   const initVerify = useCallback(() => {
@@ -66,7 +65,12 @@ export default function SliderVerify({
     startTimeRef.current = Date.now()
     trackRef.current = [{ startX, currentX: startX }]
 
-    Taro.vibrateShort()
+    // 添加震动反馈
+    try {
+      Taro.vibrateShort()
+    } catch (error) {
+      console.log('震动反馈不可用:', error)
+    }
   }, [isVerified, isVerifying])
 
   // 拖拽移动
@@ -77,7 +81,7 @@ export default function SliderVerify({
     const currentX = touch.clientX
     const startX = trackRef.current[0]?.startX || 0
 
-    const effectiveWidth = width || containerWidth
+    const effectiveWidth = width
     const distance = Math.max(0, Math.min(currentX - startX, effectiveWidth - 40))
     setSlideDistance(distance)
 
@@ -89,7 +93,7 @@ export default function SliderVerify({
 
     // 记录验证路径（用于后端验证）
     setVerifyPath(prev => [...prev, Math.round(distance)])
-  }, [isMoving, isVerified, isVerifying, width, containerWidth])
+  }, [isMoving, isVerified, isVerifying, width])
 
   // 结束拖拽
   const handleTouchEnd = useCallback(async () => {
@@ -115,7 +119,11 @@ export default function SliderVerify({
 
       if (response.success && response.data.verified) {
         setIsVerified(true)
-        Taro.vibrateShort()
+        try {
+          Taro.vibrateShort()
+        } catch (error) {
+          console.log('震动反馈不可用:', error)
+        }
         onSuccess(response.data.token)
       } else {
         // 验证失败，重置滑块
@@ -137,19 +145,6 @@ export default function SliderVerify({
 
   // 组件挂载时初始化
   useLoad(() => {
-    // 获取容器宽度
-    if (!width) {
-      Taro.nextTick(() => {
-        Taro.createSelectorQuery()
-          .select('.slider-verify')
-          .boundingClientRect()
-          .exec((res) => {
-            if (res[0] && res[0].width) {
-              setContainerWidth(res[0].width)
-            }
-          })
-      })
-    }
     initVerify()
   })
 
