@@ -271,6 +271,7 @@ const AiServer = () => {
       console.error('拍照失败:', error);
       
       showToast({
+
         title: '拍照失败，请重试',
         icon: 'error',
         duration: 2000
@@ -907,7 +908,7 @@ const AiServer = () => {
               </Text>
               <Text className='separator'>|</Text>
               <Text className='disclaimer-text'>
-                喵喵喵，欢迎使用小电Ai客服
+                喵喵，欢迎使用小电Ai客服
               </Text>
             </View>
             <Button 
