@@ -252,3 +252,58 @@ export const showConfirm = (content: string, title = '提示'): Promise<boolean>
     })
   })
 }
+
+export interface GpsLocationResult {
+	lng: number
+	lat: number
+	accuracy?: number
+	source: 'amap_geolocation' | 'browser_gps_conv'
+}
+
+/**
+ * 获取当前设备位置（H5），优先使用高德 JSAPI Geolocation，失败回退浏览器 geolocation 并做坐标转换
+ * 需要在调用前在 H5 环境设置 window._AMapSecurityConfig 和 AMapLoader Key（见 map/device.tsx 的示例）
+ */
+export async function getCurrentGpsByAMap(options?: { timeoutMs?: number }): Promise<GpsLocationResult> {
+	const timeout = options?.timeoutMs ?? 20000
+	// 确保 AMap 已加载
+	if (typeof window !== 'undefined' && (window as any).AMap) {
+		try {
+			const AMap = (window as any).AMap
+			await new Promise<void>((resolve) => setTimeout(resolve, 0))
+			return await new Promise<GpsLocationResult>((resolve, reject) => {
+				const geo = new AMap.Geolocation({ enableHighAccuracy: true, timeout, showButton: false, showCircle: false })
+				geo.getCurrentPosition((status: string, result: any) => {
+					if (status === 'complete' && result?.position) {
+						resolve({ lng: result.position.lng, lat: result.position.lat, accuracy: result.accuracy, source: 'amap_geolocation' })
+					} else {
+						reject(new Error('AMap geolocation failed'))
+					}
+				})
+			})
+		} catch {}
+	}
+
+	// 回退到浏览器定位 + 坐标转换
+	if (typeof navigator !== 'undefined' && navigator.geolocation && (window as any).AMap) {
+		return await new Promise<GpsLocationResult>((resolve, reject) => {
+			const id = navigator.geolocation.getCurrentPosition(
+				(pos) => {
+					const { longitude, latitude, accuracy } = pos.coords
+					;(window as any).AMap.convertFrom([longitude, latitude], 'gps', (status: string, result: any) => {
+						if (status === 'complete' && result?.locations?.length) {
+							const p = result.locations[0]
+							resolve({ lng: p.lng, lat: p.lat, accuracy, source: 'browser_gps_conv' })
+						} else {
+							reject(new Error('convertFrom failed'))
+						}
+					})
+				},
+				(err) => reject(err),
+				{ enableHighAccuracy: true, timeout, maximumAge: 0 }
+			)
+		})
+	}
+
+	throw new Error('No geolocation available or AMap not loaded')
+}

@@ -1,0 +1,287 @@
+.city-selector-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.city-selector {
+  width: 100%;
+  height: 100vh;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 顶部导航 */
+.city-header {
+  position: relative;
+  height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+
+  .back-btn {
+    position: absolute;
+    left: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 54px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    color: #333;
+    cursor: pointer;
+  }
+
+  .title {
+    font-size: 39px;
+    font-weight: 800;
+    color: #333;
+  }
+
+  .header-actions {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 12px;
+
+    .action-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #666;
+    }
+  }
+}
+
+/* 搜索栏 */
+.search-bar {
+  padding: 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+
+  .search-icon {
+    position: absolute;
+    left: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #999;
+  }
+
+  .search-input {
+    width: 100%;
+    height: 44px;
+    background: #f2f3f5;
+    border-radius: 22px;
+    border: none;
+    padding: 0 16px 0 48px;
+    font-size: 26px;
+    color: #333;
+
+    &::placeholder {
+      color: #a0a0a0;
+    }
+
+    &:focus {
+      outline: none;
+      background: #e8f4fd;
+    }
+  }
+}
+
+/* 当前城市 */
+.current-city {
+  padding: 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .relocate-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #1890ff;
+    font-size: 24px;
+    cursor: pointer;
+
+    .relocate-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1890ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      
+      &.locating {
+        background: #52c41a;
+        animation: rotate 1s linear infinite;
+      }
+    }
+  }
+}
+
+/* 搜索结果 */
+.search-results {
+  flex: 1;
+  overflow-y: auto;
+  background: #ffffff;
+
+  .city-item {
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+
+    &:hover {
+      background: #f5f5f5;
+    }
+
+    &:active {
+      background: #e8f4fd;
+    }
+  }
+}
+
+/* 热门城市 */
+.hot-cities {
+  padding: 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+
+  .section-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+  }
+
+  .hot-cities-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+
+    .hot-city-item {
+      height: 64px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #e8f4fd;
+      }
+
+      &:active {
+        background: #d1e7ff;
+      }
+
+      text {
+        font-size: 24px;
+        color: #333;
+      }
+    }
+  }
+}
+
+/* 城市列表 */
+.city-list {
+  flex: 1;
+  background: #ffffff;
+
+  .letter-section {
+    .letter-title {
+      padding: 12px 16px;
+      background: #f8f9fa;
+      font-size: 24px;
+      font-weight: 600;
+      color: #666;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .city-item {
+      padding: 16px;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover {
+        background: #f5f5f5;
+      }
+
+      &:active {
+        background: #e8f4fd;
+      }
+
+      text {
+        font-size: 26px;
+        color: #333;
+      }
+    }
+  }
+}
+
+/* 字母索引 */
+.letter-index {
+  position: fixed;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 1001;
+
+  .index-item {
+    display: block;
+    cursor: pointer;
+    user-select: none;
+
+    text {
+      display: block;
+      font-size: 18px;
+      color: #0f0f0f;
+      font-weight: 700;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+  }
+}
+
+/* 旋转动画 */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+} 
