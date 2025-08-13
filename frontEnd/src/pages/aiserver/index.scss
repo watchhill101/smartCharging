@@ -814,3 +814,62 @@
     flex: 1;
   }
 }
+
+// 添加语音识别中的输入框样式
+.message-input {
+  // ...现有样式保持不变...
+  
+  &.recognizing {
+    background-color: rgba(25, 118, 210, 0.05);
+    border-color: #1976d2;
+    animation: pulse-border 2s infinite;
+    
+    &::placeholder {
+      color: #1976d2;
+      opacity: 0.8;
+    }
+  }
+}
+
+// 添加脉冲动画
+@keyframes pulse-border {
+  0% {
+    border-color: rgba(25, 118, 210, 0.4);
+    box-shadow: 0 0 0 0 rgba(25, 118, 210, 0.2);
+  }
+  50% {
+    border-color: rgba(25, 118, 210, 1);
+    box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1);
+  }
+  100% {
+    border-color: rgba(25, 118, 210, 0.4);
+    box-shadow: 0 0 0 0 rgba(25, 118, 210, 0);
+  }
+}
+
+// 添加语音按钮识别中样式
+.voice-button {
+  // ...现有样式保持不变...
+  
+  &.recognizing {
+    background-color: rgba(25, 118, 210, 0.1);
+  }
+  
+  .icon-voice {
+    // ...现有样式保持不变...
+    
+    &.processing {
+      color: #1976d2;
+      animation: rotate 2s linear infinite;
+    }
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

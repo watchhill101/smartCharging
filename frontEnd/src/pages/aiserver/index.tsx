@@ -975,6 +975,9 @@ const AiServer = () => {
   // 处理语音转文字
   const processVoiceToText = async (filePath: string) => {
     try {
+      // 设置识别状态
+      setRecognitionStatus('正在识别语音...');
+      
       // 1. 读取录音文件为 base64 格式
       const fileData = await Taro.getFileSystemManager().readFileSync(filePath, 'base64');
       
@@ -1058,6 +1061,9 @@ const AiServer = () => {
       // 将识别结果填入输入框
       setInputValue(transcriptResult);
       
+      // 清除识别状态
+      setRecognitionStatus('');
+      
       // 显示成功提示
       showToast({
         title: '语音识别成功',
@@ -1068,6 +1074,9 @@ const AiServer = () => {
     } catch (error) {
       console.error('语音转文字处理失败:', error);
       hideToast();
+      
+      // 清除识别状态
+      setRecognitionStatus('');
       
       showToast({
         title: '语音识别失败',
@@ -1081,6 +1090,8 @@ const AiServer = () => {
   const processVoiceToTextH5 = async (base64Data) => {
     try {
       console.log('H5环境处理语音识别，数据长度:', base64Data.length);
+      // 设置识别状态
+      setRecognitionStatus('正在识别语音...');
       
       // 创建音频数据的 Blob 对象
       const binaryString = atob(base64Data);
@@ -1202,9 +1213,12 @@ const AiServer = () => {
         return 3000; // 后期固定等待3秒
       };
       
+      // 在 processVoiceToTextH5 函数的轮询部分添加更多反馈
       while (attempts < maxAttempts) {
         attempts++;
         const waitTime = getWaitTime(attempts - 1);
+        // 更新识别状态
+        setRecognitionStatus(`识别中 (${attempts}/${maxAttempts})...`);
         console.log(`检查转录结果 (${attempts}/${maxAttempts})...等待${waitTime/1000}秒`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
         
@@ -1268,6 +1282,9 @@ const AiServer = () => {
       // 将识别结果填入输入框
       setInputValue(transcriptResult);
       
+      // 清除识别状态
+      setRecognitionStatus('');
+      
       // 显示成功提示
       showToast({
         title: '语音识别成功',
@@ -1279,21 +1296,15 @@ const AiServer = () => {
       console.error('H5语音转文字处理失败:', error);
       hideToast();
       
-      // 判断是否为超时错误
-      if (error.message?.includes('超时')) {
-        showToast({
-          title: '识别超时，请手动输入或重试',
-          icon: 'none',
-          duration: 2500
-        });
-      } else {
-        showToast({
-          title: '语音识别失败，请重试',
-          icon: 'error',
-          duration: 2000
-        });
-      }
-      
+      // 错误时也要重置状态
+      setRecognitionStatus(''); // 确保清除识别状态
+    
+      showToast({
+        title: '语音识别失败，请重试',
+        icon: 'error',
+        duration: 2000
+      });
+    
       throw error;
     }
   };
@@ -1414,6 +1425,12 @@ const AiServer = () => {
     };
     
     return h5RecorderManager;
+  };
+
+  // 添加紧急重置函数
+  const resetRecognitionState = () => {
+    setRecognitionStatus('');
+    hideToast();
   };
 
   return (
@@ -1568,22 +1585,22 @@ const AiServer = () => {
       <View className='input-area'>
         <View className='input-container'>
           <Button 
-            className='voice-button'
+            className={`voice-button ${isRecording ? 'recording' : ''} ${recognitionStatus ? 'recognizing' : ''}`}
             onClick={handleVoiceButtonClick}
             disabled={isLoading || isProcessingImage || isRecording}
           >
-            <Text className={`icon-voice ${isRecording ? 'recording' : ''}`}>
-              {isRecording ? '🎙️' : '🎤'}
+            <Text className={`icon-voice ${isRecording ? 'recording' : ''} ${recognitionStatus ? 'processing' : ''}`}>
+              {isRecording ? '🎙️' : recognitionStatus ? '🔄' : '🎤'}
             </Text>
           </Button>
           <Input
             ref={inputRef}
-            className='message-input'
-            placeholder='请输入您的问题...'
+            className={`message-input ${recognitionStatus ? 'recognizing' : ''}`}
+            placeholder={recognitionStatus ? '正在识别语音...' : '请输入您的问题...'}
             value={inputValue}
             onInput={(e) => setInputValue(e.detail.value)}
             onConfirm={() => sendMessage(inputValue)}
-            disabled={isLoading || isProcessingImage || isRecording}
+            disabled={isLoading || isProcessingImage || isRecording} // 移除 recognitionStatus 作为禁用条件
             confirmType='send'
           />
           <View className='action-buttons'>
@@ -1667,6 +1684,22 @@ const AiServer = () => {
           </View>
         </View>
       )}
+
+      {/* 点击重置区域 - 紧急重置功能 */}
+      <View 
+        className="reset-area" 
+        onClick={resetRecognitionState}
+        style={{ 
+          display: recognitionStatus ? 'block' : 'none',
+          position: 'absolute', 
+          top: '0', 
+          right: '0',
+          padding: '5px', 
+          zIndex: 1000 
+        }}
+      >
+        <Text style={{ fontSize: '12px', color: '#999' }}>点击重置</Text>
+      </View>
     </View>
   );
 };
