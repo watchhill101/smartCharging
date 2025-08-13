@@ -718,6 +718,48 @@ const AiServer = () => {
     sendMessage(questionText);
   }, [sendMessage]);
 
+  // 添加一个安全的电话拨号函数
+  const safePhoneCall = (phoneNumber: string) => {
+    try {
+      // 检查是否在 H5 环境
+      if (process.env.TARO_ENV === 'h5') {
+        // H5 环境使用 window.location.href
+        window.location.href = `tel:${phoneNumber}`;
+        return;
+      }
+      
+      // 小程序环境
+      if (Taro.makePhoneCall && typeof Taro.makePhoneCall === 'function') {
+        Taro.makePhoneCall({
+          phoneNumber,
+          fail: (err) => {
+            console.error('拨号失败:', err);
+            showToast({
+              title: `拨号失败，请手动拨打${phoneNumber}`,
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        });
+      } else {
+        // Taro.makePhoneCall 不可用时的备用方案
+        console.warn('Taro.makePhoneCall 不可用');
+        showToast({
+          title: `请手动拨打客服电话：${phoneNumber}`,
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    } catch (error) {
+      console.error('拨号功能错误:', error);
+      showToast({
+        title: `请手动拨打客服电话：${phoneNumber}`,
+        icon: 'none',
+        duration: 3000
+      });
+    }
+  };
+
   return (
     <View className='aiserver-container'>
       {/* 聊天区域 */}
@@ -916,8 +958,15 @@ const AiServer = () => {
               onClick={() => {
                 showModal({
                   title: '联系客服',
-                  content: '人工客服热线：400-123-4567\n服务时间：8:00-22:00',
-                  showCancel: false
+                  content: '人工客服热线：19503102993\n服务时间：8:00-22:00',
+                  showCancel: true,
+                  confirmText: '立即拨打',
+                  success: (res) => {
+                    if (res.confirm) {
+                      // 使用安全的电话拨号函数
+                      safePhoneCall('19503102993');
+                    }
+                  }
                 });
               }}
             >
