@@ -19,6 +19,18 @@ const showToast = (options: any) => {
   }
 }
 
+const hideToast = () => {
+  try {
+    if (Taro.hideToast && typeof Taro.hideToast === 'function') {
+      Taro.hideToast();
+    } else {
+      console.log('隐藏Toast');
+    }
+  } catch (error) {
+    console.log('隐藏Toast失败');
+  }
+};
+
 const showModal = (options: any) => {
   try {
     if (Taro.showModal && typeof Taro.showModal === 'function') {
@@ -189,8 +201,13 @@ const AiServer = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [retryCount, setRetryCount] = useState(0)
   const [isProcessingImage, setIsProcessingImage] = useState(false)
+  const [isRecording, setIsRecording] = useState(false); // 录音状态
+  const [recordDuration, setRecordDuration] = useState(0);
+  const [recognitionStatus, setRecognitionStatus] = useState(''); // 识别状态
   const scrollViewRef = useRef<any>()
   const inputRef = useRef<any>()
+  const recorderManagerRef = useRef<any>(null);
+  const recordingTimerRef = useRef<any>(null);
 
   // 初始化 AI 服务
   const aiService = new AIService({
@@ -271,7 +288,6 @@ const AiServer = () => {
       console.error('拍照失败:', error);
       
       showToast({
-
         title: '拍照失败，请重试',
         icon: 'error',
         duration: 2000
@@ -760,6 +776,646 @@ const AiServer = () => {
     }
   };
 
+  // 修改录音初始化逻辑
+  useEffect(() => {
+    let recorderManager;
+    
+    // 检测环境
+    if (process.env.TARO_ENV === 'h5') {
+      // H5环境使用Web API实现
+      console.log('初始化H5录音环境');
+      recorderManager = createH5Recorder();
+      recorderManagerRef.current = recorderManager;
+    } else if (Taro.getRecorderManager) {
+      // 小程序环境
+      console.log('初始化小程序录音环境');
+      recorderManager = Taro.getRecorderManager();
+      recorderManagerRef.current = recorderManager;
+    } else {
+      console.log('当前环境不支持录音');
+      recorderManagerRef.current = null;
+      return; // 不支持录音的环境直接返回
+    }
+    
+    // 监听录音开始事件
+    recorderManager.onStart(() => {
+      console.log('录音开始');
+      setIsRecording(true);
+      
+      // 启动计时器，显示录音时长
+      let duration = 0;
+      recordingTimerRef.current = setInterval(() => {
+        duration += 1;
+        setRecordDuration(duration);
+        
+        // 最长录音时间限制为60秒
+        if (duration >= 60) {
+          stopRecording();
+        }
+      }, 1000);
+    });
+    
+    // 监听录音停止事件
+    recorderManager.onStop(async (res) => {
+      console.log('录音结束', res);
+      
+      // 清除计时器
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
+      }
+      
+      // 获取录音时长
+      const duration = recordDuration;
+      setIsRecording(false);
+      setRecordDuration(0);
+      
+      // 判断录音是否有效 - 使用文件大小和时长的组合判断
+      const isValidRecording = res.fileSize > 5000 || duration >= 1;
+      
+      if (!isValidRecording) {
+        showToast({
+          title: '录音时间太短，请重试',
+          icon: 'none',
+          duration: 2000
+        });
+        return;
+      }
+      
+      // 显示识别中提示
+      showToast({
+        title: '正在识别语音...',
+        icon: 'loading',
+        duration: 10000
+      });
+      
+      // 处理录音文件并识别
+      try {
+        if (process.env.TARO_ENV === 'h5') {
+          // H5环境，直接使用base64数据
+          if (res.base64) {
+            await processVoiceToTextH5(res.base64);
+          } else {
+            throw new Error('未获取到录音数据');
+          }
+        } else {
+          // 小程序环境，使用tempFilePath
+          await processVoiceToText(res.tempFilePath);
+        }
+      } catch (error) {
+        console.error('语音识别失败:', error);
+        hideToast();
+        
+        showToast({
+          title: '语音识别失败，请重试',
+          icon: 'error',
+          duration: 2000
+        });
+      }
+    });
+    
+    // 监听录音错误事件
+    recorderManager.onError((error) => {
+      console.error('录音错误:', error);
+      setIsRecording(false);
+      setRecordDuration(0);
+      
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
+      }
+      
+      showToast({
+        title: '录音失败，请重试',
+        icon: 'error',
+        duration: 2000
+      });
+    });
+    
+    // 组件卸载时清理
+    return () => {
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+      }
+    };
+  }, []);
+
+  // 处理录音按钮点击
+  const handleVoiceButtonClick = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  };
+
+  // 开始录音 - 区分环境
+  const startRecording = () => {
+    if (!recorderManagerRef.current) {
+      showToast({
+        title: '您的设备不支持录音功能',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+    
+    // H5环境下直接开始录音
+    if (process.env.TARO_ENV === 'h5') {
+      try {
+        recorderManagerRef.current.start({
+          duration: 60000, // 最长录音时间，单位ms
+          sampleRate: 16000, // 采样率
+          numberOfChannels: 1, // 录音通道数
+          encodeBitRate: 48000, // 编码码率
+          format: 'mp3' // 音频格式
+        });
+      } catch (error) {
+        console.error('H5环境录音失败:', error);
+        showToast({
+          title: '启动录音失败，请检查浏览器权限',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+      return;
+    }
+    
+    // 小程序环境请求录音权限
+    Taro.authorize({
+      scope: 'scope.record',
+      success: () => {
+        // 开始录音
+        recorderManagerRef.current.start({
+          duration: 60000, // 最长录音时间，单位ms
+          sampleRate: 16000, // 采样率
+          numberOfChannels: 1, // 录音通道数
+          encodeBitRate: 48000, // 编码码率
+          format: 'mp3', // 音频格式
+          frameSize: 50 // 指定帧大小
+        });
+      },
+      fail: () => {
+        showToast({
+          title: '需要录音权限',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    });
+  };
+
+  // 停止录音
+  const stopRecording = () => {
+    if (recorderManagerRef.current && isRecording) {
+      recorderManagerRef.current.stop();
+    }
+  };
+
+  // 处理语音转文字
+  const processVoiceToText = async (filePath: string) => {
+    try {
+      // 1. 读取录音文件为 base64 格式
+      const fileData = await Taro.getFileSystemManager().readFileSync(filePath, 'base64');
+      
+      // 2. 上传到 AssemblyAI 进行识别
+      const response = await fetch('https://api.assemblyai.com/v2/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'a76ace010da546c88458d3ae26801fed',
+          'Content-Type': 'application/json'
+        },
+        body: fileData
+      });
+      
+      if (!response.ok) {
+        throw new Error('文件上传失败');
+      }
+      
+      // 获取上传后的文件URL
+      const uploadData = await response.json();
+      const audioUrl = uploadData.upload_url;
+      
+      // 3. 发起转录请求
+      const transcriptResponse = await fetch('https://api.assemblyai.com/v2/transcript', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'a76ace010da546c88458d3ae26801fed',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          audio_url: audioUrl,
+          language_code: 'zh', // 中文识别
+        })
+      });
+      
+      if (!transcriptResponse.ok) {
+        throw new Error('转录请求失败');
+      }
+      
+      const transcriptData = await transcriptResponse.json();
+      const transcriptId = transcriptData.id;
+      
+      // 4. 轮询获取转录结果
+      let transcriptResult = null;
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      while (attempts < maxAttempts) {
+        attempts++;
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 等待1秒
+        
+        const resultResponse = await fetch(`https://api.assemblyai.com/v2/transcript/${transcriptId}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': 'a76ace010da546c88458d3ae26801fed',
+          }
+        });
+        
+        if (!resultResponse.ok) {
+          throw new Error('获取转录结果失败');
+        }
+        
+        const resultData = await resultResponse.json();
+        
+        if (resultData.status === 'completed') {
+          transcriptResult = resultData.text;
+          break;
+        } else if (resultData.status === 'error') {
+          throw new Error(resultData.error || '转录失败');
+        }
+        
+        // 如果还在处理中，继续等待
+      }
+      
+      // 隐藏转录中的提示
+      hideToast();
+      
+      if (!transcriptResult) {
+        throw new Error('转录超时');
+      }
+      
+      // 将识别结果填入输入框
+      setInputValue(transcriptResult);
+      
+      // 显示成功提示
+      showToast({
+        title: '语音识别成功',
+        icon: 'success',
+        duration: 1500
+      });
+      
+    } catch (error) {
+      console.error('语音转文字处理失败:', error);
+      hideToast();
+      
+      showToast({
+        title: '语音识别失败',
+        icon: 'error',
+        duration: 2000
+      });
+    }
+  };
+
+  // 替换 processVoiceToTextH5 函数
+  const processVoiceToTextH5 = async (base64Data) => {
+    try {
+      console.log('H5环境处理语音识别，数据长度:', base64Data.length);
+      
+      // 创建音频数据的 Blob 对象
+      const binaryString = atob(base64Data);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      const audioBlob = new Blob([bytes], { type: 'audio/mp3' });
+      
+      // 创建表单数据
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'recording.mp3');
+      
+      // 设置超时和重试机制
+      const fetchWithTimeout = async (url, options, timeout = 10000) => {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeout);
+        
+        try {
+          const response = await fetch(url, {
+            ...options,
+            signal: controller.signal
+          });
+          clearTimeout(id);
+          return response;
+        } catch (error) {
+          clearTimeout(id);
+          throw error;
+        }
+      };
+      
+      // 尝试上传音频文件
+      let uploadResponse;
+      let retries = 0;
+      const maxRetries = 2;
+      
+      while (retries <= maxRetries) {
+        try {
+          console.log(`尝试上传音频文件 (尝试 ${retries + 1}/${maxRetries + 1})...`);
+          uploadResponse = await fetchWithTimeout(
+            'https://api.assemblyai.com/v2/upload',
+            {
+              method: 'POST',
+              headers: {
+                'Authorization': 'a76ace010da546c88458d3ae26801fed'
+              },
+              body: audioBlob
+            },
+            15000
+          );
+          
+          if (uploadResponse.ok) {
+            break;
+          }
+          
+          retries++;
+          if (retries <= maxRetries) {
+            // 等待一段时间再重试
+            await new Promise(resolve => setTimeout(resolve, 1000 * retries));
+          }
+        } catch (error) {
+          console.error(`上传尝试 ${retries + 1} 失败:`, error);
+          retries++;
+          
+          if (retries > maxRetries) {
+            throw new Error('音频上传失败，请检查网络连接');
+          }
+          
+          // 等待一段时间再重试
+          await new Promise(resolve => setTimeout(resolve, 1000 * retries));
+        }
+      }
+      
+      if (!uploadResponse || !uploadResponse.ok) {
+        throw new Error('上传服务不可用，请稍后重试');
+      }
+      
+      // 获取上传后的文件URL
+      const uploadData = await uploadResponse.json();
+      const audioUrl = uploadData.upload_url;
+      console.log('音频上传成功，URL:', audioUrl);
+      
+      // 发起转录请求
+      const transcriptResponse = await fetchWithTimeout(
+        'https://api.assemblyai.com/v2/transcript',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': 'a76ace010da546c88458d3ae26801fed',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            audio_url: audioUrl,
+            language_code: 'zh', // 中文识别
+          })
+        },
+        15000
+      );
+      
+      if (!transcriptResponse.ok) {
+        throw new Error('转录请求失败');
+      }
+      
+      const transcriptData = await transcriptResponse.json();
+      const transcriptId = transcriptData.id;
+      console.log('转录请求已提交，ID:', transcriptId);
+      
+      // 轮询获取转录结果
+      let transcriptResult = null;
+      let attempts = 0;
+      const maxAttempts = 20; // 增加到20次
+      
+      // 智能等待策略
+      const waitTimes = [1000, 1000, 1500, 1500, 2000, 2000, 2500, 2500]; // 不同阶段的等待时间
+      const getWaitTime = (attempt) => {
+        if (attempt < waitTimes.length) {
+          return waitTimes[attempt];
+        }
+        return 3000; // 后期固定等待3秒
+      };
+      
+      while (attempts < maxAttempts) {
+        attempts++;
+        const waitTime = getWaitTime(attempts - 1);
+        console.log(`检查转录结果 (${attempts}/${maxAttempts})...等待${waitTime/1000}秒`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        
+        try {
+          const resultResponse = await fetchWithTimeout(
+            `https://api.assemblyai.com/v2/transcript/${transcriptId}`,
+            {
+              method: 'GET',
+              headers: {
+                'Authorization': 'a76ace010da546c88458d3ae26801fed',
+              }
+            },
+            10000
+          );
+          
+          if (!resultResponse.ok) {
+            console.warn(`获取转录结果失败 (尝试 ${attempts})`);
+            continue;
+          }
+          
+          const resultData = await resultResponse.json();
+          console.log('转录状态:', resultData.status);
+          
+          if (resultData.status === 'completed') {
+            transcriptResult = resultData.text;
+            console.log('转录完成:', transcriptResult);
+            break;
+          } else if (resultData.status === 'error') {
+            throw new Error(resultData.error || '转录失败');
+          } else if (resultData.status === 'queued' || resultData.status === 'processing') {
+            // 更新加载提示，让用户知道还在处理中
+            if (attempts % 4 === 0) { // 每4次更新一次提示
+              hideToast();
+              showToast({
+                title: `语音识别中(${attempts}/${maxAttempts})...`,
+                icon: 'loading',
+                duration: 10000
+              });
+            }
+          }
+        } catch (error) {
+          console.warn(`获取转录结果请求错误 (尝试 ${attempts}):`, error);
+          // 继续尝试，不中断循环
+        }
+      }
+      
+      // 隐藏转录中的提示
+      hideToast();
+      
+      if (!transcriptResult) {
+        // 增加备用方案，当识别超时时，提示用户手动输入
+        setInputValue(''); // 清空输入框
+        showToast({
+          title: '语音识别超时，请手动输入',
+          icon: 'none',
+          duration: 2000
+        });
+        throw new Error('转录超时，请尝试手动输入您的问题');
+      }
+      
+      // 将识别结果填入输入框
+      setInputValue(transcriptResult);
+      
+      // 显示成功提示
+      showToast({
+        title: '语音识别成功',
+        icon: 'success',
+        duration: 1500
+      });
+      
+    } catch (error) {
+      console.error('H5语音转文字处理失败:', error);
+      hideToast();
+      
+      // 判断是否为超时错误
+      if (error.message?.includes('超时')) {
+        showToast({
+          title: '识别超时，请手动输入或重试',
+          icon: 'none',
+          duration: 2500
+        });
+      } else {
+        showToast({
+          title: '语音识别失败，请重试',
+          icon: 'error',
+          duration: 2000
+        });
+      }
+      
+      throw error;
+    }
+  };
+
+  // 在组件外部添加此函数，用于创建H5环境下的录音管理器
+  const createH5Recorder = () => {
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let audioStream = null;
+    
+    // 模拟小程序的RecorderManager接口
+    const h5RecorderManager = {
+      // 事件回调
+      onStartCallback: null,
+      onStopCallback: null,
+      onErrorCallback: null,
+      
+      // 事件监听方法
+      onStart(callback) {
+        this.onStartCallback = callback;
+      },
+      onStop(callback) {
+        this.onStopCallback = callback;
+      },
+      onError(callback) {
+        this.onErrorCallback = callback;
+      },
+      
+      // 开始录音
+      async start(options) {
+        try {
+          audioChunks = [];
+          
+          // 获取麦克风权限
+          audioStream = await navigator.mediaDevices.getUserMedia({ 
+            audio: {
+              sampleRate: options?.sampleRate || 44100,
+              channelCount: options?.numberOfChannels || 1
+            } 
+          });
+          
+          // 创建MediaRecorder实例
+          mediaRecorder = new MediaRecorder(audioStream);
+          
+          // 收集音频数据
+          mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+              audioChunks.push(event.data);
+            }
+          };
+          
+          // 录音结束处理
+          mediaRecorder.onstop = async () => {
+            // 停止所有轨道
+            if (audioStream) {
+              audioStream.getTracks().forEach(track => track.stop());
+            }
+            
+            if (this.onStopCallback && audioChunks.length > 0) {
+              // 创建音频Blob
+              const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+              
+              // 将Blob转为Base64以便与小程序API兼容
+              const reader = new FileReader();
+              reader.readAsDataURL(audioBlob);
+              reader.onloadend = () => {
+                const base64data = reader.result;
+                
+                // 调用onStop回调，传递兼容小程序的参数
+                this.onStopCallback({
+                  tempFilePath: URL.createObjectURL(audioBlob), // 临时URL
+                  fileSize: audioBlob.size,
+                  base64: base64data.split('base64,')[1] // 提取base64部分
+                });
+              };
+            }
+          };
+          
+          // 处理错误
+          mediaRecorder.onerror = (event) => {
+            if (this.onErrorCallback) {
+              this.onErrorCallback({ errMsg: '录音失败: ' + event });
+            }
+          };
+          
+          // 开始录音
+          mediaRecorder.start(1000); // 每秒收集一次数据
+          
+          // 确保开始回调被触发
+          setTimeout(() => {
+            if (this.onStartCallback) {
+              this.onStartCallback();
+            }
+          }, 100); // 短暂延迟确保UI状态更新
+          
+          // 设置最大录音时间
+          if (options?.duration) {
+            setTimeout(() => {
+              if (mediaRecorder && mediaRecorder.state === 'recording') {
+                this.stop();
+              }
+            }, options.duration);
+          }
+        } catch (error) {
+          console.error('获取麦克风权限失败:', error);
+          if (this.onErrorCallback) {
+            this.onErrorCallback({ errMsg: '获取麦克风权限失败: ' + error.message });
+          }
+        }
+      },
+      
+      // 停止录音
+      stop() {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+          mediaRecorder.stop();
+        }
+      }
+    };
+    
+    return h5RecorderManager;
+  };
+
   return (
     <View className='aiserver-container'>
       {/* 聊天区域 */}
@@ -911,6 +1567,15 @@ const AiServer = () => {
       {/* 输入区域 */}
       <View className='input-area'>
         <View className='input-container'>
+          <Button 
+            className='voice-button'
+            onClick={handleVoiceButtonClick}
+            disabled={isLoading || isProcessingImage || isRecording}
+          >
+            <Text className={`icon-voice ${isRecording ? 'recording' : ''}`}>
+              {isRecording ? '🎙️' : '🎤'}
+            </Text>
+          </Button>
           <Input
             ref={inputRef}
             className='message-input'
@@ -918,21 +1583,21 @@ const AiServer = () => {
             value={inputValue}
             onInput={(e) => setInputValue(e.detail.value)}
             onConfirm={() => sendMessage(inputValue)}
-            disabled={isLoading || isProcessingImage}
+            disabled={isLoading || isProcessingImage || isRecording}
             confirmType='send'
           />
           <View className='action-buttons'>
             <Button 
               className='camera-button'
               onClick={handleCameraClick}
-              disabled={isLoading || isProcessingImage}
+              disabled={isLoading || isProcessingImage || isRecording}
             >
               <Text className='icon-camera'>📷</Text>
             </Button>
             <Button 
               className={`send-button ${inputValue.trim() && !isLoading ? 'active' : ''}`}
               onClick={() => sendMessage(inputValue)}
-              disabled={!inputValue.trim() || isLoading || isProcessingImage}
+              disabled={!inputValue.trim() || isLoading || isProcessingImage || isRecording}
             >
               <Text className='send-text'>发送</Text>
             </Button>
@@ -975,6 +1640,33 @@ const AiServer = () => {
           </View>
         </View>
       </View>
+
+      {/* 录音状态指示器 */}
+      {isRecording && (
+        <View className='recording-indicator'>
+          <View className='recording-icon'>🎙️</View>
+          <View className='recording-status'>
+            <Text className='recording-text'>正在录音...</Text>
+            <Text className='recording-duration'>{recordDuration}s</Text>
+          </View>
+          <View className='recording-tip'>
+            <Text>点击按钮结束录音</Text>
+          </View>
+        </View>
+      )}
+
+      {/* 识别状态指示器 */}
+      {!isRecording && recognitionStatus && (
+        <View className='recording-indicator'>
+          <View className='recording-icon'>🔄</View>
+          <View className='recording-status'>
+            <Text className='recording-text'>{recognitionStatus}</Text>
+          </View>
+          <View className='recording-tip'>
+            <Text>语音识别可能需要一些时间，请耐心等待</Text>
+          </View>
+        </View>
+      )}
     </View>
   );
 };
