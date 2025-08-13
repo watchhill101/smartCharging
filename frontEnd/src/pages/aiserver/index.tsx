@@ -49,25 +49,79 @@ interface ApiResponse {
   }
 }
 
-// AI 客服配置
-const AI_CONFIG = {
-  apiKey: "sk-jcqcc71pkFwLcp2r0e2aBc6174834417B7F32d148c786773",
-  baseURL: "https://free.v36.cm/v1",
-  model: "gpt-3.5-turbo",
-  maxTokens: 800,
-  temperature: 0.7,
-  timeout: 30000 // 30秒超时
+// AI 模型配置 - 支持多个模型备用
+const AI_MODELS = [
+  {
+    name: 'GPT-3.5-Turbo',
+    apiKey: "sk-jcqcc71pkFwLcp2r0e2aBc6174834417B7F32d148c786773",
+    baseURL: "https://free.v36.cm/v1",
+    model: "gpt-3.5-turbo",
+    maxTokens: 800,
+    temperature: 0.7,
+    timeout: 30000,
+    priority: 1 // 优先级，数字越小优先级越高
+  },
+  {
+    name: 'GPT-4o-Mini',
+    apiKey: "sk-jcqcc71pkFwLcp2r0e2aBc6174834417B7F32d148c786773",
+    baseURL: "https://free.v36.cm/v1",
+    model: "gpt-4o-mini",
+    maxTokens: 600,
+    temperature: 0.7,
+    timeout: 25000,
+    priority: 2
+  },
+  {
+    name: 'GPT-3.5-备用',
+    apiKey: "sk-jcqcc71pkFwLcp2r0e2aBc6174834417B7F32d148c786773",
+    baseURL: "https://api.openai.com/v1", // 官方接口作为备用
+    model: "gpt-3.5-turbo-1106",
+    maxTokens: 500,
+    temperature: 0.8,
+    timeout: 20000,
+    priority: 3
+  }
+]
+
+// 当前使用的模型索引
+let currentModelIndex = 0
+
+// 获取当前可用的模型配置
+const getCurrentModel = () => {
+  return AI_MODELS[currentModelIndex] || AI_MODELS[0]
 }
 
-// 预设问题
-const PRESET_QUESTIONS = [
-  "充电桩如何使用？",
-  "如何支付充电费用？", 
-  "充电故障怎么办？",
-  "如何查看充电记录？",
-  "会员有什么优惠？",
-  "如何找到附近充电桩？"
-]
+// 切换到下一个可用模型
+const switchToNextModel = () => {
+  currentModelIndex = (currentModelIndex + 1) % AI_MODELS.length
+  console.log(`切换到模型: ${getCurrentModel().name}`)
+  return getCurrentModel()
+}
+
+// 重置到首选模型
+const resetToPreferredModel = () => {
+  currentModelIndex = 0
+  console.log(`重置到首选模型: ${getCurrentModel().name}`)
+}
+
+// 检查错误类型，决定是否切换模型
+const shouldSwitchModel = (error: any) => {
+  const errorMessage = error.message?.toLowerCase() || ''
+  
+  // 以下情况应该切换模型
+  const switchConditions = [
+    errorMessage.includes('429'), // 请求过于频繁
+    errorMessage.includes('502'), // 网关错误
+    errorMessage.includes('503'), // 服务不可用
+    errorMessage.includes('504'), // 网关超时
+    errorMessage.includes('model not found'), // 模型不存在
+    errorMessage.includes('quota'), // 配额不足
+    errorMessage.includes('rate limit'), // 频率限制
+    error.name === 'AbortError' // 请求超时
+  ]
+  
+  return switchConditions.some(condition => condition)
+}
 
 // 错误类型映射
 const ERROR_MESSAGES = {
@@ -111,7 +165,7 @@ const AiServer = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: generateId(),
-      content: '您好！我是小电，您的智能充电助手 🔌\n\n很高兴为您服务！我可以帮您解答：\n• 充电桩使用方法\n• 支付和计费问题\n• 故障处理方案\n• 会员优惠政策\n• 充电站查找\n\n有什么问题尽管问我哦～ 😊',
+      content: '您好！我是小电，您的智能充电助手 🔌\n\n很高兴为您服务！我可以为您提供以下专业服务：\n\n🔌 充电指导 - 充电桩使用方法和操作流程\n💳 支付帮助 - 充电费用计算和支付方式\n�️ 故障处理 - 充电异常诊断和解决方案\n🎁 会员优惠 - 会员服务和优惠政策介绍\n📍 站点查找 - 充电站查找和预约服务\n📊 记录查询 - 充电历史和账单查询\n\n有什么问题随时问我，我会为您详细解答！😊',
       role: 'assistant',
       timestamp: Date.now()
     }
@@ -145,67 +199,98 @@ const AiServer = () => {
     return ERROR_MESSAGES.UNKNOWN_ERROR + '\n\n📞 人工客服：400-123-4567'
   }, [])
 
-  // 优化的 AI 调用函数
+  // 优化的 AI 调用函数 - 支持多模型备用
   const callAI = useCallback(async (userMessage: string): Promise<string> => {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), AI_CONFIG.timeout)
+    let lastError: any = null
+    let attemptCount = 0
+    const maxAttempts = AI_MODELS.length
 
-    try {
-      // 构建对话历史 - 只保留最近的对话
-      const conversationHistory = messages
-        .slice(-6) // 减少到6轮对话，节省 token
-        .filter(msg => !msg.isError) // 过滤错误消息
-        .map(msg => ({
-          role: msg.role,
-          content: msg.content
-        }))
-      
-      // 添加当前用户消息
-      conversationHistory.push({
-        role: 'user',
-        content: userMessage
-      })
+    // 尝试所有可用模型
+    while (attemptCount < maxAttempts) {
+      const currentModel = getCurrentModel()
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), currentModel.timeout)
 
-      const response = await fetch(`${AI_CONFIG.baseURL}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${AI_CONFIG.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: AI_CONFIG.model,
-          messages: [getSystemPrompt(), ...conversationHistory],
-          max_tokens: AI_CONFIG.maxTokens,
-          temperature: AI_CONFIG.temperature,
-          stream: false
-        }),
-        signal: controller.signal
-      })
+      try {
+        console.log(`尝试使用模型: ${currentModel.name} (第${attemptCount + 1}次尝试)`)
+        
+        // 构建对话历史 - 只保留最近的对话
+        const conversationHistory = messages
+          .slice(-6) // 减少到6轮对话，节省 token
+          .filter(msg => !msg.isError) // 过滤错误消息
+          .map(msg => ({
+            role: msg.role,
+            content: msg.content
+          }))
+        
+        // 添加当前用户消息
+        conversationHistory.push({
+          role: 'user',
+          content: userMessage
+        })
 
-      clearTimeout(timeoutId)
+        const response = await fetch(`${currentModel.baseURL}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${currentModel.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: currentModel.model,
+            messages: [getSystemPrompt(), ...conversationHistory],
+            max_tokens: currentModel.maxTokens,
+            temperature: currentModel.temperature,
+            stream: false
+          }),
+          signal: controller.signal
+        })
 
-      if (!response.ok) {
-        const errorText = await response.text()
-        throw new Error(`API调用失败 (${response.status}): ${errorText}`)
+        clearTimeout(timeoutId)
+
+        if (!response.ok) {
+          const errorText = await response.text()
+          throw new Error(`API调用失败 (${response.status}): ${errorText}`)
+        }
+
+        const data: ApiResponse = await response.json()
+        
+        if (data.error) {
+          throw new Error(data.error.message)
+        }
+
+        const content = data.choices[0]?.message?.content
+        if (!content) {
+          throw new Error('模型返回内容为空')
+        }
+
+        // 成功后重置到首选模型（延迟重置）
+        if (attemptCount > 0) {
+          console.log(`模型 ${currentModel.name} 调用成功，60秒后将重置到首选模型`)
+          setTimeout(resetToPreferredModel, 60000) // 60秒后重置
+        }
+
+        return content
+
+      } catch (error: any) {
+        clearTimeout(timeoutId)
+        lastError = error
+        console.error(`模型 ${currentModel.name} 调用失败:`, error.message)
+        
+        // 检查是否应该切换模型
+        if (shouldSwitchModel(error) && attemptCount < maxAttempts - 1) {
+          switchToNextModel()
+          attemptCount++
+          console.log(`切换到备用模型，继续尝试...`)
+          continue
+        } else {
+          // 如果是其他错误（如网络问题），直接抛出
+          throw error
+        }
       }
-
-      const data: ApiResponse = await response.json()
-      
-      if (data.error) {
-        throw new Error(data.error.message)
-      }
-
-      return data.choices[0]?.message?.content || '抱歉，我没有收到有效的回复，请重新提问 🤔'
-    } catch (error: any) {
-      clearTimeout(timeoutId)
-      console.error('AI调用错误:', error)
-      
-      if (error.name === 'AbortError') {
-        throw new Error('timeout')
-      }
-      
-      throw error
     }
+
+    // 所有模型都失败了
+    throw new Error(`所有模型都无法响应: ${lastError?.message || '未知错误'}`)
   }, [messages])
 
   // 发送消息 - 优化错误处理和重试机制
@@ -254,23 +339,17 @@ const AiServer = () => {
       // 显示用户友好的错误提示 - 使用控制台输出作为备用
       try {
         showToast({
-          title: '发送失败，请重试',
+          title: '发送失败，已尝试备用模型',
           icon: 'error',
           duration: 2000
         })
       } catch (e) {
-        console.log('发送失败，请重试')
+        console.log('发送失败，已尝试备用模型')
       }
     } finally {
       setIsLoading(false)
     }
   }, [isLoading, callAI, scrollToBottom, getErrorMessage])
-
-  // 处理预设问题点击 - 添加防抖
-  const handlePresetQuestion = useCallback((question: string) => {
-    if (isLoading) return
-    sendMessage(question)
-  }, [isLoading, sendMessage])
 
   // 清空对话 - 优化用户体验
   const clearMessages = useCallback(() => {
@@ -285,7 +364,7 @@ const AiServer = () => {
           setMessages([
             {
               id: generateId(),
-              content: '对话已清空！我是小电，继续为您服务 🔌\n\n有什么充电相关问题可以随时问我哦～ 😊',
+              content: '对话已清空！我是小电，继续为您服务 🔌\n\n我可以为您提供：\n🔌 充电指导 💳 支付帮助 🛠️ 故障处理\n🎁 会员优惠 📍 站点查找 📊 记录查询\n\n有什么充电相关问题可以随时问我哦～ 😊',
               role: 'assistant',
               timestamp: Date.now()
             }
@@ -358,6 +437,7 @@ const AiServer = () => {
 
   return (
     <View className='aiserver-container'>
+
       {/* 聊天区域 */}
       <ScrollView 
         className='chat-area'
@@ -414,27 +494,6 @@ const AiServer = () => {
         <View id='bottom' style={{ height: '1rpx' }}></View>
       </ScrollView>
 
-      {/* 预设问题区域 */}
-      {messages.length <= 1 && (
-        <View className='preset-questions'>
-          <Text className='preset-title'>💡 常见问题</Text>
-          <View className='questions-grid'>
-            {PRESET_QUESTIONS.map((question, index) => (
-              <View 
-                key={index}
-                className='question-item'
-                onClick={() => handlePresetQuestion(question)}
-              >
-                <Text className='question-text'>{question}</Text>
-              </View>
-            ))}
-          </View>
-          <View className='tip-box'>
-            <Text className='tip-text'>💡 点击问题快速提问，或在下方输入您的问题</Text>
-          </View>
-        </View>
-      )}
-
       {/* 输入区域 */}
       <View className='input-area'>
         <View className='input-container'>
@@ -467,15 +526,14 @@ const AiServer = () => {
             <Text className='char-count'>{inputValue.length}/500</Text>
           </View>
           <View className='tool-right'>
-            {messages.length > 2 && (
-              <Button 
-                className='tool-button clear-button' 
-                size='mini'
-                onClick={clearMessages}
-              >
-                🗑️ 清空
-              </Button>
-            )}
+            <Button 
+              className={`tool-button clear-button ${messages.length > 2 ? 'visible' : 'hidden'}`}
+              size='mini'
+              onClick={clearMessages}
+              disabled={messages.length <= 2}
+            >
+              🗑️ 清空
+            </Button>
             <Button 
               className='tool-button help-button' 
               size='mini'
@@ -494,7 +552,7 @@ const AiServer = () => {
         
         <View className='disclaimer'>
           <Text className='disclaimer-text'>
-            🤖 本回答由 AI 生成，仅供参考。如需准确信息请联系人工客服
+            本回答由 AI 生成，仅供参考。如需准确信息请联系人工客服
           </Text>
         </View>
       </View>

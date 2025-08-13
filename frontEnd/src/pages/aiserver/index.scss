@@ -1,3 +1,69 @@
+/* 模型状态栏样式 */
+.model-status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 30rpx 15rpx;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20rpx);
+  border-bottom: 2rpx solid rgba(255, 255, 255, 0.1);
+  z-index: 10;
+  position: relative;
+
+  .status-info {
+    display: flex;
+    align-items: center;
+    gap: 20rpx;
+
+    .current-model {
+      font-size: 28rpx;
+      color: rgba(0, 0, 0, 0.8);
+      font-weight: 600;
+      text-shadow: 0 2rpx 4rpx rgba(255, 255, 255, 0.3);
+    }
+
+    .switch-count {
+      font-size: 24rpx;
+      color: rgba(0, 0, 0, 0.6);
+      background: rgba(255, 255, 255, 0.4);
+      padding: 8rpx 16rpx;
+      border-radius: 20rpx;
+      backdrop-filter: blur(10rpx);
+    }
+  }
+
+  .status-indicator {
+    .status-dot {
+      width: 20rpx;
+      height: 20rpx;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+
+      &.active {
+        background: #52c41a;
+        box-shadow: 0 0 20rpx rgba(82, 196, 26, 0.6);
+      }
+
+      &.loading {
+        background: #faad14;
+        box-shadow: 0 0 20rpx rgba(250, 173, 20, 0.6);
+        animation: pulse 1.5s infinite;
+      }
+    }
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+}
+
 .aiserver-container {
   display: flex;
   flex-direction: column;
@@ -179,18 +245,79 @@
   color: #666;
 }
 
-/* 预设问题区域 */
-.preset-questions {
+/* 智能助手服务区域 */
+.assistant-service-area {
   padding: 32rpx;
   background: white;
   border-top: 1rpx solid #e8e8e8;
   box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.05);
 }
 
-.preset-title {
-  font-size: 34rpx;
-  color: #333;
+.service-header {
+  text-align: center;
+  margin-bottom: 32rpx;
+  
+  .service-title {
+    font-size: 38rpx;
+    color: #1890ff;
+    font-weight: 700;
+    margin-bottom: 8rpx;
+    display: block;
+  }
+  
+  .service-subtitle {
+    font-size: 26rpx;
+    color: #666;
+    display: block;
+  }
+}
+
+.service-features {
+  margin-bottom: 32rpx;
+  
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20rpx;
+  }
+  
+  .feature-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20rpx 16rpx;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 16rpx;
+    transition: all 0.3s ease;
+    
+    &:active {
+      transform: scale(0.95);
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    }
+    
+    .feature-icon {
+      font-size: 32rpx;
+      margin-bottom: 8rpx;
+      display: block;
+    }
+    
+    .feature-text {
+      font-size: 24rpx;
+      color: #333;
+      font-weight: 500;
+    }
+  }
+}
+
+/* 预设问题区域样式更新 */
+.preset-questions {
   margin-bottom: 24rpx;
+}
+
+.preset-title {
+  font-size: 32rpx;
+  color: #1890ff;
+  margin-bottom: 20rpx;
   font-weight: 600;
   text-align: center;
 }
@@ -230,16 +357,18 @@
 }
 
 .tip-box {
-  background: #f6ffed;
-  border: 1rpx solid #b7eb8f;
-  border-radius: 16rpx;
-  padding: 16rpx 20rpx;
+  background: linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%);
+  border: 1rpx solid #d9f7be;
+  border-radius: 20rpx;
+  padding: 20rpx 24rpx;
   text-align: center;
-}
-
-.tip-text {
-  font-size: 26rpx;
-  color: #52c41a;
+  margin-top: 20rpx;
+  
+  .tip-text {
+    font-size: 26rpx;
+    color: #52c41a;
+    font-weight: 500;
+  }
 }
 
 /* 输入区域 */
@@ -307,6 +436,7 @@
   align-items: center;
   margin-top: 16rpx;
   padding: 0 8rpx;
+  min-height: 60rpx;
 }
 
 .tool-left {
@@ -315,8 +445,12 @@
 }
 
 .tool-right {
-  display: flex;
-  gap: 12rpx;
+  display: flex !important;
+  gap: 16rpx;
+  align-items: center !important;
+  height: 60rpx;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
 }
 
 .char-count {
@@ -325,27 +459,55 @@
 }
 
 .tool-button {
-  background: #f0f0f0;
-  color: #666;
-  border: 1rpx solid #d9d9d9;
-  border-radius: 20rpx;
-  font-size: 24rpx;
-  padding: 8rpx 16rpx;
+  background: #f0f0f0 !important;
+  color: #666 !important;
+  border: 1rpx solid #d9d9d9 !important;
+  border-radius: 20rpx !important;
+  font-size: 24rpx !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: 120rpx !important;
+  width: auto !important;
+  height: 60rpx !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   transition: all 0.3s ease;
+  box-sizing: border-box !important;
+  line-height: 1 !important;
+  position: relative;
+  
+  /* 重置所有可能的Taro Button默认样式 */
+  &::after {
+    border: none !important;
+  }
   
   &:active {
-    background: #e6e6e6;
+    background: #e6e6e6 !important;
     transform: scale(0.95);
   }
   
   &.clear-button:active {
-    background: #ff4d4f;
-    color: white;
+    background: #ff4d4f !important;
+    color: white !important;
   }
   
   &.help-button:active {
-    background: #52c41a;
-    color: white;
+    background: #52c41a !important;
+    color: white !important;
+  }
+  
+  /* 隐藏状态的按钮 */
+  &.hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+  }
+  
+  &.visible {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
   }
 }
 
