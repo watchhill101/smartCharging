@@ -1,54 +1,159 @@
 import { View, Text, Input, Button } from '@tarojs/components'
 import { useState } from 'react'
 import { useLoad } from '@tarojs/taro'
-import Taro from '@tarojs/taro'
+import {
+  getStorageSync as taroGetStorageSync,
+  setStorageSync as taroSetStorageSync,
+  navigateTo as taroNavigateTo
+} from '@tarojs/taro'
 import { post } from '../../utils/request'
 import { STORAGE_KEYS } from '../../utils/constants'
 import SliderVerify from '../../components/SliderVerify'
 import './login.scss'
+import React from 'react'
 
 interface LoginForm {
   username: string
-  password: string
+  verifyCode: string
 }
 
 export default function Login() {
   const [form, setForm] = useState<LoginForm>({
     username: '',
-    password: ''
+    verifyCode: ''
   })
   const [loading, setLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
   const [verifyToken, setVerifyToken] = useState<string | null>(null)
+  const [codeLoading, setCodeLoading] = useState(false)
+  const [countdown, setCountdown] = useState(0)
+  const [countdownTimer, setCountdownTimer] = useState<NodeJS.Timeout | null>(null)
+  const [receivedCode, setReceivedCode] = useState<string | null>(null)
 
   useLoad(() => {
-    console.log('登录页面加载')
     // 检查是否已记住用户名
     try {
-      const rememberedUsername = Taro.getStorageSync(STORAGE_KEYS.REMEMBERED_USERNAME)
+      const rememberedUsername = taroGetStorageSync(STORAGE_KEYS.REMEMBERED_USERNAME)
       if (rememberedUsername) {
         setForm(prev => ({ ...prev, username: rememberedUsername }))
       }
     } catch (error) {
-      console.log('获取记住的用户名失败:', error)
+      console.error('获取记住的用户名失败:', error)
     }
   })
+
+  // 清理定时器的函数
+  const clearCountdownTimer = () => {
+    if (countdownTimer) {
+      clearInterval(countdownTimer)
+      setCountdownTimer(null)
+    }
+  }
+
+  // 开始倒计时的函数
+  const startCountdown = () => {
+    // 先清理之前的定时器
+    clearCountdownTimer()
+
+    setCountdown(60)
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer)
+          setCountdownTimer(null)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+    setCountdownTimer(timer)
+  }
+
+  // 获取验证码
+  const handleGetVerifyCode = async () => {
+    if (!form.username.trim()) {
+      console.log('请先输入手机号')
+      return
+    }
+    if (!validatePhone(form.username)) {
+      console.log('请输入正确的手机号格式')
+      return
+    }
+
+    // 如果正在倒计时，直接返回
+    if (countdown > 0) {
+      console.log('请等待倒计时结束')
+      return
+    }
+
+    setCodeLoading(true)
+    try {
+      const response = await post('/auth/send-verify-code', {
+        phone: form.username
+      })
+
+      if (response.success) {
+        console.log('✅ 验证码发送成功')
+        // 开始倒计时
+        startCountdown()
+
+        // 获取后端返回的验证码（开发环境下）
+        if (response.data && response.data.code) {
+          setReceivedCode(response.data.code)
+          console.log('🎯 收到后端验证码:', response.data.code)
+          console.log('💡 提示：点击顶部验证码可自动填入')
+
+          // 10秒后自动隐藏验证码显示
+          setTimeout(() => {
+            setReceivedCode(null)
+          }, 10000)
+        } else {
+          // 如果后端没有返回验证码（生产环境），显示提示
+          console.log('📱 验证码已发送到您的手机，请查收短信')
+          // 在生产环境下，可以显示一个提示消息
+          // 这里可以添加Toast提示或其他用户友好的提示方式
+        }
+      } else {
+        console.log('❌ 验证码发送失败:', response.message)
+      }
+    } catch (error) {
+      console.error('❌ 验证码发送失败:', error)
+      console.log('验证码发送失败，请稍后重试')
+    } finally {
+      setCodeLoading(false)
+    }
+  }
+
+  // 组件卸载时清理定时器
+  React.useEffect(() => {
+    return () => {
+      clearCountdownTimer()
+    }
+  }, [countdownTimer])
 
   const handleInputChange = (field: keyof LoginForm, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }))
   }
 
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^1[3-9]\d{9}$/
+    return phoneRegex.test(phone)
+  }
+
   const validateForm = () => {
     if (!form.username.trim()) {
-      console.log('请输入用户名')
+      console.log('请输入手机号')
       return false
     }
-    if (!form.password.trim()) {
-      console.log('请输入密码')
+    if (!validatePhone(form.username)) {
+      console.log('请输入正确的手机号格式')
       return false
     }
-    if (form.password.length < 6) {
-      console.log('密码至少6位')
+    if (!form.verifyCode.trim()) {
+      console.log('请输入验证码')
+      return false
+    }
+    if (form.verifyCode.length !== 6) {
+      console.log('验证码为6位数字')
       return false
     }
     return true
@@ -90,104 +195,67 @@ export default function Login() {
 
     console.log('✅ 准备发送登录请求:', {
       username: form.username,
-      password: '***',
+      verifyCode: '***',
       verifyToken: verifyToken ? '已获取' : '未获取'
     })
 
     setLoading(true)
-    try {
-      console.log('🚀 发送POST请求到 /auth/login')
 
-      // 添加超时和重试机制
-      const response = await post('/auth/login', {
-        username: form.username,
-        password: form.password,
+    try {
+      console.log('📡 发送登录请求...')
+      const response = await post('/auth/login-with-code', {
+        phone: form.username,
+        verifyCode: form.verifyCode,
         verifyToken
       })
 
-      console.log('📡 服务器响应:', response)
+      console.log('📦 收到登录响应:', response)
 
-      if (response?.success && response?.data) {
-        console.log('✅ 登录成功，保存用户信息')
+      if (response.success && response.data) {
+        console.log('🎉 登录成功！')
 
         // 保存登录信息
         try {
-          Taro.setStorageSync(STORAGE_KEYS.USER_TOKEN, response.data.token)
-          Taro.setStorageSync(STORAGE_KEYS.USER_INFO, response.data.user)
+          taroSetStorageSync(STORAGE_KEYS.USER_TOKEN, response.data.token)
+          taroSetStorageSync(STORAGE_KEYS.USER_INFO, response.data.user)
 
           // 保存刷新令牌
           if (response.data.refreshToken) {
-            Taro.setStorageSync('refresh_token', response.data.refreshToken)
+            taroSetStorageSync('refresh_token', response.data.refreshToken)
           }
 
           // 保存用户名以便下次使用
-          Taro.setStorageSync(STORAGE_KEYS.REMEMBERED_USERNAME, form.username)
+          taroSetStorageSync(STORAGE_KEYS.REMEMBERED_USERNAME, form.username)
 
           console.log('👤 用户信息已保存:', response.data.user)
-
-          // 跳转到首页
-          setTimeout(() => {
-            console.log('🏠 跳转到首页')
-            Taro.switchTab({ url: '/pages/index/index' })
-          }, 1000) // 减少延迟时间
-
         } catch (storageError) {
-          console.error('💾 存储失败:', storageError)
-          console.log('登录成功但数据保存失败')
+          console.error('💾 保存用户信息失败:', storageError)
         }
+
+        console.log('✅ 登录成功，准备跳转')
+        console.log('登录成功')
+
+        setTimeout(() => {
+          console.log('🏠 跳转到首页')
+          taroNavigateTo({ url: '/pages/index/index' })
+        }, 1000) // 减少延迟时间
+
       } else {
-        console.log('❌ 登录失败，响应数据无效:', response)
-        console.log(response?.message || '登录失败，请检查用户名和密码')
-        resetVerification()
+        console.log('❌ 登录失败:', response.message || '未知错误')
+        console.log(response.message || '登录失败，请检查验证码')
       }
     } catch (error: any) {
-      console.error('💥 登录请求异常:', error)
+      console.error('❌ 登录请求失败:', error)
 
-      // 详细的错误分析
-      let errorMessage = '网络错误，请检查网络连接'
-
-      if (error.response) {
-        console.log('🌐 HTTP错误详情:', {
-          status: error.response.status,
-          statusText: error.response.statusText,
-          data: error.response.data
-        })
-
-        switch (error.response.status) {
-          case 401:
-            errorMessage = '用户名或密码错误'
-            break
-          case 403:
-            errorMessage = '账户被禁用'
-            break
-          case 404:
-            errorMessage = '服务不可用，请稍后重试'
-            break
-          case 500:
-            errorMessage = '服务器错误，请稍后重试'
-            break
-          default:
-            errorMessage = error.response.data?.message || `HTTP ${error.response.status} 错误`
-        }
-      } else if (error.message) {
-        console.log('🔌 网络错误:', error.message)
-        if (error.message.includes('Network Error')) {
-          errorMessage = '无法连接到服务器，请检查网络连接'
-        } else if (error.message.includes('timeout')) {
-          errorMessage = '请求超时，请重试'
-        } else {
-          errorMessage = error.message
-        }
+      if (error.message) {
+        console.log(error.message)
+      } else {
+        console.log('登录失败，请检查网络连接')
       }
-
-      console.log('错误信息:', errorMessage)
-
-      // 登录失败时重置验证状态
-      resetVerification()
     } finally {
-      console.log('🏁 登录流程结束')
       setLoading(false)
     }
+
   }
 
   const handleRegister = () => {
@@ -196,6 +264,65 @@ export default function Login() {
 
   return (
     <View className='login-page'>
+      {/* 验证码显示区域 */}
+      {receivedCode && (
+        <View className='verify-code-display' style={{
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          right: '0',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: '#fff',
+          padding: '12px 16px',
+          zIndex: '1000',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.2)'
+        }}>
+          <Text style={{
+            fontSize: '14px',
+            fontWeight: '500',
+            marginRight: '8px'
+          }}>🔐 系统验证码:</Text>
+          <Text style={{
+            fontSize: '18px',
+            fontWeight: 'bold',
+            fontFamily: 'Courier New, monospace',
+            background: 'rgba(255, 255, 255, 0.2)',
+            padding: '4px 12px',
+            borderRadius: '6px',
+            letterSpacing: '3px',
+            marginRight: '8px',
+            cursor: 'pointer'
+          }}
+            onClick={() => {
+              handleInputChange('verifyCode', receivedCode)
+              console.log('验证码已自动填入')
+            }}
+          >{receivedCode}</Text>
+          <Text style={{
+            fontSize: '10px',
+            opacity: '0.7',
+            marginRight: '8px'
+          }}>点击填入</Text>
+          <Text
+            style={{
+              fontSize: '12px',
+              opacity: '0.8',
+              cursor: 'pointer',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              background: 'rgba(255, 255, 255, 0.1)'
+            }}
+            onClick={() => setReceivedCode(null)}
+          >
+            ✕
+          </Text>
+        </View>
+      )}
+
       {/* 背景装饰 */}
       <View className='login-bg'>
         <View className='bg-circle circle-1'></View>
@@ -204,72 +331,155 @@ export default function Login() {
       </View>
 
       {/* 登录容器 */}
-      <View className='login-container'>
+      <View className='login-container' style={{
+        width: '100%',
+        maxWidth: '380px',
+        margin: '0 auto',
+        padding: '20px 16px',
+        marginTop: receivedCode ? '60px' : '0'
+      }}>
         {/* Logo和标题 */}
-        <View className='login-header'>
-          <View className='logo'>
-            <Text className='logo-icon'>⚡</Text>
+        <View className='login-header' style={{
+          textAlign: 'center',
+          marginBottom: '24px'
+        }}>
+          <View className='logo' style={{
+            width: '64px',
+            height: '64px',
+            margin: '0 auto 12px'
+          }}>
+            <Text className='logo-icon' style={{ fontSize: '32px' }}>⚡</Text>
           </View>
-          <Text className='app-title'>智能充电</Text>
-          <Text className='app-subtitle'>让充电更简单</Text>
+          <Text className='app-title' style={{
+            fontSize: '28px',
+            marginBottom: '6px'
+          }}>智能充电</Text>
+          <Text className='app-subtitle' style={{
+            fontSize: '14px',
+            marginBottom: '0'
+          }}>让充电更简单</Text>
         </View>
 
         {/* 登录表单 */}
-        <View className='login-form'>
-          <View className='form-card'>
-            <View className='input-group'>
-              <View className='input-wrapper'>
-                <View className='input-icon'>👤</View>
+        <View className='login-form' style={{ width: '100%' }}>
+          <View className='form-card' style={{
+            padding: '24px 20px',
+            borderRadius: '16px'
+          }}>
+            {/* 手机号输入框 */}
+            <View className='input-group' style={{ marginBottom: '20px' }}>
+              <View className='input-wrapper' style={{ minHeight: '48px' }}>
+                <View className='input-icon' style={{
+                  width: '48px',
+                  height: '48px',
+                  fontSize: '16px'
+                }}>📱</View>
                 <Input
                   className='form-input'
-                  placeholder='请输入用户名/手机号'
+                  placeholder='请输入手机号'
                   placeholderClass='input-placeholder'
                   value={form.username}
                   onInput={(e) => handleInputChange('username', e.detail.value)}
+                  style={{
+                    padding: '12px 16px',
+                    fontSize: '16px'
+                  }}
                 />
               </View>
             </View>
 
-            <View className='input-group'>
-              <View className='input-wrapper'>
-                <View className='input-icon'>🔒</View>
-                <Input
-                  className='form-input'
-                  placeholder='请输入密码'
-                  placeholderClass='input-placeholder'
-                  password={!showPassword}
-                  value={form.password}
-                  onInput={(e) => handleInputChange('password', e.detail.value)}
-                />
-                <View
-                  className='password-toggle'
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? '👁️' : '👁️‍🗨️'}
-                </View>
+            {/* 验证码输入框 */}
+            <View style={{ margin: '20px 0' }}>
+              <View style={{ marginBottom: '10px' }}>
+                <Text style={{
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: '#333333',
+                  letterSpacing: '0.5px'
+                }}>🔑 验证码</Text>
               </View>
+
+              <View style={{
+                padding: '2px',
+                borderRadius: '10px',
+                marginBottom: '14px',
+                background: 'rgba(24, 144, 255, 0.05)',
+                border: '1px solid rgba(24, 144, 255, 0.1)'
+              }}>
+                <Input
+                  className='verify-code-input-new'
+                  value={form.verifyCode}
+                  type='text'
+                  maxlength={6}
+                  adjustPosition={true}
+                  holdKeyboard={false}
+                  onInput={(e) => {
+                    handleInputChange('verifyCode', e.detail.value)
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    background: '#fff',
+                    fontSize: '16px',
+                    fontWeight: '500',
+                    letterSpacing: '2px',
+                    textAlign: 'center',
+                    color: '#333333',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+                  }}
+                />
+              </View>
+
+              <Button
+                style={{
+                  width: '100%',
+                  padding: '14px 20px',
+                  background: codeLoading || countdown > 0
+                    ? 'linear-gradient(135deg, #d9d9d9 0%, #bfbfbf 100%)'
+                    : 'linear-gradient(135deg, #1890ff 0%, #096dd9 100%)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  letterSpacing: '0.5px',
+                  boxShadow: codeLoading || countdown > 0
+                    ? 'none'
+                    : '0 4px 15px rgba(24, 144, 255, 0.3)',
+                  transition: 'all 0.3s ease'
+                }}
+                onClick={handleGetVerifyCode}
+                disabled={codeLoading || countdown > 0}
+              >
+                {codeLoading ? '发送中...' : countdown > 0 ? `重新获取 (${countdown}s)` : '获取验证码'}
+              </Button>
             </View>
 
             {/* 安全验证模块 */}
-            <View className='security-verify-section'>
-              <View className='verify-title'>
-                <Text className='verify-title-text'>安全验证</Text>
-                <Text className='verify-desc'>请拖动滑块完成验证</Text>
+            <View className='security-verify-section' style={{ margin: '20px 0' }}>
+              <View className='verify-title' style={{ marginBottom: '12px' }}>
+                <Text className='verify-title-text' style={{ fontSize: '14px' }}>安全验证</Text>
+                <Text className='verify-desc' style={{ fontSize: '12px' }}>请拖动滑块完成验证</Text>
               </View>
 
-              <View className='slider-verify-container'>
+              <View className='slider-verify-container' style={{
+                margin: '12px 0',
+                padding: '10px'
+              }}>
                 <SliderVerify
                   onSuccess={handleSliderSuccess}
                   onError={handleSliderError}
                   width={248}
-                  height={42}
+                  height={40}
                 />
               </View>
 
               {/* 验证状态提示 */}
               {verifyToken && (
-                <View className='verify-status'>
-                  <Text className='verify-success-text'>✓ 安全验证已通过</Text>
+                <View className='verify-status' style={{ margin: '10px 0 0 0' }}>
+                  <Text className='verify-success-text' style={{ fontSize: '12px' }}>✓ 安全验证已通过</Text>
                 </View>
               )}
             </View>
@@ -278,72 +488,31 @@ export default function Login() {
               className={`login-btn ${loading ? 'loading' : ''} ${!verifyToken ? 'disabled' : ''}`}
               onClick={handleLogin}
               disabled={loading || !verifyToken}
+              style={{
+                height: '48px',
+                fontSize: '16px',
+                fontWeight: '600',
+                marginTop: '8px'
+              }}
             >
               {loading ? '登录中...' : verifyToken ? '登录' : '请先完成验证'}
             </Button>
 
             {/* 重新验证按钮 */}
             {verifyToken && (
-              <View className='reverify-container'>
+              <View className='reverify-container' style={{ marginTop: '10px' }}>
                 <Text
                   className='reverify-btn'
                   onClick={resetVerification}
+                  style={{ fontSize: '12px' }}
                 >
                   重新验证
                 </Text>
               </View>
             )}
-
-            {/* 测试按钮 */}
-            <View className='test-container'>
-              <Text
-                className='test-btn'
-                onClick={() => {
-                  console.log('🧪 测试网络连接')
-                  console.log('测试功能正常！')
-                }}
-              >
-                测试功能
-              </Text>
-
-              <Text
-                className='test-btn ml-md'
-                onClick={async () => {
-                  console.log('🌐 测试网络连接...')
-                  console.log('正在测试网络连接...')
-
-                  try {
-                    const response = await post('/auth/slider-verify', {
-                      slideDistance: 100,
-                      puzzleOffset: 100,
-                      accuracy: 5,
-                      duration: 1000,
-                      verifyPath: [0, 50, 100],
-                      trackData: []
-                    })
-                    console.log('✅ 网络连接正常:', response)
-                    console.log('网络连接正常')
-                  } catch (error) {
-                    console.error('❌ 网络连接失败:', error)
-                    console.log('网络连接失败，请检查后端服务')
-                  }
-                }}
-              >
-                测试网络
-              </Text>
-            </View>
           </View>
         </View>
 
-        {/* 底部链接 */}
-        <View className='login-footer'>
-          <Text className='register-text'>
-            还没有账号？
-            <Text className='register-link' onClick={handleRegister}>
-              立即注册
-            </Text>
-          </Text>
-        </View>
       </View>
     </View>
   )

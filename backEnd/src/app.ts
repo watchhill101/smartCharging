@@ -18,16 +18,27 @@ import paymentRoutes from './routes/payment';
 // 加载环境变量
 dotenv.config();
 
+
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 // 中间件
 app.use(helmet());
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://smartcharging.com'] 
-    : ['http://localhost:3000'],
-  credentials: true
+  origin: process.env.NODE_ENV === 'production'
+    ? ['https://smartcharging.com']
+    : [
+      'http://localhost:3000',
+      'http://localhost:8000',
+      'http://localhost:8001',
+      'http://localhost:8002',
+      'http://127.0.0.1:8000',
+      'http://127.0.0.1:8001',
+      'http://127.0.0.1:8002'
+    ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
@@ -35,10 +46,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // 健康检查
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV 
+    environment: process.env.NODE_ENV
   });
 });
 

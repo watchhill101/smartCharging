@@ -18,17 +18,37 @@
     "allowJs": true,
     "resolveJsonModule": true,
     "typeRoots": [
-      "node_modules/@types"
+      "node_modules/@types",
+      "node_modules/@tarojs/taro/types"
+    ],
+    "types": [
+      "@tarojs/taro"
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@/components/*": ["./src/components/*"],
-      "@/pages/*": ["./src/pages/*"],
-      "@/utils/*": ["./src/utils/*"],
-      "@/types/*": ["./src/types/*"],
-      "@/assets/*": ["./src/assets/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@/components/*": [
+        "./src/components/*"
+      ],
+      "@/pages/*": [
+        "./src/pages/*"
+      ],
+      "@/utils/*": [
+        "./src/utils/*"
+      ],
+      "@/types/*": [
+        "./src/types/*"
+      ],
+      "@/assets/*": [
+        "./src/assets/*"
+      ]
     }
   },
-  "include": ["./src", "./types", "./config"],
+  "include": [
+    "./src",
+    "./types",
+    "./config"
+  ],
   "compileOnSave": false
 }

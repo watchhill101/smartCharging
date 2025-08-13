@@ -1,7 +1,12 @@
 import { View, Text } from '@tarojs/components'
 import { useLoad, useDidShow } from '@tarojs/taro'
 import { useState } from 'react'
-import Taro from '@tarojs/taro'
+import {
+  getStorageSync as taroGetStorageSync,
+  removeStorageSync as taroRemoveStorageSync,
+  navigateTo as taroNavigateTo,
+  showModal as taroShowModal
+} from '@tarojs/taro'
 import './index.scss'
 import { SafeButton } from '../../utils/platform'
 import { STORAGE_KEYS } from '../../utils/constants'
@@ -20,50 +25,61 @@ export default function Index() {
     checkLoginStatus()
   })
 
+  // 检查登录状态
   const checkLoginStatus = () => {
     try {
-      const token = Taro.getStorageSync(STORAGE_KEYS.USER_TOKEN)
-      const user = Taro.getStorageSync(STORAGE_KEYS.USER_INFO)
+      const token = taroGetStorageSync(STORAGE_KEYS.USER_TOKEN)
+      const user = taroGetStorageSync(STORAGE_KEYS.USER_INFO)
 
       if (token && user) {
-        setIsLoggedIn(true)
         setUserInfo(user)
-        console.log('当前登录用户:', user)
+        setIsLoggedIn(true)
+        console.log('用户已登录:', user)
       } else {
         setIsLoggedIn(false)
-        setUserInfo(null)
+        console.log('用户未登录')
       }
     } catch (error) {
       console.error('检查登录状态失败:', error)
       setIsLoggedIn(false)
-      setUserInfo(null)
     }
   }
 
-  const goToLogin = () => {
-    Taro.navigateTo({
-      url: '/pages/login/login'
-    })
+  // 跳转到登录页
+  const handleLogin = () => {
+    try {
+      taroNavigateTo({
+        url: '/pages/login/login'
+      })
+    } catch (error) {
+      console.log('页面跳转不可用:', error)
+    }
   }
 
+  // 登出
   const handleLogout = () => {
-    Taro.showModal({
-      title: '提示',
-      content: '确定要退出登录吗？',
-      success: (res) => {
-        if (res.confirm) {
-          // 清除本地存储的登录信息
-          Taro.removeStorageSync(STORAGE_KEYS.USER_TOKEN)
-          Taro.removeStorageSync(STORAGE_KEYS.USER_INFO)
-          Taro.removeStorageSync('refresh_token')
-
-          setIsLoggedIn(false)
-          setUserInfo(null)
-
-          console.log('已退出登录')
+    try {
+      taroShowModal({
+        title: '提示',
+        content: '确定要退出登录吗？',
+        success: (res) => {
+          if (res.confirm) {
+            try {
+              taroRemoveStorageSync(STORAGE_KEYS.USER_TOKEN)
+              taroRemoveStorageSync(STORAGE_KEYS.USER_INFO)
+              taroRemoveStorageSync('refresh_token')
+              setUserInfo(null)
+              setIsLoggedIn(false)
+              console.log('用户已登出')
+            } catch (error) {
+              console.error('退出登录失败:', error)
+            }
+          }
         }
-      }
-    })
+      })
+    } catch (error) {
+      console.log('showModal 不可用:', error)
+    }
   }
 
   return (
@@ -99,7 +115,7 @@ export default function Index() {
       ) : (
         <View className='login-prompt'>
           <Text className='prompt-text'>请先登录以使用完整功能</Text>
-          <SafeButton type='primary' className='demo-button' onClick={goToLogin}>
+          <SafeButton type='primary' className='demo-button' onClick={handleLogin}>
             立即登录
           </SafeButton>
         </View>

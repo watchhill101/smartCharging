@@ -1,4 +1,8 @@
-import Taro from '@tarojs/taro'
+import {
+  showLoading as taroShowLoading,
+  hideLoading as taroHideLoading,
+  showModal as taroShowModal
+} from '@tarojs/taro'
 
 /**
  * 格式化时间
@@ -217,15 +221,23 @@ export const showToast = (title: string, icon: 'success' | 'error' | 'loading' |
 
 // 显示加载中
 export const showLoading = (title: string = '加载中...') => {
-  Taro.showLoading({
-    title,
-    mask: true
-  })
+  try {
+    taroShowLoading({
+      title,
+      mask: true
+    })
+  } catch (error) {
+    console.log('showLoading 不可用:', error)
+  }
 }
 
 // 隐藏加载
 export const hideLoading = () => {
-  Taro.hideLoading()
+  try {
+    taroHideLoading()
+  } catch (error) {
+    console.log('hideLoading 不可用:', error)
+  }
 }
 
 // 显示模态框
@@ -236,13 +248,18 @@ export const showModal = (options: {
   confirmText?: string
   cancelText?: string
 }) => {
-  return Taro.showModal({
-    title: options.title || '提示',
-    content: options.content,
-    showCancel: options.showCancel !== false,
-    confirmText: options.confirmText || '确定',
-    cancelText: options.cancelText || '取消'
-  })
+  try {
+    return taroShowModal({
+      title: options.title || '提示',
+      content: options.content,
+      showCancel: options.showCancel !== false,
+      confirmText: options.confirmText || '确定',
+      cancelText: options.cancelText || '取消'
+    })
+  } catch (error) {
+    console.log('showModal 不可用:', error)
+    return Promise.resolve({ confirm: false, cancel: true })
+  }
 }
 
 /**
@@ -252,15 +269,20 @@ export const showModal = (options: {
  */
 export const showConfirm = (content: string, title = '提示'): Promise<boolean> => {
   return new Promise((resolve) => {
-    Taro.showModal({
-      title,
-      content,
-      success: (res) => {
-        resolve(res.confirm)
-      },
-      fail: () => {
-        resolve(false)
-      }
-    })
+    try {
+      taroShowModal({
+        title,
+        content,
+        success: (res) => {
+          resolve(res.confirm)
+        },
+        fail: () => {
+          resolve(false)
+        }
+      })
+    } catch (error) {
+      console.log('showModal 不可用:', error)
+      resolve(false)
+    }
   })
 }

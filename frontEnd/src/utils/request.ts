@@ -1,4 +1,11 @@
-import Taro from '@tarojs/taro'
+import {
+  getStorageSync as taroGetStorageSync,
+  removeStorageSync as taroRemoveStorageSync,
+  showLoading as taroShowLoading,
+  hideLoading as taroHideLoading,
+  reLaunch as taroReLaunch,
+  request as taroRequest
+} from '@tarojs/taro'
 import { API_CONFIG, STORAGE_KEYS, ERROR_CODES } from './constants'
 
 // 显示提示信息的工具函数（临时禁用）
@@ -14,26 +21,26 @@ const showToast = (title: string, icon: 'success' | 'error' | 'loading' | 'none'
 // 获取存储的工具函数
 const getStorageSync = (key: string) => {
   try {
-    return Taro.getStorageSync(key)
+    return taroGetStorageSync(key)
   } catch (error) {
     console.error('获取存储失败:', error)
     return null
   }
 }
 
-// 设置存储的工具函数
-const setStorageSync = (key: string, value: any) => {
-  try {
-    return Taro.setStorageSync(key, value)
-  } catch (error) {
-    console.error('设置存储失败:', error)
-  }
-}
+// 设置存储的工具函数 (暂未使用)
+// const setStorageSync = (key: string, value: any) => {
+//   try {
+//     taroSetStorageSync(key, value)
+//   } catch (error) {
+//     console.error('设置存储失败:', error)
+//   }
+// }
 
 // 移除存储的工具函数
 const removeStorageSync = (key: string) => {
   try {
-    return Taro.removeStorageSync(key)
+    taroRemoveStorageSync(key)
   } catch (error) {
     console.error('移除存储失败:', error)
   }
@@ -88,10 +95,14 @@ const requestInterceptor = (options: RequestOptions) => {
 
   // 显示加载中
   if (options.showLoading !== false) {
-    Taro.showLoading({
-      title: '请求中...',
-      mask: true
-    })
+    try {
+      taroShowLoading({
+        title: '请求中...',
+        mask: true
+      })
+    } catch (error) {
+      console.log('showLoading 不可用:', error)
+    }
   }
 
   return options
@@ -101,7 +112,11 @@ const requestInterceptor = (options: RequestOptions) => {
 const responseInterceptor = (response: any, options: RequestOptions) => {
   // 隐藏加载中
   if (options.showLoading !== false) {
-    Taro.hideLoading()
+    try {
+      taroHideLoading()
+    } catch (error) {
+      console.log('hideLoading 不可用:', error)
+    }
   }
 
   const { statusCode, data } = response
@@ -133,9 +148,13 @@ const handleBusinessError = (data: ApiResponse, options: RequestOptions) => {
       // 清除token并跳转到登录页
       removeStorageSync(STORAGE_KEYS.USER_TOKEN)
       removeStorageSync(STORAGE_KEYS.USER_INFO)
-      Taro.reLaunch({
-        url: '/pages/login/login'
-      })
+      try {
+        taroReLaunch({
+          url: '/pages/login/login'
+        })
+      } catch (error) {
+        console.log('页面跳转不可用:', error)
+      }
       break
     case ERROR_CODES.PERMISSION_DENIED:
       if (options.showError !== false) {
@@ -205,7 +224,7 @@ const handleHttpError = (statusCode: number, options: RequestOptions) => {
 const retryRequest = async (options: RequestOptions, retryCount = 0): Promise<any> => {
   try {
     const processedOptions = requestInterceptor(options)
-    const response = await Taro.request(processedOptions)
+    const response = await taroRequest(processedOptions)
     return responseInterceptor(response, options)
   } catch (error) {
     if (retryCount < API_CONFIG.RETRY_COUNT) {

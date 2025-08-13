@@ -1,7 +1,7 @@
 import { View, Text } from '@tarojs/components'
 import { useState, useRef, useCallback } from 'react'
 import { useLoad } from '@tarojs/taro'
-import Taro from '@tarojs/taro'
+import { vibrateShort as taroVibrateShort } from '@tarojs/taro'
 import { post } from '../../utils/request'
 import './index.scss'
 
@@ -67,7 +67,7 @@ export default function SliderVerify({
 
     // 添加震动反馈
     try {
-      Taro.vibrateShort()
+      taroVibrateShort()
     } catch (error) {
       console.log('震动反馈不可用:', error)
     }
@@ -120,7 +120,7 @@ export default function SliderVerify({
       if (response.success && response.data.verified) {
         setIsVerified(true)
         try {
-          Taro.vibrateShort()
+          taroVibrateShort()
         } catch (error) {
           console.log('震动反馈不可用:', error)
         }
