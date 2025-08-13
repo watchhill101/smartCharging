@@ -1,14 +1,207 @@
 .index {
-  padding: 20px;
-  text-align: center;
-  
-  .welcome-text {
-    font-size: 32px;
-    color: #333;
-    margin-bottom: 40px;
+  min-height: 100vh;
+  background: #f7f8fa;
+  padding-bottom: 100px; // 给底部tabbar预留空间
+  display: flex;
+  flex-direction: column;
+
+  .top-bar {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    background: #ffffff;
+    .city {
+      font-size: 28px;
+      color: #333;
+      margin-right: 12px;
+    }
+    .search {
+      flex: 1;
+      height: 64px;
+      background: #f2f3f5;
+      border-radius: 32px;
+      line-height: 64px;
+      padding: 0 24px;
+      color: #999;
+      font-size: 26px;
+    }
+    .extra {
+      margin-left: 12px;
+      color: #999;
+    }
   }
-  
-  .demo-button {
-    margin: 20px 0;
+
+  .content {
+    padding: 12px 12px 0;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .feature-section {
+    padding: 12px 6px;
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px 4px;
+    }
+    .feature-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 0;
+      .feature-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: linear-gradient(180deg, #ffecdb, #ffd5b8);
+        margin-bottom: 8px;
+      }
+      .feature-text {
+        font-size: 24px;
+        color: #333;
+      }
+    }
+  }
+
+  .filter-bar {
+    margin-top: 12px;
+    padding: 12px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    .filter-tag {
+      padding: 8px 16px;
+      border-radius: 18px;
+      border: 1px solid #ddd;
+      color: #666;
+      font-size: 22px;
+      background: #fff;
+    }
+  }
+
+  .bind-car-hint {
+    margin: 12px 0;
+    padding: 16px;
+    background: #fff8e6;
+    border-radius: 12px;
+    color: #a87000;
+    font-size: 24px;
+    .action {
+      margin-left: 12px;
+      color: #ff6a00;
+    }
+  }
+
+  .station-card {
+    padding: 20px;
+    margin-top: 12px;
+
+    .station-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      .logo {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: linear-gradient(180deg, #3fd37c, #1fb86a);
+      }
+      .station-title {
+        font-size: 34px;
+        font-weight: 800;
+        color: #222;
+        &.big {
+          font-size: 36px;
+        }
+      }
+      .status-chip {
+        margin-left: auto;
+        padding: 6px 12px;
+        border-radius: 10px;
+        font-size: 22px;
+        &.slow {
+          background: #fff1e6;
+          color: #ff8f1f;
+        }
+      }
+    }
+
+    .tag-list {
+      display: flex;
+      gap: 12px;
+      margin: 14px 0 4px;
+      .tag {
+        padding: 8px 12px;
+        border-radius: 10px;
+        background: #f5f7fa;
+        color: #606a76;
+        font-size: 22px;
+      }
+    }
+
+    .info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+      .info-item {
+        display: flex;
+        align-items: center;
+        .icon {
+          width: 34px;
+          height: 34px;
+          border-radius: 8px;
+          margin-right: 10px;
+          &.parking { background: #e6f4ff; }
+          &.active-icon { background: #e8ffea; }
+        }
+        .info-text {
+          color: #6b7280;
+          font-size: 24px;
+        }
+        &.active .info-text {
+          color: #27ae60;
+        }
+      }
+    }
+
+    .divider {
+      height: 1px;
+      background: #f0f0f0;
+      margin: 16px 0;
+    }
+
+    .bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .price {
+        display: flex;
+        align-items: baseline;
+        .currency { color: #ff6a00; font-size: 28px; margin-right: 6px; }
+        .amount { color: #ff6a00; font-size: 44px; font-weight: 800; }
+        .unit { color: #888; font-size: 24px; margin-left: 6px; }
+      }
+      .distance-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 18px;
+        border-radius: 100px;
+        border: 1px solid #e6e8eb;
+        color: #2e3a46;
+        font-size: 26px;
+        .nav-icon {
+          width: 26px;
+          height: 26px;
+          border-radius: 50%;
+          background: #88a5ff;
+        }
+      }
+    }
   }
 }

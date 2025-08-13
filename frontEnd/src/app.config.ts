@@ -19,27 +19,19 @@ export default defineAppConfig({
     list: [
       {
         pagePath: 'pages/index/index',
-        text: '首页',
-        iconPath: 'assets/icons/home.png',
-        selectedIconPath: 'assets/icons/home-active.png'
+        text: '首页'
       },
       {
         pagePath: 'pages/map/index',
-        text: '地图',
-        iconPath: 'assets/icons/map.png',
-        selectedIconPath: 'assets/icons/map-active.png'
+        text: '地图'
       },
       {
         pagePath: 'pages/charging/index',
-        text: '充电',
-        iconPath: 'assets/icons/charging.png',
-        selectedIconPath: 'assets/icons/charging-active.png'
+        text: '充电'
       },
       {
         pagePath: 'pages/profile/index',
-        text: '我的',
-        iconPath: 'assets/icons/profile.png',
-        selectedIconPath: 'assets/icons/profile-active.png'
+        text: '我的'
       }
     ]
   }
