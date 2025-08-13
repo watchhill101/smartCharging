@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { View, Text, ScrollView, Input, Button } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import './index.scss'
+// 引入自定义图标字体
+import '../../assets/icons/ChangeIt/iconfont.css'
 
 // 安全的 Taro API 调用
 const showToast = (options: any) => {
@@ -36,6 +38,7 @@ interface Message {
   role: 'user' | 'assistant'
   timestamp: number
   isError?: boolean
+  isWelcome?: boolean // 新增欢迎消息标识
 }
 
 interface ApiResponse {
@@ -165,9 +168,10 @@ const AiServer = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: generateId(),
-      content: '您好！我是小电，您的智能充电助手 🔌\n\n很高兴为您服务！我可以为您提供以下专业服务：\n\n🔌 充电指导 - 充电桩使用方法和操作流程\n💳 支付帮助 - 充电费用计算和支付方式\n�️ 故障处理 - 充电异常诊断和解决方案\n🎁 会员优惠 - 会员服务和优惠政策介绍\n📍 站点查找 - 充电站查找和预约服务\n📊 记录查询 - 充电历史和账单查询\n\n有什么问题随时问我，我会为您详细解答！😊',
+      content: '',
       role: 'assistant',
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      isWelcome: true // 添加欢迎消息标识
     }
   ])
   const [inputValue, setInputValue] = useState('')
@@ -364,9 +368,10 @@ const AiServer = () => {
           setMessages([
             {
               id: generateId(),
-              content: '对话已清空！我是小电，继续为您服务 🔌\n\n我可以为您提供：\n🔌 充电指导 💳 支付帮助 🛠️ 故障处理\n🎁 会员优惠 📍 站点查找 📊 记录查询\n\n有什么充电相关问题可以随时问我哦～ 😊',
+              content: '',
               role: 'assistant',
-              timestamp: Date.now()
+              timestamp: Date.now(),
+              isWelcome: true // 使用欢迎消息格式
             }
           ])
           setRetryCount(0)
@@ -425,6 +430,76 @@ const AiServer = () => {
     }
   }, [])
 
+  // 完整的快捷问题配置
+  const quickQuestionsData = {
+    '充电问题': [
+      { id: 1, text: '安心充电如何退款', icon: '💰' },
+      { id: 2, text: '电子充电卡如何退款', icon: '💳' },
+      { id: 3, text: '如何退公众号余额', icon: '💰' },
+      { id: 4, text: '公众号钱包有余额但是无法退款', icon: '⚠️' },
+      { id: 5, text: '如何开票', icon: '📄' },
+      { id: 6, text: '充电费用怎么计算', icon: '🧮' },
+      { id: 7, text: '充电优惠活动有哪些', icon: '🎁' },
+      { id: 8, text: '会员充值优惠政策', icon: '👑' }
+    ],
+    '充电桩问题': [
+      { id: 9, text: '充电桩如何使用', icon: '🔌' },
+      { id: 10, text: '充电桩故障怎么办', icon: '🛠️' },
+      { id: 11, text: '找不到充电桩位置', icon: '📍' },
+      { id: 12, text: '充电桩被占用怎么办', icon: '🚗' },
+      { id: 13, text: '充电速度很慢是什么原因', icon: '⚡' },
+      { id: 14, text: '充电桩预约功能怎么用', icon: '📅' },
+      { id: 15, text: '充电桩支持哪些车型', icon: '🚙' },
+      { id: 16, text: '夜间充电安全吗', icon: '🌙' }
+    ],
+    '合作加盟': [
+      { id: 17, text: '如何加盟合作', icon: '🤝' },
+      { id: 18, text: '加盟费用多少', icon: '💰' },
+      { id: 19, text: '加盟条件和要求', icon: '📋' },
+      { id: 20, text: '投资回报周期', icon: '📈' },
+      { id: 21, text: '运营支持政策', icon: '🎯' },
+      { id: 22, text: '设备采购和安装', icon: '🏗️' },
+      { id: 23, text: '区域代理政策', icon: '🌍' },
+      { id: 24, text: '技术培训服务', icon: '👨‍🏫' }
+    ]
+  }
+
+  // 当前选中的分类
+  const [activeCategory, setActiveCategory] = useState<keyof typeof quickQuestionsData>('充电问题')
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+
+  // 获取当前分类的问题
+  const getCurrentQuestions = useCallback(() => {
+    const categoryQuestions = quickQuestionsData[activeCategory] || []
+    const questionsPerPage = 5
+    const startIndex = currentQuestionIndex * questionsPerPage
+    return categoryQuestions.slice(startIndex, startIndex + questionsPerPage)
+  }, [activeCategory, currentQuestionIndex])
+
+  // 处理分类切换
+  const handleCategoryChange = useCallback((category: keyof typeof quickQuestionsData) => {
+    setActiveCategory(category)
+    setCurrentQuestionIndex(0) // 重置到第一页
+  }, [])
+
+  // 换一批问题
+  const handleRefreshQuestions = useCallback(() => {
+    const categoryQuestions = quickQuestionsData[activeCategory] || []
+    const questionsPerPage = 5
+    const maxPages = Math.ceil(categoryQuestions.length / questionsPerPage)
+    setCurrentQuestionIndex(prev => (prev + 1) % maxPages)
+  }, [activeCategory])
+
+  // 获取分类图标
+  const getCategoryIcon = (category: string) => {
+    const icons = {
+      '充电问题': '🔌',
+      '充电桩问题': '⚡',
+      '合作加盟': '🤝'
+    }
+    return icons[category] || '❓'
+  }
+
   // 优化 useEffect
   useEffect(() => {
     scrollToBottom()
@@ -435,9 +510,13 @@ const AiServer = () => {
     console.log('AI客服页面已加载')
   }, [])
 
+  // 处理快捷问题点击
+  const handleQuickQuestion = useCallback((questionText: string) => {
+    sendMessage(questionText)
+  }, [sendMessage])
+
   return (
     <View className='aiserver-container'>
-
       {/* 聊天区域 */}
       <ScrollView 
         className='chat-area'
@@ -456,15 +535,89 @@ const AiServer = () => {
                 </View>
               )}
               <View className='message-bubble'>
-                <Text className='message-text' selectable>{message.content}</Text>
-                <View className='message-footer'>
-                  <Text className='message-time'>{formatTime(message.timestamp)}</Text>
-                  {message.isError && (
-                    <View className='retry-button' onClick={retryLastMessage}>
-                      <Text className='retry-text'>重试</Text>
+                {message.isWelcome ? (
+                  // 欢迎消息特殊处理
+                  <View className='welcome-container'>
+                    <View className='welcome-header'>
+                      <View className='welcome-info'>
+                        <Text className='welcome-title'>您好，我是小电</Text>
+                      </View>
                     </View>
-                  )}
-                </View>
+                    
+                    <View className='service-intro'>
+                      <Text className='intro-text'>我可以为您解答以下问题：</Text>
+                    </View>
+                    
+                    {/* 问题分类标签 */}
+                    <View className='category-tabs'>
+                      {(Object.keys(quickQuestionsData) as Array<keyof typeof quickQuestionsData>).map((category) => (
+                        <View 
+                          key={category}
+                          className={`category-tab ${activeCategory === category ? 'active' : ''}`}
+                          onClick={() => handleCategoryChange(category)}
+                        >
+                          <Text className='category-icon'>{getCategoryIcon(category)}</Text>
+                          <Text className='category-text'>{category}</Text>
+                        </View>
+                      ))}
+                    </View>
+                    
+                    {/* 快捷问题列表 */}
+                    <View className='quick-questions'>
+                      <View className='questions-header'>
+                        <Text className='questions-title'>常见问题</Text>
+                        <Text className='questions-count'>
+                          {getCurrentQuestions().length} / {quickQuestionsData[activeCategory]?.length || 0}
+                        </Text>
+                      </View>
+                      
+                      <View className='questions-list'>
+                        {getCurrentQuestions().map((question, index) => (
+                          <View 
+                            key={question.id} 
+                            className='question-item'
+                            onClick={() => handleQuickQuestion(question.text)}
+                            style={{ animationDelay: `${index * 0.1}s` }}
+                          >
+                            <View className='question-content'>
+                              <Text className='question-icon'>{question.icon}</Text>
+                              <Text className='question-text'>{question.text}</Text>
+                            </View>
+                            <View className='question-action'>
+                              <Text className='question-arrow'>→</Text>
+                            </View>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+                    
+                    {/* 换一批和帮助 */}
+                    <View className='welcome-footer'>
+                      {quickQuestionsData[activeCategory]?.length > 5 && (
+                        <View className='refresh-button' onClick={handleRefreshQuestions}>
+                          <Text className='refresh-icon refresh-emoji'>⟲</Text>
+                          <Text className='refresh-text'>换一批</Text>
+                        </View>
+                      )}
+                      <View className='help-hint'>
+                        <Text className='hint-text'>💡 直接输入问题获得更精准回答</Text>
+                      </View>
+                    </View>
+                  </View>
+                ) : (
+                  <Text className='message-text' selectable>{message.content}</Text>
+                )}
+                
+                {!message.isWelcome && (
+                  <View className='message-footer'>
+                    <Text className='message-time'>{formatTime(message.timestamp)}</Text>
+                    {message.isError && (
+                      <View className='retry-button' onClick={retryLastMessage}>
+                        <Text className='retry-text'>重试</Text>
+                      </View>
+                    )}
+                  </View>
+                )}
               </View>
               {message.role === 'user' && (
                 <View className='avatar user-avatar'>
