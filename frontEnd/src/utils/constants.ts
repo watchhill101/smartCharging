@@ -55,8 +55,7 @@ export const PAYMENT_METHOD = {
 
 // 验证等级
 export const VERIFICATION_LEVEL = {
-  BASIC: 'basic',
-  FACE_VERIFIED: 'face_verified'
+  BASIC: 'basic'
 } as const
 
 // 错误码

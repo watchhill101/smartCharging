@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人脸登录功能测试</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .test-info {
+      background: #f0f8ff;
+      border: 1px solid #b6d7ff;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .test-info h3 {
+      margin-top: 0;
+      color: #1976d2;
+    }
+
+    .test-info ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+
+    .test-info li {
+      margin: 5px 0;
+    }
+
+    .status {
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+
+    .status.success {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .status.info {
+      background: #d1ecf1;
+      border: 1px solid #bee5eb;
+      color: #0c5460;
+    }
+
+    #console-output {
+      background: #1e1e1e;
+      color: #ffffff;
+      padding: 15px;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🎯 人脸登录功能测试</h1>
+
+    <div class="test-info">
+      <h3>测试说明</h3>
+      <p>此页面用于测试修复后的人脸登录功能。主要修复的问题包括：</p>
+      <ul>
+        <li>✅ 修复摄像头视频流未找到的问题</li>
+        <li>✅ 改善异步时序处理</li>
+        <li>✅ 增强错误处理和用户反馈</li>
+        <li>✅ 优化DOM元素操作和资源管理</li>
+        <li>✅ 添加更详细的日志输出</li>
+      </ul>
+    </div>
+
+    <div class="status info" id="test-status">
+      ℹ️ 准备开始测试...请确保浏览器支持摄像头访问
+    </div>
+
+    <div id="console-output">
+      === 人脸登录测试控制台 ===
+      等待测试开始...
+
+      测试步骤：
+      1. 检查浏览器摄像头支持
+      2. 请求摄像头权限
+      3. 初始化视频流
+      4. 启动人脸检测
+      5. 模拟登录过程
+
+      请在前端应用中访问登录页面或人脸登录组件进行实际测试。
+    </div>
+  </div>
+
+  <script>
+    // 模拟控制台输出
+    function addLog(message, type = 'info') {
+      const output = document.getElementById('console-output');
+      const timestamp = new Date().toLocaleTimeString();
+      const emoji = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+      output.textContent += `\n[${timestamp}] ${emoji} ${message}`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    // 检查浏览器支持
+    function checkBrowserSupport() {
+      addLog('开始检查浏览器支持...');
+
+      if (!navigator.mediaDevices) {
+        addLog('浏览器不支持 MediaDevices API', 'error');
+        updateStatus('error', '❌ 浏览器不支持摄像头功能');
+        return false;
+      }
+
+      if (!navigator.mediaDevices.getUserMedia) {
+        addLog('浏览器不支持 getUserMedia API', 'error');
+        updateStatus('error', '❌ 浏览器不支持摄像头访问');
+        return false;
+      }
+
+      addLog('浏览器支持摄像头功能', 'success');
+      return true;
+    }
+
+    // 测试摄像头权限
+    async function testCameraPermission() {
+      try {
+        addLog('正在请求摄像头权限...');
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            width: { ideal: 640 },
+            height: { ideal: 480 },
+            facingMode: 'user'
+          }
+        });
+
+        addLog('摄像头权限获取成功', 'success');
+        addLog(`视频轨道数量: ${stream.getVideoTracks().length}`);
+
+        // 停止测试流
+        stream.getTracks().forEach(track => track.stop());
+
+        updateStatus('success', '✅ 摄像头功能正常，可以进行人脸登录测试');
+        return true;
+
+      } catch (error) {
+        let errorMsg = '摄像头权限测试失败';
+        if (error.name === 'NotAllowedError') {
+          errorMsg = '用户拒绝了摄像头权限';
+        } else if (error.name === 'NotFoundError') {
+          errorMsg = '未找到摄像头设备';
+        } else if (error.name === 'NotSupportedError') {
+          errorMsg = '浏览器不支持摄像头功能';
+        }
+
+        addLog(`${errorMsg}: ${error.message}`, 'error');
+        updateStatus('error', `❌ ${errorMsg}`);
+        return false;
+      }
+    }
+
+    function updateStatus(type, message) {
+      const statusEl = document.getElementById('test-status');
+      statusEl.className = `status ${type}`;
+      statusEl.textContent = message;
+    }
+
+    // 启动测试
+    async function runTests() {
+      addLog('=== 开始人脸登录功能测试 ===');
+
+      if (!checkBrowserSupport()) {
+        return;
+      }
+
+      updateStatus('info', '🔄 正在测试摄像头权限...');
+      await testCameraPermission();
+
+      addLog('=== 测试完成 ===');
+      addLog('请在实际应用中测试人脸登录组件的完整功能');
+    }
+
+    // 页面加载完成后自动运行测试
+    window.addEventListener('load', () => {
+      setTimeout(runTests, 1000);
+    });
+  </script>
+</body>
+
+</html>

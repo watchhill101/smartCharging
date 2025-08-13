@@ -4,11 +4,14 @@ import { useLoad } from '@tarojs/taro'
 import {
   getStorageSync as taroGetStorageSync,
   setStorageSync as taroSetStorageSync,
-  navigateTo as taroNavigateTo
+  navigateTo as taroNavigateTo,
+  showToast as taroShowToast,
+  switchTab
 } from '@tarojs/taro'
 import { post } from '../../utils/request'
 import { STORAGE_KEYS } from '../../utils/constants'
 import SliderVerify from '../../components/SliderVerify'
+import FaceLogin from '../../components/FaceLogin'
 import './login.scss'
 import React from 'react'
 
@@ -28,6 +31,8 @@ export default function Login() {
   const [countdown, setCountdown] = useState(0)
   const [countdownTimer, setCountdownTimer] = useState<NodeJS.Timeout | null>(null)
   const [receivedCode, setReceivedCode] = useState<string | null>(null)
+  const [loginMode, setLoginMode] = useState<'code' | 'face'>('code')
+  const [showFaceLogin, setShowFaceLogin] = useState(false)
 
   useLoad(() => {
     // 检查是否已记住用户名
@@ -109,8 +114,6 @@ export default function Login() {
         } else {
           // 如果后端没有返回验证码（生产环境），显示提示
           console.log('📱 验证码已发送到您的手机，请查收短信')
-          // 在生产环境下，可以显示一个提示消息
-          // 这里可以添加Toast提示或其他用户友好的提示方式
         }
       } else {
         console.log('❌ 验证码发送失败:', response.message)
@@ -238,7 +241,7 @@ export default function Login() {
         setTimeout(() => {
           console.log('🏠 跳转到首页')
           taroNavigateTo({ url: '/pages/index/index' })
-        }, 1000) // 减少延迟时间
+        }, 1000)
 
       } else {
         console.log('❌ 登录失败:', response.message || '未知错误')
@@ -255,11 +258,66 @@ export default function Login() {
     } finally {
       setLoading(false)
     }
-
   }
 
-  const handleRegister = () => {
-    console.log('注册功能开发中')
+  // 切换到人脸登录
+  const switchToFaceLogin = () => {
+    setLoginMode('face');
+    setShowFaceLogin(true);
+  };
+
+  // 人脸登录成功处理
+  const handleFaceLoginSuccess = (result: any) => {
+    console.log('人脸登录成功:', result);
+    setShowFaceLogin(false);
+
+    // 显示成功提示
+    const toastTitle = result.isNewUser ? '账户创建成功' : '登录成功';
+    taroShowToast({
+      title: toastTitle,
+      icon: 'success',
+      duration: 2000
+    });
+
+    // 如果是新用户，显示欢迎信息
+    if (result.isNewUser) {
+      console.log('🎉 欢迎新用户:', result.user?.nickName);
+    }
+
+    // 跳转到首页（使用switchTab而不是navigateTo）
+    setTimeout(() => {
+      switchTab({
+        url: '/pages/index/index'
+      });
+    }, result.isNewUser ? 2000 : 1500); // 新用户稍微延长显示时间
+  };
+
+  // 人脸登录失败处理
+  const handleFaceLoginError = (error: string) => {
+    console.error('人脸登录失败:', error);
+    taroShowToast({
+      title: error || '人脸登录失败',
+      icon: 'error',
+      duration: 2000
+    });
+  };
+
+  // 取消人脸登录
+  const handleFaceLoginCancel = () => {
+    setShowFaceLogin(false);
+    setLoginMode('code');
+  };
+
+  // 如果显示人脸登录，渲染人脸登录组件
+  if (showFaceLogin) {
+    return (
+      <FaceLogin
+        autoStart={true}
+        onSuccess={handleFaceLoginSuccess}
+        onError={handleFaceLoginError}
+        onCancel={handleFaceLoginCancel}
+      />
+    );
   }
 
   return (
@@ -358,6 +416,55 @@ export default function Login() {
             fontSize: '14px',
             marginBottom: '0'
           }}>让充电更简单</Text>
+        </View>
+
+        {/* 登录模式切换 */}
+        <View className='login-mode-switch' style={{
+          display: 'flex',
+          marginBottom: '24px',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          background: 'rgba(24, 144, 255, 0.05)',
+          border: '1px solid rgba(24, 144, 255, 0.1)'
+        }}>
+          <Button
+            className={`mode-switch-btn ${loginMode === 'code' ? 'active' : ''}`}
+            onClick={() => setLoginMode('code')}
+            style={{
+              flex: '1',
+              padding: '12px 16px',
+              fontSize: '14px',
+              fontWeight: '500',
+              border: 'none',
+              borderRadius: '0',
+              background: loginMode === 'code'
+                ? 'linear-gradient(135deg, #1890ff 0%, #096dd9 100%)'
+                : 'transparent',
+              color: loginMode === 'code' ? '#fff' : '#666',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            📱 短信验证码
+          </Button>
+          <Button
+            className={`mode-switch-btn ${loginMode === 'face' ? 'active' : ''}`}
+            onClick={switchToFaceLogin}
+            style={{
+              flex: '1',
+              padding: '12px 16px',
+              fontSize: '14px',
+              fontWeight: '500',
+              border: 'none',
+              borderRadius: '0',
+              background: loginMode === 'face'
+                ? 'linear-gradient(135deg, #1890ff 0%, #096dd9 100%)'
+                : 'transparent',
+              color: loginMode === 'face' ? '#fff' : '#666',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            🎭 人脸识别
+          </Button>
         </View>
 
         {/* 登录表单 */}
@@ -512,7 +619,6 @@ export default function Login() {
             )}
           </View>
         </View>
-
       </View>
     </View>
   )

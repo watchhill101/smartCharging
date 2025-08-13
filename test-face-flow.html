@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人脸登录流程测试</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .camera {
+      width: 100%;
+      height: 400px;
+      background: #000;
+      border-radius: 10px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      position: relative;
+    }
+
+    .camera video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .face-frame {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      border: 3px solid #00ff00;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .face-frame.detected {
+      opacity: 1;
+    }
+
+    .countdown {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 72px;
+      font-weight: bold;
+      color: #00ff00;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .countdown.show {
+      opacity: 1;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .log {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 15px;
+      margin: 20px 0;
+      font-family: monospace;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .status {
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .status.processing {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .step-indicator {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .step {
+      text-align: center;
+      flex: 1;
+      margin: 0 10px;
+      padding: 10px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .step.active {
+      background: #007bff;
+      color: white;
+      font-weight: bold;
+    }
+
+    .step.completed {
+      background: #28a745;
+      color: white;
+    }
+
+    .step.pending {
+      background: #6c757d;
+      color: white;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🎭 人脸登录流程测试</h1>
+    <p>测试完整的人脸登录流程，包括检测、登录和跳转</p>
+
+    <div class="step-indicator">
+      <div class="step pending" id="step1">1. 摄像头启动</div>
+      <div class="step pending" id="step2">2. 开始检测</div>
+      <div class="step pending" id="step3">3. 人脸识别</div>
+      <div class="step pending" id="step4">4. 登录/注册</div>
+      <div class="step pending" id="step5">5. 跳转首页</div>
+    </div>
+
+    <div class="camera" id="camera">
+      <div>点击"启动摄像头"开始测试</div>
+      <div class="face-frame" id="faceFrame"></div>
+      <div class="countdown" id="countdown"></div>
+    </div>
+
+    <div id="status" class="status info">等待开始测试...</div>
+
+    <div>
+      <button onclick="startCamera()" id="startBtn">启动摄像头</button>
+      <button onclick="startDetection()" id="detectBtn" disabled>开始检测</button>
+      <button onclick="stopTest()" id="stopBtn" disabled>停止测试</button>
+      <button onclick="clearLog()">清空日志</button>
+    </div>
+
+    <div id="log" class="log"></div>
+  </div>
+
+  <script>
+    let stream = null;
+    let video = null;
+    let detectionInterval = null;
+    let countdownInterval = null;
+    let currentStep = 0;
+
+    function log(message) {
+      const timestamp = new Date().toLocaleTimeString();
+      const logEntry = `[${timestamp}] ${message}`;
+      console.log(logEntry);
+      document.getElementById('log').innerHTML += logEntry + '\n';
+      document.getElementById('log').scrollTop = document.getElementById('log').scrollHeight;
+    }
+
+    function updateStatus(message, type = 'info') {
+      document.getElementById('status').textContent = message;
+      document.getElementById('status').className = `status ${type}`;
+    }
+
+    function updateStep(stepNumber, status = 'active') {
+      // 重置所有步骤
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById(`step${i}`).className = 'step pending';
+      }
+
+      // 设置当前步骤
+      if (stepNumber > 0) {
+        document.getElementById(`step${stepNumber}`).className = `step ${status}`;
+      }
+
+      // 设置已完成步骤
+      for (let i = 1; i < stepNumber; i++) {
+        document.getElementById(`step${i}`).className = 'step completed';
+      }
+    }
+
+    async function startCamera() {
+      try {
+        log('🚀 步骤1: 启动摄像头');
+        updateStep(1, 'active');
+        updateStatus('正在启动摄像头...', 'info');
+
+        document.getElementById('startBtn').disabled = true;
+        document.getElementById('detectBtn').disabled = false;
+        document.getElementById('stopBtn').disabled = false;
+
+        // 获取摄像头权限
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            width: { ideal: 640 },
+            height: { ideal: 480 },
+            facingMode: 'user'
+          },
+          audio: false
+        });
+
+        // 创建video元素
+        video = document.createElement('video');
+        video.srcObject = stream;
+        video.autoplay = true;
+        video.playsInline = true;
+        video.muted = true;
+        video.style.width = '100%';
+        video.style.height = '100%';
+        video.style.objectFit = 'cover';
+        video.style.transform = 'scaleX(-1)';
+
+        const camera = document.getElementById('camera');
+        camera.innerHTML = '';
+        camera.appendChild(video);
+        camera.appendChild(document.getElementById('faceFrame'));
+        camera.appendChild(document.getElementById('countdown'));
+
+        video.onloadeddata = () => {
+          log('📹 摄像头启动成功');
+          log(`📏 视频尺寸: ${video.videoWidth}x${video.videoHeight}`);
+          updateStatus('摄像头已就绪，可以开始检测', 'success');
+          updateStep(1, 'completed');
+          updateStep(2, 'active');
+        };
+
+      } catch (error) {
+        log(`❌ 摄像头启动失败: ${error.message}`);
+        updateStatus(`摄像头启动失败: ${error.message}`, 'error');
+        document.getElementById('startBtn').disabled = false;
+      }
+    }
+
+    function startDetection() {
+      if (!video) {
+        log('❌ 请先启动摄像头');
+        return;
+      }
+
+      log('🔍 步骤2: 开始人脸检测');
+      updateStep(2, 'active');
+      updateStatus('正在检测人脸，请面向摄像头...', 'processing');
+
+      document.getElementById('detectBtn').disabled = true;
+
+      // 开始倒计时
+      let timeLeft = 3;
+      const countdownEl = document.getElementById('countdown');
+      countdownEl.textContent = timeLeft;
+      countdownEl.classList.add('show');
+
+      countdownInterval = setInterval(() => {
+        timeLeft--;
+        countdownEl.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+          clearInterval(countdownInterval);
+          countdownEl.classList.remove('show');
+
+          // 倒计时结束，开始连续检测
+          log('⏰ 倒计时结束，开始连续检测');
+          startContinuousDetection();
+        }
+      }, 1000);
+
+      log('✅ 3秒倒计时开始');
+    }
+
+    function startContinuousDetection() {
+      log('🔍 开始连续人脸检测...');
+      updateStatus('正在检测人脸，请保持正对摄像头...', 'processing');
+
+      detectionInterval = setInterval(async () => {
+        await detectFace();
+      }, 500);
+
+      log('✅ 连续检测已启动，每0.5秒检测一次');
+    }
+
+    async function detectFace() {
+      try {
+        // 捕获图像
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
+
+        context.scale(-1, 1);
+        context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+
+        const blob = await new Promise(resolve => {
+          canvas.toBlob(resolve, 'image/jpeg', 0.8);
+        });
+
+        log(`📸 捕获图像: ${blob.size} bytes`);
+
+        // 发送到后端检测
+        const formData = new FormData();
+        formData.append('image', blob, 'face.jpg');
+
+        const response = await fetch('http://localhost:8080/api/face/detect', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          log(`❌ 检测请求失败: ${response.status}`);
+          return;
+        }
+
+        const result = await response.json();
+        log(`📄 检测结果: ${JSON.stringify(result)}`);
+
+        if (result.success && result.data?.faceDetected) {
+          log('🎉 步骤3: 检测到人脸！');
+          updateStep(3, 'completed');
+          updateStep(4, 'active');
+
+          // 显示检测框
+          document.getElementById('faceFrame').classList.add('detected');
+
+          // 停止检测
+          if (detectionInterval) {
+            clearInterval(detectionInterval);
+            detectionInterval = null;
+          }
+
+          // 开始登录流程
+          await performLogin(blob);
+        } else {
+          // 隐藏检测框
+          document.getElementById('faceFrame').classList.remove('detected');
+        }
+
+      } catch (error) {
+        log(`❌ 检测错误: ${error.message}`);
+      }
+    }
+
+    async function performLogin(faceBlob) {
+      try {
+        log('🔐 步骤4: 开始人脸登录流程...');
+        updateStatus('检测到人脸，正在登录...', 'processing');
+
+        const formData = new FormData();
+        formData.append('image', faceBlob, 'face.jpg');
+
+        // 先尝试登录
+        let response = await fetch('http://localhost:8080/api/face/login', {
+          method: 'POST',
+          body: formData,
+        });
+
+        let result = await response.json();
+
+        if (!result.success && result.message?.includes('未找到匹配')) {
+          log('🆕 未找到匹配用户，开始自动注册...');
+          updateStatus('首次使用，正在创建账户...', 'processing');
+
+          // 自动注册
+          response = await fetch('http://localhost:8080/api/face/auto-register-login', {
+            method: 'POST',
+            body: formData,
+          });
+
+          result = await response.json();
+        }
+
+        if (result.success) {
+          const message = result.data.isNewUser ? '账户创建成功！' : '登录成功！';
+          log(`🎉 ${message}`);
+          log(`👤 用户信息: ${result.data.user.nickName} (${result.data.user.phone})`);
+
+          updateStatus(message + ' 即将跳转到首页...', 'success');
+          updateStep(4, 'completed');
+          updateStep(5, 'active');
+
+          // 模拟跳转到首页
+          setTimeout(() => {
+            updateStatus('🏠 成功跳转到首页！', 'success');
+            log('✅ 步骤5: 人脸登录流程完成！');
+            updateStep(5, 'completed');
+          }, 2000);
+
+        } else {
+          throw new Error(result.message || '登录失败');
+        }
+
+      } catch (error) {
+        log(`❌ 登录失败: ${error.message}`);
+        updateStatus(`登录失败: ${error.message}`, 'error');
+      }
+    }
+
+    function stopTest() {
+      if (detectionInterval) {
+        clearInterval(detectionInterval);
+        detectionInterval = null;
+      }
+
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+      }
+
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+      }
+
+      const camera = document.getElementById('camera');
+      camera.innerHTML = '<div>测试已停止</div>';
+      camera.appendChild(document.getElementById('faceFrame'));
+      camera.appendChild(document.getElementById('countdown'));
+
+      updateStatus('测试已停止', 'info');
+      log('🛑 测试已停止');
+
+      // 重置所有步骤
+      updateStep(0);
+
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('detectBtn').disabled = true;
+      document.getElementById('stopBtn').disabled = true;
+    }
+
+    function clearLog() {
+      document.getElementById('log').innerHTML = '';
+    }
+
+    // 页面加载时检查后端
+    window.onload = async function () {
+      try {
+        const response = await fetch('http://localhost:8080/health');
+        const data = await response.json();
+
+        if (data.status === 'OK') {
+          log('✅ 后端服务连接正常');
+          updateStatus('后端服务正常，可以开始测试', 'success');
+        } else {
+          throw new Error('后端服务状态异常');
+        }
+      } catch (error) {
+        log('❌ 后端服务连接失败，请启动后端服务');
+        updateStatus('后端服务未连接', 'error');
+      }
+    };
+  </script>
+</body>
+
+</html>

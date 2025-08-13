@@ -70,20 +70,20 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
 };
 
 // 验证等级检查中间件
-export const requireVerificationLevel = (level: 'basic' | 'face_verified') => {
+export const requireVerificationLevel = (level: 'basic') => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       return next(new AppError('Authentication required', 401, 'AUTH_REQUIRED'));
     }
 
-    const levelHierarchy = { basic: 0, face_verified: 1 };
-    const userLevel = levelHierarchy[req.user.verificationLevel];
+    const levelHierarchy = { basic: 0 };
+    const userLevel = levelHierarchy['basic']; // 现在只有basic级别
     const requiredLevel = levelHierarchy[level];
 
     if (userLevel < requiredLevel) {
       return next(new AppError(
-        `Verification level '${level}' required`, 
-        403, 
+        `Verification level '${level}' required`,
+        403,
         'INSUFFICIENT_VERIFICATION_LEVEL'
       ));
     }
@@ -102,7 +102,7 @@ export const generateToken = (userId: string): string => {
   return jwt.sign(
     { userId },
     jwtSecret,
-    { 
+    {
       expiresIn: process.env.JWT_EXPIRES_IN || '7d',
       issuer: 'smart-charging-app'
     }

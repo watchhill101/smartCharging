@@ -1,13 +1,704 @@
 .profile-page {
-  padding: 20px;
-  
-  .profile-container {
-    margin-top: 40px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 40rpx 30rpx;
+
+  .loading-container,
+  .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
     text-align: center;
-    
-    .placeholder {
-      color: #999;
-      font-size: 28px;
+
+    .error-text {
+      font-size: 32rpx;
+      color: #7f8c8d;
+      margin-bottom: 40rpx;
     }
+
+    .retry-button {
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 25rpx;
+      padding: 24rpx 48rpx;
+      font-size: 28rpx;
+    }
+  }
+
+  .profile-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40rpx;
+    max-width: 750rpx;
+    margin: 0 auto;
+  }
+
+  // 用户信息卡片
+  .user-info-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24rpx;
+    padding: 40rpx;
+    display: flex;
+    align-items: center;
+    gap: 30rpx;
+    box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10rpx);
+
+    .user-avatar {
+      .avatar-image {
+        width: 120rpx;
+        height: 120rpx;
+        border-radius: 60rpx;
+        object-fit: cover;
+        border: 4rpx solid #ecf0f1;
+      }
+
+      .avatar-default {
+        width: 120rpx;
+        height: 120rpx;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 60rpx;
+        font-size: 48rpx;
+        font-weight: 600;
+
+        .avatar-text {
+          color: white;
+          font-size: 48rpx;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .user-details {
+      flex: 1;
+
+      .user-name {
+        font-size: 40rpx;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 10rpx;
+        display: block;
+      }
+
+      .user-phone {
+        font-size: 28rpx;
+        color: #7f8c8d;
+        margin-bottom: 15rpx;
+        display: block;
+      }
+
+      .verification-badge {
+        .verification-level {
+          font-size: 24rpx;
+          font-weight: 500;
+          padding: 8rpx 16rpx;
+          border-radius: 12rpx;
+          background: rgba(255, 255, 255, 0.8);
+          border: 2rpx solid currentColor;
+          display: inline-block;
+        }
+      }
+    }
+  }
+
+  // 余额卡片
+  .balance-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 24rpx;
+    padding: 40rpx;
+    text-align: center;
+    color: white;
+    box-shadow: 0 8rpx 32rpx rgba(102, 126, 234, 0.3);
+
+    .balance-label {
+      font-size: 28rpx;
+      opacity: 0.9;
+      margin-bottom: 15rpx;
+      display: block;
+    }
+
+    .balance-amount {
+      font-size: 56rpx;
+      font-weight: 700;
+      display: block;
+    }
+  }
+
+  // 验证功能区域
+  .verification-section {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24rpx;
+    padding: 40rpx;
+    box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30rpx;
+
+      .section-title {
+        font-size: 36rpx;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+      }
+
+      .history-button {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+        border-radius: 20rpx;
+        padding: 16rpx 24rpx;
+        font-size: 24rpx;
+        font-weight: 500;
+
+        &:active {
+          transform: translateY(1rpx);
+          opacity: 0.9;
+        }
+      }
+    }
+
+    .verification-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 30rpx 0;
+      border-bottom: 2rpx solid #ecf0f1;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .verification-info {
+        flex: 1;
+
+        .verification-name {
+          font-size: 32rpx;
+          font-weight: 500;
+          color: #2c3e50;
+          margin-bottom: 10rpx;
+          display: block;
+        }
+
+        .verification-desc {
+          font-size: 26rpx;
+          color: #7f8c8d;
+          line-height: 1.5;
+          display: block;
+          margin-bottom: 8rpx;
+        }
+
+        .verification-success-tip {
+          font-size: 24rpx;
+          color: #27ae60;
+          background: rgba(46, 204, 113, 0.1);
+          padding: 8rpx 12rpx;
+          border-radius: 12rpx;
+          display: block;
+          margin-top: 8rpx;
+        }
+
+        .verification-failed-tip {
+          font-size: 24rpx;
+          color: #e74c3c;
+          background: rgba(231, 76, 60, 0.1);
+          padding: 8rpx 12rpx;
+          border-radius: 12rpx;
+          display: block;
+          margin-top: 8rpx;
+        }
+      }
+
+      .verification-action {
+        .verify-button {
+          background: linear-gradient(135deg, #e74c3c, #c0392b);
+          color: white;
+          border: none;
+          border-radius: 25rpx;
+          padding: 20rpx 32rpx;
+          font-size: 26rpx;
+          font-weight: 500;
+          min-width: 120rpx;
+
+          &:disabled {
+            background: #bdc3c7;
+            color: #ecf0f1;
+          }
+
+          &:active:not(:disabled) {
+            transform: translateY(2rpx);
+          }
+        }
+
+        .verified-status {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 10rpx;
+
+          .verified-text {
+            font-size: 26rpx;
+            color: #27ae60;
+            font-weight: 500;
+            padding: 16rpx 24rpx;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 20rpx;
+            border: 2rpx solid rgba(46, 204, 113, 0.3);
+          }
+
+          .reverify-button {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            border: none;
+            border-radius: 18rpx;
+            padding: 12rpx 20rpx;
+            font-size: 22rpx;
+            font-weight: 500;
+
+            &:disabled {
+              background: #bdc3c7;
+              color: #ecf0f1;
+            }
+
+            &:active:not(:disabled) {
+              transform: translateY(1rpx);
+            }
+          }
+        }
+      }
+    }
+
+    // 验证进度条
+    .verification-progress {
+      margin-top: 20rpx;
+      padding: 20rpx;
+      background: rgba(52, 152, 219, 0.05);
+      border-radius: 16rpx;
+      border: 1rpx solid rgba(52, 152, 219, 0.2);
+
+      .progress-bar {
+        height: 8rpx;
+        background: rgba(52, 152, 219, 0.2);
+        border-radius: 4rpx;
+        overflow: hidden;
+        margin-bottom: 12rpx;
+
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #3498db, #2980b9);
+          width: 0%;
+          animation: progressAnimation 2s ease-in-out infinite;
+        }
+      }
+
+      .progress-text {
+        font-size: 24rpx;
+        color: #3498db;
+        text-align: center;
+        display: block;
+      }
+    }
+
+    // 验证级别说明
+    .verification-levels {
+      margin-top: 30rpx;
+      padding: 25rpx;
+      background: rgba(236, 240, 241, 0.5);
+      border-radius: 16rpx;
+
+      .levels-title {
+        font-size: 28rpx;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 20rpx;
+        display: block;
+      }
+
+      .level-item {
+        display: flex;
+        align-items: center;
+        gap: 15rpx;
+        margin-bottom: 15rpx;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .level-badge {
+          padding: 8rpx 16rpx;
+          border-radius: 12rpx;
+          font-size: 22rpx;
+          font-weight: 500;
+          min-width: 60rpx;
+          text-align: center;
+
+          &.basic {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+            border: 1rpx solid rgba(243, 156, 18, 0.3);
+          }
+
+          &.face {
+            background: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+            border: 1rpx solid rgba(46, 204, 113, 0.3);
+          }
+        }
+
+        .level-desc {
+          font-size: 24rpx;
+          color: #7f8c8d;
+          flex: 1;
+          line-height: 1.4;
+        }
+      }
+    }
+  }
+
+  // 车辆信息区域
+  .vehicles-section {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24rpx;
+    padding: 40rpx;
+    box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+
+    .section-title {
+      font-size: 36rpx;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 30rpx;
+      display: block;
+    }
+
+    .vehicle-item {
+      padding: 30rpx 0;
+      border-bottom: 2rpx solid #ecf0f1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .vehicle-name {
+        font-size: 30rpx;
+        font-weight: 500;
+        color: #2c3e50;
+      }
+
+      .vehicle-plate {
+        font-size: 28rpx;
+        color: #7f8c8d;
+        background: #ecf0f1;
+        padding: 8rpx 16rpx;
+        border-radius: 8rpx;
+      }
+    }
+
+    .empty-vehicles {
+      text-align: center;
+      padding: 60rpx 0;
+
+      .empty-text {
+        font-size: 28rpx;
+        color: #bdc3c7;
+        margin-bottom: 30rpx;
+        display: block;
+      }
+
+      .add-vehicle-button {
+        background: #3498db;
+        color: white;
+        border: none;
+        border-radius: 25rpx;
+        padding: 24rpx 48rpx;
+        font-size: 28rpx;
+      }
+    }
+  }
+
+  // 操作按钮区域
+  .actions-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20rpx;
+    margin-top: 20rpx;
+
+    .action-button {
+      padding: 32rpx 40rpx;
+      border-radius: 25rpx;
+      font-size: 32rpx;
+      font-weight: 500;
+      border: none;
+      transition: all 0.3s ease;
+
+      &.secondary {
+        background: rgba(255, 255, 255, 0.9);
+        color: #2c3e50;
+        border: 2rpx solid #ecf0f1;
+
+        &:active {
+          background: rgba(255, 255, 255, 0.7);
+          transform: translateY(2rpx);
+        }
+      }
+
+      &.danger {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+
+        &:active {
+          transform: translateY(2rpx);
+          opacity: 0.9;
+        }
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media screen and (max-width: 750rpx) {
+  .profile-page {
+    padding: 30rpx 20rpx;
+
+    .user-info-card {
+      padding: 30rpx;
+      gap: 24rpx;
+
+      .user-avatar {
+
+        .avatar-image,
+        .avatar-default {
+          width: 100rpx;
+          height: 100rpx;
+          border-radius: 50rpx;
+        }
+
+        .avatar-default {
+          font-size: 40rpx;
+        }
+      }
+
+      .user-details {
+        .user-name {
+          font-size: 36rpx;
+        }
+
+        .user-phone {
+          font-size: 26rpx;
+        }
+
+        .verification-level {
+          font-size: 22rpx;
+        }
+      }
+    }
+
+    .balance-card {
+      padding: 30rpx;
+
+      .balance-label {
+        font-size: 26rpx;
+      }
+
+      .balance-amount {
+        font-size: 48rpx;
+      }
+    }
+
+    .verification-section,
+    .vehicles-section {
+      padding: 30rpx;
+
+      .section-title {
+        font-size: 32rpx;
+      }
+    }
+
+    .verification-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20rpx;
+
+      .verification-action {
+        align-self: flex-end;
+
+        .verified-status {
+          align-items: flex-start;
+        }
+      }
+    }
+
+    .verification-levels {
+      padding: 20rpx;
+
+      .levels-title {
+        font-size: 26rpx;
+      }
+
+      .level-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8rpx;
+
+        .level-badge {
+          align-self: flex-start;
+        }
+      }
+    }
+
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15rpx;
+
+      .history-button {
+        align-self: flex-start;
+        font-size: 22rpx;
+        padding: 12rpx 20rpx;
+      }
+    }
+  }
+}
+
+// 深色模式支持
+@media (prefers-color-scheme: dark) {
+  .profile-page {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+
+    .user-info-card,
+    .verification-section,
+    .vehicles-section {
+      background: rgba(52, 73, 94, 0.9);
+      border: 1rpx solid rgba(255, 255, 255, 0.1);
+
+      .section-title,
+      .user-name {
+        color: #ecf0f1;
+      }
+
+      .user-phone,
+      .verification-desc,
+      .empty-text {
+        color: #bdc3c7;
+      }
+
+      .verification-name,
+      .vehicle-name {
+        color: #ecf0f1;
+      }
+    }
+
+    .vehicle-item {
+      border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .verification-item {
+      border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .action-button.secondary {
+      background: rgba(52, 73, 94, 0.8);
+      color: #ecf0f1;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .verification-levels {
+      background: rgba(44, 62, 80, 0.3);
+      border: 1rpx solid rgba(255, 255, 255, 0.1);
+
+      .levels-title {
+        color: #ecf0f1;
+      }
+
+      .level-desc {
+        color: #bdc3c7;
+      }
+    }
+
+    .verification-progress {
+      background: rgba(44, 62, 80, 0.3);
+      border-color: rgba(52, 152, 219, 0.3);
+
+      .progress-text {
+        color: #5dade2;
+      }
+    }
+  }
+}
+
+// 动画效果
+.profile-page {
+  animation: fadeIn 0.5s ease;
+
+  .profile-container>* {
+    animation: slideInUp 0.6s ease;
+    animation-fill-mode: both;
+
+    &:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+
+    &:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    &:nth-child(4) {
+      animation-delay: 0.4s;
+    }
+
+    &:nth-child(5) {
+      animation-delay: 0.5s;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes progressAnimation {
+  0% {
+    width: 0%;
+  }
+
+  50% {
+    width: 70%;
+  }
+
+  100% {
+    width: 100%;
   }
 }

@@ -7,7 +7,6 @@ export interface User {
   nickName?: string
   avatarUrl?: string
   balance: number
-  verificationLevel: 'basic' | 'face_verified'
   vehicles: Vehicle[]
   createdAt: string
   updatedAt: string
@@ -190,10 +189,7 @@ export interface SliderVerification extends VerificationResult {
   timestamp?: number
 }
 
-// 人脸验证
-export interface FaceVerification extends VerificationResult {
-  liveDetectionPassed?: boolean
-}
+
 
 // 通知消息
 export interface Notification {
@@ -242,7 +238,6 @@ export interface SystemConfig {
   maintenanceMode: boolean
   maintenanceMessage?: string
   features: {
-    faceVerification: boolean
     sliderVerification: boolean
     onlinePayment: boolean
     couponSystem: boolean

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>简单人脸登录测试</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .camera {
+      width: 100%;
+      height: 300px;
+      background: #000;
+      border-radius: 10px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+    }
+
+    .camera video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .log {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 15px;
+      margin: 20px 0;
+      font-family: monospace;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .status {
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🎭 简单人脸登录测试</h1>
+
+    <div class="camera" id="camera">
+      <div>点击"启动摄像头"开始</div>
+    </div>
+
+    <div id="status" class="status info">等待操作...</div>
+
+    <div>
+      <button onclick="startCamera()" id="startBtn">启动摄像头</button>
+      <button onclick="startDetection()" id="detectBtn" disabled>开始检测</button>
+      <button onclick="stopCamera()" id="stopBtn" disabled>停止</button>
+    </div>
+
+    <div class="log" id="log"></div>
+  </div>
+
+  <script>
+    let stream = null;
+    let video = null;
+    let detectionInterval = null;
+
+    function log(message) {
+      const timestamp = new Date().toLocaleTimeString();
+      const logEntry = `[${timestamp}] ${message}`;
+      console.log(logEntry);
+      document.getElementById('log').innerHTML += logEntry + '\n';
+      document.getElementById('log').scrollTop = document.getElementById('log').scrollHeight;
+    }
+
+    function updateStatus(message, type = 'info') {
+      document.getElementById('status').textContent = message;
+      document.getElementById('status').className = `status ${type}`;
+    }
+
+    async function startCamera() {
+      try {
+        log('🚀 启动摄像头...');
+        updateStatus('正在启动摄像头...', 'info');
+
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: 640, height: 480, facingMode: 'user' },
+          audio: false
+        });
+
+        video = document.createElement('video');
+        video.srcObject = stream;
+        video.autoplay = true;
+        video.playsInline = true;
+        video.muted = true;
+
+        const camera = document.getElementById('camera');
+        camera.innerHTML = '';
+        camera.appendChild(video);
+
+        video.onloadeddata = () => {
+          log('✅ 摄像头启动成功');
+          updateStatus('摄像头已就绪', 'success');
+          document.getElementById('detectBtn').disabled = false;
+          document.getElementById('stopBtn').disabled = false;
+          document.getElementById('startBtn').disabled = true;
+        };
+
+      } catch (error) {
+        log(`❌ 摄像头启动失败: ${error.message}`);
+        updateStatus(`摄像头启动失败: ${error.message}`, 'error');
+      }
+    }
+
+    function startDetection() {
+      if (!video) {
+        log('❌ 请先启动摄像头');
+        return;
+      }
+
+      log('🔍 开始连续人脸检测...');
+      updateStatus('正在检测人脸...', 'info');
+
+      detectionInterval = setInterval(async () => {
+        await detectFace();
+      }, 1000);
+
+      log('✅ 检测已启动，每秒检测一次');
+    }
+
+    async function detectFace() {
+      try {
+        // 捕获图像
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
+
+        context.drawImage(video, 0, 0);
+
+        const blob = await new Promise(resolve => {
+          canvas.toBlob(resolve, 'image/jpeg', 0.8);
+        });
+
+        log(`📸 捕获图像: ${blob.size} bytes`);
+
+        // 发送到后端检测
+        const formData = new FormData();
+        formData.append('image', blob, 'face.jpg');
+
+        const response = await fetch('http://localhost:8080/api/face/detect', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          log(`❌ 检测请求失败: ${response.status}`);
+          return;
+        }
+
+        const result = await response.json();
+        log(`📄 检测结果: ${JSON.stringify(result)}`);
+
+        if (result.success && result.data?.faceDetected) {
+          log('🎉 检测到人脸！开始登录...');
+          updateStatus('检测到人脸，正在登录...', 'success');
+
+          // 停止检测
+          clearInterval(detectionInterval);
+          detectionInterval = null;
+
+          // 开始登录
+          await performLogin(blob);
+        }
+
+      } catch (error) {
+        log(`❌ 检测错误: ${error.message}`);
+      }
+    }
+
+    async function performLogin(faceBlob) {
+      try {
+        log('🔐 开始人脸登录...');
+
+        const formData = new FormData();
+        formData.append('image', faceBlob, 'face.jpg');
+
+        // 尝试登录
+        let response = await fetch('http://localhost:8080/api/face/login', {
+          method: 'POST',
+          body: formData,
+        });
+
+        let result = await response.json();
+
+        if (!result.success && result.message?.includes('未找到匹配')) {
+          log('🆕 未找到匹配用户，开始自动注册...');
+
+          // 自动注册
+          response = await fetch('http://localhost:8080/api/face/auto-register-login', {
+            method: 'POST',
+            body: formData,
+          });
+
+          result = await response.json();
+        }
+
+        if (result.success) {
+          const message = result.data.isNewUser ? '账户创建成功！' : '登录成功！';
+          log(`🎉 ${message}`);
+          log(`👤 用户: ${result.data.user.nickName}`);
+
+          updateStatus(message + ' 即将跳转...', 'success');
+
+          // 模拟跳转
+          setTimeout(() => {
+            updateStatus('🏠 成功跳转到首页！', 'success');
+            log('✅ 登录流程完成！');
+          }, 2000);
+
+        } else {
+          throw new Error(result.message || '登录失败');
+        }
+
+      } catch (error) {
+        log(`❌ 登录失败: ${error.message}`);
+        updateStatus(`登录失败: ${error.message}`, 'error');
+      }
+    }
+
+    function stopCamera() {
+      if (detectionInterval) {
+        clearInterval(detectionInterval);
+        detectionInterval = null;
+      }
+
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+      }
+
+      const camera = document.getElementById('camera');
+      camera.innerHTML = '<div>点击"启动摄像头"开始</div>';
+
+      updateStatus('已停止', 'info');
+      log('🛑 摄像头已停止');
+
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('detectBtn').disabled = true;
+      document.getElementById('stopBtn').disabled = true;
+    }
+
+    // 页面加载时检查后端
+    window.onload = async function () {
+      try {
+        const response = await fetch('http://localhost:8080/health');
+        const data = await response.json();
+
+        if (data.status === 'OK') {
+          log('✅ 后端服务连接正常');
+          updateStatus('后端服务正常，可以开始测试', 'success');
+        } else {
+          throw new Error('后端服务状态异常');
+        }
+      } catch (error) {
+        log('❌ 后端服务连接失败，请启动后端服务');
+        updateStatus('后端服务未连接', 'error');
+      }
+    };
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人脸登录测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 15px;
+        }
+
+        .camera-container {
+            width: 100%;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .camera-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: rgba(76, 175, 80, 0.3);
+        }
+
+        .status.error {
+            background: rgba(244, 67, 54, 0.3);
+        }
+
+        .status.info {
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        .status.warning {
+            background: rgba(255, 152, 0, 0.3);
+        }
+
+        .log {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .feature-item.supported {
+            border: 2px solid #4CAF50;
+        }
+
+        .feature-item.not-supported {
+            border: 2px solid #f44336;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎭 人脸登录功能测试</h1>
+            <p>测试浏览器兼容性和功能完整性</p>
+        </div>
+
+        <!-- 环境检测 -->
+        <div class="test-section">
+            <h2>📋 环境检测</h2>
+            <div class="feature-list" id="features">
+                <!-- 功能支持检测结果会动态插入这里 -->
+            </div>
+        </div>
+
+        <!-- 摄像头测试 -->
+        <div class="test-section">
+            <h2>📹 摄像头测试</h2>
+            <div class="camera-container" id="cameraContainer">
+                <div
+                    style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 18px;">
+                    点击"启动摄像头"开始测试
+                </div>
+            </div>
+            <div class="controls">
+                <button onclick="startCamera()">启动摄像头</button>
+                <button onclick="stopCamera()">停止摄像头</button>
+                <button onclick="captureImage()">拍照测试</button>
+            </div>
+            <div id="cameraStatus" class="status info">等待启动摄像头...</div>
+        </div>
+
+        <!-- API测试 -->
+        <div class="test-section">
+            <h2>🔌 API连接测试</h2>
+            <div class="controls">
+                <button onclick="testHealthCheck()">健康检查</button>
+                <button onclick="testFaceDetection()">人脸检测</button>
+                <button onclick="testFaceLogin()">人脸登录</button>
+            </div>
+            <div id="apiStatus" class="status info">等待测试API连接...</div>
+        </div>
+
+        <!-- 日志输出 -->
+        <div class="test-section">
+            <h2>📝 测试日志</h2>
+            <div class="controls">
+                <button onclick="clearLog()">清空日志</button>
+                <button onclick="downloadLog()">下载日志</button>
+            </div>
+            <div id="log" class="log"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentStream = null;
+        let videoElement = null;
+        const logElement = document.getElementById('log');
+
+        // 日志函数
+        function log(level, message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${level.toUpperCase()}: ${message}`;
+            console.log(logEntry);
+            logElement.innerHTML += logEntry + '\n';
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        // 更新状态
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${type}`;
+        }
+
+        // 检测浏览器功能支持
+        function checkBrowserSupport() {
+            const features = [
+                {
+                    name: '媒体设备API',
+                    supported: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
+                    icon: '📹'
+                },
+                {
+                    name: 'Canvas API',
+                    supported: !!(document.createElement('canvas').getContext),
+                    icon: '🎨'
+                },
+                {
+                    name: 'Fetch API',
+                    supported: !!(window.fetch),
+                    icon: '🔗'
+                },
+                {
+                    name: 'FormData API',
+                    supported: !!(window.FormData),
+                    icon: '📄'
+                },
+                {
+                    name: 'Blob API',
+                    supported: !!(window.Blob),
+                    icon: '💾'
+                },
+                {
+                    name: 'Promise 支持',
+                    supported: !!(window.Promise),
+                    icon: '⏰'
+                },
+                {
+                    name: 'HTTPS 环境',
+                    supported: location.protocol === 'https:' || location.hostname === 'localhost',
+                    icon: '🔒'
+                }
+            ];
+
+            const featuresContainer = document.getElementById('features');
+            featuresContainer.innerHTML = '';
+
+            features.forEach(feature => {
+                const div = document.createElement('div');
+                div.className = `feature-item ${feature.supported ? 'supported' : 'not-supported'}`;
+                div.innerHTML = `
+                    <div style="font-size: 24px; margin-bottom: 10px;">${feature.icon}</div>
+                    <div style="font-weight: bold;">${feature.name}</div>
+                    <div style="margin-top: 5px; ${feature.supported ? 'color: #4CAF50' : 'color: #f44336'}">
+                        ${feature.supported ? '✅ 支持' : '❌ 不支持'}
+                    </div>
+                `;
+                featuresContainer.appendChild(div);
+
+                log('info', `${feature.name}: ${feature.supported ? '支持' : '不支持'}`);
+            });
+
+            return features.every(f => f.supported);
+        }
+
+        // 启动摄像头
+        async function startCamera() {
+            try {
+                updateStatus('cameraStatus', '正在启动摄像头...', 'info');
+                log('info', '请求摄像头权限...');
+
+                const constraints = {
+                    video: {
+                        width: { ideal: 640, min: 320 },
+                        height: { ideal: 480, min: 240 },
+                        facingMode: 'user'
+                    },
+                    audio: false
+                };
+
+                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+                log('success', '摄像头启动成功');
+
+                // 创建video元素
+                videoElement = document.createElement('video');
+                videoElement.srcObject = currentStream;
+                videoElement.autoplay = true;
+                videoElement.playsInline = true;
+                videoElement.muted = true;
+                videoElement.style.width = '100%';
+                videoElement.style.height = '100%';
+                videoElement.style.objectFit = 'cover';
+                videoElement.style.transform = 'scaleX(-1)';
+
+                const container = document.getElementById('cameraContainer');
+                container.innerHTML = '';
+                container.appendChild(videoElement);
+
+                videoElement.onloadeddata = () => {
+                    log('success', `视频尺寸: ${videoElement.videoWidth}x${videoElement.videoHeight}`);
+                    updateStatus('cameraStatus', '摄像头运行正常', 'success');
+                };
+
+            } catch (error) {
+                log('error', `摄像头启动失败: ${error.message}`);
+                updateStatus('cameraStatus', `摄像头启动失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 停止摄像头
+        function stopCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+                log('info', '摄像头已停止');
+            }
+
+            const container = document.getElementById('cameraContainer');
+            container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 18px;">摄像头已停止</div>';
+            updateStatus('cameraStatus', '摄像头已停止', 'info');
+        }
+
+        // 拍照测试
+        async function captureImage() {
+            if (!videoElement || !currentStream) {
+                log('error', '请先启动摄像头');
+                return;
+            }
+
+            try {
+                log('info', '开始拍照...');
+
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+
+                canvas.width = videoElement.videoWidth || 640;
+                canvas.height = videoElement.videoHeight || 480;
+
+                context.scale(-1, 1);
+                context.drawImage(videoElement, -canvas.width, 0, canvas.width, canvas.height);
+
+                const blob = await new Promise((resolve, reject) => {
+                    canvas.toBlob(blob => {
+                        if (blob) resolve(blob);
+                        else reject(new Error('图像捕获失败'));
+                    }, 'image/jpeg', 0.85);
+                });
+
+                log('success', `图像捕获成功，大小: ${blob.size} bytes`);
+
+                // 显示拍照结果
+                const url = URL.createObjectURL(blob);
+                const img = document.createElement('img');
+                img.src = url;
+                img.style.maxWidth = '200px';
+                img.style.border = '2px solid #4CAF50';
+                img.style.borderRadius = '10px';
+                img.style.margin = '10px';
+
+                const container = document.getElementById('cameraContainer');
+                const existingImg = container.querySelector('img');
+                if (existingImg) existingImg.remove();
+                container.appendChild(img);
+
+            } catch (error) {
+                log('error', `拍照失败: ${error.message}`);
+            }
+        }
+
+        // API测试
+        async function testHealthCheck() {
+            try {
+                log('info', '测试后端健康检查...');
+                updateStatus('apiStatus', '检查后端连接...', 'info');
+
+                const response = await fetch('http://localhost:8080/health');
+                const data = await response.json();
+
+                if (data.status === 'OK') {
+                    log('success', '后端服务正常');
+                    updateStatus('apiStatus', '后端服务连接正常', 'success');
+                } else {
+                    throw new Error('后端服务状态异常');
+                }
+            } catch (error) {
+                log('error', `健康检查失败: ${error.message}`);
+                updateStatus('apiStatus', `后端连接失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testFaceDetection() {
+            if (!videoElement) {
+                log('error', '请先启动摄像头并拍照');
+                return;
+            }
+
+            try {
+                log('info', '测试人脸检测API...');
+
+                // 先拍照
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = videoElement.videoWidth || 640;
+                canvas.height = videoElement.videoHeight || 480;
+                context.drawImage(videoElement, 0, 0);
+
+                const blob = await new Promise((resolve) => {
+                    canvas.toBlob(resolve, 'image/jpeg', 0.85);
+                });
+
+                const formData = new FormData();
+                formData.append('image', blob, 'test.jpg');
+
+                const response = await fetch('http://localhost:8080/api/face/detect', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    log('success', `人脸检测成功: ${JSON.stringify(result.data, null, 2)}`);
+                } else {
+                    log('error', `人脸检测失败: ${result.message}`);
+                }
+            } catch (error) {
+                log('error', `人脸检测API测试失败: ${error.message}`);
+            }
+        }
+
+        async function testFaceLogin() {
+            log('info', '人脸登录测试需要先注册人脸档案');
+            log('info', '请使用后端测试脚本先创建用户和人脸档案');
+        }
+
+        // 清空日志
+        function clearLog() {
+            logElement.innerHTML = '';
+        }
+
+        // 下载日志
+        function downloadLog() {
+            const logContent = logElement.textContent;
+            const blob = new Blob([logContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `face-login-test-${new Date().toISOString().split('T')[0]}.log`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 页面加载时进行初始化检测
+        window.onload = function () {
+            log('info', '开始人脸登录功能测试');
+            log('info', `浏览器: ${navigator.userAgent}`);
+            log('info', `当前URL: ${location.href}`);
+
+            const allSupported = checkBrowserSupport();
+
+            if (allSupported) {
+                log('success', '所有必需功能都受支持');
+            } else {
+                log('warning', '部分功能不受支持，可能影响人脸登录功能');
+            }
+        };
+    </script>
+</body>
+
+</html>
