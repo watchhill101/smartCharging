@@ -57,6 +57,7 @@ export interface Charger {
   }
 }
 
+
 // 充电会话
 export interface ChargingSession {
   _id: string
@@ -247,4 +248,20 @@ export interface SystemConfig {
     onlinePayment: boolean
     couponSystem: boolean
   }
+}
+
+// QR码扫描结果
+export interface QRScanResult {
+  chargerId: string;
+  stationId: string;
+  timestamp: string;
+}
+
+// 充电启动请求
+export interface StartChargingRequest {
+  userId: string;
+  stationId: string;
+  chargerId: string;
+  qrData: string;
+  vehicleInfo?: Vehicle;
 }
