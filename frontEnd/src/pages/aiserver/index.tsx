@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { View, Text, ScrollView, Input, Button } from '@tarojs/components'
+import { View, Text, ScrollView, Input, Button, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import './index.scss'
 // 引入自定义图标字体
 import '../../assets/icons/ChangeIt/iconfont.css'
+import { AIService } from '../../utils/aiService'
 
 // 安全的 Taro API 调用
 const showToast = (options: any) => {
@@ -39,6 +40,8 @@ interface Message {
   timestamp: number
   isError?: boolean
   isWelcome?: boolean // 新增欢迎消息标识
+  contentType?: 'text' | 'image' // 新增消息类型
+  imageData?: string // 新增图片数据
 }
 
 interface ApiResponse {
@@ -150,6 +153,7 @@ const getSystemPrompt = () => ({
 5. APP功能使用指导
 6. 充电安全建议和注意事项
 7. 充电站查找和预约服务
+8. 分析用户上传的充电相关图片
 
 💡 服务标准：
 - 回答简洁明了，重点突出
@@ -161,6 +165,12 @@ const getSystemPrompt = () => ({
 📞 人工客服：400-123-4567
 🕒 服务时间：24小时在线，人工客服8:00-22:00
 
+当用户上传图片时：
+1. 仔细分析图片内容
+2. 如果是充电桩或电动车相关的问题，给出专业解答
+3. 如果是错误代码或故障显示，提供可能的解决方案
+4. 如果图片内容不明确，礼貌地请用户提供更清晰的图片或文字描述
+
 记住：你叫"小电"，是用户的贴心充电助手！`
 })
 
@@ -171,14 +181,23 @@ const AiServer = () => {
       content: '',
       role: 'assistant',
       timestamp: Date.now(),
-      isWelcome: true // 添加欢迎消息标识
+      isWelcome: true, // 添加欢迎消息标识
+      contentType: 'text'
     }
   ])
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [retryCount, setRetryCount] = useState(0)
+  const [isProcessingImage, setIsProcessingImage] = useState(false)
   const scrollViewRef = useRef<any>()
   const inputRef = useRef<any>()
+
+  // 初始化 AI 服务
+  const aiService = new AIService({
+    apiKey: AI_MODELS[0].apiKey,
+    baseURL: AI_MODELS[0].baseURL,
+    model: AI_MODELS[0].model
+  });
 
   // 滚动到底部 - 优化性能
   const scrollToBottom = useCallback(() => {
@@ -203,158 +222,336 @@ const AiServer = () => {
     return ERROR_MESSAGES.UNKNOWN_ERROR + '\n\n📞 人工客服：400-123-4567'
   }, [])
 
-  // 优化的 AI 调用函数 - 支持多模型备用
-  const callAI = useCallback(async (userMessage: string): Promise<string> => {
-    let lastError: any = null
-    let attemptCount = 0
-    const maxAttempts = AI_MODELS.length
-
-    // 尝试所有可用模型
-    while (attemptCount < maxAttempts) {
-      const currentModel = getCurrentModel()
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), currentModel.timeout)
-
-      try {
-        console.log(`尝试使用模型: ${currentModel.name} (第${attemptCount + 1}次尝试)`)
+  // 调用摄像头拍照
+  const handleCameraClick = async () => {
+    if (isLoading || isProcessingImage) return
+    
+    try {
+      setIsProcessingImage(true)
+      
+      // 方法1: 尝试 chooseMedia (推荐的新 API)
+      if (Taro.chooseMedia) {
+        const res = await Taro.chooseMedia({
+          count: 1,
+          mediaType: ['image'],
+          sourceType: ['camera'],
+          camera: 'back',
+          sizeType: ['compressed'] // 压缩图片以提高性能
+        });
         
-        // 构建对话历史 - 只保留最近的对话
-        const conversationHistory = messages
-          .slice(-6) // 减少到6轮对话，节省 token
-          .filter(msg => !msg.isError) // 过滤错误消息
-          .map(msg => ({
-            role: msg.role,
-            content: msg.content
-          }))
-        
-        // 添加当前用户消息
-        conversationHistory.push({
-          role: 'user',
-          content: userMessage
-        })
-
-        const response = await fetch(`${currentModel.baseURL}/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${currentModel.apiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: currentModel.model,
-            messages: [getSystemPrompt(), ...conversationHistory],
-            max_tokens: currentModel.maxTokens,
-            temperature: currentModel.temperature,
-            stream: false
-          }),
-          signal: controller.signal
-        })
-
-        clearTimeout(timeoutId)
-
-        if (!response.ok) {
-          const errorText = await response.text()
-          throw new Error(`API调用失败 (${response.status}): ${errorText}`)
-        }
-
-        const data: ApiResponse = await response.json()
-        
-        if (data.error) {
-          throw new Error(data.error.message)
-        }
-
-        const content = data.choices[0]?.message?.content
-        if (!content) {
-          throw new Error('模型返回内容为空')
-        }
-
-        // 成功后重置到首选模型（延迟重置）
-        if (attemptCount > 0) {
-          console.log(`模型 ${currentModel.name} 调用成功，60秒后将重置到首选模型`)
-          setTimeout(resetToPreferredModel, 60000) // 60秒后重置
-        }
-
-        return content
-
-      } catch (error: any) {
-        clearTimeout(timeoutId)
-        lastError = error
-        console.error(`模型 ${currentModel.name} 调用失败:`, error.message)
-        
-        // 检查是否应该切换模型
-        if (shouldSwitchModel(error) && attemptCount < maxAttempts - 1) {
-          switchToNextModel()
-          attemptCount++
-          console.log(`切换到备用模型，继续尝试...`)
-          continue
-        } else {
-          // 如果是其他错误（如网络问题），直接抛出
-          throw error
+        if (res.tempFiles && res.tempFiles.length > 0) {
+          await processAndSendImage(res.tempFiles[0].tempFilePath);
+          return;
         }
       }
+      
+      // 方法2: 尝试 chooseImage (旧 API)
+      if (Taro.chooseImage) {
+        const res = await Taro.chooseImage({
+          count: 1,
+          sizeType: ["compressed"],
+          sourceType: ["camera"]
+        });
+        
+        if (res.tempFilePaths && res.tempFilePaths.length > 0) {
+          await processAndSendImage(res.tempFilePaths[0]);
+          return;
+        }
+      }
+      
+      // 方法3: H5 环境的处理
+      if (process.env.TARO_ENV === 'h5') {
+        handleH5Camera();
+        return;
+      }
+      
+      throw new Error('当前环境不支持拍照功能');
+      
+    } catch (error) {
+      console.error('拍照失败:', error);
+      
+      showToast({
+        title: '拍照失败，请重试',
+        icon: 'error',
+        duration: 2000
+      });
+    } finally {
+      setIsProcessingImage(false);
     }
+  };
 
-    // 所有模型都失败了
-    throw new Error(`所有模型都无法响应: ${lastError?.message || '未知错误'}`)
-  }, [messages])
+  // H5环境下的摄像头处理
+  const handleH5Camera = () => {
+    // H5 环境使用 input file
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment'; // 后置摄像头
+    
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        try {
+          const reader = new FileReader();
+          reader.onload = async (event) => {
+            const imageSrc = event.target?.result as string;
+            await processAndSendImage(imageSrc);
+          };
+          reader.readAsDataURL(file);
+        } catch (error) {
+          console.error('处理图片失败:', error);
+          setIsProcessingImage(false);
+          showToast({
+            title: '图片处理失败',
+            icon: 'error'
+          });
+        }
+      } else {
+        setIsProcessingImage(false);
+      }
+    };
+    
+    input.click();
+  };
 
-  // 发送消息 - 优化错误处理和重试机制
+  // 转换图片为base64
+  const convertImageToBase64 = (imagePath: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      // 在小程序环境中
+      if (process.env.TARO_ENV !== 'h5') {
+        Taro.getFileSystemManager().readFile({
+          filePath: imagePath,
+          encoding: 'base64',
+          success: (res) => {
+            const base64 = `data:image/jpeg;base64,${res.data}`;
+            resolve(base64);
+          },
+          fail: (error) => {
+            console.error('读取图片失败:', error);
+            reject(error);
+          }
+        });
+      } else {
+        // H5环境中图片已经是base64
+        resolve(imagePath);
+      }
+    });
+  };
+
+  // 处理图片并发送给AI - 使用 GLM-4V-Flash
+  const processAndSendImage = async (imagePath: string) => {
+    try {
+      // 1. 显示用户发送的图片消息
+      const userImageMessage: Message = {
+        id: generateId(),
+        content: '图片消息',
+        role: 'user',
+        timestamp: Date.now(),
+        contentType: 'image',
+        imageData: imagePath
+      };
+      
+      setMessages(prev => [...prev, userImageMessage]);
+      scrollToBottom();
+      
+      // 2. 显示AI正在处理的消息
+      const loadingMessageId = generateId();
+      const loadingMessage: Message = {
+        id: loadingMessageId,
+        content: '正在分析您的图片，请稍候...',
+        role: 'assistant',
+        timestamp: Date.now(),
+        contentType: 'text'
+      };
+      setMessages(prev => [...prev, loadingMessage]);
+      scrollToBottom();
+      
+      // 3. 转换图片为base64
+      let imageBase64 = '';
+      try {
+        console.log('开始转换图片为base64...');
+        imageBase64 = imagePath.startsWith('data:image') 
+          ? imagePath 
+          : await convertImageToBase64(imagePath);
+        console.log('图片base64转换完成，长度:', imageBase64.length);
+      } catch (error) {
+        console.error('图片转换失败:', error);
+        throw new Error('图片处理失败，请重试');
+      }
+      
+      // 4. 使用 GLM-4V-Flash 模型分析图片
+      console.log('开始调用GLM模型分析图片...');
+      const analysisResult = await aiService.analyzeImage(
+        imageBase64, 
+        aiService.getImageAnalysisPrompt()
+      );
+      
+      console.log('GLM模型分析结果:', analysisResult);
+      
+      // 5. 替换加载消息或添加新消息
+      if (!analysisResult.success) {
+        console.error('图片分析失败:', analysisResult.error);
+        
+        // 使用备用响应
+        const backupContent = '我看到了您上传的图片。这似乎是一个与充电设备相关的问题。能否请您提供更多关于这个问题的文字描述，以便我能更准确地为您提供帮助？';
+        
+        // 更新消息列表 - 替换"正在分析"的临时消息
+        setMessages(prev => {
+          const newMessages = [...prev];
+          const loadingMsgIndex = newMessages.findIndex(msg => msg.id === loadingMessageId);
+          
+          const assistantMessage: Message = {
+            id: generateId(),
+            content: backupContent,
+            role: 'assistant',
+            timestamp: Date.now(),
+            contentType: 'text'
+          };
+          
+          if (loadingMsgIndex !== -1) {
+            newMessages[loadingMsgIndex] = assistantMessage;
+          } else {
+            newMessages.push(assistantMessage);
+          }
+          
+          return newMessages;
+        });
+        
+        return; // 提前返回，使用备用响应
+      }
+      
+      // 更新消息列表 - 替换"正在分析"的临时消息
+      setMessages(prev => {
+        const newMessages = [...prev];
+        const loadingMsgIndex = newMessages.findIndex(msg => msg.id === loadingMessageId);
+        
+        const assistantMessage: Message = {
+          id: generateId(),
+          content: analysisResult.content || '抱歉，无法解析该图片内容',
+          role: 'assistant',
+          timestamp: Date.now(),
+          contentType: 'text'
+        };
+        
+        if (loadingMsgIndex !== -1) {
+          newMessages[loadingMsgIndex] = assistantMessage;
+        } else {
+          newMessages.push(assistantMessage);
+        }
+        
+        return newMessages;
+      });
+      
+      scrollToBottom();
+      
+    } catch (error) {
+      console.error('图片处理失败:', error);
+      
+      // 添加错误消息
+      setMessages(prev => {
+        // 移除加载消息
+        const filteredMessages = prev.filter(msg => 
+          !(msg.role === 'assistant' && msg.content === '正在分析您的图片，请稍候...')
+        );
+        
+        // 添加错误消息
+        return [...filteredMessages, {
+          id: generateId(),
+          content: `抱歉，图片分析失败。请尝试使用更清晰的图片，或者直接描述您的问题。`,
+          role: 'assistant',
+          timestamp: Date.now(),
+          contentType: 'text',
+          isError: true
+        }];
+      });
+      
+      showToast({
+        title: '图片分析失败',
+        icon: 'error',
+        duration: 2000
+      });
+    } finally {
+      setIsProcessingImage(false);
+    }
+  };
+  
+  // 发送消息 - 文本消息调用 GPT-3.5-Turbo
   const sendMessage = useCallback(async (content: string) => {
-    if (!content.trim() || isLoading) return
+    if (!content.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: generateId(),
       content: content.trim(),
       role: 'user',
-      timestamp: Date.now()
-    }
+      timestamp: Date.now(),
+      contentType: 'text'
+    };
 
-    setMessages(prev => [...prev, userMessage])
-    setInputValue('')
-    setIsLoading(true)
-    scrollToBottom()
+    setMessages(prev => [...prev, userMessage]);
+    setInputValue('');
+    setIsLoading(true);
+    scrollToBottom();
 
     try {
-      const aiResponse = await callAI(content.trim())
+      // 构建对话历史
+      const conversationHistory = messages
+        .slice(-6) // 减少到6轮对话，节省 token
+        .filter(msg => !msg.isError && msg.contentType === 'text') // 过滤错误消息和图片消息
+        .map(msg => ({
+          role: msg.role,
+          content: msg.content
+        }));
+      
+      // 添加系统提示和当前用户消息
+      const chatMessages = [
+        aiService.getSystemPrompt(),
+        ...conversationHistory,
+        { role: 'user' as const, content: content.trim() }
+      ];
+      
+      // 调用 GPT-3.5-Turbo
+      const response = await aiService.chat(chatMessages);
+      
+      if (!response.success) {
+        throw new Error(response.error || '获取回复失败');
+      }
       
       const assistantMessage: Message = {
         id: generateId(),
-        content: aiResponse,
+        content: response.content,
         role: 'assistant',
-        timestamp: Date.now()
-      }
+        timestamp: Date.now(),
+        contentType: 'text'
+      };
 
-      setMessages(prev => [...prev, assistantMessage])
-      scrollToBottom()
-      setRetryCount(0) // 重置重试次数
+      setMessages(prev => [...prev, assistantMessage]);
+      scrollToBottom();
+      setRetryCount(0); // 重置重试次数
     } catch (error: any) {
-      console.error('发送消息失败:', error)
+      console.error('发送消息失败:', error);
       
       const errorMessage: Message = {
         id: generateId(),
         content: getErrorMessage(error),
         role: 'assistant',
         timestamp: Date.now(),
-        isError: true
-      }
+        isError: true,
+        contentType: 'text'
+      };
       
-      setMessages(prev => [...prev, errorMessage])
-      scrollToBottom()
+      setMessages(prev => [...prev, errorMessage]);
+      scrollToBottom();
       
-      // 显示用户友好的错误提示 - 使用控制台输出作为备用
-      try {
-        showToast({
-          title: '发送失败，已尝试备用模型',
-          icon: 'error',
-          duration: 2000
-        })
-      } catch (e) {
-        console.log('发送失败，已尝试备用模型')
-      }
+      showToast({
+        title: '发送失败，请重试',
+        icon: 'error',
+        duration: 2000
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [isLoading, callAI, scrollToBottom, getErrorMessage])
-
+  }, [messages, isLoading, aiService, getErrorMessage, scrollToBottom]);
+  
   // 清空对话 - 优化用户体验
   const clearMessages = useCallback(() => {
     showModal({
@@ -371,64 +568,69 @@ const AiServer = () => {
               content: '',
               role: 'assistant',
               timestamp: Date.now(),
-              isWelcome: true // 使用欢迎消息格式
+              isWelcome: true, // 使用欢迎消息格式
+              contentType: 'text'
             }
-          ])
-          setRetryCount(0)
+          ]);
+          setRetryCount(0);
           showToast({
             title: '对话已清空',
             icon: 'success'
-          })
+          });
         }
       }
-    })
-  }, [])
+    });
+  }, []);
 
   // 重试发送 - 新增功能
   const retryLastMessage = useCallback(() => {
     const lastUserMessage = messages
       .slice()
       .reverse()
-      .find(msg => msg.role === 'user')
+      .find(msg => msg.role === 'user');
     
     if (lastUserMessage && retryCount < 3) {
-      setRetryCount(prev => prev + 1)
-      sendMessage(lastUserMessage.content)
+      setRetryCount(prev => prev + 1);
+      if (lastUserMessage.contentType === 'text') {
+        sendMessage(lastUserMessage.content);
+      } else if (lastUserMessage.contentType === 'image' && lastUserMessage.imageData) {
+        processAndSendImage(lastUserMessage.imageData);
+      }
     } else {
       showToast({
         title: '重试次数过多，请稍后再试',
         icon: 'error'
-      })
+      });
     }
-  }, [messages, retryCount, sendMessage])
+  }, [messages, retryCount, sendMessage]);
 
   // 格式化时间 - 优化显示
   const formatTime = useCallback((timestamp: number) => {
-    const date = new Date(timestamp)
-    const now = new Date()
-    const diff = now.getTime() - timestamp
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now.getTime() - timestamp;
     
     // 如果是今天
     if (diff < 24 * 60 * 60 * 1000) {
-      return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+      return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
     }
     
     // 如果是昨天
     if (diff < 48 * 60 * 60 * 1000) {
-      return `昨天 ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+      return `昨天 ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
     }
     
     // 更早的日期
-    return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
-  }, [])
+    return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+  }, []);
 
   // 输入框快捷操作
   const handleKeyPress = useCallback((e: any) => {
     if (e.detail.value.length > 500) {
-      console.log('消息过长，请精简后发送')
-      return
+      console.log('消息过长，请精简后发送');
+      return;
     }
-  }, [])
+  }, []);
 
   // 完整的快捷问题配置
   const quickQuestionsData = {
@@ -462,33 +664,33 @@ const AiServer = () => {
       { id: 23, text: '区域代理政策', icon: '🌍' },
       { id: 24, text: '技术培训服务', icon: '👨‍🏫' }
     ]
-  }
+  };
 
   // 当前选中的分类
-  const [activeCategory, setActiveCategory] = useState<keyof typeof quickQuestionsData>('充电问题')
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+  const [activeCategory, setActiveCategory] = useState<keyof typeof quickQuestionsData>('充电问题');
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   // 获取当前分类的问题
   const getCurrentQuestions = useCallback(() => {
-    const categoryQuestions = quickQuestionsData[activeCategory] || []
-    const questionsPerPage = 5
-    const startIndex = currentQuestionIndex * questionsPerPage
-    return categoryQuestions.slice(startIndex, startIndex + questionsPerPage)
-  }, [activeCategory, currentQuestionIndex])
+    const categoryQuestions = quickQuestionsData[activeCategory] || [];
+    const questionsPerPage = 5;
+    const startIndex = currentQuestionIndex * questionsPerPage;
+    return categoryQuestions.slice(startIndex, startIndex + questionsPerPage);
+  }, [activeCategory, currentQuestionIndex]);
 
   // 处理分类切换
   const handleCategoryChange = useCallback((category: keyof typeof quickQuestionsData) => {
-    setActiveCategory(category)
-    setCurrentQuestionIndex(0) // 重置到第一页
-  }, [])
+    setActiveCategory(category);
+    setCurrentQuestionIndex(0); // 重置到第一页
+  }, []);
 
   // 换一批问题
   const handleRefreshQuestions = useCallback(() => {
-    const categoryQuestions = quickQuestionsData[activeCategory] || []
-    const questionsPerPage = 5
-    const maxPages = Math.ceil(categoryQuestions.length / questionsPerPage)
-    setCurrentQuestionIndex(prev => (prev + 1) % maxPages)
-  }, [activeCategory])
+    const categoryQuestions = quickQuestionsData[activeCategory] || [];
+    const questionsPerPage = 5;
+    const maxPages = Math.ceil(categoryQuestions.length / questionsPerPage);
+    setCurrentQuestionIndex(prev => (prev + 1) % maxPages);
+  }, [activeCategory]);
 
   // 获取分类图标
   const getCategoryIcon = (category: string) => {
@@ -496,24 +698,24 @@ const AiServer = () => {
       '充电问题': '🔌',
       '充电桩问题': '⚡',
       '合作加盟': '🤝'
-    }
-    return icons[category] || '❓'
-  }
+    };
+    return icons[category] || '❓';
+  };
 
   // 优化 useEffect
   useEffect(() => {
-    scrollToBottom()
-  }, [messages, scrollToBottom])
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
 
   // 页面初始化
   useEffect(() => {
-    console.log('AI客服页面已加载')
-  }, [])
+    console.log('AI客服页面已加载');
+  }, []);
 
   // 处理快捷问题点击
   const handleQuickQuestion = useCallback((questionText: string) => {
-    sendMessage(questionText)
-  }, [sendMessage])
+    sendMessage(questionText);
+  }, [sendMessage]);
 
   return (
     <View className='aiserver-container'>
@@ -604,7 +806,23 @@ const AiServer = () => {
                       </View>
                     </View>
                   </View>
+                ) : message.contentType === 'image' ? (
+                  // 图片消息
+                  <View className='image-message'>
+                    <Image 
+                      src={message.imageData || ''} 
+                      mode='widthFix' 
+                      className='chat-image'
+                      onClick={() => {
+                        Taro.previewImage({
+                          urls: [message.imageData || ''],
+                          current: message.imageData
+                        });
+                      }}
+                    />
+                  </View>
                 ) : (
+                  // 普通文本消息
                   <Text className='message-text' selectable>{message.content}</Text>
                 )}
                 
@@ -655,62 +873,60 @@ const AiServer = () => {
             className='message-input'
             placeholder='请输入您的问题...'
             value={inputValue}
-            onInput={(e) => {
-              setInputValue(e.detail.value)
-              handleKeyPress(e)
-            }}
+            onInput={(e) => setInputValue(e.detail.value)}
             onConfirm={() => sendMessage(inputValue)}
-            disabled={isLoading}
-            maxlength={500}
+            disabled={isLoading || isProcessingImage}
             confirmType='send'
           />
-          <Button 
-            className={`send-button ${inputValue.trim() && !isLoading ? 'active' : ''}`}
-            onClick={() => sendMessage(inputValue)}
-            disabled={!inputValue.trim() || isLoading}
-            size='mini'
-          >
-            {isLoading ? '发送中' : '发送'}
-          </Button>
-        </View>
-        
-        <View className='input-tools'>
-          <View className='tool-left'>
-            <Text className='char-count'>{inputValue.length}/500</Text>
-          </View>
-          <View className='tool-right'>
+          <View className='action-buttons'>
             <Button 
-              className={`tool-button clear-button ${messages.length > 2 ? 'visible' : 'hidden'}`}
-              size='mini'
-              onClick={clearMessages}
-              disabled={messages.length <= 2}
+              className='camera-button'
+              onClick={handleCameraClick}
+              disabled={isLoading || isProcessingImage}
             >
-              🗑️ 清空
+              <Text className='icon-camera'>📷</Text>
             </Button>
             <Button 
-              className='tool-button help-button' 
-              size='mini'
+              className={`send-button ${inputValue.trim() && !isLoading ? 'active' : ''}`}
+              onClick={() => sendMessage(inputValue)}
+              disabled={!inputValue.trim() || isLoading || isProcessingImage}
+            >
+              <Text className='send-text'>发送</Text>
+            </Button>
+          </View>
+        </View>
+
+        <View className='bottom-info'>
+          <View className='service-info'>
+            <View className='action-links'>
+              <Text 
+                className='clear-button'
+                onClick={clearMessages}
+              >
+                🗑️ 清空
+              </Text>
+              <Text className='separator'>|</Text>
+              <Text className='disclaimer-text'>
+                喵喵喵，欢迎使用小电Ai客服
+              </Text>
+            </View>
+            <Button 
+              className='help-button' 
               onClick={() => {
                 showModal({
                   title: '联系客服',
-                  content: '人工客服热线：400-123-4567\n服务时间：8:00-22:00\n\n或继续与AI助手小电对话',
+                  content: '人工客服热线：400-123-4567\n服务时间：8:00-22:00',
                   showCancel: false
-                })
+                });
               }}
             >
-              📞 人工
+              📞 人工客服
             </Button>
           </View>
         </View>
-        
-        <View className='disclaimer'>
-          <Text className='disclaimer-text'>
-            本回答由 AI 生成，仅供参考。如需准确信息请联系人工客服
-          </Text>
-        </View>
       </View>
     </View>
-  )
-}
+  );
+};
 
-export default AiServer
+export default AiServer;
