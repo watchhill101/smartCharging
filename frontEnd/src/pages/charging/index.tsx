@@ -9,7 +9,7 @@ export default function Charging() {
 
   return (
     <View className='charging-page'>
-      <Text>充电页面</Text>
+      <Text>钱包页面</Text>
       <View className='charging-container'>
         {/* 充电相关组件将在后续任务中实现 */}
         <Text className='placeholder'>充电功能占位</Text>
