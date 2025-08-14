@@ -185,12 +185,16 @@ export class FaceRecognitionService {
         return { success: false, message: '图片文件过大，请压缩后上传' };
       }
 
-      // 简化图片格式检查，更宽松的验证
-      console.log(`📷 图片质量验证: 大小=${imageData.length} bytes`);
+      // 检查图片格式
+      const header = imageData.slice(0, 4);
+      if (!this.isValidImageHeader(header)) {
+        console.log('⚠️ 图片格式可能不正确，但允许继续处理');
+      }
 
-      // 暂时跳过格式检查，专注于功能测试
+      console.log(`📷 图片质量验证: 大小=${imageData.length} bytes`);
       return { success: true };
     } catch (error) {
+      console.error('图片质量验证错误:', error);
       return { success: false, message: '图片质量验证失败' };
     }
   }
@@ -206,10 +210,24 @@ export class FaceRecognitionService {
     // 使用种子生成确定性的随机数
     const random = (seed % 1000) / 1000;
 
-    // 模拟检测结果 - 提高检测成功率和置信度
-    const faceDetected = random > 0.02; // 98%概率检测到人脸
-    const faceCount = faceDetected ? 1 : 0; // 简化为单人脸检测
-    const confidence = faceDetected ? 0.75 + random * 0.25 : random * 0.3; // 0.75-1.0 或 0-0.3
+    // 基于图片大小调整检测成功率
+    const sizeBonus = Math.min(imageData.length / (500 * 1024), 1); // 500KB为基准
+    const baseSuccessRate = 0.85 + sizeBonus * 0.13; // 85%-98%的成功率
+
+    // 模拟检测结果
+    const faceDetected = random < baseSuccessRate;
+    const faceCount = faceDetected ? 1 : 0;
+
+    // 更智能的置信度计算
+    let confidence = 0;
+    if (faceDetected) {
+      // 基于图片质量和随机因子计算置信度
+      const qualityFactor = Math.min(imageData.length / (1024 * 1024), 1); // 基于文件大小的质量因子
+      const randomFactor = 0.5 + random * 0.5; // 0.5-1.0的随机因子
+      confidence = Math.max(0.6, 0.7 + qualityFactor * 0.2 + randomFactor * 0.1);
+    } else {
+      confidence = random * 0.5; // 未检测到时的低置信度
+    }
 
     // 生成模拟的人脸特征
     const encoding = faceDetected ? this.generateMockFaceEncoding(seed) : [];
@@ -220,12 +238,12 @@ export class FaceRecognitionService {
       confidence > 0.8 ? 'good' :
         confidence > 0.7 ? 'fair' : 'poor';
 
-    console.log(`🎭 人脸检测模拟: 检测到=${faceDetected}, 置信度=${confidence.toFixed(3)}, 质量=${quality}`);
+    console.log(`🎭 人脸检测模拟: 检测到=${faceDetected}, 置信度=${confidence.toFixed(3)}, 质量=${quality}, 图片大小=${(imageData.length / 1024).toFixed(1)}KB`);
 
     return {
       faceDetected,
       faceCount,
-      confidence,
+      confidence: Math.min(confidence, 1.0), // 确保不超过1.0
       features: faceDetected ? { encoding, landmarks } : undefined,
       quality
     };

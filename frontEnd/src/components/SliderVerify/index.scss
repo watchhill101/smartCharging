@@ -3,7 +3,9 @@
   position: relative;
   margin: 0;
   user-select: none;
-  touch-action: none;
+  touch-action: pan-x;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
 }
 
 /* 验证轨道 */
@@ -137,6 +139,9 @@
   box-shadow: 0 2px 6px rgba(24, 144, 255, 0.25);
   z-index: 3;
   border: 1px solid rgba(255, 255, 255, 0.8);
+  touch-action: pan-x;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
 }
 
 .slider-button:active {

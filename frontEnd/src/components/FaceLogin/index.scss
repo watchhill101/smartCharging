@@ -301,6 +301,52 @@
   }
 }
 
+// 成功状态显示
+.success-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+  background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%);
+  border-radius: 24rpx;
+  border: 2rpx solid #52c41a;
+  margin: 20rpx 0;
+  width: 100%;
+
+  .success-icon {
+    font-size: 64rpx;
+    margin-bottom: 16rpx;
+    animation: bounce 0.6s ease-in-out;
+  }
+
+  .success-text {
+    font-size: 32rpx;
+    color: #52c41a;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.4;
+  }
+}
+
+@keyframes bounce {
+
+  0%,
+  20%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+
+  40% {
+    transform: translateY(-20rpx);
+  }
+
+  80% {
+    transform: translateY(-10rpx);
+  }
+}
+
 // 响应式适配
 @media (max-width: 750px) {
   .face-login {

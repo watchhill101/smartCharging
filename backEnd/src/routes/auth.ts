@@ -14,12 +14,12 @@ const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
 
 // 生成JWT token
 const generateToken = (userId: string) => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions);
 };
 
 // 生成刷新token
 const generateRefreshToken = (userId: string) => {
-  return jwt.sign({ userId }, JWT_REFRESH_SECRET, { expiresIn: JWT_REFRESH_EXPIRES_IN });
+  return jwt.sign({ userId }, JWT_REFRESH_SECRET, { expiresIn: JWT_REFRESH_EXPIRES_IN } as jwt.SignOptions);
 };
 
 // 验证码存储（生产环境应该使用Redis或数据库）
@@ -81,13 +81,24 @@ router.post('/login-with-code', asyncHandler(async (req: Request, res: Response)
     });
   }
 
-  // 验证滑块验证token（简化实现）
+  // 验证滑块验证token
   if (!verifyToken) {
     return res.status(400).json({
       success: false,
       message: '请先完成安全验证'
     });
   }
+
+  // 验证token格式
+  if (!verifyToken.startsWith('mock_token_')) {
+    console.log('❌ 验证token格式错误:', verifyToken);
+    return res.status(400).json({
+      success: false,
+      message: '验证令牌格式错误，请重新验证'
+    });
+  }
+
+  console.log('✅ 验证token格式正确:', verifyToken);
 
   // 检查验证码
   const storedVerification = verificationCodes.get(phone);
@@ -177,6 +188,144 @@ router.post('/login-with-code', asyncHandler(async (req: Request, res: Response)
       message: '登录失败，请稍后重试'
     });
   }
+}));
+
+// 滑动验证
+router.post('/slider-verify', asyncHandler(async (req: Request, res: Response) => {
+  console.log('🎯 收到滑动验证请求:', req.body);
+  const { slideDistance, puzzleOffset, accuracy, duration, verifyPath, trackData } = req.body;
+
+  // 基本参数验证
+  if (typeof slideDistance !== 'number' || typeof puzzleOffset !== 'number') {
+    return res.status(400).json({
+      success: false,
+      message: '参数错误'
+    });
+  }
+
+  // 验证逻辑：允许一定的误差范围
+  const errorThreshold = 15; // 允许15像素的误差，更宽松
+  const isAccurate = accuracy <= errorThreshold;
+
+  // 验证时间合理性（防止机器人）
+  const minDuration = 300; // 最少300ms，更宽松
+  const maxDuration = 15000; // 最多15s，更宽松
+  const isDurationValid = duration >= minDuration && duration <= maxDuration;
+
+  // 轨迹验证：检查是否有连续的移动轨迹
+  const hasValidTrajectory = trackData && trackData.length > 5;
+
+  // 综合判断：满足精度或有合理的移动轨迹即可
+  const isVerified = (isAccurate || accuracy <= 25) && isDurationValid && hasValidTrajectory;
+
+  if (isVerified) {
+    // 生成验证token（与前端期望的格式匹配）
+    const verifyToken = `mock_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    console.log('✅ 滑动验证成功, token:', verifyToken);
+    res.json({
+      success: true,
+      message: '验证成功',
+      data: {
+        verified: true,
+        token: verifyToken,
+        accuracy: accuracy,
+        duration: duration
+      }
+    });
+  } else {
+    const reasons = [];
+    if (!isAccurate && accuracy > 25) reasons.push(`精度不够(${accuracy.toFixed(1)}px > 25px)`);
+    if (!isDurationValid) reasons.push(`时间异常(${duration}ms)`);
+    if (!hasValidTrajectory) reasons.push('轨迹异常');
+
+    console.log('❌ 滑动验证失败:', {
+      accuracy,
+      duration,
+      isAccurate,
+      isDurationValid,
+      hasValidTrajectory,
+      reasons
+    });
+
+    res.status(400).json({
+      success: false,
+      message: '验证失败，请重试',
+      data: {
+        verified: false,
+        accuracy: accuracy,
+        duration: duration,
+        reason: reasons.join(', ') || '未知原因'
+      }
+    });
+  }
+}));
+
+// 获取当前用户信息
+router.get('/me', asyncHandler(async (req: Request, res: Response) => {
+  console.log('👤 收到获取用户信息请求');
+
+  // 从请求头获取token
+  const token = req.headers.authorization?.replace('Bearer ', '');
+
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: '未提供认证令牌'
+    });
+  }
+
+  try {
+    // 验证token
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: '用户不存在'
+      });
+    }
+
+    console.log('✅ 获取用户信息成功:', user.phone);
+
+    res.json({
+      success: true,
+      message: '获取用户信息成功',
+      data: {
+        user: {
+          id: user._id,
+          phone: user.phone,
+          nickName: user.nickName,
+          balance: user.balance,
+          verificationLevel: user.verificationLevel || 'basic',
+          vehicles: user.vehicles || [],
+          avatarUrl: user.avatarUrl,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ 验证token失败:', error);
+    res.status(401).json({
+      success: false,
+      message: '认证令牌无效'
+    });
+  }
+}));
+
+// 退出登录
+router.post('/logout', asyncHandler(async (req: Request, res: Response) => {
+  console.log('👋 收到退出登录请求');
+
+  // 这里可以添加token黑名单逻辑
+  // 目前只是简单返回成功
+  res.json({
+    success: true,
+    message: '退出登录成功'
+  });
 }));
 
 // 刷新token

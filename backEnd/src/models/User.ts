@@ -20,6 +20,7 @@ export interface IUser extends Document {
   lastLoginAt?: Date;
   faceEnabled: boolean; // 是否启用人脸登录
   faceProfileCount: number; // 人脸档案数量
+  verificationLevel?: 'basic' | 'face_verified'; // 验证级别
   createdAt: Date;
   updatedAt: Date;
 }
@@ -83,6 +84,11 @@ const UserSchema = new Schema<IUser>({
   faceProfileCount: {
     type: Number,
     default: 0
+  },
+  verificationLevel: {
+    type: String,
+    enum: ['basic', 'face_verified'],
+    default: 'basic'
   }
 }, {
   timestamps: true

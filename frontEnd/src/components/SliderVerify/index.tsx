@@ -1,7 +1,7 @@
 import { View, Text } from '@tarojs/components'
 import { useState, useRef, useCallback } from 'react'
 import { useLoad } from '@tarojs/taro'
-import { vibrateShort as taroVibrateShort } from '@tarojs/taro'
+import { vibrateShort as taroVibrateShort, createSelectorQuery } from '@tarojs/taro'
 import { post } from '../../utils/request'
 import './index.scss'
 
@@ -31,39 +31,69 @@ export default function SliderVerify({
   const [verifyPath, setVerifyPath] = useState<number[]>([])
 
   const sliderRef = useRef<any>(null)
+  const containerRef = useRef<any>(null)
   const startTimeRef = useRef<number>(0)
   const trackRef = useRef<TouchPosition[]>([])
+  const containerRectRef = useRef<any>(null)
+
+  // 获取容器位置信息
+  const getContainerRect = useCallback(() => {
+    return new Promise((resolve) => {
+      const query = createSelectorQuery()
+      query.select('.slider-verify').boundingClientRect((rect) => {
+        containerRectRef.current = rect
+        resolve(rect)
+      }).exec()
+    })
+  }, [])
 
   // 生成随机拼图位置
   const generatePuzzlePosition = useCallback(() => {
-    const effectiveWidth = width
-    const minOffset = effectiveWidth * 0.25
-    const maxOffset = effectiveWidth * 0.7
+    const effectiveWidth = width - 40 // 减去滑块宽度
+    const minOffset = effectiveWidth * 0.3 // 30%位置开始
+    const maxOffset = effectiveWidth * 0.8 // 80%位置结束
     const offset = Math.random() * (maxOffset - minOffset) + minOffset
     setPuzzleOffset(offset)
+    console.log(`🎯 生成拼图位置: ${offset.toFixed(1)}px, 有效宽度: ${effectiveWidth}px`)
     return offset
   }, [width])
 
   // 初始化验证
-  const initVerify = useCallback(() => {
+  const initVerify = useCallback(async () => {
     setIsVerified(false)
     setIsVerifying(false)
     setSlideDistance(0)
     setVerifyPath([])
     trackRef.current = []
     generatePuzzlePosition()
-  }, [generatePuzzlePosition])
+    // 获取容器位置信息
+    await getContainerRect()
+  }, [generatePuzzlePosition, getContainerRect])
 
   // 开始拖拽
-  const handleTouchStart = useCallback((e: any) => {
+  const handleTouchStart = useCallback(async (e: any) => {
     if (isVerified || isVerifying) return
 
+    // 确保有容器位置信息
+    if (!containerRectRef.current) {
+      await getContainerRect()
+    }
+
     const touch = e.touches[0]
-    const startX = touch.clientX
+    const containerRect = containerRectRef.current
+
+    // 计算相对于容器的X坐标
+    const startX = containerRect ? touch.clientX - containerRect.left : touch.clientX
 
     setIsMoving(true)
     startTimeRef.current = Date.now()
     trackRef.current = [{ startX, currentX: startX }]
+
+    console.log('🎯 开始拖拽:', {
+      clientX: touch.clientX,
+      containerLeft: containerRect?.left || 0,
+      startX
+    })
 
     // 添加震动反馈
     try {
@@ -71,28 +101,37 @@ export default function SliderVerify({
     } catch (error) {
       console.log('震动反馈不可用:', error)
     }
-  }, [isVerified, isVerifying])
+  }, [isVerified, isVerifying, getContainerRect])
 
   // 拖拽移动
   const handleTouchMove = useCallback((e: any) => {
     if (!isMoving || isVerified || isVerifying) return
 
     const touch = e.touches[0]
-    const currentX = touch.clientX
+    const containerRect = containerRectRef.current
     const startX = trackRef.current[0]?.startX || 0
 
-    const effectiveWidth = width
-    const distance = Math.max(0, Math.min(currentX - startX, effectiveWidth - 40))
+    // 计算相对于容器的X坐标
+    const currentX = containerRect ? touch.clientX - containerRect.left : touch.clientX
+
+    const effectiveWidth = width - 40 // 减去滑块宽度
+    const distance = Math.max(0, Math.min(currentX - startX, effectiveWidth))
     setSlideDistance(distance)
 
     // 记录拖拽轨迹
     trackRef.current.push({
       startX,
-      currentX: currentX - startX
+      currentX: distance
     })
 
     // 记录验证路径（用于后端验证）
     setVerifyPath(prev => [...prev, Math.round(distance)])
+
+    console.log('🎯 拖拽移动:', {
+      clientX: touch.clientX,
+      currentX,
+      distance: distance.toFixed(1)
+    })
   }, [isMoving, isVerified, isVerifying, width])
 
   // 结束拖拽
@@ -106,6 +145,14 @@ export default function SliderVerify({
     const duration = endTime - startTimeRef.current
     const accuracy = Math.abs(slideDistance - puzzleOffset)
 
+    console.log(`🎯 滑块验证数据:`, {
+      slideDistance: slideDistance.toFixed(1),
+      puzzleOffset: puzzleOffset.toFixed(1),
+      accuracy: accuracy.toFixed(1),
+      duration,
+      pathLength: verifyPath.length
+    })
+
     try {
       // 发送验证请求到后端
       const response = await post('/auth/slider-verify', {
@@ -117,7 +164,10 @@ export default function SliderVerify({
         trackData: trackRef.current
       })
 
+      console.log('🔍 滑块验证响应:', response)
+
       if (response.success && response.data.verified) {
+        console.log('✅ 滑块验证成功!')
         setIsVerified(true)
         try {
           taroVibrateShort()
@@ -126,18 +176,19 @@ export default function SliderVerify({
         }
         onSuccess(response.data.token)
       } else {
+        console.log('❌ 滑块验证失败:', response.data?.reason || '未知原因')
         // 验证失败，重置滑块
         setTimeout(() => {
           initVerify()
         }, 1000)
-        onError?.('验证失败，请重试')
+        onError?.(`验证失败: ${response.data?.reason || '请重试'}`)
       }
     } catch (error) {
-      console.error('滑块验证失败:', error)
+      console.error('滑块验证请求失败:', error)
       setTimeout(() => {
         initVerify()
       }, 1000)
-      onError?.('验证失败，请重试')
+      onError?.('网络请求失败，请重试')
     } finally {
       setIsVerifying(false)
     }
@@ -149,7 +200,11 @@ export default function SliderVerify({
   })
 
   return (
-    <View className='slider-verify' style={{ height: `${height}px` }}>
+    <View
+      ref={containerRef}
+      className='slider-verify'
+      style={{ height: `${height}px` }}
+    >
       {/* 验证背景轨道 */}
       <View className='slider-track'>
         <View className='slider-track-bg'>

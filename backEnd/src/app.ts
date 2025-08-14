@@ -35,7 +35,9 @@ app.use(cors({
       'http://localhost:8002',
       'http://127.0.0.1:8000',
       'http://127.0.0.1:8001',
-      'http://127.0.0.1:8002'
+      'http://127.0.0.1:8002',
+      'http://localhost:10086', // Taro开发服务器端口
+      'http://127.0.0.1:10086'
     ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

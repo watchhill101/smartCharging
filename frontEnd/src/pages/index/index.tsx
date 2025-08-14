@@ -1,5 +1,5 @@
 import { View, Text } from '@tarojs/components'
-import { useLoad, useDidShow } from '@tarojs/taro'
+import Taro, { useLoad, useDidShow } from '@tarojs/taro'
 import { useState } from 'react'
 import {
   getStorageSync as taroGetStorageSync,
@@ -28,19 +28,24 @@ export default function Index() {
   // 检查登录状态
   const checkLoginStatus = () => {
     try {
+      console.log('🔍 检查登录状态...')
+
       const token = taroGetStorageSync(STORAGE_KEYS.USER_TOKEN)
       const user = taroGetStorageSync(STORAGE_KEYS.USER_INFO)
+
+      console.log('  Token:', token ? '存在' : '不存在')
+      console.log('  User:', user)
 
       if (token && user) {
         setUserInfo(user)
         setIsLoggedIn(true)
-        console.log('用户已登录:', user)
+        console.log('✅ 用户已登录:', user.nickName)
       } else {
         setIsLoggedIn(false)
-        console.log('用户未登录')
+        console.log('❌ 用户未登录 - Token:', !!token, 'User:', !!user)
       }
     } catch (error) {
-      console.error('检查登录状态失败:', error)
+      console.error('❌ 检查登录状态失败:', error)
       setIsLoggedIn(false)
     }
   }

@@ -1,7 +1,7 @@
 import { View, Text, Input, Button } from '@tarojs/components'
 import { useState } from 'react'
 import { useLoad } from '@tarojs/taro'
-import {
+import Taro, {
   getStorageSync as taroGetStorageSync,
   setStorageSync as taroSetStorageSync,
   navigateTo as taroNavigateTo,
@@ -33,6 +33,7 @@ export default function Login() {
   const [receivedCode, setReceivedCode] = useState<string | null>(null)
   const [loginMode, setLoginMode] = useState<'code' | 'face'>('code')
   const [showFaceLogin, setShowFaceLogin] = useState(false)
+  const [faceLoginSuccess, setFaceLoginSuccess] = useState(false)
 
   useLoad(() => {
     // 检查是否已记住用户名
@@ -268,11 +269,12 @@ export default function Login() {
 
   // 人脸登录成功处理
   const handleFaceLoginSuccess = (result: any) => {
-    console.log('人脸登录成功:', result);
+    console.log('🎉 人脸登录成功:', result);
     setShowFaceLogin(false);
+    setFaceLoginSuccess(true); // 设置人脸登录成功状态
 
-    // 显示成功提示
-    const toastTitle = result.isNewUser ? '账户创建成功' : '登录成功';
+    // 立即显示成功提示
+    const toastTitle = result.isNewUser ? '欢迎新用户！' : '登录成功！';
     taroShowToast({
       title: toastTitle,
       icon: 'success',
@@ -284,12 +286,41 @@ export default function Login() {
       console.log('🎉 欢迎新用户:', result.user?.nickName);
     }
 
-    // 跳转到首页（使用switchTab而不是navigateTo）
+    console.log('🏠 准备跳转到首页...');
+
+    // 确保数据已保存后再跳转
     setTimeout(() => {
+      // 验证数据是否正确保存
+      try {
+        console.log('📋 跳转前验证数据:');
+
+        const savedToken = taroGetStorageSync(STORAGE_KEYS.USER_TOKEN);
+        const savedUser = taroGetStorageSync(STORAGE_KEYS.USER_INFO);
+
+        console.log('  Token:', savedToken ? '已保存' : '未保存');
+        console.log('  User:', savedUser ? savedUser.nickName : '未保存');
+
+        if (!savedToken || !savedUser) {
+          console.error('❌ 数据保存验证失败，延迟跳转');
+          // 如果数据未保存，再等待一秒
+          setTimeout(() => {
+            console.log('🚀 延迟执行页面跳转');
+            switchTab({
+              url: '/pages/index/index'
+            });
+          }, 1000);
+          return;
+        }
+
+      } catch (error) {
+        console.error('❌ 验证保存数据失败:', error);
+      }
+
+      console.log('🚀 执行页面跳转');
       switchTab({
         url: '/pages/index/index'
       });
-    }, result.isNewUser ? 2000 : 1500); // 新用户稍微延长显示时间
+    }, 2000); // 增加延迟时间到2秒，确保数据保存完成
   };
 
   // 人脸登录失败处理
