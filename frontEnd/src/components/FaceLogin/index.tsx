@@ -1,6 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { View, Button, Text } from '@tarojs/components';
-import Taro from '@tarojs/taro';
+import Taro, {
+  setStorageSync as taroSetStorageSync,
+  getStorageSync as taroGetStorageSync,
+  showToast as taroShowToast
+} from '@tarojs/taro';
 import { post } from '../../utils/request';
 import { STORAGE_KEYS } from '../../utils/constants';
 import './index.scss';
@@ -386,17 +390,14 @@ const FaceLogin: React.FC<FaceLoginProps> = ({
       setRetryCount(prev => prev + 1);
 
       try {
-        if (typeof Taro !== 'undefined' && Taro.showToast) {
-          Taro.showToast({
-            title: '登录失败',
-            icon: 'error',
-            duration: 2000
-          });
-        } else {
-          console.log('❌ 登录失败');
-        }
+        taroShowToast({
+          title: '登录失败',
+          icon: 'error',
+          duration: 2000
+        });
       } catch (toastError) {
         console.warn('显示错误提示失败:', toastError);
+        console.log('❌ 登录失败');
       }
 
       if (onError) {
@@ -445,48 +446,85 @@ const FaceLogin: React.FC<FaceLoginProps> = ({
         console.log('💾 开始保存登录信息...');
         console.log('  保存的数据:', result.data);
 
+        // 安全的存储操作函数
+        const safeSetStorage = (key: string, value: any, description: string) => {
+          try {
+            if (typeof taroSetStorageSync === 'function') {
+              taroSetStorageSync(key, value);
+              console.log(`✅ ${description}已保存`);
+              return true;
+            } else {
+              console.warn(`⚠️ taroSetStorageSync不可用，使用localStorage作为备用`);
+              if (typeof localStorage !== 'undefined') {
+                localStorage.setItem(key, JSON.stringify(value));
+                console.log(`✅ ${description}已保存（localStorage）`);
+                return true;
+              } else {
+                console.error(`❌ 存储功能不可用`);
+                return false;
+              }
+            }
+          } catch (error) {
+            console.error(`❌ 保存${description}失败:`, error);
+            return false;
+          }
+        };
+
+        const safeGetStorage = (key: string) => {
+          try {
+            if (typeof taroGetStorageSync === 'function') {
+              return taroGetStorageSync(key);
+            } else if (typeof localStorage !== 'undefined') {
+              const value = localStorage.getItem(key);
+              return value ? JSON.parse(value) : null;
+            } else {
+              return null;
+            }
+          } catch (error) {
+            console.error(`❌ 获取存储失败:`, error);
+            return null;
+          }
+        };
+
         try {
+          let saveSuccess = true;
+
           if (result.data.token) {
             console.log('💾 正在保存Token:', result.data.token);
-            Taro.setStorageSync(STORAGE_KEYS.USER_TOKEN, result.data.token);
-            console.log('✅ Token已保存');
+            if (!safeSetStorage(STORAGE_KEYS.USER_TOKEN, result.data.token, 'Token')) {
+              saveSuccess = false;
+            }
           }
 
           if (result.data.refreshToken) {
             console.log('💾 正在保存RefreshToken');
-            Taro.setStorageSync('refresh_token', result.data.refreshToken);
-            console.log('✅ RefreshToken已保存');
+            if (!safeSetStorage('refresh_token', result.data.refreshToken, 'RefreshToken')) {
+              saveSuccess = false;
+            }
           }
 
           if (result.data.user) {
             console.log('💾 正在保存用户信息:', result.data.user);
-            Taro.setStorageSync(STORAGE_KEYS.USER_INFO, result.data.user);
-            console.log('✅ 用户信息已保存');
+            if (!safeSetStorage(STORAGE_KEYS.USER_INFO, result.data.user, '用户信息')) {
+              saveSuccess = false;
+            }
           }
 
           // 立即验证保存是否成功
           console.log('🔍 验证保存结果:');
-          const savedToken = Taro.getStorageSync(STORAGE_KEYS.USER_TOKEN);
-          const savedUser = Taro.getStorageSync(STORAGE_KEYS.USER_INFO);
+          const savedToken = safeGetStorage(STORAGE_KEYS.USER_TOKEN);
+          const savedUser = safeGetStorage(STORAGE_KEYS.USER_INFO);
           console.log('  Token验证:', savedToken ? '成功' : '失败');
           console.log('  User验证:', savedUser ? '成功' : '失败');
           console.log('  保存的用户名:', savedUser ? savedUser.nickName : '无');
 
-        } catch (storageError) {
-          console.error('❌ 存储用户信息失败:', storageError);
-          // 尝试重新保存一次
-          try {
-            console.log('🔄 重试保存...');
-            if (result.data.token) {
-              Taro.setStorageSync(STORAGE_KEYS.USER_TOKEN, result.data.token);
-            }
-            if (result.data.user) {
-              Taro.setStorageSync(STORAGE_KEYS.USER_INFO, result.data.user);
-            }
-            console.log('✅ 重试保存成功');
-          } catch (retryError) {
-            console.error('❌ 重试保存也失败:', retryError);
+          if (!saveSuccess) {
+            console.warn('⚠️ 部分数据保存失败，但继续登录流程');
           }
+
+        } catch (storageError) {
+          console.error('❌ 存储用户信息过程中出现异常:', storageError);
+          console.warn('⚠️ 存储失败，但继续登录流程');
         }
 
         setStatus('success');
@@ -497,17 +535,14 @@ const FaceLogin: React.FC<FaceLoginProps> = ({
 
         // 显示成功提示
         try {
-          if (typeof Taro !== 'undefined' && Taro.showToast) {
-            Taro.showToast({
-              title: '登录成功！',
-              icon: 'success',
-              duration: 2000
-            });
-          } else {
-            console.log('🎉 登录成功');
-          }
+          taroShowToast({
+            title: '登录成功！',
+            icon: 'success',
+            duration: 2000
+          });
         } catch (toastError) {
           console.warn('显示提示失败:', toastError);
+          console.log('🎉 登录成功');
         }
 
         // 缩短延迟，更快调用成功回调
@@ -544,17 +579,14 @@ const FaceLogin: React.FC<FaceLoginProps> = ({
       setRetryCount(prev => prev + 1);
 
       try {
-        if (typeof Taro !== 'undefined' && Taro.showToast) {
-          Taro.showToast({
-            title: '注册失败',
-            icon: 'error',
-            duration: 2000
-          });
-        } else {
-          console.log('❌ 注册失败');
-        }
+        taroShowToast({
+          title: '注册失败',
+          icon: 'error',
+          duration: 2000
+        });
       } catch (toastError) {
         console.warn('显示错误提示失败:', toastError);
+        console.log('❌ 注册失败');
       }
 
       if (onError) {
