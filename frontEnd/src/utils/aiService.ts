@@ -239,7 +239,7 @@ export class AIService {
 - 对于不确定的信息，诚实告知并提供替代方案
 - 适当使用表情符号增加亲和力
 
-客服热线：400-123-4567（工作时间：8:00-22:00）`
+客服热线：19503102993（工作时间：8:00-22:00）`
     }
   }
 
@@ -271,6 +271,6 @@ export class AIService {
       return errorResponses.quota
     }
 
-    return `${errorResponses.default}\n\n如需帮助，请联系人工客服：400-123-4567`
+    return `${errorResponses.default}\n\n如需帮助，请联系人工客服：19503102993`
   }
 }

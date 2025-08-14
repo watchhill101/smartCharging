@@ -208,6 +208,8 @@ const AiServer = () => {
   const inputRef = useRef<any>()
   const recorderManagerRef = useRef<any>(null);
   const recordingTimerRef = useRef<any>(null);
+  // 在现有状态中添加弹出框控制状态
+  const [showImageActionSheet, setShowImageActionSheet] = useState(false)
 
   // 初始化 AI 服务
   const aiService = new AIService({
@@ -239,97 +241,291 @@ const AiServer = () => {
     return ERROR_MESSAGES.UNKNOWN_ERROR + '\n\n📞 人工客服：400-123-4567'
   }, [])
 
-  // 调用摄像头拍照
-  const handleCameraClick = async () => {
+  // 修改 handleCameraClick 方法
+  const handleCameraClick = () => {
+    if (isLoading || isProcessingImage) return
+    
+    // H5环境显示自定义选择弹出框
+    if (process.env.TARO_ENV === 'h5') {
+      setShowImageActionSheet(true)
+      return
+    }
+    
+    // 小程序环境直接显示系统选择框
+    handleMiniProgramImagePicker()
+  }
+
+  // 新增：小程序环境的图片选择器（使用系统原生弹框）
+  const handleMiniProgramImagePicker = () => {
     if (isLoading || isProcessingImage) return
     
     try {
       setIsProcessingImage(true)
       
-      // 方法1: 尝试 chooseMedia (推荐的新 API)
-      if (Taro.chooseMedia) {
-        const res = await Taro.chooseMedia({
-          count: 1,
-          mediaType: ['image'],
-          sourceType: ['camera'],
-          camera: 'back',
-          sizeType: ['compressed'] // 压缩图片以提高性能
-        });
-        
-        if (res.tempFiles && res.tempFiles.length > 0) {
-          await processAndSendImage(res.tempFiles[0].tempFilePath);
-          return;
+      // 使用 Taro.showActionSheet 显示原生选择框
+      Taro.showActionSheet({
+        itemList: ['拍照', '从相册选择'],
+        success: async (res) => {
+          try {
+            if (res.tapIndex === 0) {
+              // 拍照
+              await handleMiniProgramCamera()
+            } else if (res.tapIndex === 1) {
+              // 相册
+              await handleMiniProgramAlbum()
+            }
+          } catch (error) {
+            console.error('图片处理失败:', error)
+            showToast({
+              title: '操作失败，请重试',
+              icon: 'error',
+              duration: 2000
+            })
+          } finally {
+            setIsProcessingImage(false)
+          }
+        },
+        fail: () => {
+          setIsProcessingImage(false)
         }
-      }
-      
-      // 方法2: 尝试 chooseImage (旧 API)
-      if (Taro.chooseImage) {
-        const res = await Taro.chooseImage({
-          count: 1,
-          sizeType: ["compressed"],
-          sourceType: ["camera"]
-        });
-        
-        if (res.tempFilePaths && res.tempFilePaths.length > 0) {
-          await processAndSendImage(res.tempFilePaths[0]);
-          return;
-        }
-      }
-      
-      // 方法3: H5 环境的处理
-      if (process.env.TARO_ENV === 'h5') {
-        handleH5Camera();
-        return;
-      }
-      
-      throw new Error('当前环境不支持拍照功能');
-      
+      })
     } catch (error) {
-      console.error('拍照失败:', error);
-      
+      console.error('显示选择框失败:', error)
+      setIsProcessingImage(false)
+    }
+  }
+
+  // 修改后的 H5 拍照处理
+  const handleTakePhoto = async () => {
+    setShowImageActionSheet(false)
+    
+    if (isLoading || isProcessingImage) return
+    
+    try {
+      setIsProcessingImage(true)
+      handleH5Camera()
+    } catch (error) {
+      console.error('拍照失败:', error)
       showToast({
         title: '拍照失败，请重试',
         icon: 'error',
         duration: 2000
-      });
-    } finally {
-      setIsProcessingImage(false);
+      })
+      setIsProcessingImage(false)
     }
-  };
+  }
 
-  // H5环境下的摄像头处理
+  // 修改后的 H5 相册处理
+  const handleChooseFromAlbum = async () => {
+    setShowImageActionSheet(false)
+    
+    if (isLoading || isProcessingImage) return
+    
+    try {
+      setIsProcessingImage(true)
+      handleH5Album()
+    } catch (error) {
+      console.error('选择图片失败:', error)
+      showToast({
+        title: '选择图片失败，请重试',
+        icon: 'error',
+        duration: 2000
+      })
+      setIsProcessingImage(false)
+    }
+  }
+
+  // 优化后的 H5 摄像头处理
   const handleH5Camera = () => {
-    // H5 环境使用 input file
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.capture = 'environment'; // 后置摄像头
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = 'image/*'
+    input.capture = 'environment' // 后置摄像头
     
     input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
+      const file = (e.target as HTMLInputElement).files?.[0]
       if (file) {
-        try {
-          const reader = new FileReader();
-          reader.onload = async (event) => {
-            const imageSrc = event.target?.result as string;
-            await processAndSendImage(imageSrc);
-          };
-          reader.readAsDataURL(file);
-        } catch (error) {
-          console.error('处理图片失败:', error);
-          setIsProcessingImage(false);
-          showToast({
-            title: '图片处理失败',
-            icon: 'error'
-          });
-        }
+        await processImageFile(file)
       } else {
-        setIsProcessingImage(false);
+        setIsProcessingImage(false)
       }
-    };
+    }
     
-    input.click();
-  };
+    // 监听取消事件
+    input.oncancel = () => {
+      setIsProcessingImage(false)
+    }
+    
+    input.click()
+  }
+
+  // 优化后的 H5 相册处理
+  const handleH5Album = () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = 'image/*'
+    input.multiple = false
+    
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (file) {
+        await processImageFile(file)
+      } else {
+        setIsProcessingImage(false)
+      }
+    }
+    
+    input.oncancel = () => {
+      setIsProcessingImage(false)
+    }
+    
+    input.click()
+  }
+
+  // 新增：统一的文件处理方法
+  const processImageFile = async (file: File) => {
+    try {
+      // 文件大小检查（限制为10MB）
+      if (file.size > 10 * 1024 * 1024) {
+        showToast({
+          title: '图片太大，请选择小于10MB的图片',
+          icon: 'error',
+          duration: 2000
+        })
+        setIsProcessingImage(false)
+        return
+      }
+      
+      // 文件类型检查
+      if (!file.type.startsWith('image/')) {
+        showToast({
+          title: '请选择图片文件',
+          icon: 'error',
+          duration: 2000
+        })
+        setIsProcessingImage(false)
+        return
+      }
+      
+      // 显示处理提示
+      showToast({
+        title: '正在处理图片...',
+        icon: 'loading',
+        duration: 3000
+      })
+      
+      const reader = new FileReader()
+      reader.onload = async (event) => {
+        const imageSrc = event.target?.result as string
+        await processAndSendImage(imageSrc)
+      }
+      reader.onerror = () => {
+        showToast({
+          title: '图片读取失败',
+          icon: 'error',
+          duration: 2000
+        })
+        setIsProcessingImage(false)
+      }
+      reader.readAsDataURL(file)
+    } catch (error) {
+      console.error('处理图片失败:', error)
+      setIsProcessingImage(false)
+      showToast({
+        title: '图片处理失败',
+        icon: 'error'
+      })
+    }
+  }
+
+  // 优化后的小程序摄像头拍照
+  const handleMiniProgramCamera = async () => {
+    try {
+      let res
+      
+      // 优先使用新API
+      if (Taro.chooseMedia) {
+        res = await Taro.chooseMedia({
+          count: 1,
+          mediaType: ['image'],
+          sourceType: ['camera'],
+          camera: 'back',
+          sizeType: ['compressed']
+        })
+        
+        if (res.tempFiles && res.tempFiles.length > 0) {
+          await processAndSendImage(res.tempFiles[0].tempFilePath)
+          return
+        }
+      }
+      
+      // 备用旧API
+      if (Taro.chooseImage) {
+        res = await Taro.chooseImage({
+          count: 1,
+          sizeType: ['compressed'],
+          sourceType: ['camera']
+        })
+        
+        if (res.tempFilePaths && res.tempFilePaths.length > 0) {
+          await processAndSendImage(res.tempFilePaths[0])
+          return
+        }
+      }
+      
+      throw new Error('拍照功能不可用')
+    } catch (error) {
+      if (error.errMsg && error.errMsg.includes('cancel')) {
+        // 用户取消，不显示错误
+        return
+      }
+      throw error
+    }
+  }
+
+  // 优化后的小程序相册选择
+  const handleMiniProgramAlbum = async () => {
+    try {
+      let res
+      
+      // 优先使用新API
+      if (Taro.chooseMedia) {
+        res = await Taro.chooseMedia({
+          count: 1,
+          mediaType: ['image'],
+          sourceType: ['album'],
+          sizeType: ['compressed']
+        })
+        
+        if (res.tempFiles && res.tempFiles.length > 0) {
+          await processAndSendImage(res.tempFiles[0].tempFilePath)
+          return
+        }
+      }
+      
+      // 备用旧API
+      if (Taro.chooseImage) {
+        res = await Taro.chooseImage({
+          count: 1,
+          sizeType: ['compressed'],
+          sourceType: ['album']
+        })
+        
+        if (res.tempFilePaths && res.tempFilePaths.length > 0) {
+          await processAndSendImage(res.tempFilePaths[0])
+          return
+        }
+      }
+      
+      throw new Error('相册功能不可用')
+    } catch (error) {
+      if (error.errMsg && error.errMsg.includes('cancel')) {
+        // 用户取消，不显示错误
+        return
+      }
+      throw error
+    }
+  }
 
   // 转换图片为base64
   const convertImageToBase64 = (imagePath: string): Promise<string> => {
@@ -1700,6 +1896,71 @@ const AiServer = () => {
       >
         <Text style={{ fontSize: '12px', color: '#999' }}>点击重置</Text>
       </View>
+
+      {/* 图片选择弹出框 - 仅在H5环境显示 */}
+      {showImageActionSheet && process.env.TARO_ENV === 'h5' && (
+        <>
+          <View 
+            className='action-sheet-mask'
+            onClick={() => setShowImageActionSheet(false)}
+          />
+          
+          <View className='action-sheet-container'>
+            {/* 顶部指示条 */}
+            <View className='action-sheet-indicator'>
+              <View className='indicator-bar'></View>
+            </View>
+            
+            <View className='action-sheet-header'>
+              <Text className='action-sheet-title'>选择图片来源</Text>
+              <Text className='action-sheet-subtitle'>请选择获取图片的方式</Text>
+            </View>
+            
+            <View className='action-sheet-content'>
+              <View 
+                className='action-sheet-item camera-item'
+                onClick={handleTakePhoto}
+              >
+                <View className='action-item-icon camera-icon'>
+                  <Text className='icon-text'>📷</Text>
+                </View>
+                <View className='action-item-content'>
+                  <Text className='action-item-title'>拍照</Text>
+                  <Text className='action-item-desc'>使用摄像头拍摄新照片</Text>
+                </View>
+                <View className='action-item-indicator'>
+                  <Text className='arrow-icon'>›</Text>
+                </View>
+              </View>
+              
+              <View 
+                className='action-sheet-item album-item'
+                onClick={handleChooseFromAlbum}
+              >
+                <View className='action-item-icon album-icon'>
+                  <Text className='icon-text'>🖼️</Text>
+                </View>
+                <View className='action-item-content'>
+                  <Text className='action-item-title'>相册</Text>
+                  <Text className='action-item-desc'>从手机相册选择图片</Text>
+                </View>
+                <View className='action-item-indicator'>
+                  <Text className='arrow-icon'>›</Text>
+                </View>
+              </View>
+            </View>
+            
+            <View className='action-sheet-footer'>
+              <View 
+                className='action-sheet-cancel'
+                onClick={() => setShowImageActionSheet(false)}
+              >
+                <Text className='cancel-text'>取消</Text>
+              </View>
+            </View>
+          </View>
+        </>
+      )}
     </View>
   );
 };
