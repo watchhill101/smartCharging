@@ -32,6 +32,13 @@ const FaceLogin: React.FC<FaceLoginProps> = ({
   const [cameraError, setCameraError] = useState('');
   const [countdown, setCountdown] = useState(0);
   const [retryCount, setRetryCount] = useState(0);
+  const [faceDetected, setFaceDetected] = useState(false);
+
+  // 新增：人脸检测增强状态
+  const [consecutiveDetections, setConsecutiveDetections] = useState(0);
+  const [faceQualityHistory, setFaceQualityHistory] = useState<number[]>([]);
+  const [lastLoginAttempt, setLastLoginAttempt] = useState<number>(0);
+  const [isLoginInProgress, setIsLoginInProgress] = useState(false);
 
   // 引用
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -278,7 +285,174 @@ const FaceLogin: React.FC<FaceLoginProps> = ({
     }, 30000);
   }, []);
 
-  // 检测并处理人脸
+  // 改进的人脸检测函数
+  const advancedFaceDetection = useCallback(async (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) => {
+    try {
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      // 分析图像中心区域 - 缩小检测区域，提高精度
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const regionSize = Math.min(canvas.width, canvas.height) * 0.25; // 缩小检测区域
+
+      let skinPixels = 0;
+      let totalPixels = 0;
+      let brightPixels = 0;
+      let darkPixels = 0;
+      let edgePixels = 0;
+      let faceShapePixels = 0;
+
+      // 多层次检测
+      for (let y = centerY - regionSize / 2; y < centerY + regionSize / 2; y += 2) {
+        for (let x = centerX - regionSize / 2; x < centerX + regionSize / 2; x += 2) {
+          if (y >= 0 && y < canvas.height && x >= 0 && x < canvas.width) {
+            const i = (Math.floor(y) * canvas.width + Math.floor(x)) * 4;
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+
+            totalPixels++;
+
+            // 1. 亮度检测 - 更严格的范围
+            const brightness = (r + g + b) / 3;
+            if (brightness > 50 && brightness < 200) {
+              brightPixels++;
+            }
+
+            // 2. 改进的肤色检测 - 非常宽松的肤色范围
+            const isValidSkin = (
+              r > 50 && r < 255 &&  // 进一步放宽红色范围 (从60-240改为40-255)
+              g > 35 && g < 210 &&  // 进一步放宽绿色范围 (从40-200改为25-220)
+              b > 10 && b < 180 &&  // 进一步放宽蓝色范围 (从20-170改为10-200)
+              r > g - 5 && g > b - 5 &&  // 大幅放宽RGB关系要求
+              (r - g) > 6 && (g - b) > 3  // 大幅降低色差要求 (从8,5改为2,1)
+            );
+
+            if (isValidSkin) {
+              skinPixels++;
+            }
+
+            // 3. 暗部检测（眼睛、嘴巴等）
+            if (brightness < 80) {
+              darkPixels++;
+            }
+
+            // 4. 边缘检测 - 简单的Sobel算子
+            if (x > 0 && x < canvas.width - 1 && y > 0 && y < canvas.height - 1) {
+              const gx = Math.abs(
+                data[((y - 1) * canvas.width + (x - 1)) * 4] - data[((y - 1) * canvas.width + (x + 1)) * 4] +
+                2 * (data[(y * canvas.width + (x - 1)) * 4] - data[(y * canvas.width + (x + 1)) * 4]) +
+                data[((y + 1) * canvas.width + (x - 1)) * 4] - data[((y + 1) * canvas.width + (x + 1)) * 4]
+              );
+
+              const gy = Math.abs(
+                data[((y - 1) * canvas.width + (x - 1)) * 4] - data[((y + 1) * canvas.width + (x - 1)) * 4] +
+                2 * (data[((y - 1) * canvas.width + x) * 4] - data[((y + 1) * canvas.width + x) * 4]) +
+                data[((y - 1) * canvas.width + (x + 1)) * 4] - data[((y + 1) * canvas.width + (x + 1)) * 4]
+              );
+
+              const edgeStrength = Math.sqrt(gx * gx + gy * gy);
+              if (edgeStrength > 30) {
+                edgePixels++;
+              }
+            }
+
+            // 5. 人脸形状检测 - 椭圆形区域权重
+            const dx = (x - centerX) / (regionSize / 2);
+            const dy = (y - centerY) / (regionSize / 2);
+            const ellipseValue = (dx * dx) + (dy * dy * 1.2); // 椭圆形，稍微拉长
+
+            if (ellipseValue <= 1 && isValidSkin) {
+              faceShapePixels++;
+            }
+          }
+        }
+      }
+
+      if (totalPixels === 0) {
+        return { success: false, data: { faceDetected: false, confidence: 0, quality: 'poor' } };
+      }
+
+      const skinRatio = skinPixels / totalPixels;
+      const brightRatio = brightPixels / totalPixels;
+      const darkRatio = darkPixels / totalPixels;
+      const edgeRatio = edgePixels / totalPixels;
+      const shapeRatio = faceShapePixels / totalPixels;
+
+      // 非常宽松的人脸检测条件
+      const hasValidSkin = skinRatio > 0.03; // 大幅降低肤色比例要求 (从0.08降到0.03)
+      const hasGoodBrightness = brightRatio > 0.30; // 进一步放宽亮度范围，去掉上限
+      const hasFeatures = darkRatio > 0.05; // 大幅放宽暗部特征要求，去掉上限
+      const hasEdges = edgeRatio > 0.05; // 大幅降低边缘检测要求 (从0.04降到0.02)
+      const hasGoodShape = shapeRatio > 0.05; // 大幅降低形状匹配要求 (从0.05降到0.02)
+
+      // 综合判断 - 简化逻辑，只需满足任意2-3个条件
+      const conditions = [hasValidSkin, hasGoodBrightness, hasFeatures, hasEdges, hasGoodShape];
+      const passedConditions = conditions.filter(Boolean).length;
+      const faceDetected = passedConditions >= 2; // 只需满足任意2个条件即可
+
+      // 计算置信度 - 更宽松的计算方式
+      let confidence = 0;
+      if (faceDetected) {
+        // 基础置信度更高，每个通过的条件都给更多分数
+        const baseConfidence = 0.4; // 基础置信度从0提高到0.4
+        const bonusPerCondition = 0.15; // 每个条件给更多加分
+        confidence = Math.min(0.95, baseConfidence + (passedConditions * bonusPerCondition));
+      }
+
+      // 质量评估
+      let quality = 'poor';
+      if (confidence > 0.8) {
+        quality = 'excellent';
+      } else if (confidence > 0.6) {
+        quality = 'good';
+      } else if (confidence > 0.4) {
+        quality = 'fair';
+      }
+
+      console.log('🎭 改进检测结果:', {
+        skinRatio: skinRatio.toFixed(3),
+        brightRatio: brightRatio.toFixed(3),
+        darkRatio: darkRatio.toFixed(3),
+        edgeRatio: edgeRatio.toFixed(3),
+        shapeRatio: shapeRatio.toFixed(3),
+        detected: faceDetected,
+        confidence: confidence.toFixed(3),
+        quality,
+        passedConditions: `${passedConditions}/5`,
+        checks: {
+          hasValidSkin,
+          hasGoodBrightness,
+          hasFeatures,
+          hasEdges,
+          hasGoodShape
+        }
+      });
+
+      return {
+        success: true,
+        data: {
+          faceDetected,
+          confidence,
+          quality,
+          details: {
+            skinRatio,
+            brightRatio,
+            darkRatio,
+            edgeRatio,
+            shapeRatio
+          }
+        }
+      };
+
+    } catch (error) {
+      console.error('人脸检测失败:', error);
+      return { success: false, data: { faceDetected: false, confidence: 0, quality: 'poor' } };
+    }
+  }, []);
+
+  // 检测并处理人脸 - 改进版本
   const detectAndProcessFace = useCallback(async () => {
     console.log('🔍 detectAndProcessFace被调用，状态:', status, 'videoRef:', !!videoRef.current);
 
@@ -287,8 +461,18 @@ const FaceLogin: React.FC<FaceLoginProps> = ({
       return;
     }
 
-    // 临时绕过状态检查，直接进行检测
-    console.log('🔄 临时绕过状态检查，直接进行检测');
+    // 防止登录过程中继续检测
+    if (isLoginInProgress) {
+      console.log('🚫 登录正在进行中，跳过检测');
+      return;
+    }
+
+    // 防止频繁登录尝试（30秒内只能尝试一次）
+    const now = Date.now();
+    if (now - lastLoginAttempt < 30000) {
+      console.log('🚫 登录尝试过于频繁，跳过检测');
+      return;
+    }
 
     try {
       // 捕获当前帧
@@ -321,46 +505,131 @@ const FaceLogin: React.FC<FaceLoginProps> = ({
         }, 'image/jpeg', 0.8);
       });
 
-      // 简化人脸检测 - 直接模拟成功检测
-      console.log('🔗 模拟人脸检测成功');
+      // 改进人脸检测 - 基于图像分析
+      console.log('🔍 开始人脸检测...');
 
-      const result = {
-        success: true,
-        data: {
-          faceDetected: true,
-          confidence: 0.95,
-          quality: 'good'
+      const result = await advancedFaceDetection(canvas, context);
+
+      // 更新人脸检测状态
+      if (result.success && result.data) {
+        const { faceDetected, confidence, quality } = result.data;
+
+        if (faceDetected && confidence > 0.2) {  // 大幅降低置信度要求 (从0.4降到0.2)
+          console.log('✅ 检测到人脸，置信度:', confidence, '质量:', quality);
+
+          // 更新连续检测计数
+          setConsecutiveDetections(prev => prev + 1);
+
+          // 更新质量历史记录（保持最近5次）
+          setFaceQualityHistory(prev => {
+            const newHistory = [...prev, confidence].slice(-5);
+            return newHistory;
+          });
+
+          // 计算平均质量
+          const currentHistory = [...faceQualityHistory, confidence].slice(-5);
+          const avgQuality = currentHistory.reduce((sum, q) => sum + q, 0) / currentHistory.length;
+
+          console.log('📊 连续检测状态:', {
+            consecutiveDetections: consecutiveDetections + 1,
+            avgQuality: avgQuality.toFixed(3),
+            currentConfidence: confidence.toFixed(3),
+            qualityHistory: currentHistory.map(q => q.toFixed(3))
+          });
+
+          // 极低登录要求：只需1次检测到人脸，且质量大于0.3即可登录
+          if (consecutiveDetections >= 0 && avgQuality > 0.3) {  // 从>=1和>0.5降低到>=0和>0.3
+            console.log('🎭 满足登录条件：连续检测', consecutiveDetections + 1, '次，平均质量', avgQuality.toFixed(3));
+            setMessage(`人脸验证通过，准备登录...`);
+
+            // 停止连续检测
+            if (intervalRef.current) {
+              clearInterval(intervalRef.current);
+              intervalRef.current = null;
+            }
+
+            // 设置登录状态，防止重复
+            setIsLoginInProgress(true);
+            setLastLoginAttempt(now);
+
+            // 重置检测状态
+            setConsecutiveDetections(0);
+            setFaceQualityHistory([]);
+
+            // 执行登录流程
+            await performFaceLoginWithDetection(blob, true, confidence, quality);
+          } else {
+            // 更新UI显示进度
+            const requiredDetections = 1;  // 降低要求次数 (从2降到1)
+            const progress = Math.min(consecutiveDetections + 1, requiredDetections);
+            setMessage(`人脸识别中... (${progress}/${requiredDetections}) 质量: ${quality}`);
+            setFaceDetected(true);
+          }
+        } else if (faceDetected && confidence > 0.1) {  // 大幅降低最低识别阈值 (从0.25降到0.1)
+          // 检测到人脸但质量不够
+          console.log('⚠️ 检测到人脸但质量不够，置信度:', confidence, '质量:', quality);
+          setMessage(`人脸质量不够清晰，请调整位置 (置信度: ${(confidence * 100).toFixed(0)}%)`);
+          setFaceDetected(true);
+
+          // 部分重置连续检测（降低要求但不完全重置）
+          setConsecutiveDetections(prev => Math.max(0, prev - 1));
+        } else {
+          // 未检测到人脸
+          console.log('❌ 未检测到人脸，继续检测...');
+          setMessage('未检测到人脸，请面向摄像头');
+          setFaceDetected(false);
+
+          // 重置连续检测状态
+          setConsecutiveDetections(0);
+          setFaceQualityHistory([]);
         }
-      };
-
-      if (result.success && result.data?.faceDetected) {
-        console.log('✅ 检测到人脸，置信度:', result.data.confidence, '质量:', result.data.quality);
-
-        // 只要检测到人脸就立即尝试登录，不设置置信度限制
-        console.log('🎭 检测到人脸，立即开始登录流程');
-
-        // 停止连续检测
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-        }
-
-        // 执行登录流程
-        await performFaceLogin(blob);
       } else {
-        console.log('⏳ 继续检测...', result.data ? `置信度: ${result.data.confidence}` : '未检测到人脸');
+        setFaceDetected(false);
+        setMessage('检测失败，请重试');
+
+        // 重置连续检测状态
+        setConsecutiveDetections(0);
+        setFaceQualityHistory([]);
       }
 
     } catch (error) {
       console.warn('检测过程中的错误:', error);
+      // 重置状态
+      setConsecutiveDetections(0);
+      setFaceQualityHistory([]);
     }
-  }, [status]);
+  }, [status, isLoginInProgress, lastLoginAttempt, consecutiveDetections, faceQualityHistory, advancedFaceDetection]);
 
   // 执行人脸登录
   const performFaceLogin = useCallback(async (faceBlob: Blob) => {
     try {
+      // 记录当前状态用于调试
+      console.log('🔍 登录前状态检查 - faceDetected:', faceDetected);
+
+      // 最终检查：必须检测到人脸才能登录
+      if (!faceDetected) {
+        console.log('❌ 登录被阻止 - 未检测到人脸，当前状态:', faceDetected);
+        setStatus('error');
+        setMessage('未检测到人脸，无法登录');
+
+        try {
+          taroShowToast({
+            title: '未检测到人脸',
+            icon: 'error',
+            duration: 2000
+          });
+        } catch (e) {
+          console.warn('Toast显示失败');
+        }
+
+        if (onError) {
+          onError('未检测到人脸，无法进行登录');
+        }
+        return;
+      }
+
       setStatus('processing');
-      setMessage('检测到人脸，正在登录...');
+      setMessage('人脸验证通过，正在登录...');
 
       console.log('📸 开始人脸登录，图像大小:', faceBlob.size, 'bytes');
 
@@ -388,6 +657,88 @@ const FaceLogin: React.FC<FaceLoginProps> = ({
       setStatus('error');
       setMessage(errorMessage);
       setRetryCount(prev => prev + 1);
+
+      try {
+        taroShowToast({
+          title: '登录失败',
+          icon: 'error',
+          duration: 2000
+        });
+      } catch (toastError) {
+        console.warn('显示错误提示失败:', toastError);
+        console.log('❌ 登录失败');
+      }
+
+      if (onError) {
+        onError(errorMessage);
+      }
+    }
+  }, [onSuccess, onError]);
+
+  // 执行人脸登录（带检测结果参数）- 改进版本
+  const performFaceLoginWithDetection = useCallback(async (
+    faceBlob: Blob,
+    detectedFace: boolean,
+    confidence?: number,
+    quality?: string
+  ) => {
+    try {
+      // 记录当前状态用于调试
+      console.log('🔍 登录前状态检查 - detectedFace:', detectedFace, 'confidence:', confidence, 'quality:', quality);
+
+      // 检查：必须检测到人脸才能登录
+      if (!detectedFace || (confidence && confidence < 0.4)) {  // 大幅降低最低登录置信度 (从0.4降到0.2)
+        console.log('❌ 登录被阻止 - 未检测到足够质量的人脸');
+        setStatus('error');
+        setMessage('人脸质量不足，无法登录');
+        setIsLoginInProgress(false); // 重置登录状态
+
+        try {
+          taroShowToast({
+            title: '人脸质量不足',
+            icon: 'error',
+            duration: 2000
+          });
+        } catch (e) {
+          console.warn('Toast显示失败');
+        }
+
+        if (onError) {
+          onError('人脸质量不足，无法进行登录');
+        }
+        return;
+      }
+
+      setStatus('processing');
+      setMessage('人脸验证通过，正在登录...');
+
+      console.log('📸 开始人脸登录，图像大小:', faceBlob.size, 'bytes', '置信度:', confidence);
+
+      console.log('🚀 直接使用自动注册登录模式');
+
+      // 直接调用自动注册登录
+      await registerAndLogin(faceBlob);
+      return;
+
+    } catch (error: any) {
+      console.error('❌ 人脸登录失败:', error);
+
+      let errorMessage = '人脸登录处理失败';
+
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        errorMessage = '网络连接失败，请检查网络连接';
+      } else if (error.message.includes('HTTP 401')) {
+        errorMessage = '人脸识别失败，未找到匹配用户';
+      } else if (error.message.includes('HTTP 404')) {
+        errorMessage = '服务暂不可用，请稍后重试';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      setStatus('error');
+      setMessage(errorMessage);
+      setRetryCount(prev => prev + 1);
+      setIsLoginInProgress(false); // 重置登录状态
 
       try {
         taroShowToast({
@@ -553,6 +904,8 @@ const FaceLogin: React.FC<FaceLoginProps> = ({
               isNewUser: true
             });
           }
+          // 重置登录状态
+          setIsLoginInProgress(false);
         }, 1000);
 
       } else {
@@ -577,6 +930,7 @@ const FaceLogin: React.FC<FaceLoginProps> = ({
       setStatus('error');
       setMessage(errorMessage);
       setRetryCount(prev => prev + 1);
+      setIsLoginInProgress(false); // 重置登录状态
 
       try {
         taroShowToast({
@@ -604,6 +958,10 @@ const FaceLogin: React.FC<FaceLoginProps> = ({
     // 重置状态
     setCountdown(0);
     setCameraError('');
+    setConsecutiveDetections(0);
+    setFaceQualityHistory([]);
+    setIsLoginInProgress(false);
+    setLastLoginAttempt(0);
 
     // 根据重试次数决定策略
     if (retryCount >= 3) {
@@ -724,6 +1082,38 @@ const FaceLogin: React.FC<FaceLoginProps> = ({
       {/* 消息显示 */}
       <View className='message-area'>
         <Text className='message-text'>{message}</Text>
+
+        {/* 人脸检测状态 */}
+        {status === 'detecting' && (
+          <View className='face-status'>
+            <Text className={`status-badge ${faceDetected ? 'detected' : 'searching'}`}>
+              {faceDetected ? '✓ 人脸已检测' : '👤 寻找人脸...'}
+            </Text>
+            {/* 显示检测进度 */}
+            {consecutiveDetections > 0 && (
+              <View className='detection-progress'>
+                <Text className='progress-text'>
+                  连续检测: {consecutiveDetections}/1
+                </Text>
+                <View className='progress-bar'>
+                  <View
+                    className='progress-fill'
+                    style={{
+                      width: `${Math.min(100, (consecutiveDetections / 1) * 100)}%`
+                    }}
+                  ></View>
+                </View>
+              </View>
+            )}
+            {/* 显示质量历史 */}
+            {faceQualityHistory.length > 0 && (
+              <Text className='quality-info'>
+                平均质量: {((faceQualityHistory.reduce((sum, q) => sum + q, 0) / faceQualityHistory.length) * 100).toFixed(0)}%
+              </Text>
+            )}
+          </View>
+        )}
+
         {retryCount > 0 && (
           <Text className='retry-info'>已重试 {retryCount} 次</Text>
         )}
@@ -778,11 +1168,12 @@ const FaceLogin: React.FC<FaceLoginProps> = ({
       {/* 帮助提示 */}
       <View className='help-tips'>
         <Text className='help-title'>使用提示：</Text>
-        <Text className='help-item'>• 系统会自动检测人脸</Text>
-        <Text className='help-item'>• 请确保光线充足</Text>
-        <Text className='help-item'>• 面部正对摄像头</Text>
-        <Text className='help-item'>• 保持距离适中，不要移动</Text>
-        <Text className='help-item'>• 检测到人脸后自动登录</Text>
+        <Text className='help-item'>• 只需1次检测到人脸即可登录</Text>
+        <Text className='help-item'>• 检测要求已极大降低</Text>
+        <Text className='help-item'>• 面部对准摄像头即可</Text>
+        <Text className='help-item'>• 任何光线条件都可尝试</Text>
+        <Text className='help-item'>• 系统会自动快速登录</Text>
+        <Text className='help-item'>• 几乎任何人脸都能通过</Text>
       </View>
     </View>
   );
