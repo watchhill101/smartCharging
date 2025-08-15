@@ -1,4 +1,6 @@
 import type { UserConfigExport } from "@tarojs/cli"
+import fs from 'fs'
+import path from 'path'
 
 export default {
   logger: {
@@ -13,6 +15,10 @@ export default {
       open: false,      // 不自动打开浏览器
       strictPort: true, // 严格端口模式
       cors: true,       // 启用CORS
+      https: {
+        key: fs.readFileSync(path.join(__dirname, '../cert/key.pem')),
+        cert: fs.readFileSync(path.join(__dirname, '../cert/cert.pem'))
+      },
       proxy: {
         "/v1_0/": {
           target: 'http://localhost:8080',  // 代理到后端服务

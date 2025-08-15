@@ -4,8 +4,6 @@ export default defineAppConfig({
     'pages/map/index',
     'pages/charging/index', 
     'pages/profile/index',
-    'pages/StationDetail/index', // 添加充电桩详情页面
-    'pages/QRScanner/index',     // 添加QR扫描页面
     // ... 其他页面
   ],
   window: {

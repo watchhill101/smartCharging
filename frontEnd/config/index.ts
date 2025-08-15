@@ -1,5 +1,4 @@
 import { defineConfig, type UserConfigExport } from "@tarojs/cli";
-
 import devConfig from "./dev";
 import prodConfig from "./prod";
 
