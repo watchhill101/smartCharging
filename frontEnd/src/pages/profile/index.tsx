@@ -1,9 +1,14 @@
 import { View, Text, Button, Image } from '@tarojs/components';
 import { useState, useEffect } from 'react';
-import Taro, { useLoad } from '@tarojs/taro';
+import Taro, {
+  useLoad,
+  getStorageSync as taroGetStorageSync,
+  setStorageSync as taroSetStorageSync
+} from '@tarojs/taro';
 import VerificationHistory from '../../components/VerificationHistory';
 import FaceVerification from '../../components/FaceVerification';
 import request from '../../utils/request';
+import { STORAGE_KEYS } from '../../utils/constants';
 import './index.scss';
 
 interface UserProfile {
@@ -39,16 +44,60 @@ export default function Profile() {
   const [faceVerificationStatus, setFaceVerificationStatus] = useState<'none' | 'pending' | 'success' | 'failed'>('none');
 
   useLoad(() => {
-    console.log('个人中心页面加载');
+    console.log('🏠 个人中心页面加载');
     loadUserProfile();
   });
+
+  // 页面每次显示时都重新加载用户信息
+  useEffect(() => {
+    const handleShow = () => {
+      console.log('📱 页面显示，重新加载用户信息');
+      loadUserProfile();
+    };
+
+    // 立即执行一次
+    handleShow();
+  }, []);
 
   const loadUserProfile = async () => {
     try {
       setIsLoading(true);
-      const token = Taro.getStorageSync('token');
+      console.log('🔄 开始加载用户信息...');
+
+      // 首先尝试从存储中获取用户信息
+      let storedUserInfo = null;
+      let token = null;
+
+      try {
+        storedUserInfo = taroGetStorageSync(STORAGE_KEYS.USER_INFO);
+        token = taroGetStorageSync(STORAGE_KEYS.USER_TOKEN);
+      } catch (error) {
+        console.error('❌ 读取存储失败:', error);
+      }
+
+      console.log('📦 存储信息检查:', {
+        hasUserInfo: !!storedUserInfo,
+        hasToken: !!token,
+        userInfo: storedUserInfo
+      });
+
+      if (storedUserInfo && typeof storedUserInfo === 'object') {
+        console.log('✅ 从存储加载用户信息:', storedUserInfo);
+        const userInfo = storedUserInfo as UserProfile;
+        const profileData = {
+          ...userInfo,
+          nickName: userInfo.nickName || `用户${userInfo.phone?.slice(-4) || ''}`,
+          chargingCount: userInfo.chargingCount || 0,
+          points: userInfo.points || 0
+        };
+        console.log('📋 设置用户配置:', profileData);
+        setUserProfile(profileData);
+        setIsLoading(false);
+        return;
+      }
 
       if (!token) {
+        console.log('❌ 未找到用户token，使用默认信息');
         // 使用模拟数据而不是直接跳转登录
         setUserProfile({
           id: 'demo_user',
@@ -70,23 +119,46 @@ export default function Profile() {
       });
 
       if (response.data.success && response.data.data?.user) {
-        setUserProfile(response.data.data.user);
+        const userInfo = response.data.data.user;
+        setUserProfile(userInfo);
+        // 更新存储的用户信息
+        taroSetStorageSync(STORAGE_KEYS.USER_INFO, userInfo);
       } else {
         throw new Error(response.data.message || '获取用户信息失败');
       }
     } catch (error: any) {
       console.error('加载用户信息失败:', error);
-      // 使用模拟数据作为后备
-      setUserProfile({
-        id: 'demo_user',
-        phone: '71178870',
-        nickName: '充电用户',
-        balance: 0.00,
-        verificationLevel: 'basic',
-        vehicles: [],
-        chargingCount: 0,
-        points: 0
-      });
+
+      // 尝试使用存储的用户信息作为后备
+      let storedUserInfo = null;
+      try {
+        storedUserInfo = taroGetStorageSync(STORAGE_KEYS.USER_INFO);
+      } catch (error) {
+        console.error('❌ 读取存储失败:', error);
+      }
+
+      if (storedUserInfo && typeof storedUserInfo === 'object') {
+        console.log('🔄 使用存储的用户信息作为后备:', storedUserInfo);
+        const userInfo = storedUserInfo as UserProfile;
+        setUserProfile({
+          ...userInfo,
+          chargingCount: userInfo.chargingCount || 0,
+          points: userInfo.points || 0
+        });
+      } else {
+        console.log('📱 使用默认用户信息');
+        // 使用模拟数据作为最后的后备
+        setUserProfile({
+          id: 'demo_user',
+          phone: '71178870',
+          nickName: '充电用户',
+          balance: 0.00,
+          verificationLevel: 'basic',
+          vehicles: [],
+          chargingCount: 0,
+          points: 0
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -193,7 +265,9 @@ export default function Profile() {
                 )}
               </View>
               <View className='user-details'>
-                <Text className='user-name'>{userProfile?.nickName || '充电用户'}</Text>
+                <Text className='user-name'>
+                  {userProfile?.nickName || userProfile?.phone ? `用户${userProfile.phone?.slice(-4)}` : '充电用户'}
+                </Text>
                 <View className='user-id-section'>
                   <Text className='user-id-label'>ID</Text>
                   <Text className='user-id'>{userProfile?.phone || '71178870'}</Text>
@@ -211,6 +285,37 @@ export default function Profile() {
           <View className='info-tip'>
             <Text className='tip-text'>您的资料还未完善，完善后可获得7天头像挂件</Text>
             <Text className='complete-link' onClick={() => navigateToFunction('完善资料')}>去完善 {'>'}</Text>
+          </View>
+
+          {/* 调试：用户信息管理按钮 */}
+          <View style={{ padding: '10px', textAlign: 'center', display: 'flex', gap: '10px' }}>
+            <Button
+              size='mini'
+              type='primary'
+              onClick={() => {
+                console.log('🔄 手动刷新用户信息');
+                loadUserProfile();
+              }}
+            >
+              刷新用户信息
+            </Button>
+            <Button
+              size='mini'
+              type='warn'
+              onClick={() => {
+                console.log('🗑️ 清除存储的用户信息');
+                try {
+                  taroSetStorageSync(STORAGE_KEYS.USER_INFO, null);
+                  taroSetStorageSync(STORAGE_KEYS.USER_TOKEN, null);
+                  console.log('✅ 用户信息已清除，请重新登录');
+                  setUserProfile(null);
+                } catch (error) {
+                  console.error('❌ 清除失败:', error);
+                }
+              }}
+            >
+              清除用户信息
+            </Button>
           </View>
         </View>
       </View>
