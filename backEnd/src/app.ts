@@ -24,7 +24,10 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 // 中间件
-app.use(helmet());
+app.use(helmet({
+  crossOriginEmbedderPolicy: false,
+  contentSecurityPolicy: false
+}));
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
     ? ['https://smartcharging.com']
@@ -37,11 +40,26 @@ app.use(cors({
       'http://127.0.0.1:8001',
       'http://127.0.0.1:8002',
       'http://localhost:10086', // Taro开发服务器端口
-      'http://127.0.0.1:10086'
+      'http://127.0.0.1:10086',
+      'https://localhost:8000', // 添加HTTPS支持
+      'https://127.0.0.1:8000',
+      'https://localhost:8001',
+      'https://127.0.0.1:8001'
     ],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'Access-Control-Request-Method',
+    'Access-Control-Request-Headers'
+  ],
+  exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
+  optionsSuccessStatus: 200, // 处理旧版本IE
+  preflightContinue: false
 }));
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));

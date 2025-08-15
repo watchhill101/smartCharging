@@ -8,14 +8,24 @@ import {
 } from '@tarojs/taro'
 import { API_CONFIG, STORAGE_KEYS, ERROR_CODES } from './constants'
 
-// 显示提示信息的工具函数（临时禁用）
+// 显示提示信息的工具函数
 const showToast = (title: string, icon: 'success' | 'error' | 'loading' | 'none' = 'none') => {
   console.log(`Toast: ${title} (${icon})`)
-  // Taro.showToast({
-  //   title,
-  //   icon: icon === 'error' ? 'none' : icon,
-  //   duration: 2000
-  // })
+  try {
+    // 动态导入Taro，避免在某些环境下的错误
+    import('@tarojs/taro').then(Taro => {
+      Taro.showToast({
+        title,
+        icon: icon === 'error' ? 'none' : icon,
+        duration: 2000
+      })
+    }).catch(() => {
+      // 如果Taro不可用，只在控制台显示
+      console.log(`Toast fallback: ${title}`)
+    })
+  } catch (error) {
+    console.log(`Toast error: ${title}`, error)
+  }
 }
 
 // 获取存储的工具函数

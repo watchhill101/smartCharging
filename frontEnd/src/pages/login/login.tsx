@@ -122,6 +122,13 @@ export default function Login() {
     } catch (error) {
       console.error('❌ 验证码发送失败:', error)
       console.log('验证码发送失败，请稍后重试')
+
+      // 显示具体的错误信息
+      taroShowToast({
+        title: '验证码发送失败，请稍后重试',
+        icon: 'error',
+        duration: 2000
+      })
     } finally {
       setCodeLoading(false)
     }

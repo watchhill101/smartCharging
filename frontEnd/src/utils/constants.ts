@@ -3,7 +3,7 @@
 // API 基础配置
 export const API_CONFIG = {
   BASE_URL: process.env.NODE_ENV === 'development'
-    ? 'http://localhost:8080/api'
+    ? '/api'  // 开发环境使用相对路径，通过代理转发
     : 'https://api.smartcharging.com/api',
   TIMEOUT: 10000,
   RETRY_COUNT: 3
