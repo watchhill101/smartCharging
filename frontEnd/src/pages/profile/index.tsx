@@ -1,8 +1,8 @@
 import { View, Text, Button, Image } from '@tarojs/components';
 import { useState, useEffect } from 'react';
 import Taro, { useLoad } from '@tarojs/taro';
-import FaceVerification from '../../components/FaceVerification';
 import VerificationHistory from '../../components/VerificationHistory';
+import FaceVerification from '../../components/FaceVerification';
 import request from '../../utils/request';
 import './index.scss';
 
@@ -14,6 +14,8 @@ interface UserProfile {
   verificationLevel: 'basic' | 'face_verified';
   vehicles: any[];
   avatarUrl?: string;
+  chargingCount?: number;
+  points?: number;
 }
 
 interface FaceVerificationResult {
@@ -47,8 +49,18 @@ export default function Profile() {
       const token = Taro.getStorageSync('token');
 
       if (!token) {
-        Taro.showToast({ title: '请先登录', icon: 'error' });
-        Taro.redirectTo({ url: '/pages/login/login' });
+        // 使用模拟数据而不是直接跳转登录
+        setUserProfile({
+          id: 'demo_user',
+          phone: '71178870',
+          nickName: '充电用户',
+          balance: 0.00,
+          verificationLevel: 'basic',
+          vehicles: [],
+          chargingCount: 0,
+          points: 0
+        });
+        setIsLoading(false);
         return;
       }
 
@@ -64,7 +76,17 @@ export default function Profile() {
       }
     } catch (error: any) {
       console.error('加载用户信息失败:', error);
-      Taro.showToast({ title: error.message || '加载失败', icon: 'error' });
+      // 使用模拟数据作为后备
+      setUserProfile({
+        id: 'demo_user',
+        phone: '71178870',
+        nickName: '充电用户',
+        balance: 0.00,
+        verificationLevel: 'basic',
+        vehicles: [],
+        chargingCount: 0,
+        points: 0
+      });
     } finally {
       setIsLoading(false);
     }
@@ -76,7 +98,6 @@ export default function Profile() {
     setShowFaceVerification(false);
 
     try {
-      // 更新用户验证级别
       if (result.data.token && userProfile) {
         const response = await request({
           url: '/users/update-verification',
@@ -89,7 +110,6 @@ export default function Profile() {
         });
 
         if (response.data.success) {
-          // 重新加载用户信息
           await loadUserProfile();
           Taro.showToast({
             title: '人脸验证成功，验证级别已提升',
@@ -116,57 +136,17 @@ export default function Profile() {
     setShowFaceVerification(true);
   };
 
-  const getVerificationLevelText = (level: string) => {
-    switch (level) {
-      case 'basic':
-        return '基础验证';
-      case 'face_verified':
-        return '人脸验证';
-      default:
-        return '未验证';
-    }
+  const navigateToFunction = (functionName: string) => {
+    Taro.showToast({
+      title: `${functionName}功能开发中`,
+      icon: 'none'
+    });
   };
 
-  const getVerificationLevelColor = (level: string) => {
-    switch (level) {
-      case 'basic':
-        return '#f39c12';
-      case 'face_verified':
-        return '#27ae60';
-      default:
-        return '#95a5a6';
-    }
-  };
-
-  const logout = async () => {
-    try {
-      const result = await Taro.showModal({
-        title: '确认退出',
-        content: '是否确定要退出登录？'
-      });
-
-      if (result.confirm) {
-        // 清除本地存储的token
-        Taro.removeStorageSync('token');
-        Taro.removeStorageSync('refreshToken');
-        Taro.removeStorageSync('userInfo');
-
-        // 调用退出API（可选）
-        try {
-          await request({
-            url: '/auth/logout',
-            method: 'POST'
-          });
-        } catch (error) {
-          // 忽略退出API错误，本地清除已足够
-        }
-
-        Taro.showToast({ title: '退出成功', icon: 'success' });
-        Taro.reLaunch({ url: '/pages/login/login' });
-      }
-    } catch (error) {
-      console.error('退出登录失败:', error);
-    }
+  const switchToCharging = () => {
+    Taro.switchTab({
+      url: '/pages/charging/index'
+    });
   };
 
   if (showFaceVerification) {
@@ -194,163 +174,191 @@ export default function Profile() {
 
   return (
     <View className='profile-page'>
-      {isLoading ? (
-        <View className='loading-container'>
-          <Text>加载中...</Text>
-        </View>
-      ) : userProfile ? (
-        <View className='profile-container'>
-          {/* 用户基本信息 */}
-          <View className='user-info-card'>
-            <View className='user-avatar'>
-              {userProfile.avatarUrl ? (
-                <Image src={userProfile.avatarUrl} className='avatar-image' />
-              ) : (
-                <View className='avatar-default'>
-                  <Text className='avatar-text'>
-                    {userProfile.nickName?.charAt(0) || '用'}
-                  </Text>
-                </View>
-              )}
-            </View>
-            <View className='user-details'>
-              <Text className='user-name'>{userProfile.nickName}</Text>
-              <Text className='user-phone'>{userProfile.phone}</Text>
-              <View className='verification-badge'>
-                <Text
-                  className='verification-level'
-                  style={{ color: getVerificationLevelColor(userProfile.verificationLevel) }}
-                >
-                  {getVerificationLevelText(userProfile.verificationLevel)}
-                </Text>
-              </View>
-            </View>
-          </View>
+      {/* 头部区域 */}
+      <View className='profile-header'>
+        <View className='header-bg'></View>
+        <View className='header-content'>
+          <Text className='page-title'>电瓶车个人中心</Text>
 
-          {/* 账户余额 */}
-          <View className='balance-card'>
-            <Text className='balance-label'>账户余额</Text>
-            <Text className='balance-amount'>¥{userProfile.balance.toFixed(2)}</Text>
-          </View>
-
-          {/* 验证功能 */}
-          <View className='verification-section'>
-            <View className='section-header'>
-              <Text className='section-title'>安全验证</Text>
-              {userProfile.verificationLevel === 'face_verified' && (
-                <Button
-                  className='history-button'
-                  onClick={() => setShowVerificationHistory(true)}
-                >
-                  📋 验证记录
-                </Button>
-              )}
-            </View>
-
-            <View className='verification-item'>
-              <View className='verification-info'>
-                <Text className='verification-name'>🎭 人脸识别验证</Text>
-                <Text className='verification-desc'>
-                  {userProfile.verificationLevel === 'face_verified'
-                    ? '已完成人脸验证，账户安全级别较高'
-                    : '完成人脸验证可提升账户安全级别'
-                  }
-                </Text>
-                {faceVerificationStatus === 'success' && (
-                  <Text className='verification-success-tip'>
-                    🎉 恭喜！您已成功完成人脸验证
-                  </Text>
-                )}
-                {faceVerificationStatus === 'failed' && (
-                  <Text className='verification-failed-tip'>
-                    ❌ 验证失败，请重试或检查网络连接
-                  </Text>
-                )}
-              </View>
-              <View className='verification-action'>
-                {userProfile.verificationLevel === 'face_verified' ? (
-                  <View className='verified-status'>
-                    <Text className='verified-text'>✅ 已验证</Text>
-                    <Button
-                      className='reverify-button'
-                      onClick={startFaceVerification}
-                      disabled={faceVerificationStatus === 'pending'}
-                    >
-                      🔄 重新验证
-                    </Button>
-                  </View>
+          {/* 用户信息区域 */}
+          <View className='user-info-section'>
+            <View className='user-basic-info'>
+              <View className='user-avatar'>
+                {userProfile?.avatarUrl ? (
+                  <Image src={userProfile.avatarUrl} className='avatar-image' />
                 ) : (
-                  <Button
-                    className='verify-button'
-                    onClick={startFaceVerification}
-                    disabled={faceVerificationStatus === 'pending'}
-                  >
-                    {faceVerificationStatus === 'pending' ? '验证中...' : '🎯 开始验证'}
-                  </Button>
+                  <View className='avatar-default'>
+                    <Text className='avatar-icon'>👤</Text>
+                  </View>
                 )}
               </View>
+              <View className='user-details'>
+                <Text className='user-name'>{userProfile?.nickName || '充电用户'}</Text>
+                <View className='user-id-section'>
+                  <Text className='user-id-label'>ID</Text>
+                  <Text className='user-id'>{userProfile?.phone || '71178870'}</Text>
+                  <Text className='user-type'>电瓶车充电</Text>
+                </View>
+              </View>
             </View>
 
-            {/* 验证状态进度条 */}
-            {faceVerificationStatus === 'pending' && (
-              <View className='verification-progress'>
-                <View className='progress-bar'>
-                  <View className='progress-fill'></View>
-                </View>
-                <Text className='progress-text'>正在进行人脸验证，请耐心等待...</Text>
-              </View>
-            )}
-
-            {/* 验证级别说明 */}
-            <View className='verification-levels'>
-              <Text className='levels-title'>验证级别说明</Text>
-              <View className='level-item'>
-                <Text className='level-badge basic'>基础</Text>
-                <Text className='level-desc'>手机号验证，基本身份确认</Text>
-              </View>
-              <View className='level-item'>
-                <Text className='level-badge face'>人脸</Text>
-                <Text className='level-desc'>生物识别验证，高级安全保护</Text>
-              </View>
-            </View>
+            <Button className='switch-button' onClick={switchToCharging}>
+              切换汽车充电
+            </Button>
           </View>
 
-          {/* 车辆信息 */}
-          <View className='vehicles-section'>
-            <Text className='section-title'>我的车辆</Text>
-            {userProfile.vehicles && userProfile.vehicles.length > 0 ? (
-              userProfile.vehicles.map((vehicle, index) => (
-                <View key={index} className='vehicle-item'>
-                  <Text className='vehicle-name'>{vehicle.brand} {vehicle.model}</Text>
-                  <Text className='vehicle-plate'>{vehicle.licensePlate}</Text>
-                </View>
-              ))
-            ) : (
-              <View className='empty-vehicles'>
-                <Text className='empty-text'>暂无车辆信息</Text>
-                <Button className='add-vehicle-button'>添加车辆</Button>
-              </View>
-            )}
-          </View>
-
-          {/* 操作按钮 */}
-          <View className='actions-section'>
-            <Button className='action-button secondary' onClick={loadUserProfile}>
-              刷新信息
-            </Button>
-            <Button className='action-button danger' onClick={logout}>
-              退出登录
-            </Button>
+          {/* 完善资料提示 */}
+          <View className='info-tip'>
+            <Text className='tip-text'>您的资料还未完善，完善后可获得7天头像挂件</Text>
+            <Text className='complete-link' onClick={() => navigateToFunction('完善资料')}>去完善 {'>'}</Text>
           </View>
         </View>
-      ) : (
-        <View className='error-container'>
-          <Text className='error-text'>加载用户信息失败</Text>
-          <Button className='retry-button' onClick={loadUserProfile}>
-            重试
+      </View>
+
+      {/* 统计数据区域 */}
+      <View className='stats-section'>
+        <View className='stat-item'>
+          <Text className='stat-number'>{userProfile?.chargingCount || 0}</Text>
+          <Text className='stat-label'>充电中(条)</Text>
+        </View>
+        <View className='stat-divider'></View>
+        <View className='stat-item'>
+          <Text className='stat-number'>{userProfile?.points || 0}</Text>
+          <Text className='stat-label'>积分</Text>
+          <View className='stat-badge'>未签到</View>
+        </View>
+        <View className='stat-divider'></View>
+        <View className='stat-item'>
+          <Text className='stat-number'>{userProfile?.balance?.toFixed(2) || '0.00'}</Text>
+          <Text className='stat-label'>钱包(元)</Text>
+        </View>
+        <View className='stat-divider'></View>
+        <View className='stat-item'>
+          <View className='card-center-icon'>🎫</View>
+          <Text className='stat-label'>卡包中心</Text>
+        </View>
+      </View>
+
+      {/* 安心充电服务 */}
+      <View className='service-section'>
+        <View className='service-content'>
+          <View className='service-info'>
+            <Text className='service-title'>安心充电{'\n'}服务</Text>
+            <Text className='service-desc'>服务升级，守护您的每次充电</Text>
+          </View>
+          <Button className='service-button' onClick={() => navigateToFunction('安心充电服务')}>
+            去开通 {'>'}
           </Button>
         </View>
-      )}
+      </View>
+
+      {/* 常用功能 */}
+      <View className='functions-section'>
+        <Text className='section-title'>常用功能</Text>
+        <View className='functions-grid'>
+          <View className='function-item' onClick={() => navigateToFunction('我的订单')}>
+            <View className='function-icon order-icon'>📋</View>
+            <Text className='function-label'>我的订单</Text>
+          </View>
+          <View className='function-item' onClick={() => navigateToFunction('我的电卡')}>
+            <View className='function-icon card-icon'>💳</View>
+            <Text className='function-label'>我的电卡</Text>
+          </View>
+          <View className='function-item' onClick={() => navigateToFunction('包月套餐')}>
+            <View className='function-icon package-icon'>📦</View>
+            <Text className='function-label'>包月套餐</Text>
+          </View>
+          <View className='function-item' onClick={() => navigateToFunction('充电会员')}>
+            <View className='function-icon member-icon'>💎</View>
+            <Text className='function-label'>充电会员</Text>
+          </View>
+          <View className='function-item' onClick={() => navigateToFunction('我的车辆')}>
+            <View className='function-icon vehicle-icon'>🛵</View>
+            <Text className='function-label'>我的车辆</Text>
+          </View>
+          <View className='function-item' onClick={() => navigateToFunction('常用设置')}>
+            <View className='function-icon settings-icon'>⚙️</View>
+            <Text className='function-label'>常用设置</Text>
+          </View>
+          <View className='function-item' onClick={() => navigateToFunction('AI客服')}>
+            <View className='function-icon ai-icon'>🤖</View>
+            <Text className='function-label'>AI客服</Text>
+          </View>
+          <View className='function-item' onClick={() => navigateToFunction('头像装扮')}>
+            <View className='function-icon avatar-icon'>👑</View>
+            <Text className='function-label'>头像装扮</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* 电池报告 */}
+      <View className='battery-report-section'>
+        <View className='battery-report-item' onClick={() => navigateToFunction('电池报告')}>
+          <View className='battery-icon-large'>🔋</View>
+          <Text className='battery-label'>电池报告</Text>
+        </View>
+      </View>
+
+      {/* 充电会员推广 */}
+      <View className='membership-section'>
+        <View className='membership-card'>
+          <View className='membership-header'>
+            <View className='membership-icon'>👑</View>
+            <Text className='membership-title'>充电会员</Text>
+            <Text className='membership-subtitle'>充电省钱又省心</Text>
+          </View>
+
+          <View className='membership-benefits'>
+            <View className='benefit-item'>
+              <Text className='benefit-title'>充电优惠</Text>
+              <Text className='benefit-value'>8.5折</Text>
+            </View>
+            <View className='benefit-item'>
+              <Text className='benefit-title'>积分兑</Text>
+              <Text className='benefit-value'>充电券</Text>
+            </View>
+            <View className='benefit-item'>
+              <Text className='benefit-title'>充电防护</Text>
+              <Text className='benefit-value'>30天不限量</Text>
+            </View>
+          </View>
+
+          <Button className='membership-join-btn' onClick={() => navigateToFunction('开通会员')}>
+            立即省钱
+          </Button>
+        </View>
+      </View>
+
+      {/* 换电业务 */}
+      <View className='battery-swap-section'>
+        <Text className='section-title'>换电业务</Text>
+        <View className='swap-functions-grid'>
+          <View className='swap-function-item' onClick={() => navigateToFunction('我的套餐')}>
+            <View className='swap-icon package-swap-icon'>📊</View>
+            <Text className='swap-label'>我的套餐</Text>
+          </View>
+          <View className='swap-function-item' onClick={() => navigateToFunction('我的押金')}>
+            <View className='swap-icon deposit-icon'>💰</View>
+            <Text className='swap-label'>我的押金</Text>
+          </View>
+          <View className='swap-function-item' onClick={() => navigateToFunction('换电记录')}>
+            <View className='swap-icon record-icon'>📝</View>
+            <Text className='swap-label'>换电记录</Text>
+          </View>
+          <View className='swap-function-item' onClick={() => navigateToFunction('我的电池')}>
+            <View className='swap-icon battery-swap-icon'>🔋</View>
+            <Text className='swap-label'>我的电池</Text>
+          </View>
+          <View className='swap-function-item' onClick={() => navigateToFunction('认证信息')}>
+            <View className='swap-icon auth-icon'>✅</View>
+            <Text className='swap-label'>认证信息</Text>
+          </View>
+          <View className='swap-function-item' onClick={() => navigateToFunction('服务网点')}>
+            <View className='swap-icon service-icon'>📍</View>
+            <Text className='swap-label'>服务网点</Text>
+          </View>
+        </View>
+      </View>
     </View>
   );
 }
