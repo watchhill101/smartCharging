@@ -34,5 +34,15 @@ export default defineAppConfig({
         text: '我的'
       }
     ]
-  }
+  },
+  // 添加权限配置
+  permission: {
+    'scope.userLocation': {
+      desc: '你的位置信息将用于小程序位置接口的效果展示'
+    }
+  },
+  // 添加功能配置
+  requiredBackgroundModes: ['location'],
+  // 添加插件配置
+  plugins: {}
 })

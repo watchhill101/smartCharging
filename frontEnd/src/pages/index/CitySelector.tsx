@@ -1,8 +1,7 @@
-import { View, Text, ScrollView } from '@tarojs/components'
-import { useState, useRef } from 'react'
+import { View, Text } from '@tarojs/components'
+import { useEffect, useState, useRef } from 'react'
 import Taro from '@tarojs/taro'
-// 兼容导入（避免某些打包器的 default/cjs 差异）
-const getLocation = (...args: any[]) => (Taro as any).getLocation?.(...args)
+import AMapLoader from '@amap/amap-jsapi-loader'
 import './CitySelector.scss'
 
 interface CitySelectorProps {
@@ -11,152 +10,241 @@ interface CitySelectorProps {
   onClose: () => void
 }
 
+// 安全 Toast 调用
+function showToast(params: { title: string; icon?: 'none' | 'success' | 'error'; duration?: number }) {
+  try {
+    if (typeof Taro?.showToast === 'function') return Taro.showToast(params)
+  } catch {}
+  console.warn('[Toast]', params.title)
+}
+
 export default function CitySelector({ currentCity, onCityChange, onClose }: CitySelectorProps) {
   const [searchText, setSearchText] = useState('')
   const [isLocating, setIsLocating] = useState(false)
-  const locateTimeoutRef = useRef<number | null>(null)
+  const [locationInfo, setLocationInfo] = useState<{
+    city: string
+    province: string
+    district: string
+    address: string
+  } | null>(null)
+  const geocoderRef = useRef<any>(null)
 
+  // 热门城市数据
   const hotCities = [
     '北京市', '上海市', '南京市', '苏州市',
     '杭州市', '郑州市', '武汉市', '长沙市',
     '广州市', '深圳市', '重庆市', '成都市'
   ]
 
-  const cityData = {
-    'A': ['阿拉善盟', '鞍山市', '安庆市', '安阳市', '阿坝藏族羌族自治州', '安顺市', '阿里地区', '安康市', '阿克苏地区', '阿勒泰地区'],
-    'B': ['保定市', '北京市', '包头市', '宝鸡市', '蚌埠市', '本溪市', '白山市', '白城市', '巴中市', '百色市'],
-    'C': ['成都市', '重庆市', '长沙市', '长春市', '常州市', '成都市', '承德市', '沧州市', '长治市', '赤峰市'],
-    'D': ['大连市', '东莞市', '大庆市', '德阳市', '东营市', '大同市', '丹东市', '大庆市', '德州市', '大理白族自治州'],
-    'E': ['鄂尔多斯市', '恩施土家族苗族自治州'],
-    'F': ['佛山市', '福州市', '抚顺市', '阜新市', '阜阳市', '抚州市', '防城港市'],
-    'G': ['广州市', '贵阳市', '桂林市', '赣州市', '广元市', '广安市', '贵港市'],
-    'H': ['杭州市', '合肥市', '哈尔滨市', '惠州市', '海口市', '呼和浩特市', '邯郸市', '衡水市', '黄山市', '黄石市'],
-    'J': ['济南市', '嘉兴市', '金华市', '江门市', '揭阳市', '焦作市', '济宁市', '晋中市', '晋城市', '锦州市'],
-    'K': ['昆明市', '开封市', '克拉玛依市', '喀什地区'],
-    'L': ['廊坊市', '洛阳市', '兰州市', '临沂市', '柳州市', '泸州市', '乐山市', '丽江市', '临沧市', '六盘水市'],
-    'M': ['绵阳市', '茂名市', '梅州市', '牡丹江市', '马鞍山市', '眉山市'],
-    'N': ['南京市', '宁波市', '南昌市', '南宁市', '南通市', '南充市', '内江市', '宁德市', '南平市'],
-    'P': ['莆田市', '濮阳市', '盘锦市', '平顶山市', '萍乡市'],
-    'Q': ['青岛市', '泉州市', '齐齐哈尔市', '秦皇岛市', '清远市', '衢州市', '曲靖市'],
-    'R': ['日照市', '瑞安市'],
-    'S': ['石家庄市', '深圳市', '苏州市', '上海市', '沈阳市', '厦门市', '汕头市', '韶关市', '商丘市', '三门峡市'],
-    'T': ['天津市', '太原市', '唐山市', '台州市', '泰州市', '泰安市', '铁岭市'],
-    'W': ['武汉市', '无锡市', '温州市', '潍坊市', '威海市', '芜湖市', '渭南市', '乌海市'],
-    'X': ['西安市', '厦门市', '徐州市', '新乡市', '许昌市', '信阳市', '咸阳市', '西宁市', '忻州市'],
-    'Y': ['烟台市', '银川市', '宜昌市', '岳阳市', '运城市', '阳泉市', '营口市', '延边朝鲜族自治州'],
-    'Z': ['郑州市', '中山市', '珠海市', '淄博市', '枣庄市', '张家口市', '张家界市', '周口市', '驻马店市', '遵义市']
+  // 城市分类数据（按拼音首字母）
+  const cityCategories = {
+    'A': ['安庆市', '安阳市', '鞍山市', '安康市'],
+    'B': ['北京市', '保定市', '包头市', '蚌埠市', '本溪市'],
+    'C': ['成都市', '重庆市', '长沙市', '常州市', '承德市'],
+    'D': ['大连市', '东莞市', '大同市', '丹东市'],
+    'E': ['鄂尔多斯市'],
+    'F': ['福州市', '佛山市', '抚顺市'],
+    'G': ['广州市', '贵阳市', '桂林市', '赣州市'],
+    'H': ['杭州市', '哈尔滨市', '合肥市', '海口市', '邯郸市'],
+    'J': ['济南市', '金华市', '嘉兴市', '江门市'],
+    'K': ['昆明市', '开封市'],
+    'L': ['兰州市', '洛阳市', '连云港市', '廊坊市'],
+    'M': ['绵阳市', '马鞍山市'],
+    'N': ['南京市', '宁波市', '南昌市', '南宁市'],
+    'Q': ['青岛市', '泉州市', '秦皇岛市'],
+    'S': ['上海市', '深圳市', '苏州市', '沈阳市', '石家庄市'],
+    'T': ['天津市', '太原市', '唐山市', '台州市'],
+    'W': ['武汉市', '无锡市', '温州市', '威海市'],
+    'X': ['西安市', '厦门市', '徐州市', '襄阳市'],
+    'Y': ['银川市', '烟台市', '扬州市', '盐城市'],
+    'Z': ['郑州市', '珠海市', '中山市', '淄博市']
   }
 
-  const letters = Object.keys(cityData).sort()
+  // 初始化高德地图API
+  useEffect(() => {
+    // @ts-ignore
+    if (process.env.TARO_ENV !== 'h5') return
+
+    // @ts-ignore
+    window._AMapSecurityConfig = { securityJsCode: '88a533ed5eb157250debf50883ccbe61' }
+
+    AMapLoader.load({
+      key: 'fe211b3e07c4e9b86b16adfd57925547',
+      version: '2.0',
+      plugins: ['AMap.Geocoder']
+    }).then((AMap) => {
+      // 初始化地理编码器
+      geocoderRef.current = new AMap.Geocoder({
+        radius: 1000,
+        extensions: 'all'
+      })
+    }).catch((error) => {
+      console.error('高德地图加载失败:', error)
+    })
+  }, [])
 
   const handleCitySelect = (city: string) => {
     onCityChange(city)
     onClose()
   }
 
-  const handleLetterClick = (letter: string) => {
-    // 滚动到对应字母的城市列表
-    const element = document.getElementById(`letter-${letter}`)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
+  // GPS定位获取当前城市
+  const getCurrentLocation = () => {
+    if (isLocating) return
+    
+    setIsLocating(true)
+    showToast({ title: '正在定位...', icon: 'none' })
+    
+    // H5环境浏览器定位
+    if (!navigator.geolocation) {
+      showToast({ title: '浏览器不支持定位', icon: 'none' })
+      setIsLocating(false)
+      return
     }
+
+    const options = {
+      enableHighAccuracy: false,
+      timeout: 30000,
+      maximumAge: 600000
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords
+        
+        // 使用高德地图逆地理编码获取城市信息
+        if (geocoderRef.current) {
+          geocoderRef.current.getAddress([longitude, latitude], (status: string, result: any) => {
+            setIsLocating(false)
+            
+            if (status === 'complete' && result?.regeocode) {
+              const regeocode = result.regeocode
+              const addressComponent = regeocode.addressComponent
+              
+              const cityInfo = {
+                city: addressComponent.city || addressComponent.province || '未知城市',
+                province: addressComponent.province || '未知省份',
+                district: addressComponent.district || '未知区域',
+                address: regeocode.formattedAddress
+              }
+              
+              setLocationInfo(cityInfo)
+              showToast({ title: `定位成功：${cityInfo.city}`, icon: 'success' })
+              
+              // 自动选择定位到的城市
+              if (cityInfo.city && cityInfo.city !== '未知城市') {
+                onCityChange(cityInfo.city)
+              }
+            } else {
+              showToast({ title: '获取城市信息失败', icon: 'none' })
+            }
+          })
+        } else {
+          setIsLocating(false)
+          showToast({ title: '地图服务未就绪', icon: 'none' })
+        }
+      },
+      (error) => {
+        setIsLocating(false)
+        let errorMessage = '定位失败'
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = '定位权限被拒绝'
+            break
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = '位置信息不可用'
+            break
+          case error.TIMEOUT:
+            errorMessage = '定位超时'
+            break
+        }
+        
+        showToast({ title: errorMessage, icon: 'none' })
+      },
+      options
+    )
   }
 
-  const handleRelocate = () => {
-    if (isLocating) return
-    setIsLocating(true)
+  // 搜索输入处理
+  const handleSearchInput = (e: any) => {
+    setSearchText(e?.target?.value || '')
+  }
 
-          // 安全超时：20s 内无响应则提示失败，避免卡在定位中
-      locateTimeoutRef.current = window.setTimeout(() => {
-        setIsLocating(false)
-        Taro.showToast({ title: '定位超时，请检查网络与权限', icon: 'error' })
-      }, 20000)
-
-      getLocation({
-        type: 'gcj02',
-        isHighAccuracy: true,
-        highAccuracyExpireTime: 18000,
-      success: (res: any) => {
-        console.log('定位成功:', res)
-        // TODO: 可调用逆地理编码获取城市
-        const newCity = '保定市'
-        onCityChange(newCity)
-        Taro.showToast({ title: `已定位到${newCity}`, icon: 'success', duration: 1500 })
-      },
-      fail: (err) => {
-        console.error('定位失败:', err)
-        Taro.showToast({ title: '定位失败，请检查定位权限', icon: 'error' })
-      },
-      complete: () => {
-        setIsLocating(false)
-        if (locateTimeoutRef.current) {
-          clearTimeout(locateTimeoutRef.current)
-          locateTimeoutRef.current = null
-        }
+  // 过滤城市（搜索功能）
+  const getFilteredCities = () => {
+    if (!searchText.trim()) return cityCategories
+    
+    const filtered: Partial<typeof cityCategories> = {}
+    Object.keys(cityCategories).forEach(letter => {
+      const cities = cityCategories[letter as keyof typeof cityCategories].filter(city =>
+        city.toLowerCase().includes(searchText.toLowerCase()) ||
+        city.includes(searchText)
+      )
+      if (cities.length > 0) {
+        filtered[letter as keyof typeof cityCategories] = cities
       }
     })
+    
+    return filtered
   }
 
-  const filteredCities = searchText ? 
-    Object.values(cityData).flat().filter(city => 
-      city.includes(searchText) || city.toLowerCase().includes(searchText.toLowerCase())
-    ) : []
+  const filteredCities = getFilteredCities()
+
   return (
     <View className='city-selector-overlay'>
       <View className='city-selector'>
-        {/* 顶部导航 */}
         <View className='city-header'>
           <View className='back-btn' onClick={onClose}>
             <Text>‹</Text>
           </View>
-          <Text className='title'>城市选择</Text>
+          <Text className='title'>选择城市</Text>
         </View>
 
         {/* 搜索栏 */}
-        <View className='search-bar'>
-          <input
-            className='search-input'
-            placeholder='搜索城市名或拼音'
-            value={searchText}
-            onChange={(e) => setSearchText((e.target as any).value)}
-          />
-        </View>
-
-        {/* 当前城市 */}
-        <View className='current-city'>
-          <Text>当前城市: {currentCity}</Text>
-          <View className='relocate-btn' onClick={handleRelocate}>
-            <View className={`relocate-icon ${isLocating ? 'locating' : ''}`}>
-              {isLocating ? '⟳' : '⊙'}
-            </View>
-            <Text>{isLocating ? '定位中...' : '重新定位'}</Text>
+        <View className='search-section'>
+          <View className='search-bar'>
+            <Text className='search-icon'>🔍</Text>
+            <input
+              value={searchText}
+              onChange={handleSearchInput}
+              placeholder='搜索城市名或拼音'
+              className='search-input'
+            />
           </View>
         </View>
 
-        {/* 搜索结果 */}
-        {searchText && (
-          <View className='search-results'>
-            {filteredCities.map((city, idx) => (
-              <View 
-                key={`${city}-${idx}`}
-                className='city-item'
-                onClick={() => handleCitySelect(city)}
-              >
-                <Text>{city}</Text>
-              </View>
-            ))}
+        {/* 当前城市和重新定位 */}
+        <View className='current-section'>
+          <Text className='section-title'>当前城市: {currentCity}</Text>
+          <View
+            className={`location-btn ${isLocating ? 'locating' : ''}`}
+            onClick={getCurrentLocation}
+          >
+            <Text className='location-icon'>📍</Text>
+            <Text className='location-text'>
+              {isLocating ? '定位中...' : '重新定位'}
+            </Text>
+          </View>
+        </View>
+
+        {/* 定位信息显示 */}
+        {locationInfo && (
+          <View className='location-info'>
+            <Text className='location-city'>{locationInfo.city}</Text>
+            <Text className='location-address'>{locationInfo.address}</Text>
           </View>
         )}
 
-        {/* 热门城市 */}
-        {!searchText && (
-          <View className='hot-cities'>
+        <View className='content'>
+          {/* 热门城市 */}
+          <View className='hot-cities-section'>
             <Text className='section-title'>热门城市</Text>
             <View className='hot-cities-grid'>
-              {hotCities.map(city => (
-                <View 
-                  key={city} 
-                  className='hot-city-item'
+              {hotCities.map((city) => (
+                <View
+                  key={city}
+                  className={`hot-city-item ${city === currentCity ? 'active' : ''}`}
                   onClick={() => handleCitySelect(city)}
                 >
                   <Text>{city}</Text>
@@ -164,45 +252,42 @@ export default function CitySelector({ currentCity, onCityChange, onClose }: Cit
               ))}
             </View>
           </View>
-        )}
 
-        {/* 城市列表 */}
-        {!searchText && (
-          <ScrollView className='city-list' scrollY>
-            {letters.map(letter => (
-              <View key={letter} id={`letter-${letter}`} className='letter-section'>
-                <Text className='letter-title'>{letter}</Text>
-                {cityData[letter].map((city, idx) => (
-                  <View 
-                    key={`${letter}-${city}-${idx}`}
-                    className='city-item'
-                    onClick={() => handleCitySelect(city)}
-                  >
-                    <Text>{city}</Text>
-                  </View>
-                ))}
-              </View>
-            ))}
-          </ScrollView>
-        )}
-
-        {/* 字母索引 */}
-        {!searchText && (
-          <View className='letter-index'>
-            <View className='index-item' onClick={() => handleLetterClick('热')}>
-              <Text>热</Text>
+          {/* 城市列表（按字母分类） */}
+          <View className='cities-section'>
+            {/* 字母索引 */}
+            <View className='alphabet-index'>
+              {Object.keys(filteredCities).map((letter) => (
+                <View key={letter} className='alphabet-item'>
+                  <Text>{letter}</Text>
+                </View>
+              ))}
             </View>
-            {letters.map(letter => (
-              <View 
-                key={letter} 
-                className='index-item'
-                onClick={() => handleLetterClick(letter)}
-              >
-                <Text>{letter}</Text>
-              </View>
-            ))}
+
+            {/* 城市分组列表 */}
+            <View className='city-groups'>
+              {Object.entries(filteredCities).map(([letter, cities]) => (
+                <View key={letter} className='city-group'>
+                  <View className='group-header'>
+                    <Text className='group-letter'>{letter}</Text>
+                  </View>
+                  <View className='group-cities'>
+                    {cities.map((city) => (
+                      <View
+                        key={city}
+                        className={`city-item ${city === currentCity ? 'active' : ''}`}
+                        onClick={() => handleCitySelect(city)}
+                      >
+                        <Text>{city}</Text>
+                        {city === currentCity && <Text className='check'>✓</Text>}
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              ))}
+            </View>
           </View>
-        )}
+        </View>
       </View>
     </View>
   )

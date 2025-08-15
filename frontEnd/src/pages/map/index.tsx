@@ -48,7 +48,7 @@ export default function Map() {
 		}
 	}
 
-	useLoad(() => {
+  useLoad(() => {
 		parseParams()
 	})
 
@@ -59,4 +59,4 @@ export default function Map() {
 	const deviceKey = useMemo(() => (coord ? `${coord.lng},${coord.lat}` : 'auto'), [coord])
 
 	return <Device key={deviceKey} initialCoord={coord} />
-} 
+}
