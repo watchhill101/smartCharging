@@ -1,13 +1,41 @@
 import { View, Text } from '@tarojs/components'
 import { useLoad } from '@tarojs/taro'
 import Taro from '@tarojs/taro'
-import { useMemo, useState } from 'react'
+import { useState, useMemo } from 'react'
 import CitySelector from './CitySelector'
 import './index.scss'
-import type { ChargingStation } from '../../types'
 
-interface StationWithExtras extends ChargingStation {
-	supportsECard: boolean
+// 充电站数据接口
+interface ChargingStation {
+  _id: string
+  name: string
+  address: string
+  location: {
+    type: 'Point'
+    coordinates: [number, number]
+  }
+  operator: string
+  operatingHours: {
+    open: string
+    close: string
+  }
+  parkingFee: number
+  photos: string[]
+  chargers: Array<{
+    chargerId: string
+    type: 'fast' | 'slow'
+    power: number
+    status: 'available' | 'busy' | 'offline'
+    pricing: {
+      electricityFee: number
+      serviceFee: number
+    }
+  }>
+  rating: number
+  reviewCount: number
+  distance?: number
+  createdAt: string
+  updatedAt: string
 }
 
 export default function Index() {
@@ -17,14 +45,11 @@ export default function Index() {
 
 	const [currentCity, setCurrentCity] = useState('保定市')
 	const [showCitySelector, setShowCitySelector] = useState(false)
-	const [isLoadingMore, setIsLoadingMore] = useState(false)
-	const [hasMoreStations, setHasMoreStations] = useState(true)
-
 	const quickActions = [
-		{ text: '蓝充补贴', icon: '💰', color: '#4285f4' },
-		{ text: '充电订单', icon: '📋', color: '#ff6b6b' },
-		{ text: '易捷支付', icon: '⚡', color: '#ff9800' },
-		{ text: '收费咨询', icon: '📍', color: '#f44336' },
+		{ text: '券包中心', icon: '💰', color: '#ff6b6b' },
+		{ text: '充电订单', icon: '📋', color: '#ff9800' },
+		{ text: '常用电站', icon: '⚡', color: '#4285f4' },
+		{ text: '设备地图', icon: '📍', color: '#ff6b6b' },
 	]
 	// 距离筛选
 	const distanceOptions = ['不限', '3km内', '5km内', '10km内', '20km内']
@@ -42,116 +67,145 @@ export default function Index() {
 		)
 	}
 
-	// 模拟电站数据（与 types 对齐）
-	const allStations: StationWithExtras[] = useMemo(
-		() => [
-			{
-				_id: 's1',
-				name: '八里庄家园充电站',
-				address: '保定市莲池区八里庄街道',
-				location: { type: 'Point', coordinates: [115.4901, 38.8731] },
-				operator: '官方',
-				operatingHours: { open: '00:00', close: '23:59' },
-				parkingFee: 2,
-				photos: [],
-				chargers: [
-					{ chargerId: 'c1', type: 'slow', power: 7, status: 'available', pricing: { electricityFee: 0.7, serviceFee: 0.3 } },
-				],
-				rating: 4.7,
-				reviewCount: 120,
-				distance: 1140,
-				createdAt: '2024-01-01T00:00:00Z',
-				updatedAt: '2024-01-01T00:00:00Z',
-				supportsECard: true,
+	// 模拟充电站数据
+	const allStations: ChargingStation[] = useMemo(() => [
+		{
+			_id: 'cs001',
+			name: '保定市志广好滋味快餐饮食连锁有限公司保定市东兴东路店',
+			address: '河北省保定市莲池区东兴东路与东三环交叉口',
+			location: {
+				type: 'Point',
+				coordinates: [115.4901, 38.8731]
 			},
-			{
-				_id: 's2',
-				name: '理工南区站',
-				address: '保定理工学院南区',
-				location: { type: 'Point', coordinates: [115.5002, 38.8702] },
-				operator: '社会运营商',
-				operatingHours: { open: '00:00', close: '23:59' },
-				parkingFee: 0,
-				photos: [],
-				chargers: [
-					{ chargerId: 'c2', type: 'fast', power: 60, status: 'available', pricing: { electricityFee: 0.65, serviceFee: 0.25 } },
-					{ chargerId: 'c3', type: 'slow', power: 7, status: 'busy', pricing: { electricityFee: 0.70, serviceFee: 0.30 } },
-				],
-				rating: 4.5,
-				reviewCount: 86,
-				distance: 3200,
-				createdAt: '2024-01-01T00:00:00Z',
-				updatedAt: '2024-01-01T00:00:00Z',
-				supportsECard: true,
+			operator: '国家电网',
+			operatingHours: { open: '00:00', close: '23:59' },
+			parkingFee: 0,
+			photos: [],
+			chargers: [
+				{
+					chargerId: 'ch001',
+					type: 'slow',
+					power: 7,
+					status: 'available',
+					pricing: { electricityFee: 0.65, serviceFee: 0.05 }
+				}
+			],
+			rating: 4.8,
+			reviewCount: 12,
+			distance: 1340,
+			createdAt: '2024-01-01T00:00:00Z',
+			updatedAt: '2024-01-01T00:00:00Z'
+		},
+		{
+			_id: 'cs002',
+			name: '董傲国际仓储充电站',
+			address: '河北省保定市清苑区董傲国际仓储物流园',
+			location: {
+				type: 'Point',
+				coordinates: [115.5002, 38.8702]
 			},
-			{
-				_id: 's3',
-				name: '莲池区大悦城站',
-				address: '保定市莲池区大悦城',
-				location: { type: 'Point', coordinates: [115.5055, 38.8803] },
-				operator: '社会运营商',
-				operatingHours: { open: '07:00', close: '22:00' },
-				parkingFee: 5,
-				photos: [],
-				chargers: [
-					{ chargerId: 'c4', type: 'fast', power: 120, status: 'available', pricing: { electricityFee: 0.75, serviceFee: 0.35 } },
-				],
-				rating: 4.2,
-				reviewCount: 41,
-				distance: 5800,
-				createdAt: '2024-01-01T00:00:00Z',
-				updatedAt: '2024-01-01T00:00:00Z',
-				supportsECard: false,
+			operator: '特来电',
+			operatingHours: { open: '00:00', close: '23:59' },
+			parkingFee: 0,
+			photos: [],
+			chargers: [
+				{
+					chargerId: 'ch002',
+					type: 'fast',
+					power: 60,
+					status: 'available',
+					pricing: { electricityFee: 0.95, serviceFee: 0.05 }
+				},
+				{
+					chargerId: 'ch003',
+					type: 'fast',
+					power: 60,
+					status: 'available',
+					pricing: { electricityFee: 0.95, serviceFee: 0.05 }
+				}
+			],
+			rating: 4.6,
+			reviewCount: 28,
+			distance: 1360,
+			createdAt: '2024-01-01T00:00:00Z',
+			updatedAt: '2024-01-01T00:00:00Z'
+		},
+		{
+			_id: 'cs003',
+			name: '董傲国际仓储内充电站',
+			address: '河北省保定市清苑区董傲国际仓储物流园内部',
+			location: {
+				type: 'Point',
+				coordinates: [115.5055, 38.8803]
 			},
-		],
-		[]
-	)
+			operator: '星星充电',
+			operatingHours: { open: '00:00', close: '23:59' },
+			parkingFee: 0,
+			photos: [],
+			chargers: [
+				{
+					chargerId: 'ch004',
+					type: 'slow',
+					power: 7,
+					status: 'available',
+					pricing: { electricityFee: 0.75, serviceFee: 0.05 }
+				}
+			],
+			rating: 4.4,
+			reviewCount: 15,
+			distance: 1530,
+			createdAt: '2024-01-01T00:00:00Z',
+			updatedAt: '2024-01-01T00:00:00Z'
+		}
+	], [])
 
+	// 筛选后的充电站
 	const filteredStations = useMemo(() => {
 		const km = selectedDistance === '不限' ? Infinity : parseFloat(selectedDistance)
 		const distanceLimitM = km === Infinity ? Infinity : km * 1000
 
-		return allStations.filter((s) => {
-			if (typeof s.distance === 'number' && s.distance > distanceLimitM) return false
-			// 依次校验三类筛选
-			if (selectedFilters.includes('免费停车') && !(s.parkingFee === 0)) return false
+		return allStations.filter((station) => {
+			// 距离筛选
+			if (typeof station.distance === 'number' && station.distance > distanceLimitM) return false
+			
+			// 免费停车筛选
+			if (selectedFilters.includes('免费停车') && station.parkingFee > 0) return false
+			
+			// 快充筛选
 			if (selectedFilters.includes('快充')) {
-				const hasFast = s.chargers.some((c) => c.type === 'fast')
+				const hasFast = station.chargers.some((c) => c.type === 'fast')
 				if (!hasFast) return false
 			}
+			
+			// 慢充筛选
 			if (selectedFilters.includes('慢充')) {
-				const hasSlow = s.chargers.some((c) => c.type === 'slow')
+				const hasSlow = station.chargers.some((c) => c.type === 'slow')
 				if (!hasSlow) return false
 			}
+			
 			return true
 		})
 	}, [allStations, selectedDistance, selectedFilters])
 
-	const getDisplayPrice = (station: StationWithExtras) => {
+	// 获取显示价格
+	const getDisplayPrice = (station: ChargingStation) => {
 		if (!station.chargers.length) return '0.0000'
-		const p = station.chargers[0].pricing
-		const total = (p.electricityFee + p.serviceFee).toFixed(4)
+		const pricing = station.chargers[0].pricing
+		const total = (pricing.electricityFee + pricing.serviceFee).toFixed(4)
 		return total
 	}
 
-	const getDisplayDistance = (station: StationWithExtras) => {
+	// 获取显示距离
+	const getDisplayDistance = (station: ChargingStation) => {
 		if (typeof station.distance !== 'number') return '--'
 		return (station.distance / 1000).toFixed(2) + 'km'
 	}
 
-	const handleLoadMore = () => {
-		if (isLoadingMore || !hasMoreStations) return
-		
-		setIsLoadingMore(true)
-		// 模拟异步加载更多数据
-		setTimeout(() => {
-			setIsLoadingMore(false)
-			// 模拟加载3次后没有更多数据
-			if (Math.random() > 0.6) {
-				setHasMoreStations(false)
-			}
-			console.log('加载更多电站数据')
-		}, 1500)
+	// 获取可用充电桩数量
+	const getAvailableChargers = (station: ChargingStation) => {
+		const available = station.chargers.filter(c => c.status === 'available').length
+		const total = station.chargers.length
+		return `${available}/${total}`
 	}
 
   return (
@@ -161,15 +215,6 @@ export default function Index() {
 					{currentCity}
 				</View>
 				<View className='search'>请输入目的地/电站名</View>
-				<View className='extra'>
-					<View className='star'>
-						<Text className='star-icon'>⭐</Text>
-						<Text>2.7</Text>
-					</View>
-					<View className='target'>
-						🎯
-					</View>
-				</View>
 			</View>
 
 			<View className='content'>
@@ -240,84 +285,83 @@ export default function Index() {
 						</>
 					)}
 				</View>
-				{/* 电站列表（根据筛选动态变化） */}
-				{filteredStations.length === 0 ? (
-					<View className='station-card card'>
-						<Text className='station-title big'>暂无符合条件的电站</Text>
-					</View>
-				) : (
-					<>
-						<View className='station-list'>
-							{filteredStations.map((s) => (
-								<View className='station-card card' key={s._id}>
-									<View className='card-header'>
-										<View className='station-logo'>
-											<View className='logo-circle'></View>
-										</View>
-										<View className='header-content'>
-											<Text className='station-name'>{s.name}</Text>
-											<View className='station-tags'>
-												<Text className='tag'>对外开放</Text>
-												{(s.operatingHours.open === '00:00' && s.operatingHours.close === '23:59') && (
-													<Text className='tag'>24h营业</Text>
-												)}
-												{s.parkingFee === 0 && <Text className='tag'>免费停车</Text>}
-												{s.chargers.some((c) => c.type === 'fast') && <Text className='tag'>快充</Text>}
-											</View>
-										</View>
-										<View className='rating-badge'>
-											<Text className='score'>营业中</Text>
-											<Text className='rating-score'>10/10</Text>
+
+				{/* 充电站列表 */}
+				<View className='station-list'>
+					{filteredStations.length === 0 ? (
+						<View className='empty-state'>
+							<Text className='empty-text'>暂无符合条件的充电站</Text>
+						</View>
+					) : (
+						filteredStations.map((station) => (
+							<View 
+								key={station._id} 
+								className='station-card'
+								onClick={() => {
+									const [lng, lat] = station.location.coordinates
+									try {
+										Taro.setStorageSync('map_target_coord', { lng, lat })
+										Taro.setStorageSync('map_target_station', {
+											name: station.name,
+											address: station.address,
+											distance: station.distance,
+											rating: station.rating
+										})
+									} catch {}
+									Taro.switchTab({ url: '/pages/map/index' })
+								}}
+							>
+								{/* 顶部信息 */}
+								<View className='station-header'>
+									<View className='station-logo'>
+										<Text className='logo-icon'>🔌</Text>
+									</View>
+									<View className='station-info'>
+										<Text className='station-name'>{station.name}</Text>
+										<View className='station-tags'>
+											<Text className='tag'>对外开放</Text>
+											{station.operatingHours.open === '00:00' && station.operatingHours.close === '23:59' && (
+												<Text className='tag'>24小时营业</Text>
+											)}
+											{station.parkingFee === 0 && <Text className='tag'>免费停车</Text>}
 										</View>
 									</View>
-
-									<View className='station-details'>
-										<View className='detail-row'>
-											<Text className='detail-icon'>🅿️</Text>
-											<Text className='detail-text'>按实际场地收费标准收费</Text>
-										</View>
-										<View className='detail-row'>
-											<Text className='detail-icon'>⚡</Text>
-											<Text className='detail-text'>12小时内有人充电</Text>
-											<Text className='status-text'>暂不可用</Text>
-										</View>
-									</View>
-
-									<View className='station-bottom'>
-										<View className='price-info'>
-											<Text className='price-symbol'>¥</Text>
-											<Text className='price-value'>{getDisplayPrice(s)}</Text>
-											<Text className='price-unit'>元/度</Text>
-										</View>
-										<View className='distance-info' onClick={() => {
-											const [lng, lat] = s.location.coordinates
-											try {
-												Taro.setStorageSync('map_target_coord', { lng, lat })
-											} catch {}
-											Taro.switchTab({ url: '/pages/map/index' })
-										}}>
-											<Text className='distance-dot'>●</Text>
-											<Text className='distance-value'>{getDisplayDistance(s)}</Text>
-										</View>
+									<View className='station-status'>
+										<Text className='status-text'>营业中</Text>
+										<Text className='status-count'>闲{getAvailableChargers(station)}</Text>
 									</View>
 								</View>
-							))}
-						</View>
-						
-						{/* 加载更多区域 */}
-						<View className='load-more-container'>
-							{isLoadingMore ? (
-								<View className='loading-text'>正在加载更多电站</View>
-							) : hasMoreStations ? (
-								<View className='load-more-btn' onClick={handleLoadMore}>
-									查看更多电站
+
+								{/* 详细信息 */}
+								<View className='station-details'>
+									<View className='detail-item'>
+										<Text className='detail-icon'>🅿️</Text>
+										<Text className='detail-text'>按实际场地收费标准收费</Text>
+									</View>
+									<View className='detail-item activity'>
+										<Text className='detail-icon'>⚡</Text>
+										<Text className='detail-text'>5小时内有人充电</Text>
+										<Text className='detail-status'>暂不可用</Text>
+									</View>
 								</View>
-							) : (
-								<View className='loading-text'>已显示全部电站</View>
-							)}
-						</View>
-					</>
-				)}
+
+								{/* 底部价格和距离 */}
+								<View className='station-bottom'>
+									<View className='price-section'>
+										<Text className='price-symbol'>¥</Text>
+										<Text className='price-value'>{getDisplayPrice(station)}</Text>
+										<Text className='price-unit'>起/度</Text>
+									</View>
+									<View className='distance-section'>
+										<Text className='distance-icon'>📍</Text>
+										<Text className='distance-text'>{getDisplayDistance(station)}</Text>
+									</View>
+								</View>
+							</View>
+						))
+					)}
+				</View>
+
 			</View>
 
 			{/* 城市选择器 */}
@@ -328,6 +372,18 @@ export default function Index() {
 					onClose={() => setShowCitySelector(false)}
 				/>
 			)}
+
+			{/* AI客服浮动按钮 */}
+			<View className='ai-customer-service'>
+				<View className='ai-button'>
+					<View className='ai-icon'>
+						<Text className='ai-text'>Ai</Text>
+					</View>
+					<View className='ai-label'>
+						<Text className='label-text'>AI客服</Text>
+					</View>
+				</View>
+			</View>
     </View>
   )
 }

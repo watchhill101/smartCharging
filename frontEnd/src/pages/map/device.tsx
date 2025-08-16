@@ -2,10 +2,17 @@ import { View, Text } from '@tarojs/components'
 import { useEffect, useRef, useState } from 'react'
 import Taro from '@tarojs/taro'
 import AMapLoader from '@amap/amap-jsapi-loader'
+import './device.scss'
 
 interface DeviceProps {
   onBack?: () => void
   initialCoord?: { lng: number; lat: number }
+  stationInfo?: {
+    name: string
+    address: string
+    distance?: number
+    rating?: number
+  }
 }
 
 // 安全 Toast 调用
@@ -86,7 +93,8 @@ export default function Device(props: DeviceProps) {
 
       // 如果有初始坐标，添加标记
       if (props.initialCoord) {
-        addRedMarker(props.initialCoord.lng, props.initialCoord.lat, '目标位置')
+        const title = props.stationInfo?.name || '目标位置'
+        addRedMarker(props.initialCoord.lng, props.initialCoord.lat, title)
       } else {
         // 没有初始坐标时，自动获取当前位置
         getCurrentLocation()
@@ -116,47 +124,49 @@ export default function Device(props: DeviceProps) {
       mapRef.current.remove(markerRef.current)
     }
 
-    // 创建红色标记DOM元素
+    // 创建红色标记DOM元素 - 移动端优化
     const markerContent = document.createElement('div')
     markerContent.style.cssText = `
-      width: 32px;
-      height: 44px;
+      width: 36px;
+      height: 50px;
       background: transparent;
       position: relative;
       cursor: pointer;
+      transform: scale(1.1);
     `
     markerContent.innerHTML = `
       <div style="
         position: absolute;
         top: 0;
         left: 0;
-        width: 32px;
-        height: 32px;
-        background: #FF4444;
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #FF4444, #CC3333);
         border-radius: 50%;
-        border: 3px solid white;
-        box-shadow: 0 2px 8px rgba(255,68,68,0.4);
+        border: 4px solid white;
+        box-shadow: 0 4px 12px rgba(255,68,68,0.4);
       "></div>
       <div style="
         position: absolute;
-        top: 26px;
+        top: 30px;
         left: 50%;
         transform: translateX(-50%);
         width: 0;
         height: 0;
-        border-left: 8px solid transparent;
-        border-right: 8px solid transparent;
-        border-top: 12px solid #FF4444;
-        filter: drop-shadow(0 2px 4px rgba(255,68,68,0.3));
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 14px solid #FF4444;
+        filter: drop-shadow(0 3px 6px rgba(255,68,68,0.3));
       "></div>
       <div style="
         position: absolute;
-        top: 8px;
-        left: 8px;
+        top: 10px;
+        left: 10px;
         width: 16px;
         height: 16px;
         background: white;
         border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
       "></div>
     `
 
@@ -460,67 +470,37 @@ export default function Device(props: DeviceProps) {
   }
 
   return (
-    <View className='map-page' style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* 顶部导航栏 */}
-      <View style={{
-        height: 56,
-        background: '#fff',
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0 16px',
-        borderBottom: '1px solid #f0f0f0',
-        position: 'relative',
-        zIndex: 10
-      }}>
-        <View
-          onClick={() => props.onBack?.()}
-          style={{
-            position: 'absolute',
-            left: 16,
-            width: 32,
-            height: 32,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer'
-          }}
-        >
-          <Text style={{ fontSize: 24, color: '#333' }}>←</Text>
-        </View>
-        <Text style={{ 
-          fontSize: 18, 
-          fontWeight: 'bold', 
-          color: '#333',
-          position: 'absolute',
-          left: '50%',
-          transform: 'translateX(-50%)'
-        }}>
-          地图搜索
-        </Text>
-      </View>
+    <View className='map-page' style={{ 
+      height: '100vh', 
+      display: 'flex', 
+      flexDirection: 'column',
+      background: '#f5f5f5'
+    }}>
+
 
       {/* 搜索栏 */}
       <View style={{
-        padding: 16,
+        padding: '12px 16px 12px 32px',
         background: '#fff',
-        borderBottom: '1px solid #f0f0f0',
+        borderBottom: '1px solid #e8e8e8',
         zIndex: 9
       }}>
         <View style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 12
+          gap: '8px'
         }}>
           <View style={{
             flex: 1,
-            height: 40,
-            background: '#f5f5f5',
-            borderRadius: 20,
+            height: '34px',
+            background: '#f8f9fa',
+            borderRadius: '17px',
             display: 'flex',
             alignItems: 'center',
-            padding: '0 16px'
+            padding: '0 14px 0 18px',
+            border: '1px solid #e9ecef'
           }}>
-            <Text style={{ fontSize: 16, color: '#999', marginRight: 8 }}>🔍</Text>
+            <Text style={{ fontSize: '14px', color: '#999', marginRight: '6px' }}>🔍</Text>
             <input
               value={searchText}
               onChange={handleSearchInput}
@@ -532,7 +512,7 @@ export default function Device(props: DeviceProps) {
                 border: 'none',
                 outline: 'none',
                 background: 'transparent',
-                fontSize: 14,
+                fontSize: '14px',
                 color: '#333'
               }}
             />
@@ -540,81 +520,93 @@ export default function Device(props: DeviceProps) {
           <View
             onClick={searchByPlaceName}
             style={{
-              height: 40,
-              padding: '0 20px',
-              background: isSearching ? '#ccc' : '#1890ff',
+              height: '34px',
+              padding: '0 12px',
+              background: isSearching ? '#d6d6d6' : '#007bff',
               color: '#fff',
-              borderRadius: 20,
+              borderRadius: '17px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: isSearching ? 'not-allowed' : 'pointer',
-              fontSize: 14,
-              fontWeight: 'bold'
+              fontSize: '12px',
+              fontWeight: '600',
+              minWidth: '50px',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 4px rgba(0,123,255,0.2)',
+              flexShrink: 0
             }}
           >
-            {isSearching ? '搜索中...' : '搜索'}
+            {isSearching ? '搜索' : '搜索'}
           </View>
           <View
             onClick={getCurrentLocation}
             style={{
-              height: 40,
-              padding: '0 16px',
-              background: isGettingLocation ? '#ccc' : '#52c41a',
+              width: '34px',
+              height: '34px',
+              background: isGettingLocation ? '#d6d6d6' : '#28a745',
               color: '#fff',
-              borderRadius: 20,
+              borderRadius: '17px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: isGettingLocation ? 'not-allowed' : 'pointer',
-              fontSize: 14,
-              fontWeight: 'bold'
+              fontSize: '14px',
+              fontWeight: 'bold',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 4px rgba(40,167,69,0.2)',
+              flexShrink: 0
             }}
           >
-            {isGettingLocation ? '定位中...' : '📍'}
+            📍
           </View>
-
-          
         </View>
       </View>
 
       {/* 位置信息展示 */}
       {locationInfo && (
         <View style={{
-          padding: 16,
+          padding: '12px',
           background: '#fff',
-          borderBottom: '1px solid #f0f0f0',
-          zIndex: 8
+          borderBottom: '1px solid #e8e8e8',
+          zIndex: 8,
+          margin: '0 8px',
+          borderRadius: '12px',
+          marginBottom: '8px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
         }}>
-          <View style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+          <View style={{ display: 'flex', alignItems: 'center', marginBottom: '6px' }}>
             <View style={{
-              width: 8,
-              height: 8,
+              width: '8px',
+              height: '8px',
               background: '#ff4444',
               borderRadius: '50%',
-              marginRight: 8
+              marginRight: '8px'
             }} />
-            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#333' }}>
-              {locationInfo.name}
+            <Text style={{ fontSize: '15px', fontWeight: '600', color: '#333' }}>
+              我的位置
             </Text>
           </View>
-          <Text style={{ fontSize: 14, color: '#666', marginBottom: 4 }}>
+          <Text style={{ fontSize: '13px', color: '#666', marginBottom: '4px', lineHeight: '1.4' }}>
             {locationInfo.address}
           </Text>
-          <Text style={{ fontSize: 12, color: '#999' }}>
-            经纬度: {locationInfo.coord.lng.toFixed(6)}, {locationInfo.coord.lat.toFixed(6)}
+          <Text style={{ fontSize: '11px', color: '#999' }}>
+            {locationInfo.coord.lng.toFixed(6)}, {locationInfo.coord.lat.toFixed(6)}
           </Text>
         </View>
       )}
 
       {/* 地图容器 */}
-      <View style={{ flex: 1, position: 'relative' }}>
+      <View style={{ flex: 1, position: 'relative', margin: '0 8px', marginBottom: '8px' }}>
         <View 
           id='map-container' 
           style={{ 
             width: '100%', 
             height: '100%',
-            background: '#f5f5f5'
+            background: '#f5f5f5',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
           }} 
         />
       </View>

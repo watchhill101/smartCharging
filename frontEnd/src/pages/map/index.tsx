@@ -24,13 +24,26 @@ export default function Map() {
 		return undefined
 	})()
 
+	const initStation = (() => {
+		try {
+			const cached = Taro.getStorageSync('map_target_station') as any
+			if (cached && cached.name) {
+				Taro.removeStorageSync('map_target_station')
+				return cached
+			}
+		} catch {}
+		return undefined
+	})()
+
 	const [coord, setCoord] = useState<{ lng: number; lat: number } | undefined>(initCoord)
+	const [stationInfo, setStationInfo] = useState<any>(initStation)
 
 	const parseParams = () => {
 		const inst = getCurrentInstance()
 		const q = inst?.router?.params || {}
 		let lng = q?.lng ? parseFloat(String(q.lng)) : undefined
 		let lat = q?.lat ? parseFloat(String(q.lat)) : undefined
+		let station = undefined
 		if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
 			try {
 				const cached = Taro.getStorageSync('map_target_coord') as any
@@ -41,11 +54,20 @@ export default function Map() {
 				}
 			} catch {}
 		}
+		try {
+			const cachedStation = Taro.getStorageSync('map_target_station') as any
+			if (cachedStation && cachedStation.name) {
+				station = cachedStation
+				Taro.removeStorageSync('map_target_station')
+			}
+		} catch {}
+		
 		if (Number.isFinite(lng) && Number.isFinite(lat)) {
 			setCoord({ lng: lng as number, lat: lat as number })
 		} else {
 			setCoord(undefined)
 		}
+		setStationInfo(station)
 	}
 
   useLoad(() => {
@@ -58,5 +80,5 @@ export default function Map() {
 
 	const deviceKey = useMemo(() => (coord ? `${coord.lng},${coord.lat}` : 'auto'), [coord])
 
-	return <Device key={deviceKey} initialCoord={coord} />
+	return <Device key={deviceKey} initialCoord={coord} stationInfo={stationInfo} />
 }
