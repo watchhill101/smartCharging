@@ -1,10 +1,13 @@
 {
   "extends": ["taro/react"],
-  "ignorePatterns": [
-    "babel.config.js"
-  ],
   "rules": {
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off"
-  }
+  },
+  "ignorePatterns": [
+    "babel.config.js",
+    "scripts/**/*",
+    "node_modules/**/*",
+    "dist/**/*"
+  ]
 }

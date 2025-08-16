@@ -1,5 +1,5 @@
 {
-  "name": "frontEnd",
+  "name": "frontend",
   "version": "1.0.0",
   "private": true,
   "description": "智能充电",
@@ -29,7 +29,9 @@
     "dev:rn": "npm run build:rn -- --watch",
     "dev:qq": "npm run build:qq -- --watch",
     "dev:jd": "npm run build:jd -- --watch",
-    "dev:harmony-hybrid": "npm run build:harmony-hybrid -- --watch"
+    "dev:harmony-hybrid": "npm run build:harmony-hybrid -- --watch",
+    "generate-icons": "node scripts/generate-tabbar-icons.js",
+    "prebuild:weapp": "npm run generate-icons"
   },
   "browserslist": {
     "development": [
@@ -45,6 +47,11 @@
   "author": "",
   "dependencies": {
     "@babel/runtime": "^7.24.4",
+    "@fortawesome/fontawesome-svg-core": "^7.0.0",
+    "@fortawesome/free-brands-svg-icons": "^7.0.0",
+    "@fortawesome/free-regular-svg-icons": "^7.0.0",
+    "@fortawesome/free-solid-svg-icons": "^7.0.0",
+    "@fortawesome/react-fontawesome": "^0.2.3",
     "@nutui/nutui-react-taro": "^3.0.18-cpp.beta.1",
     "@tarojs/components": "4.1.4",
     "@tarojs/helper": "4.1.4",
@@ -63,6 +70,7 @@
     "@tarojs/shared": "4.1.4",
     "@tarojs/taro": "4.1.4",
     "assemblyai": "^4.15.0",
+    "@yudiel/react-qr-scanner": "^2.3.1",
     "babel-plugin-import": "^1.13.8",
     "crypto-js": "^4.2.0",
     "node-record-lpcm16": "^1.0.1",
@@ -82,6 +90,7 @@
     "@tarojs/vite-runner": "4.1.4",
     "@types/crypto-js": "^4.2.2",
     "@types/react": "^18.0.0",
+    "@vitejs/plugin-basic-ssl": "^1.0.1",
     "@vitejs/plugin-react": "^4.3.0",
     "babel-preset-taro": "4.1.4",
     "cross-env": "^7.0.3",
@@ -100,5 +109,9 @@
     "terser": "^5.30.4",
     "typescript": "^5.4.5",
     "vite": "^4.2.0"
-  }
+  },
+  "main": "babel.config.js",
+  "keywords": [],
+  "license": "ISC",
+  "type": "commonjs"
 }

@@ -2,11 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import { connectDB } from './config/database';
 import { connectRedis } from './config/redis';
 import { errorHandler } from './middleware/errorHandler';
 import { notFound } from './middleware/notFound';
+import { validateConfig, setDefaults, printConfigSummary } from './utils/configValidator';
 
 // 路由导入
 import authRoutes from './routes/auth';
@@ -16,8 +16,21 @@ import chargingRoutes from './routes/charging';
 import paymentRoutes from './routes/payment';
 import walletRoutes from './routes/wallet';
 
-// 加载环境变量
-dotenv.config();
+// 验证和设置配置
+setDefaults();
+const configValidation = validateConfig();
+
+if (!configValidation.isValid) {
+  console.error('❌ 配置验证失败:');
+  configValidation.errors.forEach(error => {
+    console.error(`   - ${error}`);
+  });
+  console.error('\n请检查您的环境变量配置。');
+  process.exit(1);
+}
+
+// 打印配置摘要
+printConfigSummary();
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -35,12 +48,43 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // 健康检查
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+app.get('/health', async (req, res) => {
+  const healthCheck = {
+    status: 'OK',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV 
-  });
+    environment: process.env.NODE_ENV,
+    version: '1.0.0',
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    services: {
+      database: 'unknown',
+      redis: 'unknown'
+    }
+  };
+
+  try {
+    // 检查MongoDB连接
+    const mongoose = require('mongoose');
+    healthCheck.services.database = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  } catch (error) {
+    healthCheck.services.database = 'error';
+  }
+
+  try {
+    // 检查Redis连接
+    const { getRedisClient } = require('./config/redis');
+    const redisClient = getRedisClient();
+    await redisClient.ping();
+    healthCheck.services.redis = 'connected';
+  } catch (error) {
+    healthCheck.services.redis = 'disconnected';
+  }
+
+  // 如果任何关键服务不可用，返回503状态
+  const isHealthy = healthCheck.services.database === 'connected' && 
+                   healthCheck.services.redis === 'connected';
+
+  res.status(isHealthy ? 200 : 503).json(healthCheck);
 });
 
 // API路由

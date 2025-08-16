@@ -1,6 +1,7 @@
 .index {
-  padding: 20px;
-  text-align: center;
+  padding: 40px 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   
   .welcome-text {
     font-size: 32px;
@@ -13,42 +14,91 @@
   }
 }
 
-// 全局安全按钮样式
-.safe-button {
-  padding: 12px 24px;
-  background: #f0f0f0;
-  color: #333;
-  border: 1px solid #d9d9d9;
-  border-radius: 6px;
-  font-size: 16px;
-  text-align: center;
-  cursor: pointer;
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 60px;
+  
+  .title {
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+    margin-top: 20px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
   transition: all 0.3s ease;
-  display: inline-block;
+  cursor: pointer;
   
   &:hover {
-    background: #e6e6e6;
-    border-color: #ccc;
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
   }
   
   &:active {
-    background: #d9d9d9;
+    transform: translateY(-2px);
   }
   
-  // Primary 样式
-  &--primary {
-    background: #1989fa;
-    color: white;
-    border-color: #1989fa;
+  text {
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+  }
+}
+
+// 安全按钮样式（保持兼容性）
+.safe-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 40px;
+  background: #1890ff;
+  color: white;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 500;
+  margin: 40px auto;
+  max-width: 200px;
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: #40a9ff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(24, 144, 255, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &.primary {
+    background: #722ed1;
+    box-shadow: 0 4px 12px rgba(114, 46, 209, 0.3);
     
     &:hover {
-      background: #0c7ae8;
-      border-color: #0c7ae8;
-    }
-    
-    &:active {
-      background: #096dd9;
-      border-color: #096dd9;
+      background: #9254de;
+      box-shadow: 0 6px 16px rgba(114, 46, 209, 0.4);
     }
   }
 }

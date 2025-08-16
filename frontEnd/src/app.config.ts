@@ -12,6 +12,12 @@ export default defineAppConfig({
     navigationBarTitleText: '智能充电',
     navigationBarTextStyle: 'black'
   },
+  // 添加权限配置
+  permission: {
+    'scope.camera': {
+      desc: '您的摄像头将用于扫描充电桩二维码'
+    }
+  },
   tabBar: {
     color: '#666',
     selectedColor: '#1890ff',
@@ -21,27 +27,28 @@ export default defineAppConfig({
       {
         pagePath: 'pages/index/index',
         text: '首页',
-        iconPath: 'assets/icons/home.png',
-        selectedIconPath: 'assets/icons/home-active.png'
+        iconPath: '/assets/icons/home.svg',
+        selectedIconPath: '/assets/icons/home-active.svg'
       },
       {
-        pagePath: 'pages/map/index',
+        pagePath: 'pages/map/index', 
         text: '地图',
-        iconPath: 'assets/icons/map.png',
-        selectedIconPath: 'assets/icons/map-active.png'
+        iconPath: '/assets/icons/map.svg',
+        selectedIconPath: '/assets/icons/map-active.svg'
       },
       {
         pagePath: 'pages/charging/index',
         text: '充电',
-        iconPath: 'assets/icons/charging.png',
-        selectedIconPath: 'assets/icons/charging-active.png'
+        iconPath: '/assets/icons/charging.svg',
+        selectedIconPath: '/assets/icons/charging-active.svg'
       },
       {
         pagePath: 'pages/profile/index',
         text: '我的',
-        iconPath: 'assets/icons/profile.png',
-        selectedIconPath: 'assets/icons/profile-active.png'
+        iconPath: '/assets/icons/profile.svg',
+        selectedIconPath: '/assets/icons/profile-active.svg'
       }
+      // 移除 StationDetail，它不应该在 tabBar 中
     ]
   }
 })

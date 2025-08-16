@@ -1,0 +1,36 @@
+.icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  svg {
+    display: block;
+  }
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// 图标尺寸预设
+.icon-xs { font-size: 12px; }
+.icon-sm { font-size: 14px; }
+.icon-md { font-size: 16px; }
+.icon-lg { font-size: 20px; }
+.icon-xl { font-size: 24px; }
+.icon-2x { font-size: 32px; }
+.icon-3x { font-size: 48px; }
+
+// 图标颜色预设
+.icon-primary { color: var(--primary-color); }
+.icon-success { color: var(--success-color); }
+.icon-warning { color: var(--warning-color); }
+.icon-danger { color: var(--error-color); }
+.icon-info { color: var(--info-color); }
+.icon-muted { color: var(--text-color-disabled); }
