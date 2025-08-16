@@ -14,6 +14,7 @@ import userRoutes from './routes/user';
 import stationRoutes from './routes/station';
 import chargingRoutes from './routes/charging';
 import paymentRoutes from './routes/payment';
+import walletRoutes from './routes/wallet';
 
 // 加载环境变量
 dotenv.config();
@@ -48,6 +49,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/stations', stationRoutes);
 app.use('/api/charging', chargingRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/wallet', walletRoutes);
 
 // 错误处理中间件
 app.use(notFound);
