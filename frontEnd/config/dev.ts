@@ -20,13 +20,10 @@ export default {
         cert: fs.readFileSync(path.join(__dirname, '../cert/cert.pem'))
       },
       proxy: {
-        "/api": {
+        "/v1_0/": {
           target: 'http://localhost:8080',  // 代理到后端服务
           changeOrigin: true,
-          secure: false,
-          ws: true,
-          timeout: 10000,
-          logLevel: 'debug'  // 添加调试日志
+          rewrite: (path) => path.replace(/^\/v1_0/, '')
         }
       }
     }

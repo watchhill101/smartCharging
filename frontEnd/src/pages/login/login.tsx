@@ -1,5 +1,5 @@
 import { View, Text, Input, Button } from '@tarojs/components'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLoad } from '@tarojs/taro'
 import Taro, {
   getStorageSync as taroGetStorageSync,
@@ -10,6 +10,7 @@ import Taro, {
 } from '@tarojs/taro'
 import { post } from '../../utils/request'
 import { STORAGE_KEYS } from '../../utils/constants'
+import { env } from '../../utils/platform'
 import SliderVerify from '../../components/SliderVerify'
 import FaceLogin from '../../components/FaceLogin'
 import './login.scss'
@@ -34,6 +35,8 @@ export default function Login() {
   const [loginMode, setLoginMode] = useState<'code' | 'face'>('code')
   const [showFaceLogin, setShowFaceLogin] = useState(false)
   const [faceLoginSuccess, setFaceLoginSuccess] = useState(false)
+  const [isH5Environment, setIsH5Environment] = useState(false)
+  const [supportsFaceLogin, setSupportsFaceLogin] = useState(false)
 
   useLoad(() => {
     // 检查是否已记住用户名
@@ -46,6 +49,29 @@ export default function Login() {
       console.error('获取记住的用户名失败:', error)
     }
   })
+
+  // 检查环境支持
+  useEffect(() => {
+    const checkEnvironment = () => {
+      setIsH5Environment(env.isH5)
+      
+      // 检查是否支持人脸登录
+      if (env.isH5) {
+        // H5环境下检查摄像头支持
+        setSupportsFaceLogin(
+          !!(navigator?.mediaDevices?.getUserMedia) &&
+          (location.protocol === 'https:' || 
+           location.hostname === 'localhost' || 
+           location.hostname === '127.0.0.1')
+        )
+      } else {
+        // 小程序环境暂不支持人脸登录
+        setSupportsFaceLogin(false)
+      }
+    }
+
+    checkEnvironment()
+  }, [])
 
   // 清理定时器的函数
   const clearCountdownTimer = () => {
@@ -270,6 +296,24 @@ export default function Login() {
 
   // 切换到人脸登录
   const switchToFaceLogin = () => {
+    // 检查是否支持人脸登录
+    if (!supportsFaceLogin) {
+      if (isH5Environment) {
+        taroShowToast({
+          title: '当前环境不支持摄像头功能',
+          icon: 'none',
+          duration: 3000
+        });
+      } else {
+        taroShowToast({
+          title: '小程序暂不支持人脸登录，请使用H5版本',
+          icon: 'none',
+          duration: 3000
+        });
+      }
+      return;
+    }
+
     setLoginMode('face');
     setShowFaceLogin(true);
   };
@@ -485,8 +529,9 @@ export default function Login() {
             📱 短信验证码
           </Button>
           <Button
-            className={`mode-switch-btn ${loginMode === 'face' ? 'active' : ''}`}
+            className={`mode-switch-btn ${loginMode === 'face' ? 'active' : ''} ${!supportsFaceLogin ? 'disabled' : ''}`}
             onClick={switchToFaceLogin}
+            disabled={!supportsFaceLogin}
             style={{
               flex: '1',
               padding: '12px 16px',
@@ -496,12 +541,20 @@ export default function Login() {
               borderRadius: '0',
               background: loginMode === 'face'
                 ? 'linear-gradient(135deg, #1890ff 0%, #096dd9 100%)'
+                : !supportsFaceLogin
+                ? '#f5f5f5'
                 : 'transparent',
-              color: loginMode === 'face' ? '#fff' : '#666',
+              color: loginMode === 'face' 
+                ? '#fff' 
+                : !supportsFaceLogin 
+                ? '#ccc' 
+                : '#666',
+              opacity: !supportsFaceLogin ? 0.6 : 1,
+              cursor: !supportsFaceLogin ? 'not-allowed' : 'pointer',
               transition: 'all 0.3s ease'
             }}
           >
-            🎭 人脸识别
+            🎭 人脸识别{!supportsFaceLogin && (isH5Environment ? ' (需要HTTPS)' : ' (暂不支持)')}
           </Button>
         </View>
 

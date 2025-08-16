@@ -85,13 +85,21 @@ const FaceLogin: React.FC<FaceLoginProps> = ({
         throw new Error('微信小程序暂不支持网页摄像头，请使用H5版本');
       }
 
-      // 检查浏览器环境
-      if (typeof window === 'undefined' || typeof document === 'undefined') {
-        throw new Error('当前环境不支持摄像头功能');
-      }
+      // H5环境检查
+      if (Taro.getEnv() === 'h5') {
+        // 检查浏览器环境
+        if (typeof window === 'undefined' || typeof document === 'undefined') {
+          throw new Error('当前环境不支持摄像头功能');
+        }
 
-      if (!navigator || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error('您的浏览器不支持摄像头功能，请使用现代浏览器');
+        if (!navigator || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          throw new Error('您的浏览器不支持摄像头功能，请使用现代浏览器');
+        }
+
+        // 检查HTTPS环境（摄像头需要安全环境）
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+          throw new Error('摄像头功能需要HTTPS环境，请使用HTTPS访问');
+        }
       }
 
       // 获取摄像头权限和视频流
