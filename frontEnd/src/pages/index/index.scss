@@ -102,3 +102,80 @@
     }
   }
 }
+
+/* 用户信息卡片 */
+.user-info-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+.user-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.user-phone {
+  font-size: 14px;
+  color: #666;
+}
+
+.user-details {
+  margin-bottom: 20px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.label {
+  font-size: 14px;
+  color: #666;
+}
+
+.value {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.logout-button {
+  width: 100%;
+  margin-top: 16px;
+}
+
+/* 登录提示 */
+.login-prompt {
+  background: #fff;
+  border-radius: 12px;
+  padding: 30px 20px;
+  margin: 20px 0;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.prompt-text {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 20px;
+  display: block;
+}
+
+/* 功能按钮区域 */
+.function-buttons {
+  margin-top: 20px;
+}

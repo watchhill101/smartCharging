@@ -1,9 +1,11 @@
 export default defineAppConfig({
   pages: [
+    'pages/login/login',
     'pages/index/index',
     'pages/map/index',
     'pages/charging/index', 
     'pages/profile/index',
+,
     // ... 其他页面
   ],
   window: {

@@ -1,8 +1,14 @@
 import type { UserConfigExport } from "@tarojs/cli"
 import fs from 'fs'
 import path from 'path'
+import fs from 'fs'
+import path from 'path'
 
 export default {
+  logger: {
+    quiet: false,
+    stats: true
+  },
   logger: {
     quiet: false,
     stats: true

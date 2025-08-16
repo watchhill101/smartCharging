@@ -2,8 +2,8 @@
 
 // API 基础配置
 export const API_CONFIG = {
-  BASE_URL: process.env.NODE_ENV === 'development' 
-    ? 'http://localhost:8080/api' 
+  BASE_URL: process.env.NODE_ENV === 'development'
+    ? '/api'  // 开发环境使用相对路径，通过代理转发
     : 'https://api.smartcharging.com/api',
   TIMEOUT: 10000,
   RETRY_COUNT: 3
@@ -14,7 +14,8 @@ export const STORAGE_KEYS = {
   USER_TOKEN: 'user_token',
   USER_INFO: 'user_info',
   LOCATION_PERMISSION: 'location_permission',
-  THEME_MODE: 'theme_mode'
+  THEME_MODE: 'theme_mode',
+  REMEMBERED_USERNAME: 'remembered_username'
 }
 
 // 充电桩状态
@@ -54,8 +55,7 @@ export const PAYMENT_METHOD = {
 
 // 验证等级
 export const VERIFICATION_LEVEL = {
-  BASIC: 'basic',
-  FACE_VERIFIED: 'face_verified'
+  BASIC: 'basic'
 } as const
 
 // 错误码
