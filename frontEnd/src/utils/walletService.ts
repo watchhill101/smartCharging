@@ -22,8 +22,6 @@ export interface PaymentMethod {
 
 // 钱包设置接口
 export interface WalletSettings {
-  autoInvoice: boolean
-  invoiceEmail: string
   defaultPaymentMethod: string
 }
 

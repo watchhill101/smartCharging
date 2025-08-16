@@ -16,23 +16,14 @@ interface Coupon {
   usedDate?: string
 }
 
-// 发票接口
-interface Invoice {
-  id: string
-  invoiceNumber: string
-  date: string
-  amount: number
-  description: string
-  status: 'paid' | 'pending' | 'overdue'
-}
+
 
 export default function Charging() {
   const [walletInfo, setWalletInfo] = useState<WalletInfo | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [coupons, setCoupons] = useState<Coupon[]>([])
-  const [invoices, setInvoices] = useState<Invoice[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'balance' | 'coupons' | 'invoices'>('balance')
+  const [activeTab, setActiveTab] = useState<'balance' | 'coupons'>('balance')
   const [selectedAmount, setSelectedAmount] = useState<string>('')
   const [customAmount, setCustomAmount] = useState<string>('')
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
@@ -78,8 +69,6 @@ export default function Charging() {
           { id: 'bank', type: 'bank_card', name: '银行转账', isDefault: false, isEnabled: true }
         ],
         settings: {
-          autoInvoice: false,
-          invoiceEmail: '',
           defaultPaymentMethod: 'visa'
         }
       })
@@ -144,33 +133,7 @@ export default function Charging() {
           expiryDate: '2023-04-15'
         }
       ])
-      
-      setInvoices([
-        {
-          id: '1',
-          invoiceNumber: 'INV-2023-001',
-          date: '2023-06-05',
-          amount: 59.99,
-          description: '在线购物',
-          status: 'paid'
-        },
-        {
-          id: '2',
-          invoiceNumber: 'INV-2023-002',
-          date: '2023-05-12',
-          amount: 100.00,
-          description: '钱包充值',
-          status: 'paid'
-        },
-        {
-          id: '3',
-          invoiceNumber: 'INV-2023-003',
-          date: '2023-04-28',
-          amount: 29.99,
-          description: '订阅续费',
-          status: 'paid'
-        }
-      ])
+
     } finally {
       setLoading(false)
     }
@@ -262,16 +225,6 @@ export default function Charging() {
     }
   }
 
-  // 获取发票状态样�?
-  const getInvoiceStatusClass = (status: string) => {
-    switch (status) {
-      case 'paid': return 'invoice-paid'
-      case 'pending': return 'invoice-pending'
-      case 'overdue': return 'invoice-overdue'
-      default: return ''
-    }
-  }
-
   if (loading) {
     return (
       <View className='wallet-page'>
@@ -286,7 +239,7 @@ export default function Charging() {
     <View className='wallet-page'>
 
       {/* Balance Card */}
-      <View className='balance-card'>
+      <View className='balance-card' onClick={() => setShowRechargeModal(true)}>
         <View className='card-decoration'>
           <View className='waves'></View>
         </View>
@@ -298,15 +251,9 @@ export default function Charging() {
             <Text className='balance-amount'>{walletInfo?.balance.toFixed(2) || '0.00'}</Text>
           </View>
         </View>
-        
-                 <View className='balance-actions'>
-           <Button className='recharge-btn-main' onClick={() => setShowRechargeModal(true)}>
-             立即充值
-           </Button>
-         </View>
 
          {/* Integrated Tab Navigation */}
-         <View className='card-tab-navigation'>
+         <View className='card-tab-navigation' onClick={(e) => e.stopPropagation()}>
            <View 
              className={`card-tab-item ${activeTab === 'balance' ? 'card-tab-active' : ''}`}
              onClick={() => setActiveTab('balance')}
@@ -320,13 +267,6 @@ export default function Charging() {
            >
              <Text className='card-tab-icon'>🏷️</Text>
              <Text className='card-tab-text'>优惠券</Text>
-           </View>
-           <View 
-             className={`card-tab-item ${activeTab === 'invoices' ? 'card-tab-active' : ''}`}
-             onClick={() => setActiveTab('invoices')}
-           >
-             <Text className='card-tab-icon'>🧾</Text>
-             <Text className='card-tab-text'>发票</Text>
            </View>
          </View>
        </View>
@@ -405,44 +345,7 @@ export default function Charging() {
             </View>
           )}
 
-          {/* Invoices Tab */}
-          {activeTab === 'invoices' && (
-            <View className='invoices-tab'>
-              <View className='invoices-header'>
-                <Text className='section-title'>发票历史</Text>
-                <Button className='export-btn'>📤 导出全部</Button>
-              </View>
-              <View className='invoices-list'>
-                {invoices.map((invoice) => (
-                  <View key={invoice.id} className='invoice-item'>
-                    <View className='invoice-main'>
-                      <View className='invoice-info'>
-                        <Text className='invoice-number'>{invoice.invoiceNumber}</Text>
-                        <Text className='invoice-date'>{invoice.date}</Text>
-                      </View>
-                      <View className='invoice-amount-status'>
-                        <Text className='invoice-amount'>${invoice.amount.toFixed(2)}</Text>
-                        <View className={`invoice-status ${getInvoiceStatusClass(invoice.status)}`}>
-                          <Text className='status-icon'>✓</Text>
-                          <Text className='status-text'>已支付</Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View className='invoice-footer'>
-                      <Text className='invoice-description'>{invoice.description}</Text>
-                      <View className='invoice-actions'>
-                        <Button className='action-btn'>👁️ 查看</Button>
-                        <Button className='action-btn'>📥 下载</Button>
-                      </View>
-                    </View>
-                  </View>
-                ))}
-              </View>
-              <Button className='load-more-btn'>
-                加载更多 ↓
-              </Button>
-            </View>
-          )}
+
         </ScrollView>
       </View>
 
