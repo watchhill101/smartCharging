@@ -119,7 +119,8 @@ export default function Login() {
 
     setCodeLoading(true)
     try {
-      const response = await post('/auth/send-verify-code', {
+      console.log('🔄 正在发送验证码请求...')
+  const response = await post('/v1_0/auth/send-verify-code', {
         phone: form.username
       })
 
@@ -240,7 +241,7 @@ export default function Login() {
 
     try {
       console.log('📡 发送登录请求...')
-      const response = await post('/auth/login-with-code', {
+  const response = await post('/v1_0/auth/login-with-code', {
         phone: form.username,
         verifyCode: form.verifyCode,
         verifyToken
@@ -283,14 +284,41 @@ export default function Login() {
       }
     } catch (error: any) {
       console.error('❌ 登录请求失败:', error)
+      
+      // 详细记录错误信息
+      console.log('请求错误详情:', {
+        status: error.status,
+        statusText: error.statusText,
+        message: error.message,
+        response: error.response,
+        config: error.config
+      })
 
-      if (error.message) {
-        console.log(error.message)
+      if (error.response?.status === 404) {
+        console.log('API 路径不正确，请检查路由配置')
+        taroShowToast({
+          title: 'API路径不正确',
+          icon: 'none',
+          duration: 2000
+        })
+      } else if (error.message?.includes('Network Error')) {
+        console.log('网络连接失败，请检查后端服务是否正常运行')
+        taroShowToast({
+          title: '网络连接失败',
+          icon: 'none',
+          duration: 2000
+        })
       } else {
-        console.log('登录失败，请检查网络连接')
+        console.log(error.message || '登录失败，请稍后重试')
+        taroShowToast({
+          title: error.message || '登录失败',
+          icon: 'none',
+          duration: 2000
+        })
       }
     } finally {
       setLoading(false)
+      console.log('登录请求完成')
     }
   }
 
