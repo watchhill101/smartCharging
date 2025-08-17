@@ -120,7 +120,7 @@ export default function Login() {
     setCodeLoading(true)
     try {
       console.log('🔄 正在发送验证码请求...')
-  const response = await post('/v1_0/auth/send-verify-code', {
+        const response = await post('/v1_0/auth/api/auth/send-verify-code', {
         phone: form.username
       })
 
@@ -241,7 +241,7 @@ export default function Login() {
 
     try {
       console.log('📡 发送登录请求...')
-  const response = await post('/v1_0/auth/login-with-code', {
+        const response = await post('/v1_0/auth/api/auth/login-with-code', {
         phone: form.username,
         verifyCode: form.verifyCode,
         verifyToken

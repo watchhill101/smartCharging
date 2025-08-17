@@ -155,7 +155,7 @@ export default function SliderVerify({
 
     try {
       // 发送验证请求到后端
-      const response = await post('/auth/slider-verify', {
+      const response = await post('/v1_0/auth/api/auth/slider-verify', {
         slideDistance,
         puzzleOffset,
         accuracy,
