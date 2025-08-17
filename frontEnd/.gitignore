@@ -6,5 +6,3 @@ node_modules/
 .DS_Store
 .swc
 *.local
-cert/*.pem
-cert/*.pfx
