@@ -38,7 +38,7 @@ const VehicleSchema = new Schema<IVehicle>({
   licensePlate: {
     type: String,
     required: true,
-    unique: true
+    //unique: true
   },
   batteryCapacity: {
     type: Number,

@@ -182,7 +182,8 @@ router.post('/login-with-code', asyncHandler(async (req: Request, res: Response)
     });
 
   } catch (error) {
-    console.error('❌ 登录过程出错:', error);
+  const err: any = error;
+  console.error('❌ 登录过程出错:', err, err && (err.stack || err.message));
     res.status(500).json({
       success: false,
       message: '登录失败，请稍后重试'
