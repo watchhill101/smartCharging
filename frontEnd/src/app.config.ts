@@ -2,6 +2,7 @@ export default {
   pages: [
     'pages/login/login',
     'pages/index/index',
+    'pages/index/xiangx',
     'pages/map/index',
     'pages/charging/index', 
     'pages/profile/index',
