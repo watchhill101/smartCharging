@@ -6,6 +6,7 @@ export default {
     'pages/map/index',
     'pages/charging/index', 
     'pages/profile/index',
+    'pages/profile/coupons',
     'pages/scan/index',
     'pages/orders/index',
     'pages/vehicles/index',

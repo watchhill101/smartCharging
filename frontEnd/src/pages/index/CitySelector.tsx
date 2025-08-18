@@ -2,6 +2,7 @@ import { View, Text } from '@tarojs/components'
 import { useEffect, useState, useRef } from 'react'
 import Taro from '@tarojs/taro'
 import AMapLoader from '@amap/amap-jsapi-loader'
+import { hotCities, cityCategories, searchCities } from '../../utils/cityData'
 import './CitySelector.scss'
 
 interface CitySelectorProps {
@@ -30,36 +31,29 @@ export default function CitySelector({ currentCity, onCityChange, onClose }: Cit
   } | null>(null)
   const geocoderRef = useRef<any>(null)
 
-  // 热门城市数据
-  const hotCities = [
-    '保定市', '北京市', '邯郸市', '武汉市', '成都市',
-    '上海市', '南京市', '苏州市', '杭州市', '郑州市', 
-    '长沙市', '广州市', '深圳市', '重庆市'
-  ]
-
   // 城市分类数据（按拼音首字母）
-  const cityCategories = {
-    'A': ['安庆市', '安阳市', '鞍山市', '安康市'],
-    'B': ['北京市', '保定市', '包头市', '蚌埠市', '本溪市'],
-    'C': ['成都市', '重庆市', '长沙市', '常州市', '承德市'],
-    'D': ['大连市', '东莞市', '大同市', '丹东市'],
-    'E': ['鄂尔多斯市'],
-    'F': ['福州市', '佛山市', '抚顺市'],
-    'G': ['广州市', '贵阳市', '桂林市', '赣州市'],
-    'H': ['杭州市', '哈尔滨市', '合肥市', '海口市', '邯郸市'],
-    'J': ['济南市', '金华市', '嘉兴市', '江门市'],
-    'K': ['昆明市', '开封市'],
-    'L': ['兰州市', '洛阳市', '连云港市', '廊坊市'],
-    'M': ['绵阳市', '马鞍山市'],
-    'N': ['南京市', '宁波市', '南昌市', '南宁市'],
-    'Q': ['青岛市', '泉州市', '秦皇岛市'],
-    'S': ['上海市', '深圳市', '苏州市', '沈阳市', '石家庄市'],
-    'T': ['天津市', '太原市', '唐山市', '台州市'],
-    'W': ['武汉市', '无锡市', '温州市', '威海市'],
-    'X': ['西安市', '厦门市', '徐州市', '襄阳市'],
-    'Y': ['银川市', '烟台市', '扬州市', '盐城市'],
-    'Z': ['郑州市', '珠海市', '中山市', '淄博市']
-  }
+  // const cityCategories = {
+  //   'A': ['安庆市', '安阳市', '鞍山市', '安康市'],
+  //   'B': ['北京市', '保定市', '包头市', '蚌埠市', '本溪市'],
+  //   'C': ['成都市', '重庆市', '长沙市', '常州市', '承德市'],
+  //   'D': ['大连市', '东莞市', '大同市', '丹东市'],
+  //   'E': ['鄂尔多斯市'],
+  //   'F': ['福州市', '佛山市', '抚顺市'],
+  //   'G': ['广州市', '贵阳市', '桂林市', '赣州市'],
+  //   'H': ['杭州市', '哈尔滨市', '合肥市', '海口市', '邯郸市'],
+  //   'J': ['济南市', '金华市', '嘉兴市', '江门市'],
+  //   'K': ['昆明市', '开封市'],
+  //   'L': ['兰州市', '洛阳市', '连云港市', '廊坊市'],
+  //   'M': ['绵阳市', '马鞍山市'],
+  //   'N': ['南京市', '宁波市', '南昌市', '南宁市'],
+  //   'Q': ['青岛市', '泉州市', '秦皇岛市'],
+  //   'S': ['上海市', '深圳市', '苏州市', '沈阳市', '石家庄市'],
+  //   'T': ['天津市', '太原市', '唐山市', '台州市'],
+  //   'W': ['武汉市', '无锡市', '温州市', '威海市'],
+  //   'X': ['西安市', '厦门市', '徐州市', '襄阳市'],
+  //   'Y': ['银川市', '烟台市', '扬州市', '盐城市'],
+  //   'Z': ['郑州市', '珠海市', '中山市', '淄博市']
+  // }
 
   // 初始化高德地图API
   useEffect(() => {
@@ -200,10 +194,12 @@ export default function CitySelector({ currentCity, onCityChange, onClose }: Cit
     if (!searchText.trim()) return cityCategories
     
     const filtered: Partial<typeof cityCategories> = {}
+    const searchResults = searchCities(searchText)
+    
+    // 根据搜索结果重新组织分类
     Object.keys(cityCategories).forEach(letter => {
       const cities = cityCategories[letter as keyof typeof cityCategories].filter(city =>
-        city.toLowerCase().includes(searchText.toLowerCase()) ||
-        city.includes(searchText)
+        searchResults.includes(city)
       )
       if (cities.length > 0) {
         filtered[letter as keyof typeof cityCategories] = cities
@@ -341,7 +337,7 @@ export default function CitySelector({ currentCity, onCityChange, onClose }: Cit
                     <Text className='group-letter'>{letter}</Text>
                   </View>
                   <View className='group-cities'>
-                    {cities.map((city) => (
+                    {(cities || []).map((city) => (
                       <View
                         key={city}
                         className={`city-item ${city === currentCity ? 'active' : ''}`}

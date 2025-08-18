@@ -1,0 +1,496 @@
+.coupons-page {
+  min-height: 100vh;
+  background: #f8f9fa;
+
+  /* 头部导航栏 */
+  .header-navbar {
+    background: white;
+    padding: 20rpx 32rpx;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1rpx solid #f0f0f0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+      .back-icon {
+        font-size: 36rpx;
+        color: #333;
+        font-weight: 600;
+      }
+    }
+
+    .navbar-center {
+      flex: 1;
+      text-align: center;
+
+      .navbar-title {
+        font-size: 32rpx;
+        font-weight: 600;
+        color: #333;
+      }
+    }
+
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16rpx;
+
+      .more-button {
+        width: 48rpx;
+        height: 48rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        .more-icon {
+          font-size: 24rpx;
+          color: #666;
+        }
+      }
+    }
+  }
+
+  /* 导航标签页 */
+  .tabs-section {
+    background: white;
+    border-bottom: 1rpx solid #f0f0f0;
+
+    .tabs-header {
+      display: flex;
+      align-items: center;
+      padding: 0 32rpx;
+
+      .tab {
+        flex: 1;
+        text-align: center;
+        padding: 24rpx 16rpx;
+        font-size: 28rpx;
+        color: #666;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &.active {
+          color: #22c55e;
+          font-weight: 600;
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60rpx;
+            height: 4rpx;
+            background: #22c55e;
+            border-radius: 2rpx;
+          }
+        }
+
+        &:hover {
+          color: #22c55e;
+        }
+      }
+    }
+  }
+
+  /* 主要内容区域 */
+  .main-content {
+    flex: 1;
+    padding: 80rpx 32rpx;
+
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 120rpx 0;
+
+      .loading-text {
+        font-size: 28rpx;
+        color: #666;
+      }
+    }
+
+    .coupons-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24rpx;
+
+      .coupon-item {
+        background: white;
+        border-radius: 20rpx;
+        padding: 32rpx;
+        box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+        border-left: 8rpx solid #22c55e;
+
+        .coupon-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 24rpx;
+
+          .coupon-type {
+            display: flex;
+            align-items: center;
+            gap: 12rpx;
+
+            .type-icon {
+              font-size: 32rpx;
+            }
+
+            .type-text {
+              font-size: 24rpx;
+              color: #666;
+              background: #f3f4f6;
+              padding: 8rpx 16rpx;
+              border-radius: 20rpx;
+            }
+          }
+
+          .coupon-value {
+            .value-text {
+              font-size: 36rpx;
+              font-weight: 700;
+              color: #22c55e;
+            }
+          }
+        }
+
+        .coupon-content {
+          margin-bottom: 24rpx;
+
+          .coupon-title {
+            font-size: 32rpx;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12rpx;
+            display: block;
+          }
+
+          .coupon-desc {
+            font-size: 26rpx;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 16rpx;
+            display: block;
+          }
+
+          .coupon-condition {
+            font-size: 24rpx;
+            color: #ff6b47;
+            background: #fff5f5;
+            padding: 8rpx 16rpx;
+            border-radius: 16rpx;
+            display: inline-block;
+            margin-bottom: 16rpx;
+          }
+
+          .coupon-conditions {
+            .condition-item {
+              font-size: 24rpx;
+              color: #666;
+              line-height: 1.6;
+              display: block;
+            }
+          }
+        }
+
+        .coupon-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-top: 20rpx;
+          border-top: 1rpx solid #f0f0f0;
+
+          .valid-date {
+            font-size: 24rpx;
+            color: #999;
+          }
+
+          .expiring-soon {
+            .expiring-text {
+              font-size: 22rpx;
+              color: #ff6b47;
+              background: #fff5f5;
+              padding: 6rpx 12rpx;
+              border-radius: 12rpx;
+            }
+          }
+        }
+
+        // 不同类型优惠券的左边框颜色
+        &:nth-child(4n + 1) {
+          border-left-color: #22c55e; // 绿色
+        }
+
+        &:nth-child(4n + 2) {
+          border-left-color: #3b82f6; // 蓝色
+        }
+
+        &:nth-child(4n + 3) {
+          border-left-color: #f59e0b; // 橙色
+        }
+
+        &:nth-child(4n + 4) {
+          border-left-color: #8b5cf6; // 紫色
+        }
+      }
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120rpx 0;
+
+      .wallet-illustration {
+        position: relative;
+        width: 200rpx;
+        height: 160rpx;
+        margin-bottom: 40rpx;
+
+        .wallet-icon {
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 120rpx;
+          color: #dcfce7;
+          filter: drop-shadow(0 4rpx 8rpx rgba(34, 197, 94, 0.2));
+        }
+
+        .money-symbol {
+          position: absolute;
+          top: 40rpx;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 48rpx;
+          color: #22c55e;
+          font-weight: 700;
+          z-index: 2;
+        }
+
+        .paper-stack {
+          position: absolute;
+          bottom: 20rpx;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 120rpx;
+          height: 80rpx;
+          background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+          border-radius: 8rpx;
+          box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: -8rpx;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100rpx;
+            height: 60rpx;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 8rpx;
+            box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+          }
+
+          &::after {
+            content: '';
+            position: absolute;
+            top: -16rpx;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80rpx;
+            height: 40rpx;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 8rpx;
+            box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+          }
+        }
+      }
+
+      .empty-text {
+        font-size: 32rpx;
+        color: #333;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+/* 响应式适配 */
+@media (max-width: 750px) {
+  .coupons-page {
+    .header-navbar {
+      padding: 16rpx 24rpx;
+
+      .navbar-title {
+        font-size: 28rpx;
+      }
+    }
+
+    .tabs-section .tabs-header {
+      padding: 0 24rpx;
+
+      .tab {
+        padding: 20rpx 12rpx;
+        font-size: 24rpx;
+      }
+    }
+
+    .main-content {
+      padding: 60rpx 24rpx;
+
+      .loading-state {
+        padding: 80rpx 0;
+
+        .loading-text {
+          font-size: 24rpx;
+        }
+      }
+
+      .coupons-list {
+        gap: 20rpx;
+
+        .coupon-item {
+          padding: 28rpx;
+          border-left: 6rpx solid #22c55e;
+
+          .coupon-header {
+            margin-bottom: 20rpx;
+
+            .coupon-type {
+              gap: 8rpx;
+
+              .type-icon {
+                font-size: 28rpx;
+              }
+
+              .type-text {
+                font-size: 20rpx;
+                padding: 6rpx 12rpx;
+              }
+            }
+
+            .coupon-value {
+              .value-text {
+                font-size: 32rpx;
+              }
+            }
+          }
+
+          .coupon-content {
+            margin-bottom: 20rpx;
+
+            .coupon-title {
+              font-size: 28rpx;
+              margin-bottom: 8rpx;
+            }
+
+            .coupon-desc {
+              font-size: 22rpx;
+              margin-bottom: 12rpx;
+            }
+
+            .coupon-condition {
+              font-size: 20rpx;
+              padding: 6rpx 12rpx;
+              border-radius: 12rpx;
+              margin-bottom: 12rpx;
+            }
+
+            .coupon-conditions {
+              .condition-item {
+                font-size: 20rpx;
+              }
+            }
+          }
+
+          .coupon-footer {
+            padding-top: 16rpx;
+
+            .valid-date {
+              font-size: 20rpx;
+            }
+
+            .expiring-soon {
+              .expiring-text {
+                font-size: 18rpx;
+                padding: 4rpx 8rpx;
+                border-radius: 8rpx;
+              }
+            }
+          }
+
+          // 不同类型优惠券的左边框颜色
+          &:nth-child(4n + 1) {
+            border-left-color: #22c55e; // 绿色
+          }
+
+          &:nth-child(4n + 2) {
+            border-left-color: #3b82f6; // 蓝色
+          }
+
+          &:nth-child(4n + 3) {
+            border-left-color: #f59e0b; // 橙色
+          }
+
+          &:nth-child(4n + 4) {
+            border-left-color: #8b5cf6; // 紫色
+          }
+        }
+      }
+
+      .empty-state {
+        padding: 80rpx 0;
+
+        .wallet-illustration {
+          width: 160rpx;
+          height: 128rpx;
+
+          .wallet-icon {
+            font-size: 96rpx;
+          }
+
+          .money-symbol {
+            font-size: 40rpx;
+            top: 32rpx;
+          }
+
+          .paper-stack {
+            width: 96rpx;
+            height: 64rpx;
+            bottom: 16rpx;
+
+            &::before {
+              width: 80rpx;
+              height: 48rpx;
+              top: -6rpx;
+            }
+
+            &::after {
+              width: 64rpx;
+              height: 32rpx;
+              top: -12rpx;
+            }
+          }
+        }
+
+        .empty-text {
+          font-size: 28rpx;
+        }
+      }
+    }
+  }
+}

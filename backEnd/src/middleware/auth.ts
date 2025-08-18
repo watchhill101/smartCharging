@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { AppError } from './errorHandler';
 import User, { IUser } from '../models/User';
 
+
 // 扩展Request接口
 declare global {
   namespace Express {
@@ -91,6 +92,9 @@ export const requireVerificationLevel = (level: 'basic') => {
     next();
   };
 };
+
+// 添加auth别名，保持向后兼容
+export const auth = authenticate;
 
 // 生成JWT令牌
 export const generateToken = (userId: string): string => {

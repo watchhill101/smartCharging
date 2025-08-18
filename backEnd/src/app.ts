@@ -16,6 +16,7 @@ import stationRoutes from './routes/station';
 import chargingRoutes from './routes/charging';
 import paymentRoutes from './routes/payment';
 import faceRoutes from './routes/face';
+import couponRoutes from './routes/coupons';
 
 // 验证和设置配置
 setDefaults();
@@ -125,6 +126,7 @@ app.use('/api/stations', stationRoutes);
 app.use('/api/charging', chargingRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/face', faceRoutes);
+app.use('/api/coupons', couponRoutes);
 
 // 错误处理中间件
 app.use(notFound);
