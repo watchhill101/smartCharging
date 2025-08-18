@@ -208,6 +208,8 @@ export default function Index() {
 		return `${available}/${total}`
 	}
 
+
+
   return (
     <View className='index'>
 			<View className='top-bar'>
@@ -215,6 +217,7 @@ export default function Index() {
 					{currentCity}
 				</View>
 				<View className='search'>请输入目的地/电站名</View>
+
 			</View>
 
 			<View className='content'>
@@ -299,8 +302,43 @@ export default function Index() {
 								className='station-card'
 								onClick={() => {
 									console.log('点击充电站:', station)
-									// 这里可以添加点击充电站后的逻辑
-									// 比如显示充电站信息弹窗等
+									// 保存选中的充电站信息
+									try {
+										if (typeof Taro.setStorageSync === 'function') {
+											Taro.setStorageSync('selected_station', station)
+											console.log('充电站数据已保存到Taro存储')
+										} else {
+											localStorage.setItem('selected_station', JSON.stringify(station))
+											console.log('充电站数据已保存到浏览器localStorage')
+										}
+										
+										// 跳转到详情页面
+										if (typeof Taro.navigateTo === 'function') {
+											Taro.navigateTo({
+												url: '/pages/index/xiangx',
+												success: () => {
+													console.log('跳转到详情页面成功')
+												},
+												fail: (error) => {
+													console.error('Taro跳转失败:', error)
+													// 如果Taro跳转失败，使用浏览器导航
+													window.location.hash = '#/pages/index/xiangx'
+												}
+											})
+										} else {
+											// Taro不可用，直接使用浏览器导航
+											window.location.hash = '#/pages/index/xiangx'
+										}
+									} catch (error) {
+										console.error('跳转失败:', error)
+										// 最后的备选方案
+										try {
+											localStorage.setItem('selected_station', JSON.stringify(station))
+											window.location.hash = '#/pages/index/xiangx'
+										} catch (fallbackError) {
+											console.error('备选方案也失败了:', fallbackError)
+										}
+									}
 								}}
 							>
 								{/* 顶部信息 */}
@@ -344,7 +382,76 @@ export default function Index() {
 										<Text className='price-value'>{getDisplayPrice(station)}</Text>
 										<Text className='price-unit'>起/度</Text>
 									</View>
-									<View className='distance-section'>
+									<View className='distance-section' onClick={(e) => {
+										e.stopPropagation() // 阻止事件冒泡，避免触发整个卡片的点击
+										console.log('点击距离，准备跳转到地图页面:', station)
+										
+										// 保存地图目标位置信息
+										try {
+											if (typeof Taro.setStorageSync === 'function') {
+												Taro.setStorageSync('map_target_coord', {
+													lng: station.location.coordinates[0],
+													lat: station.location.coordinates[1]
+												})
+												Taro.setStorageSync('map_target_station', {
+													name: station.name,
+													address: station.address,
+													distance: station.distance,
+													rating: station.rating
+												})
+												console.log('地图数据已保存到Taro存储')
+											} else {
+												// 降级到浏览器localStorage
+												localStorage.setItem('map_target_coord', JSON.stringify({
+													lng: station.location.coordinates[0],
+													lat: station.location.coordinates[1]
+												}))
+												localStorage.setItem('map_target_station', JSON.stringify({
+													name: station.name,
+													address: station.address,
+													distance: station.distance,
+													rating: station.rating
+												}))
+												console.log('地图数据已保存到浏览器localStorage')
+											}
+											
+											// 跳转到地图页面
+											if (typeof Taro.navigateTo === 'function') {
+												Taro.navigateTo({
+													url: '/pages/map/index',
+													success: () => {
+														console.log('跳转到地图页面成功')
+													},
+													fail: (error) => {
+														console.error('Taro跳转失败:', error)
+														// 如果Taro跳转失败，使用浏览器导航
+														window.location.hash = '#/pages/map/index'
+													}
+												})
+											} else {
+												// Taro不可用，直接使用浏览器导航
+												window.location.hash = '#/pages/map/index'
+											}
+										} catch (error) {
+											console.error('保存地图数据或跳转失败:', error)
+											// 最后的备选方案
+											try {
+												localStorage.setItem('map_target_coord', JSON.stringify({
+													lng: station.location.coordinates[0],
+													lat: station.location.coordinates[1]
+												}))
+												localStorage.setItem('map_target_station', JSON.stringify({
+													name: station.name,
+													address: station.address,
+													distance: station.distance,
+													rating: station.rating
+												}))
+												window.location.hash = '#/pages/map/index'
+											} catch (fallbackError) {
+												console.error('备选方案也失败了:', fallbackError)
+											}
+										}
+									}}>
 										<Text className='distance-icon'>📍</Text>
 										<Text className='distance-text'>{getDisplayDistance(station)}</Text>
 									</View>
