@@ -202,7 +202,7 @@
         font-size: 14px;
         color: #333;
         font-weight: 600;
-        text-align: center;
+  text-align: center;
         line-height: 1.2;
       }
     }
@@ -1209,76 +1209,78 @@
   }
 
   // AI客服浮动按钮
-  .ai-customer-service {
-    position: fixed;
-    right: 20px;
-    bottom: 120px;
-    z-index: 1000;
+.ai-customer-service {
+  position: fixed;
+  right: 20px;
+  bottom: 120px;
+  z-index: 1000;
+  
+  .ai-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
     
-    .ai-button {
+    &:hover {
+      transform: scale(1.05);
+    }
+    
+    &:active {
+      transform: scale(0.95);
+    }
+    
+    .ai-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #00D4AA 0%, #00B393 100%);
+      border-radius: 50%;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(0, 212, 170, 0.3);
+      margin-bottom: 8px;
+      position: relative;
+      overflow: hidden;
       
-      &:hover {
-        transform: scale(1.05);
+      &::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transform: rotate(45deg);
+        animation: shine 2s infinite;
       }
       
-      &:active {
-        transform: scale(0.95);
-      }
-      
-      .ai-icon {
-        width: 60px;
-        height: 60px;
-        background: linear-gradient(135deg, #00D4AA 0%, #00B393 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 16px rgba(0, 212, 170, 0.3);
-        margin-bottom: 8px;
-        position: relative;
-        overflow: hidden;
-        
-        &::before {
-          content: '';
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-          transform: rotate(45deg);
-          animation: shine 2s infinite;
-        }
-        
-        .ai-text {
-          color: white;
-          font-size: 24px;
-          font-weight: bold;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          z-index: 1;
-        }
-      }
-      
-      .ai-label {
-        background: #00D4AA;
+      .ai-text {
         color: white;
-        padding: 6px 12px;
-        border-radius: 16px;
-        font-size: 14px;
-        font-weight: 600;
-        box-shadow: 0 2px 8px rgba(0, 212, 170, 0.2);
-        
-        .label-text {
-          line-height: 1;
-        }
+        font-size: 24px;
+        font-weight: bold;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        z-index: 1;
+      }
+    }
+    
+    .ai-label {
+      background: #00D4AA;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0, 212, 170, 0.2);
+      
+      .label-text {
+        line-height: 1;
       }
     }
   }
+}
+
+
 
   // 闪光动画
   @keyframes shine {

@@ -1,4 +1,3 @@
-  
 import Taro, { useLoad, getCurrentInstance, useDidShow } from '@tarojs/taro'
 import { useMemo, useState } from 'react'
 import Device from './device'

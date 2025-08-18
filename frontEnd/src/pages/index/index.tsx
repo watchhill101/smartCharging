@@ -298,17 +298,9 @@ export default function Index() {
 								key={station._id} 
 								className='station-card'
 								onClick={() => {
-									const [lng, lat] = station.location.coordinates
-									try {
-										Taro.setStorageSync('map_target_coord', { lng, lat })
-										Taro.setStorageSync('map_target_station', {
-											name: station.name,
-											address: station.address,
-											distance: station.distance,
-											rating: station.rating
-										})
-									} catch {}
-									Taro.switchTab({ url: '/pages/map/index' })
+									console.log('点击充电站:', station)
+									// 这里可以添加点击充电站后的逻辑
+									// 比如显示充电站信息弹窗等
 								}}
 							>
 								{/* 顶部信息 */}
@@ -384,6 +376,8 @@ export default function Index() {
 					</View>
 				</View>
 			</View>
+
+
     </View>
   )
 }
