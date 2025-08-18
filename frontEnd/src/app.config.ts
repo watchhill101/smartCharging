@@ -10,65 +10,71 @@ export default {
     'pages/scan/index'
   ],
   window: {
-    backgroundTextStyle: 'light',
-    navigationBarBackgroundColor: '#fff',
-    navigationBarTitleText: '智能充电',
-    navigationBarTextStyle: 'black'
+    backgroundTextStyle: "light",
+    navigationBarBackgroundColor: "#fff",
+    navigationBarTitleText: "智能充电",
+    navigationBarTextStyle: "black",
   },
   // H5 specific configurations
   h5: {
     router: {
-      mode: 'hash',
-      basename: '/'
+      mode: "hash",
+      basename: "/",
     },
     devServer: {
       port: 10086,
-      host: 'localhost'
+      host: "localhost",
     },
-    publicPath: '/',
-    staticDirectory: 'static',
+    publicPath: "/",
+    staticDirectory: "static",
     postcss: {
       autoprefixer: {
-        enable: true
-      }
-    }
+        enable: true,
+      },
+    },
   },
   // 添加权限配置
   permission: {
-    'scope.camera': {
-      desc: '您的摄像头将用于扫描充电桩二维码'
-    }
+    "scope.camera": {
+      desc: "您的摄像头将用于扫描充电桩二维码",
+    },
   },
   tabBar: {
-    color: '#666',
-    selectedColor: '#1890ff',
-    backgroundColor: '#fff',
-    borderStyle: 'black',
+    color: "#666",
+    selectedColor: "#1890ff",
+    backgroundColor: "#fff",
+    borderStyle: "black",
     list: [
       {
-        pagePath: 'pages/index/index',
-        text: '首页',
-        iconPath: 'assets/icons/home.png',
-        selectedIconPath: 'assets/icons/home-active.png'
+        pagePath: "pages/index/index",
+        text: "首页",
+        iconPath: "/assets/icons/home.svg",
+        selectedIconPath: "/assets/icons/home-active.svg",
       },
       {
-        pagePath: 'pages/map/index', 
-        text: '地图',
-        iconPath: 'assets/icons/map.png',
-        selectedIconPath: 'assets/icons/map-active.png'
+        pagePath: "pages/map/index",
+        text: "地图",
+        iconPath: "/assets/icons/map.svg",
+        selectedIconPath: "/assets/icons/map-active.svg",
       },
       {
-        pagePath: 'pages/charging/index',
-        text: '充电',
-        iconPath: 'assets/icons/charging.png',
-        selectedIconPath: 'assets/icons/charging-active.png'
+        pagePath: "pages/scan/index",
+        text: "扫码",
+        iconPath: "/assets/icons/scan.svg",
+        selectedIconPath: "/assets/icons/scan-active.svg",
       },
       {
-        pagePath: 'pages/profile/index',
-        text: '我的',
-        iconPath: 'assets/icons/profile.png',
-        selectedIconPath: 'assets/icons/profile-active.png'
-      }
-    ]
-  }
-}
+        pagePath: "pages/charging/index",
+        text: "充电",
+        iconPath: "/assets/icons/charging.svg",
+        selectedIconPath: "/assets/icons/charging-active.svg",
+      },
+      {
+        pagePath: "pages/profile/index",
+        text: "我的",
+        iconPath: "/assets/icons/profile.svg",
+        selectedIconPath: "/assets/icons/profile-active.svg",
+      },
+    ],
+  },
+};

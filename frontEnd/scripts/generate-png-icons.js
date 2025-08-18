@@ -1,14 +1,13 @@
 const fs = require('fs')
 const path = require('path')
 
-// 创建 Base64 编码的 PNG 数据（1x1 像素的彩色图片用于测试）
-const createTestPNG = (color) => {
-  // 这是一个简单的 8x8 像素的 PNG base64 数据
-  const pngBase64 = {
-    gray: 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAABYSURBVBiVY/z//z8DFQALAzUAC1QBCwMVAAsBFQALARUACwEVAAsDE1QBMzMzAwtUATMzMwMLVAEzMzMDC1QBMzMzAwtUATMzMwMLVAEzMzMDC1QBMzMzAwtDvQAAAP//AwBfYQABYdEJhAAAAABJRU5ErkJggg==',
-    blue: 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAABYSURBVBiVY2RgYPgPBUwMVAAsTFQALExUACxMVAAsTFQALExMUAXMzMwMLExUAMzMzAwsTFQAzMzMDCxMVADMzMwMLExUAMzMzAwsTFQAzMzMDCxMVADMzAwsTP0AAAD//wMAX2EAAWHRCYQAAAAASUVORK5CYII='
-  }
-  return color === 'blue' ? pngBase64.blue : pngBase64.gray
+// 创建 Base64 编码的 PNG 数据（32x32 像素的更好质量图标）
+const createIconPNG = (iconType, isActive = false) => {
+  // 32x32 像素的灰色/蓝色方块 PNG base64 数据，更合适的大小
+  const grayPNG = 'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAGElEQVR42u3BMQEAAADCIPuntsYOYAEAUAI4AAIAAAEiGwAAAABJRU5ErkJggg=='
+  const bluePNG = 'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAGElEQVR42u3BMQEAAADCIPuntsYOYAEAUAI4AAIAAAEiGwAAAABJRU5ErkJggg=='
+  
+  return isActive ? bluePNG : grayPNG
 }
 
 // 创建真正的图标 SVG
@@ -21,6 +20,10 @@ const createIconSVG = (iconType, color = '#666') => {
     map: `
       <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="${color}"/>
+      </svg>`,
+    scan: `
+      <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9.5 6.5v3h-3v-3h3M11 5H5v6h6V5Zm-1.5 9.5v3h-3v-3h3M11 13H5v6h6v-6Zm6.5-6.5v3h-3v-3h3M19 5h-6v6h6V5Zm-6 8h1.5v1.5H13V13Zm1.5 1.5H16V16h-1.5v-1.5Zm1.5 1.5h1.5V17H16v-1.5Zm1.5-1.5V13H19v1.5h-1.5Zm0 3V16H19v1.5h-1.5Zm1.5 0h1.5V19H19v-1.5Z" fill="${color}"/>
       </svg>`,
     charging: `
       <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -38,6 +41,7 @@ const createIconSVG = (iconType, color = '#666') => {
 const icons = [
   { name: 'home', type: 'home' },
   { name: 'map', type: 'map' },
+  { name: 'scan', type: 'scan' },
   { name: 'charging', type: 'charging' },
   { name: 'profile', type: 'profile' }
 ]
@@ -58,9 +62,9 @@ icons.forEach(icon => {
     fs.writeFileSync(path.join(iconsDir, `${icon.name}.svg`), normalSvg)
     fs.writeFileSync(path.join(iconsDir, `${icon.name}-active.svg`), activeSvg)
     
-    // 创建简单的测试 PNG（base64 解码）
-    const normalPngBuffer = Buffer.from(createTestPNG('gray'), 'base64')
-    const activePngBuffer = Buffer.from(createTestPNG('blue'), 'base64')
+    // 创建更好的 PNG（base64 解码）
+    const normalPngBuffer = Buffer.from(createIconPNG(icon.type, false), 'base64')
+    const activePngBuffer = Buffer.from(createIconPNG(icon.type, true), 'base64')
     
     fs.writeFileSync(path.join(iconsDir, `${icon.name}.png`), normalPngBuffer)
     fs.writeFileSync(path.join(iconsDir, `${icon.name}-active.png`), activePngBuffer)
