@@ -1,9 +1,44 @@
 import { View, Text } from '@tarojs/components'
 import { useLoad } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import { useState, useMemo } from 'react'
+import CitySelector from './CitySelector'
 import './index.scss'
-import { SafeButton } from '../../utils/platform'
 
-export default function Index () {
+// 充电站数据接口
+interface ChargingStation {
+  _id: string
+  name: string
+  address: string
+  location: {
+    type: 'Point'
+    coordinates: [number, number]
+  }
+  operator: string
+  operatingHours: {
+    open: string
+    close: string
+  }
+  parkingFee: number
+  photos: string[]
+  chargers: Array<{
+    chargerId: string
+    type: 'fast' | 'slow'
+    power: number
+    status: 'available' | 'busy' | 'offline'
+    pricing: {
+      electricityFee: number
+      serviceFee: number
+    }
+  }>
+  rating: number
+  reviewCount: number
+  distance?: number
+  createdAt: string
+  updatedAt: string
+}
+
+export default function Index() {
   useLoad(() => {
     console.log('智能充电应用启动')
   })
