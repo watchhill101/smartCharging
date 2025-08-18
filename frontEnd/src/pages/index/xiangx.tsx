@@ -16,7 +16,7 @@ export default function XiangX() {
       
       <View className='content-section'>
         <Text className='content-text'>这里是充电站的详细信息</Text>
-        <Text className='content-text'>您可以查看充电桩状态、价格等信息</Text>
+        <Text className='content-text'>您可以查看充电桩状态、价格等信息123</Text>
       </View>
     </View>
   )
