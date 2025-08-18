@@ -40,7 +40,10 @@ app.use(helmet());
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://smartcharging.com'] 
-    : ['http://localhost:3000'],
+    : [
+        'http://localhost:10086',   // 更新为正确的前端地址
+        'https://localhost:10086'   // HTTPS版本
+      ],
   credentials: true
 }));
 app.use(morgan('combined'));

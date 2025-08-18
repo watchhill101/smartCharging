@@ -1522,15 +1522,16 @@
 
 .quick-amounts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* 自动适应布局 */
-  gap: 14px; /* 增加间距 */
+  grid-template-columns: repeat(5, 1fr); /* 固定5列，确保完美对齐 */
+  gap: 12px; /* 优化间距 */
   max-width: 100%;
-  align-items: start; /* 改为顶部对齐，确保所有按钮在同一水平线 */
-  justify-items: stretch; /* 确保按钮填满grid区域 */
+  align-items: stretch; /* 确保高度一致 */
+  justify-items: stretch; /* 确保宽度一致 */
 }
 
 .quick-amount {
-  padding: 0; /* 移除内边距，使用固定高度 */
+  padding: 0 !important; /* 强制移除内边距 */
+  margin: 0 !important; /* 强制重置所有外边距，确保统一 */
   border: 2px solid #e0e7ff; /* 增加边框粗细 */
   border-radius: 12px; /* 增加圆角 */
   background: white;
@@ -1547,6 +1548,15 @@
   box-shadow: 0 2px 4px rgba(67, 56, 202, 0.1);
   line-height: 1; /* 统一行高 */
   align-self: stretch; /* 确保在grid中垂直拉伸对齐 */
+}
+
+/* 专门处理Taro Button组件的默认样式重置 */
+.quick-amounts .quick-amount {
+  margin: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
 .quick-amount:hover {
@@ -1940,14 +1950,15 @@
   }
   
   .quick-amounts {
-    grid-template-columns: repeat(3, 1fr); /* 移动端改为3列 */
-    gap: 12px;
+    grid-template-columns: repeat(5, 1fr); /* 保持5列布局，确保对齐 */
+    gap: 10px; /* 平板端减小间距 */
   }
   
   .quick-amount {
     font-size: 17px; /* 增大768px屏幕的字体 */
     height: 48px; /* 固定高度 */
-    padding: 0; /* 移除内边距 */
+    padding: 0 !important; /* 强制移除内边距 */
+    margin: 0 !important; /* 强制重置外边距 */
   }
   
   .modal-title {
@@ -2154,10 +2165,17 @@
     font-size: 18px; /* 增大支付方式名称字体 */
   }
   
+  .quick-amounts {
+    grid-template-columns: repeat(5, 1fr); /* 移动端也保持5列，确保完美对齐 */
+    gap: 8px; /* 移动端进一步减小间距 */
+  }
+  
   .quick-amount {
-    font-size: 16px; /* 增大快速充值按钮字体 */
-    height: 46px; /* 固定高度 */
-    padding: 0; /* 移除内边距 */
+    font-size: 15px; /* 移动端稍微减小字体以适应更小的按钮 */
+    height: 44px; /* 移动端适当减小高度 */
+    padding: 0 !important; /* 强制移除内边距 */
+    margin: 0 !important; /* 强制重置外边距 */
+    min-width: 0; /* 确保不会溢出 */
   }
   
   .recharge-now-btn {

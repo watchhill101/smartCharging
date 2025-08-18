@@ -11,7 +11,7 @@ export default {
   h5: {
     devServer: {
       host: '0.0.0.0',  // 允许外部访问
-      port: 8000,       // 指定端口
+      port: 10086,      // 修改前端端口避免与后端冲突
       open: false,      // 不自动打开浏览器
       strictPort: true, // 严格端口模式
       cors: true,       // 启用CORS
@@ -20,10 +20,13 @@ export default {
         cert: fs.readFileSync(path.join(__dirname, '../cert/cert.pem'))
       },
       proxy: {
-        "/v1_0/": {
-          target: 'http://localhost:8080',  // 代理到后端服务
+        "/api/": {
+          target: 'http://localhost:8080',  // 后端实际端口8080
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/v1_0/, '')
+          secure: false,
+          pathRewrite: {
+            '^/api': '/api'
+          }
         }
       }
     }

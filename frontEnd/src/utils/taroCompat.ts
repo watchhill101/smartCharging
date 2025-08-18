@@ -231,6 +231,137 @@ const hideBrowserToast = (): void => {
   }
 }
 
+// Loading 加载提示兼容实现
+let loadingElement: HTMLElement | null = null
+
+export const loading = {
+  show: (options: {
+    title?: string
+    mask?: boolean
+  } = {}): void => {
+    const { title = '加载中...', mask = true } = options
+
+    try {
+      if (isBrowser) {
+        // 浏览器环境使用自定义 Loading
+        showBrowserLoading(title, mask)
+      } else {
+        // 小程序环境使用原生 Loading
+        Taro.showLoading({
+          title,
+          mask
+        })
+      }
+    } catch (error) {
+      console.warn('显示Loading失败:', error)
+      // 降级到console.log
+      console.log(`⏳ Loading: ${title}`)
+    }
+  },
+
+  hide: (): void => {
+    try {
+      if (isBrowser) {
+        hideBrowserLoading()
+      } else {
+        Taro.hideLoading()
+      }
+    } catch (error) {
+      console.warn('隐藏Loading失败:', error)
+    }
+  }
+}
+
+// 浏览器环境下的 Loading 实现
+const showBrowserLoading = (title: string, mask: boolean): void => {
+  // 如果已有 Loading，先清除
+  hideBrowserLoading()
+
+  // 确保样式已加载
+  injectLoadingStyles()
+
+  // 创建遮罩层
+  if (mask) {
+    const maskElement = document.createElement('div')
+    maskElement.className = 'taro-compat-loading-mask'
+    maskElement.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `
+    document.body.appendChild(maskElement)
+    loadingElement = maskElement
+  }
+
+  // 创建 Loading 容器
+  const container = mask ? loadingElement! : document.body
+  const spinner = document.createElement('div')
+  spinner.className = 'taro-compat-loading-spinner'
+  
+  spinner.style.cssText = `
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 14px;
+    z-index: 10000;
+    ${!mask ? 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);' : ''}
+    min-width: 120px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  `
+
+  // 添加旋转器
+  const rotator = document.createElement('div')
+  rotator.className = 'taro-compat-loading-rotator'
+  rotator.style.cssText = `
+    width: 24px;
+    height: 24px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+    animation: taro-loading-spin 1s linear infinite;
+  `
+
+  // 添加文字
+  const text = document.createElement('div')
+  text.textContent = title
+  text.style.cssText = 'color: white; font-size: 14px; line-height: 1.4;'
+
+  spinner.appendChild(rotator)
+  spinner.appendChild(text)
+  container.appendChild(spinner)
+
+  if (!mask) {
+    loadingElement = spinner
+  }
+}
+
+const hideBrowserLoading = (): void => {
+  if (loadingElement) {
+    if (loadingElement.parentNode) {
+      loadingElement.parentNode.removeChild(loadingElement)
+    }
+    loadingElement = null
+  }
+}
+
+// 注入 Loading 样式
+const injectLoadingStyles = (): void => {
+  if (stylesInjected || !isBrowser) return
+  injectToastStyles() // 复用样式注入逻辑
+}
+
 // Request 请求兼容实现
 export const request = async (options: {
   url: string
@@ -289,6 +420,8 @@ export const TaroCompat = {
   clearStorage: storage.clear,
   showToast: toast.show,
   hideToast: toast.hide,
+  showLoading: loading.show,
+  hideLoading: loading.hide,
   request,
   
   // 环境检测
