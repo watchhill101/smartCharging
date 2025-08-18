@@ -54,6 +54,7 @@ export default function Charging() {
   const [batteryInitialized, setBatteryInitialized] = useState(false)
   const [batteryTheme, setBatteryTheme] = useState<BatteryTheme | null>(null)
   const [showBatteryInfo, setShowBatteryInfo] = useState(false)
+  const [smartPrediction, setSmartPrediction] = useState<{usage: string, timeLeft: string} | null>(null)
 
   // 初始化电池 API（带重试机制）
   const initBatteryAPI = useCallback(async (retryCount = 0) => {
@@ -248,6 +249,75 @@ export default function Charging() {
     return 'critical'
   }
 
+  // 智能预测时间计算
+  const calculateSmartPrediction = useCallback((status: BatteryStatus) => {
+    const currentHour = new Date().getHours()
+    const level = status.level * 100
+    let usage = ''
+    let timeLeft = ''
+
+    // 基于时间和电量的智能分析
+    if (status.charging) {
+      // 充电状态的预测
+      const chargeSpeed = 0.8 // 假设每分钟充电0.8%
+      const remainingCharge = 100 - level
+      const estimatedChargeTime = Math.round(remainingCharge / chargeSpeed)
+      
+      usage = '充电中'
+      if (estimatedChargeTime < 60) {
+        timeLeft = `约${estimatedChargeTime}分钟充满`
+      } else {
+        const hours = Math.floor(estimatedChargeTime / 60)
+        const minutes = estimatedChargeTime % 60
+        timeLeft = `约${hours}小时${minutes}分钟充满`
+      }
+    } else {
+      // 使用状态的预测
+      let usagePattern = ''
+      let drainRate = 0
+
+      // 根据时间段分析使用模式
+      if (currentHour >= 6 && currentHour <= 9) {
+        usagePattern = '早晨轻度使用'
+        drainRate = 2.5 // 每小时消耗2.5%
+      } else if (currentHour >= 10 && currentHour <= 18) {
+        usagePattern = '白天中度使用'
+        drainRate = 4.0 // 每小时消耗4%
+      } else if (currentHour >= 19 && currentHour <= 23) {
+        usagePattern = '晚上重度使用'
+        drainRate = 6.0 // 每小时消耗6%
+      } else {
+        usagePattern = '夜间待机'
+        drainRate = 1.0 // 每小时消耗1%
+      }
+
+      // 根据当前电量调整消耗率
+      if (level < 20) {
+        drainRate *= 0.8 // 低电量时系统会自动优化
+        usagePattern += '(省电模式)'
+      } else if (level > 80) {
+        drainRate *= 1.2 // 高电量时使用可能更频繁
+      }
+
+      usage = usagePattern
+      const estimatedHours = level / drainRate
+      
+      if (estimatedHours < 1) {
+        timeLeft = `约${Math.round(estimatedHours * 60)}分钟`
+      } else if (estimatedHours < 24) {
+        const hours = Math.floor(estimatedHours)
+        const minutes = Math.round((estimatedHours - hours) * 60)
+        timeLeft = `约${hours}小时${minutes}分钟`
+      } else {
+        const days = Math.floor(estimatedHours / 24)
+        const hours = Math.floor(estimatedHours % 24)
+        timeLeft = `约${days}天${hours}小时`
+      }
+    }
+
+    setSmartPrediction({ usage, timeLeft })
+  }, [])
+
   // 更新电池主题
   const updateBatteryTheme = useCallback((status: BatteryStatus) => {
     const levelPercent = Math.round(status.level * 100)
@@ -310,7 +380,8 @@ export default function Charging() {
     }
 
     setBatteryTheme(newTheme)
-  }, [])
+    calculateSmartPrediction(status)
+  }, [calculateSmartPrediction])
 
   // 获取电池主题样式
   const getBatteryCardStyle = () => {
@@ -621,6 +692,21 @@ export default function Charging() {
                  batteryStatus?.isSupported ? '✅ 已支持' : '🤖 智能模拟'}
               </Text>
             </View>
+            <View className='battery-info-item smart-prediction-item'>
+              <Text className='info-label'>智能预测:</Text>
+              <Text className='info-value smart-prediction-value'>
+                {!smartPrediction ? '🧠 分析中...' : 
+                 `${smartPrediction.usage}`}
+              </Text>
+            </View>
+            {smartPrediction && (
+              <View className='battery-info-item prediction-time-item'>
+                <Text className='info-label'>预估时间:</Text>
+                <Text className='info-value prediction-time-value'>
+                  ⏰ {smartPrediction.timeLeft}
+                </Text>
+              </View>
+            )}
             {batteryStatus?.isSupported && (
               <>
                 {batteryStatus.chargingTime !== Infinity && (
