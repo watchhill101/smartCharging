@@ -198,250 +198,72 @@
   box-shadow: 0 8px 32px rgba(251, 191, 36, 0.4) !important;
 }
 
-/* 内部波浪形脉冲效果 - 卡片保持静止，只有内部波纹流动 */
+/* 美化的脉冲动画效果 */
 .critical-pulse {
-  position: relative;
-  overflow: hidden;
-}
-
-.critical-pulse::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(
-    circle at 50% 50%,
-    transparent 0%,
-    rgba(239, 68, 68, 0.1) 30%,
-    rgba(239, 68, 68, 0.2) 50%,
-    rgba(239, 68, 68, 0.1) 70%,
-    transparent 100%
-  );
-  animation: critical-pulse-wave 3s ease-in-out infinite;
-  z-index: 1;
-  pointer-events: none;
-  border-radius: inherit;
-}
-
-.critical-pulse::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 300%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(239, 68, 68, 0.15) 30%,
-    rgba(239, 68, 68, 0.25) 50%,
-    rgba(239, 68, 68, 0.15) 70%,
-    transparent 100%
-  );
-  animation: critical-wave-flow 4s ease-in-out infinite;
-  z-index: 2;
-  pointer-events: none;
-  border-radius: inherit;
+  animation: enhanced-pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .charging-pulse {
-  position: relative;
-  overflow: hidden;
-}
-
-.charging-pulse::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(
-    circle at 50% 50%,
-    transparent 0%,
-    rgba(34, 197, 94, 0.1) 30%,
-    rgba(34, 197, 94, 0.2) 50%,
-    rgba(34, 197, 94, 0.1) 70%,
-    transparent 100%
-  );
-  animation: charging-pulse-wave 2.5s ease-in-out infinite;
-  z-index: 1;
-  pointer-events: none;
-  border-radius: inherit;
-}
-
-.charging-pulse::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 300%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(34, 197, 94, 0.15) 30%,
-    rgba(34, 197, 94, 0.25) 50%,
-    rgba(34, 197, 94, 0.15) 70%,
-    transparent 100%
-  );
-  animation: charging-wave-flow 3s ease-in-out infinite;
-  z-index: 2;
-  pointer-events: none;
-  border-radius: inherit;
+  animation: charging-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .battery-pulse {
-  position: relative;
-  overflow: hidden;
+  animation: battery-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.battery-pulse::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(
-    circle at 50% 50%,
-    transparent 0%,
-    rgba(59, 130, 246, 0.1) 30%,
-    rgba(59, 130, 246, 0.15) 50%,
-    rgba(59, 130, 246, 0.1) 70%,
-    transparent 100%
-  );
-  animation: battery-pulse-wave 4s ease-in-out infinite;
-  z-index: 1;
-  pointer-events: none;
-  border-radius: inherit;
-}
-
-.battery-pulse::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 300%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(59, 130, 246, 0.1) 30%,
-    rgba(59, 130, 246, 0.2) 50%,
-    rgba(59, 130, 246, 0.1) 70%,
-    transparent 100%
-  );
-  animation: battery-wave-flow 5s ease-in-out infinite;
-  z-index: 2;
-  pointer-events: none;
-  border-radius: inherit;
-}
-
-/* 内部波浪形脉冲动画关键帧 */
-
-/* 危险状态内部脉冲波浪 */
-@keyframes critical-pulse-wave {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(0.8) rotate(0deg);
+/* 增强的脉冲动画 - 危险状态 */
+@keyframes enhanced-pulse {
+  0%, 100% { 
+    box-shadow: 
+      0 8px 32px rgba(220, 38, 38, 0.3),
+      0 0 20px rgba(220, 38, 38, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: scale(1);
   }
-  33% {
-    opacity: 0.6;
-    transform: scale(1.1) rotate(120deg);
-  }
-  66% {
-    opacity: 0.8;
-    transform: scale(1.3) rotate(240deg);
+  50% { 
+    box-shadow: 
+      0 16px 48px rgba(220, 38, 38, 0.5),
+      0 0 40px rgba(220, 38, 38, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: scale(1.02);
   }
 }
 
-@keyframes critical-wave-flow {
-  0% {
-    left: -100%;
-    opacity: 0;
+/* 充电状态脉冲动画 */
+@keyframes charging-pulse {
+  0%, 100% { 
+    box-shadow: 
+      0 12px 40px rgba(34, 197, 94, 0.3),
+      0 0 30px rgba(34, 197, 94, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transform: scale(1);
   }
-  30% {
-    opacity: 0.4;
-  }
-  70% {
-    opacity: 0.6;
-  }
-  100% {
-    left: 100%;
-    opacity: 0;
-  }
-}
-
-/* 充电状态内部脉冲波浪 */
-@keyframes charging-pulse-wave {
-  0%, 100% {
-    opacity: 0.4;
-    transform: scale(0.9) rotate(0deg);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.2) rotate(180deg);
+  50% { 
+    box-shadow: 
+      0 20px 60px rgba(34, 197, 94, 0.4),
+      0 0 50px rgba(34, 197, 94, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transform: scale(1.015);
   }
 }
 
-@keyframes charging-wave-flow {
-  0% {
-    left: -100%;
-    opacity: 0;
+/* 一般电池状态脉冲动画 */
+@keyframes battery-pulse {
+  0%, 100% { 
+    box-shadow: 
+      0 10px 35px rgba(59, 130, 246, 0.2),
+      0 0 25px rgba(59, 130, 246, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: scale(1);
   }
-  25% {
-    opacity: 0.5;
-  }
-  75% {
-    opacity: 0.7;
-  }
-  100% {
-    left: 100%;
-    opacity: 0;
-  }
-}
-
-/* 一般电池状态内部脉冲波浪 */
-@keyframes battery-pulse-wave {
-  0%, 100% {
-    opacity: 0.2;
-    transform: scale(0.7) rotate(0deg);
-  }
-  25% {
-    opacity: 0.4;
-    transform: scale(0.9) rotate(90deg);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(1.0) rotate(180deg);
-  }
-  75% {
-    opacity: 0.4;
-    transform: scale(0.9) rotate(270deg);
+  50% { 
+    box-shadow: 
+      0 18px 55px rgba(59, 130, 246, 0.3),
+      0 0 45px rgba(59, 130, 246, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: scale(1.01);
   }
 }
-
-@keyframes battery-wave-flow {
-  0% {
-    left: -100%;
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.3;
-  }
-  80% {
-    opacity: 0.4;
-  }
-  100% {
-    left: 100%;
-    opacity: 0;
-  }
-}
-
-
 
 /* 充电状态动画 */
 .charging-active {
@@ -536,7 +358,7 @@
   padding: 8px 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  z-index: 15; /* 确保电池指示器在脉冲效果之上 */
+  z-index: 5;
 }
 
 .battery-indicator:hover {
@@ -602,7 +424,7 @@
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  z-index: 20; /* 确保信息面板在所有效果之上 */
+  z-index: 10;
   min-width: 200px;
   max-width: 250px;
 }
@@ -631,56 +453,16 @@
   font-weight: 600;
 }
 
-/* 智能预测样式 */
-.smart-prediction-item {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%);
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin: 4px -8px;
-  border-left: 3px solid #3b82f6;
-}
-
-.smart-prediction-value {
-  color: #3b82f6 !important;
-  font-weight: 700;
-  font-size: 13px;
-}
-
-.prediction-time-item {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin: 4px -8px;
-  border-left: 3px solid #22c55e;
-}
-
-.prediction-time-value {
-  color: #22c55e !important;
-  font-weight: 700;
-  font-size: 13px;
-  animation: gentle-glow 2s ease-in-out infinite alternate;
-}
-
-@keyframes gentle-glow {
-  from {
-    text-shadow: 0 0 5px rgba(34, 197, 94, 0.3);
-  }
-  to {
-    text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
-  }
-}
-
 /* 电池主题提示 - 优化位置 */
 .battery-theme-hint {
-  font-size: 17px;
+  font-size: 15px;
   color: rgba(255, 255, 255, 0.8);
-  margin-top: 10px;
+  margin-top: 8px;
   text-align: left;
   opacity: 0.9;
   font-weight: 500;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  line-height: 1.4;
 }
 
 @keyframes gentle-pulse {
@@ -769,7 +551,7 @@
   text-align: left;
   margin-bottom: 20px;
   position: relative;
-  z-index: 10; /* 确保内容在脉冲效果之上 */
+  z-index: 2;
 }
 
 .balance-header {
@@ -784,11 +566,11 @@
 }
 
 .balance-label {
-  font-size: 20px;
+  font-size: 18px;
   color: rgba(255, 255, 255, 0.85);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   font-weight: 500;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
 }
 
 .balance-amount-container {
@@ -797,21 +579,21 @@
   justify-content: center;
   white-space: nowrap;
   overflow: hidden;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .currency-symbol {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 600;
   color: white;
   opacity: 0.9;
   text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  margin-right: 6px;
+  margin-right: 4px;
   flex-shrink: 0;
 }
 
 .balance-amount {
-  font-size: 52px;
+  font-size: 48px;
   font-weight: 700;
   color: white;
   line-height: 1.1;
@@ -820,8 +602,7 @@
     0 1px 3px rgba(0, 0, 0, 0.1);
   flex-shrink: 1;
   min-width: 0;
-  margin-bottom: 6px;
-  letter-spacing: -0.02em;
+  margin-bottom: 4px;
 }
 
 @keyframes subtle-glow {
@@ -850,7 +631,7 @@
   padding: 6px;
   backdrop-filter: blur(15px);
   position: relative;
-  z-index: 10; /* 确保导航在脉冲效果之上 */
+  z-index: 2;
   margin-bottom: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -997,14 +778,13 @@
 
 /* Enhanced Section Title */
 .section-title {
-  font-size: 48px; /* 从42px增加到48px */
+  font-size: 42px; /* 从36px增加到42px */
   font-weight: 700;
   color: #1f2937;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   padding-left: 4px;
   position: relative;
   display: inline-block;
-  letter-spacing: -0.02em;
 }
 
 .section-title::after {
@@ -1036,20 +816,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  background: #ffffff;
-  border: 1px solid #f1f5f9;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
   transition: all 0.3s ease;
   cursor: pointer;
 }
 
 .transaction-item:hover {
   background: #f9fafb;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .transaction-left {
@@ -1085,15 +860,14 @@
 }
 
 .transaction-desc {
-  font-size: 28px; /* 从24px增加到28px */
+  font-size: 24px; /* 从20px增加到24px */
   font-weight: 500;
   color: #1f2937;
-  margin-bottom: 4px;
-  line-height: 1.3;
+  margin-bottom: 2px;
 }
 
 .transaction-time {
-  font-size: 20px; /* 从18px增加到20px */
+  font-size: 18px; /* 从16px增加到18px */
   color: #6b7280;
 }
 
@@ -1102,10 +876,9 @@
 }
 
 .transaction-amount {
-  font-size: 28px; /* 从24px增加到28px */
+  font-size: 24px; /* 从20px增加到24px */
   font-weight: 600;
-  margin-bottom: 4px;
-  line-height: 1.2;
+  margin-bottom: 2px;
 }
 
 .amount-positive {
@@ -1117,7 +890,7 @@
 }
 
 .transaction-status {
-  font-size: 20px; /* 从18px增加到20px */
+  font-size: 18px; /* 从16px增加到18px */
   color: #6b7280;
 }
 
@@ -1125,11 +898,10 @@
   color: #4338ca;
   background: none;
   border: none;
-  font-size: 28px; /* 从24px增加到28px */
+  font-size: 24px; /* 从20px增加到24px */
   font-weight: 500;
   cursor: pointer;
-  padding: 14px 0;
-  letter-spacing: 0.02em;
+  padding: 12px 0;
 }
 
 .view-all-btn:hover {
@@ -1149,20 +921,17 @@
 }
 
 .coupon-card {
-  border-radius: 12px;
-  background: #ffffff;
-  border: 1px solid #f1f5f9;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  padding: 20px;
-  margin-bottom: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin-bottom: 8px;
   transition: all 0.3s ease;
   border-left: 4px solid;
-  cursor: pointer;
 }
 
 .coupon-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
 .coupon-active {
@@ -1245,18 +1014,17 @@
 }
 
 .coupon-title {
-  font-size: 30px; /* 从26px增加到30px */
+  font-size: 26px; /* 从22px增加到26px */
   font-weight: 600;
   color: #1f2937;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   line-height: 1.3;
-  letter-spacing: -0.01em;
 }
 
 .coupon-description {
   color: #6b7280;
-  font-size: 22px; /* 从20px增加到22px */
-  margin-bottom: 14px;
+  font-size: 20px; /* 从18px增加到20px */
+  margin-bottom: 12px;
   line-height: 1.4;
 }
 
@@ -1264,13 +1032,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 22px; /* 从20px增加到22px */
-  margin-top: 10px;
+  font-size: 20px; /* 从18px增加到20px */
+  margin-top: 8px;
 }
 
 .coupon-date {
   color: #6b7280;
-  font-size: 20px; /* 从18px增加到20px */
+  font-size: 18px; /* 从16px增加到18px */
 }
 
 .use-coupon-btn {
@@ -1280,11 +1048,10 @@
   border-radius: 20px;
   font-weight: 600;
   cursor: pointer;
-  padding: 14px 24px;
-  font-size: 20px; /* 从18px增加到20px */
+  padding: 12px 20px;
+  font-size: 18px; /* 从16px增加到18px */
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-  letter-spacing: 0.01em;
 }
 
 .use-coupon-btn:hover {
@@ -1321,17 +1088,16 @@
   color: #64748b;
   border: 2px dashed #cbd5e1;
   border-radius: 12px;
-  font-size: 22px; /* 从20px增加到22px */
+  font-size: 20px; /* 从18px增加到20px */
   font-weight: 500;
   cursor: pointer;
-  padding: 20px;
+  padding: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  margin: 14px 24px 18px 24px;
+  gap: 8px;
+  margin: 12px 24px 16px 24px;
   transition: all 0.3s ease;
-  letter-spacing: 0.01em;
 }
 
 .add-coupon-btn:hover {
@@ -1555,19 +1321,18 @@
 }
 
 .modal-title {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 600;
   color: #1f2937;
-  letter-spacing: -0.01em;
 }
 
 .close-btn {
   background: none;
   border: none;
   color: #6b7280;
-  font-size: 24px;
+  font-size: 20px;
   cursor: pointer;
-  padding: 6px;
+  padding: 4px;
 }
 
 .close-btn:hover {
@@ -1586,11 +1351,10 @@
 
 .input-label {
   display: block;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   color: #374151;
-  margin-bottom: 10px;
-  letter-spacing: 0.01em;
+  margin-bottom: 8px;
 }
 
 .amount-input-wrapper {
@@ -1616,10 +1380,10 @@
 
 .amount-input {
   flex: 1;
-  padding: 14px 14px 14px 0;
+  padding: 12px 12px 12px 0;
   border: none;
   outline: none;
-  font-size: 22px;
+  font-size: 20px;
   background: transparent;
 }
 
@@ -1658,7 +1422,7 @@
 }
 
 .payment-name {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   color: #374151;
 }
@@ -1666,20 +1430,19 @@
 .quick-amounts {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+  gap: 12px;
 }
 
 .quick-amount {
-  padding: 14px;
+  padding: 12px;
   border: 1px solid #e0e7ff;
   border-radius: 8px;
   background: white;
   color: #4338ca;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  letter-spacing: 0.01em;
 }
 
 .quick-amount:hover {
@@ -1699,12 +1462,11 @@
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 18px 24px;
-  font-size: 22px;
+  padding: 16px 20px;
+  font-size: 20px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  letter-spacing: 0.01em;
 }
 
 .recharge-now-btn:hover {
