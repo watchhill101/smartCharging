@@ -25,14 +25,15 @@ function showToast(params: { title: string; icon?: 'none' | 'success' | 'error';
 
 export default function Device(props: DeviceProps) {
   const mapRef = useRef<any>(null)
-  const markerRef = useRef<any>(null)
+  const myLocationMarkerRef = useRef<any>(null)
+  const stationMarkerRef = useRef<any>(null)
   const geocoderRef = useRef<any>(null)
   const placeSearchRef = useRef<any>(null)
   const mapClickHandlerRef = useRef<any>(null)
 
   const [searchText, setSearchText] = useState('')
   const [isSearching, setIsSearching] = useState(false)
-  const [locationInfo, setLocationInfo] = useState<{
+  const [myLocationInfo, setMyLocationInfo] = useState<{
     name: string
     address: string
     coord: { lng: number; lat: number }
@@ -80,25 +81,18 @@ export default function Device(props: DeviceProps) {
         pageSize: 1
       })
 
-
-      // 地图点击事件：点击即将该点设为“我的位置”
+      // 地图点击事件：点击即将该点设为"我的位置"
       mapClickHandlerRef.current = (e: any) => {
         const { lnglat } = e
         if (lnglat) {
-          addRedMarker(lnglat.lng, lnglat.lat, '我的位置')
+          addMyLocationMarker(lnglat.lng, lnglat.lat, '我的位置')
           showToast({ title: '已设置为我的位置', icon: 'success' })
         }
       }
       map.on('click', mapClickHandlerRef.current)
 
-      // 如果有初始坐标，添加标记
-      if (props.initialCoord) {
-        const title = props.stationInfo?.name || '目标位置'
-        addRedMarker(props.initialCoord.lng, props.initialCoord.lat, title)
-      } else {
-        // 没有初始坐标时，自动获取当前位置
-        getCurrentLocation()
-      }
+      // 初始化地图标记
+      initializeMapMarkers()
     })
 
     return () => {
@@ -109,22 +103,146 @@ export default function Device(props: DeviceProps) {
           try { mapRef.current.off('click', mapClickHandlerRef.current) } catch {}
           mapClickHandlerRef.current = null
         }
+        
         mapRef.current.destroy()
         mapRef.current = null
       }
     }
-  }, [])
+  }, [props.initialCoord, props.stationInfo])
 
-  // 添加红色标记 - 使用HTML DOM元素确保显示
-  const addRedMarker = (lng: number, lat: number, title: string = '') => {
-    if (!mapRef.current) return
-
-    // 移除旧标记
-    if (markerRef.current) {
-      mapRef.current.remove(markerRef.current)
+  // 初始化地图标记
+  const initializeMapMarkers = () => {
+    console.log('[Device] 开始初始化地图标记...')
+    console.log('[Device] 当前props:', { initialCoord: props.initialCoord, stationInfo: props.stationInfo })
+    
+    // 如果有初始坐标（充电站位置），添加充电站标记
+    if (props.initialCoord) {
+      const title = props.stationInfo?.name || '充电站位置'
+      console.log('[Device] 添加充电站标记:', { coord: props.initialCoord, title })
+      addStationMarker(props.initialCoord.lng, props.initialCoord.lat, title)
+    } else {
+      console.log('[Device] 没有初始坐标，跳过充电站标记')
     }
 
-    // 创建红色标记DOM元素 - 移动端优化
+    // 如果没有初始坐标，自动获取当前位置
+    if (!props.initialCoord) {
+      console.log('[Device] 没有初始坐标，获取当前位置')
+      getCurrentLocation()
+    } else {
+      // 如果有充电站位置，也获取当前位置作为对比
+      console.log('[Device] 有充电站位置，同时获取当前位置')
+      getCurrentLocation()
+    }
+  }
+
+  // 添加我的位置标记（蓝色）
+  const addMyLocationMarker = (lng: number, lat: number, title: string = '') => {
+    console.log('[Device] 添加我的位置标记:', { lng, lat, title })
+    if (!mapRef.current) {
+      console.error('[Device] 地图实例未初始化，无法添加标记')
+      return
+    }
+
+    // 移除旧标记
+    if (myLocationMarkerRef.current) {
+      console.log('[Device] 移除旧的我的位置标记')
+      mapRef.current.remove(myLocationMarkerRef.current)
+    }
+
+    // 创建蓝色标记DOM元素
+    const markerContent = document.createElement('div')
+    markerContent.style.cssText = `
+      width: 36px;
+      height: 50px;
+      background: transparent;
+      position: relative;
+      cursor: pointer;
+      transform: scale(1.1);
+    `
+    markerContent.innerHTML = `
+      <div style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+        border-radius: 50%;
+        border: 4px solid white;
+        box-shadow: 0 4px 12px rgba(59,130,246,0.4);
+      "></div>
+      <div style="
+        position: absolute;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 14px solid #3B82F6;
+        filter: drop-shadow(0 3px 6px rgba(59,130,246,0.3));
+      "></div>
+      <div style="
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 16px;
+        height: 16px;
+        background: white;
+        border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      "></div>
+    `
+
+    // @ts-ignore
+    myLocationMarkerRef.current = new (window as any).AMap.Marker({
+      position: [lng, lat],
+      content: markerContent,
+      title: title,
+      anchor: 'bottom-center',
+      zIndex: 200 // 确保我的位置标记在上面
+    })
+
+    mapRef.current.add(myLocationMarkerRef.current)
+    console.log('[Device] 我的位置标记已添加到地图')
+
+    // 获取地址信息
+    if (geocoderRef.current) {
+      geocoderRef.current.getAddress([lng, lat], (status: string, result: any) => {
+        if (status === 'complete' && result?.regeocode) {
+          const regeocode = result.regeocode
+          console.log('[Device] 获取到地址信息:', regeocode.formattedAddress)
+          setMyLocationInfo({
+            name: title || regeocode.addressComponent?.building || regeocode.addressComponent?.neighborhood || '未知位置',
+            address: regeocode.formattedAddress,
+            coord: { lng, lat }
+          })
+        } else {
+          console.error('[Device] 获取地址信息失败:', status)
+        }
+      })
+    }
+
+    // 调整地图视野以显示所有标记
+    adjustMapView()
+  }
+
+  // 添加充电站标记（红色）
+  const addStationMarker = (lng: number, lat: number, title: string = '') => {
+    console.log('[Device] 添加充电站标记:', { lng, lat, title })
+    if (!mapRef.current) {
+      console.error('[Device] 地图实例未初始化，无法添加充电站标记')
+      return
+    }
+
+    // 移除旧标记
+    if (stationMarkerRef.current) {
+      console.log('[Device] 移除旧的充电站标记')
+      mapRef.current.remove(stationMarkerRef.current)
+    }
+
+    // 创建红色标记DOM元素
     const markerContent = document.createElement('div')
     markerContent.style.cssText = `
       width: 36px;
@@ -171,29 +289,56 @@ export default function Device(props: DeviceProps) {
     `
 
     // @ts-ignore
-    markerRef.current = new (window as any).AMap.Marker({
+    stationMarkerRef.current = new (window as any).AMap.Marker({
       position: [lng, lat],
       content: markerContent,
       title: title,
-      anchor: 'bottom-center'
+      anchor: 'bottom-center',
+      zIndex: 100 // 充电站标记在下面
     })
 
-    mapRef.current.add(markerRef.current)
-    mapRef.current.setCenter([lng, lat])
-    mapRef.current.setZoom(18)
+    mapRef.current.add(stationMarkerRef.current)
+    console.log('[Device] 充电站标记已添加到地图')
 
-    // 获取地址信息
-    if (geocoderRef.current) {
-      geocoderRef.current.getAddress([lng, lat], (status: string, result: any) => {
-        if (status === 'complete' && result?.regeocode) {
-          const regeocode = result.regeocode
-          setLocationInfo({
-            name: title || regeocode.addressComponent?.building || regeocode.addressComponent?.neighborhood || '未知位置',
-            address: regeocode.formattedAddress,
-            coord: { lng, lat }
-          })
-        }
-      })
+    // 调整地图视野以显示所有标记
+    adjustMapView()
+  }
+
+  // 调整地图视野以显示所有标记
+  const adjustMapView = () => {
+    console.log('[Device] 开始调整地图视野...')
+    if (!mapRef.current) {
+      console.error('[Device] 地图实例未初始化，无法调整视野')
+      return
+    }
+
+    const markers: any[] = []
+    if (myLocationMarkerRef.current) {
+      markers.push(myLocationMarkerRef.current)
+      console.log('[Device] 添加我的位置标记到视野计算')
+    }
+    if (stationMarkerRef.current) {
+      markers.push(stationMarkerRef.current)
+      console.log('[Device] 添加充电站标记到视野计算')
+    }
+
+    console.log('[Device] 总标记数量:', markers.length)
+
+    if (markers.length > 0) {
+      // 如果有多个标记，调整视野以显示所有标记
+      if (markers.length > 1) {
+        console.log('[Device] 多个标记，使用setFitView调整视野')
+        mapRef.current.setFitView(markers, false, [50, 50, 50, 50])
+      } else {
+        // 如果只有一个标记，居中显示并设置合适的缩放级别
+        console.log('[Device] 单个标记，居中显示')
+        const marker = markers[0]
+        const position = marker.getPosition()
+        mapRef.current.setCenter([position.lng, position.lat])
+        mapRef.current.setZoom(18)
+      }
+    } else {
+      console.log('[Device] 没有标记，不调整视野')
     }
   }
 
@@ -214,7 +359,7 @@ export default function Device(props: DeviceProps) {
         const location = poi.location
         
         if (location) {
-          addRedMarker(location.lng, location.lat, poi.name)
+          addMyLocationMarker(location.lng, location.lat, poi.name)
           showToast({ title: '定位成功', icon: 'success' })
         } else {
           showToast({ title: '未找到精确位置', icon: 'none' })
@@ -409,7 +554,7 @@ export default function Device(props: DeviceProps) {
         console.log('[定位] Taro定位成功:', res)
         
         if (res.longitude && res.latitude) {
-          addRedMarker(res.longitude, res.latitude, '我的位置')
+          addMyLocationMarker(res.longitude, res.latitude, '我的位置')
           showToast({ title: '定位成功', icon: 'success' })
         } else {
           console.log('[定位] Taro定位数据异常')
@@ -434,28 +579,26 @@ export default function Device(props: DeviceProps) {
         if (status === 'complete' && result.locations && result.locations.length > 0) {
           const converted = result.locations[0]
           console.log('[定位] 坐标转换成功:', converted)
-          addRedMarker(converted.lng, converted.lat, title)
+          addMyLocationMarker(converted.lng, converted.lat, title)
           showToast({ title: '定位成功', icon: 'success' })
         } else {
           console.log('[定位] 坐标转换失败，使用原始坐标')
-          addRedMarker(lng, lat, title)
+          addMyLocationMarker(lng, lat, title)
           showToast({ title: '定位成功', icon: 'success' })
         }
       })
     } else {
       console.log('[定位] 无转换功能，使用原始坐标')
-      addRedMarker(lng, lat, title)
+      addMyLocationMarker(lng, lat, title)
       showToast({ title: '定位成功', icon: 'success' })
     }
   }
 
   // 设置默认位置的统一函数
   const setDefaultLocation = () => {
-    addRedMarker(115.480656, 38.877012, '默认位置')
+    addMyLocationMarker(115.480656, 38.877012, '默认位置')
     showToast({ title: '已设置默认位置（保定）', icon: 'none' })
   }
-
-
 
   // 处理搜索输入
   const handleSearchInput = (e: any) => {
@@ -476,7 +619,6 @@ export default function Device(props: DeviceProps) {
       flexDirection: 'column',
       background: '#f5f5f5'
     }}>
-
 
       {/* 搜索栏 */}
       <View style={{
@@ -563,7 +705,95 @@ export default function Device(props: DeviceProps) {
         </View>
       </View>
 
-      {/* 充电站信息展示 */}
+      {/* 我的位置信息展示（显示在上面） */}
+      {myLocationInfo && (
+        <View style={{
+          padding: '12px',
+          background: '#fff',
+          borderBottom: '1px solid #e8e8e8',
+          zIndex: 8,
+          margin: '0 8px',
+          borderRadius: '12px',
+          marginBottom: '8px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+        }}>
+          <View style={{ display: 'flex', alignItems: 'center', marginBottom: '6px' }}>
+            <View style={{
+              width: '8px',
+              height: '8px',
+              background: '#3B82F6',
+              borderRadius: '50%',
+              marginRight: '8px'
+            }} />
+            <Text style={{ fontSize: '15px', fontWeight: '600', color: '#333' }}>
+              📍 我的位置
+            </Text>
+          </View>
+          <Text style={{ fontSize: '13px', color: '#666', marginBottom: '4px', lineHeight: '1.4' }}>
+            {myLocationInfo.address}
+          </Text>
+          <Text style={{ fontSize: '11px', color: '#999' }}>
+            {myLocationInfo.coord.lng.toFixed(6)}, {myLocationInfo.coord.lat.toFixed(6)}
+          </Text>
+        </View>
+      )}
+
+      {/* 充电站位置卡片（显示在中间，点击跳转到地图） */}
+      {props.stationInfo && (
+        <View style={{
+          padding: '12px',
+          background: '#fff',
+          borderBottom: '1px solid #e8e8e8',
+          zIndex: 8,
+          margin: '0 8px',
+          borderRadius: '12px',
+          marginBottom: '8px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+          cursor: 'pointer'
+        }}
+        onClick={() => {
+          // 点击充电站位置卡片，跳转到地图页面
+          try {
+            if (typeof Taro.navigateTo === 'function') {
+              Taro.navigateTo({ url: '/pages/map/index' })
+            } else {
+              window.location.hash = '#/pages/map/index'
+            }
+          } catch (error) {
+            console.error('跳转到地图失败:', error)
+          }
+        }}
+        >
+          <View style={{ display: 'flex', alignItems: 'center', marginBottom: '6px' }}>
+            <View style={{
+              width: '8px',
+              height: '8px',
+              background: '#FF4444',
+              borderRadius: '50%',
+              marginRight: '8px'
+            }} />
+            <Text style={{ fontSize: '15px', fontWeight: '600', color: '#333' }}>
+              🔌 充电站位置
+            </Text>
+          </View>
+          <Text style={{ fontSize: '13px', color: '#666', marginBottom: '4px', lineHeight: '1.4' }}>
+            {props.stationInfo.name}
+          </Text>
+          <Text style={{ fontSize: '11px', color: '#999' }}>
+            📍 {props.stationInfo.address}
+          </Text>
+          {props.stationInfo.distance && (
+            <Text style={{ fontSize: '11px', color: '#4caf50', marginBottom: '2px' }}>
+              📏 距离: {(props.stationInfo.distance / 1000).toFixed(2)}km
+            </Text>
+          )}
+          <Text style={{ fontSize: '10px', color: '#999', fontStyle: 'italic' }}>
+            💡 点击查看地图
+          </Text>
+        </View>
+      )}
+
+      {/* 充电站详细信息展示（显示在下面） */}
       {props.stationInfo && (
         <View style={{
           padding: '16px',
@@ -579,7 +809,7 @@ export default function Device(props: DeviceProps) {
             <View style={{
               width: '12px',
               height: '12px',
-              background: '#4caf50',
+              background: '#FF4444',
               borderRadius: '50%',
               marginRight: '10px'
             }} />
@@ -603,39 +833,6 @@ export default function Device(props: DeviceProps) {
               ⭐ 评分: {props.stationInfo.rating.toFixed(1)}
             </Text>
           )}
-        </View>
-      )}
-
-      {/* 位置信息展示 */}
-      {locationInfo && (
-        <View style={{
-          padding: '12px',
-          background: '#fff',
-          borderBottom: '1px solid #e8e8e8',
-          zIndex: 8,
-          margin: '0 8px',
-          borderRadius: '12px',
-          marginBottom: '8px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
-        }}>
-          <View style={{ display: 'flex', alignItems: 'center', marginBottom: '6px' }}>
-            <View style={{
-              width: '8px',
-              height: '8px',
-              background: '#ff4444',
-              borderRadius: '50%',
-              marginRight: '8px'
-            }} />
-            <Text style={{ fontSize: '15px', fontWeight: '600', color: '#333' }}>
-              我的位置
-            </Text>
-          </View>
-          <Text style={{ fontSize: '13px', color: '#666', marginBottom: '4px', lineHeight: '1.4' }}>
-            {locationInfo.address}
-          </Text>
-          <Text style={{ fontSize: '11px', color: '#999' }}>
-            {locationInfo.coord.lng.toFixed(6)}, {locationInfo.coord.lat.toFixed(6)}
-          </Text>
         </View>
       )}
 
