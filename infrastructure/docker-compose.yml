@@ -44,6 +44,15 @@ services:
       MONGODB_URI: mongodb://admin:password123@mongodb:27017/smart_charging?authSource=admin
       REDIS_URL: redis://:redis123@redis:6379
       JWT_SECRET: your-super-secret-jwt-key-change-this-in-production
+      # Face Verification API Configuration
+      CLOUDMERSIVE_API_KEY: 5932bafd-7ce9-4169-812e-900a78b5d21a
+      FACE_VERIFICATION_ENABLED: "true"
+      FACE_VERIFICATION_TIMEOUT: "30000"
+      FACE_VERIFICATION_MAX_ATTEMPTS: "3"
+      # File Upload Configuration
+      MAX_FILE_SIZE: 10MB
+      # CORS Configuration
+      CORS_ORIGIN: "http://localhost:3000,http://localhost:8080"
     ports:
       - "8080:8080"
     depends_on:

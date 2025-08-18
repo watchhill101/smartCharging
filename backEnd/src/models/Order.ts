@@ -171,4 +171,12 @@ OrderSchema.statics.findPendingOrders = function(olderThanMinutes: number = 30) 
   });
 };
 
-export default mongoose.model<IOrder>('Order', OrderSchema);
+// 静态方法扩展接口
+interface IOrderModel extends mongoose.Model<IOrder> {
+  generateOrderId(): string;
+  findByUser(userId: string, type?: string, status?: string, limit?: number, skip?: number): Promise<IOrder[]>;
+  getOrderStats(userId: string, startDate?: Date, endDate?: Date): Promise<any>;
+  findPendingOrders(olderThanMinutes?: number): Promise<IOrder[]>;
+}
+
+export default mongoose.model<IOrder, IOrderModel>('Order', OrderSchema);

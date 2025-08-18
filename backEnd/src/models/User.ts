@@ -1,3 +1,4 @@
+
 import mongoose, { Document, Schema } from 'mongoose';
 
 // 车辆信息接口
@@ -11,12 +12,15 @@ interface IVehicle {
 // 用户接口
 export interface IUser extends Document {
   phone: string;
+  password?: string;
   nickName?: string;
   avatarUrl?: string;
   balance: number;
-  faceFeatures?: string;
-  verificationLevel: 'basic' | 'face_verified';
   vehicles: IVehicle[];
+  lastLoginAt?: Date;
+  faceEnabled: boolean; // 是否启用人脸登录
+  faceProfileCount: number; // 人脸档案数量
+  verificationLevel?: 'basic' | 'face_verified'; // 验证级别
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,25 +29,22 @@ export interface IUser extends Document {
 const VehicleSchema = new Schema<IVehicle>({
   brand: {
     type: String,
-    required: true,
-    trim: true
+    required: true
   },
   model: {
     type: String,
-    required: true,
-    trim: true
+    required: true
   },
   licensePlate: {
     type: String,
     required: true,
-    trim: true,
-    uppercase: true
+    //unique: true
   },
   batteryCapacity: {
     type: Number,
-    min: 0
+    default: 60
   }
-}, { _id: false });
+});
 
 // 用户Schema
 const UserSchema = new Schema<IUser>({
@@ -51,62 +52,49 @@ const UserSchema = new Schema<IUser>({
     type: String,
     required: true,
     unique: true,
-    trim: true,
     match: /^1[3-9]\d{9}$/
+  },
+  password: {
+    type: String,
+    required: false
   },
   nickName: {
     type: String,
-    trim: true,
-    maxlength: 50
+    default: function () {
+      return `用户${(this as any).phone?.slice(-4) || '0000'}`;
+    }
   },
   avatarUrl: {
     type: String,
-    trim: true
+    required: false
   },
   balance: {
     type: Number,
     default: 0,
     min: 0
   },
-  faceFeatures: {
-    type: String,
-    select: false // 默认不返回敏感数据
+  vehicles: [VehicleSchema],
+  lastLoginAt: {
+    type: Date
+  },
+  faceEnabled: {
+    type: Boolean,
+    default: false
+  },
+  faceProfileCount: {
+    type: Number,
+    default: 0
   },
   verificationLevel: {
     type: String,
     enum: ['basic', 'face_verified'],
     default: 'basic'
-  },
-  vehicles: [VehicleSchema]
-}, {
-  timestamps: true,
-  toJSON: {
-    transform: function(doc, ret) {
-      delete ret.__v;
-      delete ret.faceFeatures;
-      return ret;
-    }
   }
+}, {
+  timestamps: true
 });
 
-// 索引
+// 创建索引
 UserSchema.index({ phone: 1 });
-UserSchema.index({ createdAt: -1 });
-
-// 实例方法
-UserSchema.methods.addVehicle = function(vehicle: IVehicle) {
-  this.vehicles.push(vehicle);
-  return this.save();
-};
-
-UserSchema.methods.removeVehicle = function(licensePlate: string) {
-  this.vehicles = this.vehicles.filter(v => v.licensePlate !== licensePlate);
-  return this.save();
-};
-
-UserSchema.methods.updateBalance = function(amount: number) {
-  this.balance += amount;
-  return this.save();
-};
 
 export default mongoose.model<IUser>('User', UserSchema);

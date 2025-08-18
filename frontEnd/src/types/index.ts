@@ -7,7 +7,6 @@ export interface User {
   nickName?: string
   avatarUrl?: string
   balance: number
-  verificationLevel: 'basic' | 'face_verified'
   vehicles: Vehicle[]
   createdAt: string
   updatedAt: string
@@ -56,6 +55,7 @@ export interface Charger {
     serviceFee: number     // 服务费
   }
 }
+
 
 // 充电会话
 export interface ChargingSession {
@@ -190,10 +190,7 @@ export interface SliderVerification extends VerificationResult {
   timestamp?: number
 }
 
-// 人脸验证
-export interface FaceVerification extends VerificationResult {
-  liveDetectionPassed?: boolean
-}
+
 
 // 通知消息
 export interface Notification {
@@ -242,9 +239,24 @@ export interface SystemConfig {
   maintenanceMode: boolean
   maintenanceMessage?: string
   features: {
-    faceVerification: boolean
     sliderVerification: boolean
     onlinePayment: boolean
     couponSystem: boolean
   }
+}
+
+// QR码扫描结果
+export interface QRScanResult {
+  chargerId: string;
+  stationId: string;
+  timestamp: string;
+}
+
+// 充电启动请求
+export interface StartChargingRequest {
+  userId: string;
+  stationId: string;
+  chargerId: string;
+  qrData: string;
+  vehicleInfo?: Vehicle;
 }
