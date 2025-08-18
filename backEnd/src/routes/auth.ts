@@ -371,4 +371,76 @@ router.post('/refresh-token', asyncHandler(async (req: Request, res: Response) =
   }
 }));
 
+// 演示登录接口（仅用于开发和演示）
+router.post('/demo-login', asyncHandler(async (req: Request, res: Response) => {
+  console.log('🔐 收到演示登录请求:', req.body);
+  const { phone } = req.body;
+
+  if (!phone) {
+    return res.status(400).json({
+      success: false,
+      message: '手机号不能为空'
+    });
+  }
+
+  // 验证手机号格式
+  const phoneRegex = /^1[3-9]\d{9}$/;
+  if (!phoneRegex.test(phone)) {
+    return res.status(400).json({
+      success: false,
+      message: '手机号格式不正确'
+    });
+  }
+
+  try {
+    // 查找或创建用户
+    let user = await User.findOne({ phone });
+
+    if (!user) {
+      // 如果用户不存在，创建新用户
+      user = new User({
+        phone,
+        nickName: `用户${phone.slice(-4)}`,
+        balance: 0,
+        verificationLevel: 'basic'
+      });
+      await user.save();
+      console.log('✅ 创建新用户:', phone);
+    }
+
+    // 更新最后登录时间
+    user.lastLoginAt = new Date();
+    await user.save();
+
+    // 生成token
+    const token = generateToken(user._id.toString());
+    const refreshToken = generateRefreshToken(user._id.toString());
+
+    console.log('✅ 演示登录成功:', phone);
+
+    res.json({
+      success: true,
+      message: '登录成功',
+      data: {
+        token,
+        refreshToken,
+        user: {
+          id: user._id,
+          phone: user.phone,
+          nickName: user.nickName,
+          balance: user.balance,
+          verificationLevel: user.verificationLevel,
+          lastLoginAt: user.lastLoginAt
+        }
+      }
+    });
+  } catch (error) {
+    console.error('❌ 演示登录失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '登录失败，请稍后重试'
+    });
+  }
+}));
+
 export default router;

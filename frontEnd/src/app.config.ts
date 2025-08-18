@@ -6,7 +6,10 @@ export default {
     'pages/map/index',
     'pages/charging/index', 
     'pages/profile/index',
-    'pages/scan/index'
+    'pages/scan/index',
+    'pages/orders/index',
+    'pages/vehicles/index',
+    'pages/wallet/index'
   ],
   window: {
     backgroundTextStyle: 'light',

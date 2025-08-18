@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { authenticate } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
 import User from '../models/User';
+import Order from '../models/Order';
 
 const router = express.Router();
 
@@ -68,7 +69,7 @@ router.put('/profile', authenticate, asyncHandler(async (req: any, res: Response
 }));
 
 // 获取用户车辆列表
-router.get('/vehicles', authenticate, asyncHandler(async (req: any, res) => {
+router.get('/vehicles', authenticate, asyncHandler(async (req: any, res: Response) => {
   const user = await User.findById(req.user._id).select('vehicles');
   
   if (!user) {
@@ -88,7 +89,7 @@ router.get('/vehicles', authenticate, asyncHandler(async (req: any, res) => {
 }));
 
 // 添加车辆
-router.post('/vehicles', authenticate, asyncHandler(async (req: any, res) => {
+router.post('/vehicles', authenticate, asyncHandler(async (req: any, res: Response) => {
   const { brand, model, licensePlate, batteryCapacity } = req.body;
   const userId = req.user._id;
 
@@ -152,7 +153,7 @@ router.post('/vehicles', authenticate, asyncHandler(async (req: any, res) => {
 }));
 
 // 删除车辆
-router.delete('/vehicles/:licensePlate', authenticate, asyncHandler(async (req: any, res) => {
+router.delete('/vehicles/:licensePlate', authenticate, asyncHandler(async (req: any, res: Response) => {
   const { licensePlate } = req.params;
   const userId = req.user._id;
 
@@ -184,7 +185,7 @@ router.delete('/vehicles/:licensePlate', authenticate, asyncHandler(async (req: 
 }));
 
 // 获取用户余额
-router.get('/balance', authenticate, asyncHandler(async (req: any, res) => {
+router.get('/balance', authenticate, asyncHandler(async (req: any, res: Response) => {
   const user = await User.findById(req.user._id).select('balance');
   
   if (!user) {
@@ -202,6 +203,81 @@ router.get('/balance', authenticate, asyncHandler(async (req: any, res) => {
       formattedBalance: `¥${user.balance.toFixed(2)}`
     }
   });
+}));
+
+// 获取用户订单列表
+router.get('/orders', authenticate, asyncHandler(async (req: any, res: Response) => {
+  const userId = req.user._id;
+  const { type, status, page = 1, limit = 20 } = req.query;
+
+  try {
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    // 使用订单模型的静态方法获取订单
+    const orders = await Order.findByUser(
+      userId,
+      type as string,
+      status as string,
+      parseInt(limit),
+      skip
+    );
+
+    // 获取订单总数
+    const query: any = { userId };
+    if (type) query.type = type;
+    if (status) query.status = status;
+    const total = await Order.countDocuments(query);
+
+    res.json({
+      success: true,
+      message: '获取订单列表成功',
+      data: {
+        orders,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total,
+          pages: Math.ceil(total / parseInt(limit))
+        }
+      }
+    });
+  } catch (error: any) {
+    console.error('获取订单列表失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '获取订单列表失败',
+      error: error.message
+    });
+  }
+}));
+
+// 获取用户订单统计
+router.get('/orders/stats', authenticate, asyncHandler(async (req: any, res: Response) => {
+  const userId = req.user._id;
+  const { startDate, endDate } = req.query;
+
+  try {
+    let start: Date | undefined;
+    let end: Date | undefined;
+
+    if (startDate) start = new Date(startDate as string);
+    if (endDate) end = new Date(endDate as string);
+
+    const stats = await Order.getOrderStats(userId, start, end);
+
+    res.json({
+      success: true,
+      message: '获取订单统计成功',
+      data: { stats }
+    });
+  } catch (error: any) {
+    console.error('获取订单统计失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '获取订单统计失败',
+      error: error.message
+    });
+  }
 }));
 
 export default router;

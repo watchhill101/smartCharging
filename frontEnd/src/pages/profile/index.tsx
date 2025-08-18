@@ -209,6 +209,27 @@ export default function Profile() {
   };
 
   const navigateToFunction = (functionName: string) => {
+    if (functionName === '我的订单') {
+      Taro.navigateTo({
+        url: '/pages/orders/index'
+      });
+      return;
+    }
+    
+    if (functionName === '我的车辆') {
+      Taro.navigateTo({
+        url: '/pages/vehicles/index'
+      });
+      return;
+    }
+    
+    if (functionName === '钱包' || functionName === '我的钱包') {
+      Taro.navigateTo({
+        url: '/pages/wallet/index'
+      });
+      return;
+    }
+    
     Taro.showToast({
       title: `${functionName}功能开发中`,
       icon: 'none'
@@ -286,37 +307,6 @@ export default function Profile() {
             <Text className='tip-text'>您的资料还未完善，完善后可获得7天头像挂件</Text>
             <Text className='complete-link' onClick={() => navigateToFunction('完善资料')}>去完善 {'>'}</Text>
           </View>
-
-          {/* 调试：用户信息管理按钮 */}
-          <View style={{ padding: '10px', textAlign: 'center', display: 'flex', gap: '10px' }}>
-            <Button
-              size='mini'
-              type='primary'
-              onClick={() => {
-                console.log('🔄 手动刷新用户信息');
-                loadUserProfile();
-              }}
-            >
-              刷新用户信息
-            </Button>
-            <Button
-              size='mini'
-              type='warn'
-              onClick={() => {
-                console.log('🗑️ 清除存储的用户信息');
-                try {
-                  taroSetStorageSync(STORAGE_KEYS.USER_INFO, null);
-                  taroSetStorageSync(STORAGE_KEYS.USER_TOKEN, null);
-                  console.log('✅ 用户信息已清除，请重新登录');
-                  setUserProfile(null);
-                } catch (error) {
-                  console.error('❌ 清除失败:', error);
-                }
-              }}
-            >
-              清除用户信息
-            </Button>
-          </View>
         </View>
       </View>
 
@@ -333,7 +323,7 @@ export default function Profile() {
           <View className='stat-badge'>未签到</View>
         </View>
         <View className='stat-divider'></View>
-        <View className='stat-item'>
+        <View className='stat-item' onClick={() => navigateToFunction('钱包')}>
           <Text className='stat-number'>{userProfile?.balance?.toFixed(2) || '0.00'}</Text>
           <Text className='stat-label'>钱包(元)</Text>
         </View>

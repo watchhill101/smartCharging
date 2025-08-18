@@ -1,0 +1,516 @@
+.wallet-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+/* 头部导航 */
+.wallet-header {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  padding-top: calc(var(--status-bar-height, 0px) + 5px);
+  padding-bottom: 60px;
+  color: white;
+  box-shadow: none;
+}
+
+.header-nav {
+  align-items: center;
+  justify-content: center;
+  padding: 16px 24px;
+  position: relative;
+}
+
+.back-button {
+  position: absolute;
+  left: 20px;
+  background: transparent;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 0px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  
+  &::after {
+    border: none;
+  }
+  
+  &:active {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+}
+
+.header-placeholder {
+  display: none;
+}
+
+/* 内容区域 */
+.wallet-content {
+  height: calc(100vh - 120px);
+  padding: 0px 0px 24px;
+}
+
+/* 充电防护通知 */
+.protection-alert {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin: -40px 20px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.alert-icon {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.alert-text {
+  font-size: 14px;
+  color: #333;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.claim-button {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: none;
+  transition: all 0.3s ease;
+  
+  &::after {
+    border: none;
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.close-button {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 16px;
+  color: #999;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* 账户余额区域 */
+.balance-section {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  border-radius: 16px;
+  padding: 24px;
+  margin: 20px 20px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(76, 175, 80, 0.2);
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    transform: rotate(45deg);
+  }
+}
+
+.account-protection {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  z-index: 1;
+  position: relative;
+}
+
+.protection-icon {
+  font-size: 16px;
+  margin-right: 6px;
+}
+
+.protection-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.balance-display {
+  margin-bottom: 32px;
+  z-index: 1;
+  position: relative;
+}
+
+.balance-label {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 8px;
+  display: block;
+  font-weight: 500;
+}
+
+.balance-amount {
+  font-size: 42px;
+  font-weight: 800;
+  color: white;
+  display: block;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.wallet-stats {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1;
+  position: relative;
+}
+
+.stat-item {
+  text-align: center;
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  display: block;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stat-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+/* 电子充电卡 */
+.charging-card-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 20px 20px;
+  box-shadow: none;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+
+
+.card-title {
+  font-size: 16px;
+  color: white;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.buy-card-button {
+  background: rgba(255, 255, 255, 0.9);
+  color: #4CAF50;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: none;
+  transition: all 0.3s ease;
+  
+  &::after {
+    border: none;
+  }
+  
+  &:active {
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 1);
+  }
+}
+
+/* 积分任务系统 */
+.points-section {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin: 20px 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.points-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.points-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-right: 12px;
+}
+
+.points-subtitle {
+  font-size: 14px;
+  color: #7f8c8d;
+  flex: 1;
+  font-weight: 500;
+}
+
+.more-link {
+  font-size: 14px;
+  color: #4CAF50;
+  cursor: pointer;
+  font-weight: 600;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: #45a049;
+  }
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  padding: 18px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  }
+}
+
+.task-icon {
+  font-size: 28px;
+  margin-right: 16px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.task-content {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.task-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.task-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.task-points {
+  color: #ff9800;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.task-badge {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  color: white;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.task-description {
+  font-size: 13px;
+  color: #7f8c8d;
+  line-height: 1.5;
+  white-space: pre-line;
+  font-weight: 500;
+}
+
+.task-button {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 80px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+  
+  &::after {
+    border: none;
+  }
+  
+  &:hover {
+    background: linear-gradient(135deg, #45a049 0%, #388e3c 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .wallet-content {
+    padding: 12px 16px 20px;
+  }
+  
+  .balance-amount {
+    font-size: 36px;
+  }
+  
+  .balance-section {
+    padding: 20px;
+    margin: 16px 0;
+  }
+  
+  .task-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+  
+  .task-content {
+    margin-right: 0;
+    width: 100%;
+  }
+  
+  .task-button {
+    align-self: flex-end;
+    min-width: 100px;
+  }
+  
+  .task-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .charging-card-section {
+    padding: 16px 20px;
+    margin: 20px 0;
+  }
+  
+  .points-section {
+    padding: 20px;
+    margin: 20px 0;
+  }
+}
+
+/* 微交互动画 */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.protection-alert,
+.balance-section,
+.charging-card-section,
+.points-section {
+  animation: slideInUp 0.6s ease-out;
+}
+
+.balance-section {
+  animation-delay: 0.1s;
+}
+
+.charging-card-section {
+  animation-delay: 0.2s;
+}
+
+.points-section {
+  animation-delay: 0.3s;
+}
+
+/* 滚动条样式 */
+.wallet-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.wallet-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.wallet-content::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.3);
+  border-radius: 2px;
+}
+
+.wallet-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.5);
+} 
