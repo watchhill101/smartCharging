@@ -4,8 +4,9 @@ import TaroCompat from '../../utils/taroCompat'
 import './index.scss'
 import WalletService, { WalletInfo, Transaction } from '../../utils/walletService'
 import MobileDetect from '../../utils/mobileDetect'
+import dataJson from './data.json'
 
-// 优惠券接�?
+// 优惠券接口
 interface Coupon {
   id: string
   title: string
@@ -14,6 +15,7 @@ interface Coupon {
   status: 'active' | 'used' | 'expired'
   expiryDate: string
   usedDate?: string
+  minAmount: number
 }
 
 // 电池状态接口
@@ -46,7 +48,7 @@ export default function Charging() {
   const [activeTab, setActiveTab] = useState<'balance' | 'coupons'>('balance')
   const [selectedAmount, setSelectedAmount] = useState<string>('')
   const [customAmount, setCustomAmount] = useState<string>('')
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('alipay_sandbox') // 默认选择支付宝沙箱
   const [showRechargeModal, setShowRechargeModal] = useState(false)
   
   // 电池状态管理
@@ -221,25 +223,6 @@ export default function Charging() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useEffect(() => {
-    // 初始化移动端优化
-    MobileDetect.init()
-    
-    loadWalletData()
-    
-    // 延迟初始化电池状态监听，确保页面完全加载
-    const timer = setTimeout(() => {
-      initBatteryAPI()
-    }, 500) // 500ms延迟，确保页面稳定
-    
-    // 监听屏幕方向变化
-    MobileDetect.onOrientationChange((orientation) => {
-      console.log('屏幕方向变化:', orientation)
-    })
-    
-    return () => clearTimeout(timer)
-  }, [initBatteryAPI])
-
   // 获取充电样式级别
   const getChargingStyleLevel = (level: number): ChargingStyleLevel => {
     if (level >= 80) return 'high'
@@ -247,6 +230,93 @@ export default function Charging() {
     if (level >= 20) return 'low'
     return 'critical'
   }
+
+  // 智能预测时间函数
+  const getSmartPredictionTime = useCallback((): string => {
+    if (!batteryTheme || !batteryInitialized) {
+      return '⏳ 计算中...'
+    }
+
+    const currentLevel = batteryTheme.level
+    const isCharging = batteryTheme.charging
+    const currentHour = new Date().getHours()
+    
+    if (isCharging) {
+      // 充电状态预测
+      if (batteryStatus?.isSupported && batteryStatus.chargingTime !== Infinity) {
+        // 有原生API数据，直接使用
+        return `${Math.round(batteryStatus.chargingTime / 60)}分钟后充满`
+      } else {
+        // 智能估算充电时间
+        const remainingLevel = 100 - currentLevel
+        let chargingRate = 1.5 // 默认每分钟充电1.5%
+        
+        // 根据当前电量调整充电速度（快充特性）
+        if (currentLevel < 20) {
+          chargingRate = 2.5 // 低电量快充
+        } else if (currentLevel < 50) {
+          chargingRate = 2.0 // 中等电量较快充
+        } else if (currentLevel > 80) {
+          chargingRate = 0.8 // 高电量涓流充电
+        }
+        
+        const predictedMinutes = Math.round(remainingLevel / chargingRate)
+        
+        if (predictedMinutes < 60) {
+          return `⚡ ${predictedMinutes}分钟后充满`
+        } else {
+          const hours = Math.floor(predictedMinutes / 60)
+          const minutes = predictedMinutes % 60
+          return `⚡ ${hours}小时${minutes}分钟后充满`
+        }
+      }
+    } else {
+      // 使用状态预测
+      if (batteryStatus?.isSupported && batteryStatus.dischargingTime !== Infinity) {
+        // 有原生API数据
+        const hours = Math.round(batteryStatus.dischargingTime / 3600)
+        return `🔋 可使用${hours}小时`
+      } else {
+        // 智能估算续航时间
+        let usageRate = 8 // 默认每小时消耗8%
+        
+        // 根据时间段调整使用强度
+        if (currentHour >= 9 && currentHour <= 17) {
+          // 工作时间：高强度使用
+          usageRate = 12
+        } else if (currentHour >= 18 && currentHour <= 22) {
+          // 晚上娱乐时间：中等使用
+          usageRate = 10
+        } else if (currentHour >= 23 || currentHour <= 6) {
+          // 夜间/凌晨：低使用或待机
+          usageRate = 3
+        } else {
+          // 其他时间：正常使用
+          usageRate = 8
+        }
+        
+        // 根据当前电量级别调整（低电量省电模式）
+        if (currentLevel <= 20) {
+          usageRate *= 0.6 // 低电量模式，降低功耗
+        } else if (currentLevel <= 50) {
+          usageRate *= 0.8 // 中等电量时适度省电
+        }
+        
+        const predictedHours = Math.round(currentLevel / usageRate * 10) / 10
+        
+        if (predictedHours < 1) {
+          const minutes = Math.round(predictedHours * 60)
+          return `⚠️ 约${minutes}分钟后耗尽`
+        } else if (predictedHours >= 24) {
+          const days = Math.floor(predictedHours / 24)
+          const hours = Math.round(predictedHours % 24)
+          return `🔋 可使用${days}天${hours}小时`
+        } else {
+          return `🔋 可使用${predictedHours}小时`
+        }
+      }
+    }
+  }, [batteryTheme, batteryStatus, batteryInitialized])
 
   // 更新电池主题
   const updateBatteryTheme = useCallback((status: BatteryStatus) => {
@@ -355,102 +425,66 @@ export default function Charging() {
   }
 
   // 加载钱包数据
-  const loadWalletData = async () => {
+  const loadWalletData = useCallback(async () => {
     try {
       setLoading(true)
-      const [walletData, transactionData] = await Promise.all([
-        WalletService.getWalletInfo(),
-        WalletService.getTransactions({ page: 1, limit: 10 })
-      ])
       
-      setWalletInfo(walletData)
-      setTransactions(transactionData.transactions)
+      // 尝试从API获取钱包信息
+      try {
+        const walletData = await WalletService.getWalletInfo()
+        setWalletInfo(walletData)
+      } catch (apiError) {
+        console.warn('API获取钱包信息失败，使用默认数据:', apiError)
+        // 使用默认钱包数据，从JSON获取余额
+        setWalletInfo({
+          balance: dataJson.walletBalance.amount,
+          frozenAmount: 0,
+          availableBalance: dataJson.walletBalance.amount,
+          totalRecharge: 2000.00,
+          totalConsume: 754.50,
+          paymentMethods: [
+            { id: 'alipay_sandbox', type: 'alipay', name: '支付宝', isDefault: true, isEnabled: true }
+          ],
+          settings: {
+            defaultPaymentMethod: 'alipay_sandbox'
+          }
+        })
+      }
+      
+      // 从JSON文件加载交易和优惠券数据
+      console.log('从JSON文件加载数据...')
+      setTransactions(dataJson.transactions as Transaction[])
+      setCoupons(dataJson.coupons as Coupon[])
+      
     } catch (error) {
-      console.error('加载钱包数据失败:', error)
-      
-      // 使用模拟数据
-      setWalletInfo({
-        balance: 1245.50,
-        frozenAmount: 0,
-        availableBalance: 1245.50,
-        totalRecharge: 2000.00,
-        totalConsume: 754.50,
-        paymentMethods: [
-          { id: 'visa', type: 'bank_card', name: 'Visa卡', isDefault: true, isEnabled: true },
-          { id: 'mastercard', type: 'bank_card', name: '万事达卡', isDefault: false, isEnabled: true },
-          { id: 'paypal', type: 'alipay', name: 'PayPal', isDefault: false, isEnabled: true },
-          { id: 'bank', type: 'bank_card', name: '银行转账', isDefault: false, isEnabled: true }
-        ],
-        settings: {
-          defaultPaymentMethod: 'visa'
-        }
+      console.error('加载数据失败:', error)
+      TaroCompat.showToast({
+        title: '数据加载失败',
+        icon: 'error'
       })
-      
-      setTransactions([
-        {
-          id: '1',
-          type: 'recharge',
-          amount: 200,
-          description: '账户充值',
-          paymentMethod: 'visa',
-          status: 'completed',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        },
-        {
-          id: '2',
-          type: 'consume',
-          amount: 59.99,
-          description: '在线购物',
-          paymentMethod: 'visa',
-          status: 'completed',
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-          updatedAt: new Date(Date.now() - 86400000).toISOString()
-        },
-        {
-          id: '3',
-          type: 'recharge',
-          amount: 100,
-          description: '钱包充值',
-          paymentMethod: 'paypal',
-          status: 'completed',
-          createdAt: '2023-05-12T14:00:00.000Z',
-          updatedAt: '2023-05-12T14:00:00.000Z'
-        }
-      ])
-      
-      setCoupons([
-        {
-          id: '1',
-          title: '夏季促销',
-          discount: '20%',
-          description: '购买满100元享受8折优惠',
-          status: 'active',
-          expiryDate: '2023-08-30'
-        },
-        {
-          id: '2',
-          title: '新用户福利',
-          discount: '$10',
-          description: '首次购买立减10元',
-          status: 'used',
-          expiryDate: '2023-12-31',
-          usedDate: '2023-05-05'
-        },
-        {
-          id: '3',
-          title: '春季特惠',
-          discount: '15%',
-          description: '精选商品享受85折优惠',
-          status: 'expired',
-          expiryDate: '2023-04-15'
-        }
-      ])
-
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    // 初始化移动端优化
+    MobileDetect.init()
+    
+    loadWalletData()
+    
+    // 延迟初始化电池状态监听，确保页面完全加载
+    const timer = setTimeout(() => {
+      initBatteryAPI()
+    }, 500) // 500ms延迟，确保页面稳定
+    
+    // 监听屏幕方向变化
+    MobileDetect.onOrientationChange((orientation) => {
+      console.log('屏幕方向变化:', orientation)
+    })
+    
+    return () => clearTimeout(timer)
+  }, [initBatteryAPI, loadWalletData])
 
   // 处理金额选择
   const handleAmountSelect = (amount: string) => {
@@ -465,13 +499,21 @@ export default function Charging() {
     setSelectedPaymentMethod(methodId)
   }
 
-  // 处理充�?
+  // 处理充值
   const handleRecharge = async () => {
-    const amount = selectedAmount === 'custom' ? customAmount : selectedAmount.replace('¥', '')
+    const amount = selectedAmount ? selectedAmount.replace('¥', '') : customAmount
     
     if (!amount || parseFloat(amount) <= 0) {
       TaroCompat.showToast({
         title: '请输入有效金额',
+        icon: 'error'
+      })
+      return
+    }
+
+    if (parseFloat(amount) < 1 || parseFloat(amount) > 1000) {
+      TaroCompat.showToast({
+        title: '充值金额必须在1-1000元之间',
         icon: 'error'
       })
       return
@@ -486,21 +528,35 @@ export default function Charging() {
     }
 
     try {
-      await WalletService.createRecharge(parseFloat(amount), selectedPaymentMethod)
+      // 关闭弹窗
+      setShowRechargeModal(false)
       
-      TaroCompat.showToast({
-        title: '充值订单创建成功',
-        icon: 'success'
+      // 调用钱包充值API
+      const response = await fetch('/api/payments/wallet/recharge', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        },
+        body: JSON.stringify({
+          amount: parseFloat(amount)
+        })
       })
-      
-      // 刷新数据
-      loadWalletData()
+
+      const result = await response.json()
+
+      if (result.success && result.data.payUrl) {
+        // 跳转到支付宝沙箱支付页面
+        window.location.href = result.data.payUrl
+      } else {
+        throw new Error(result.message || '充值失败')
+      }
     } catch (error) {
       console.error('充值失败', error)
-              TaroCompat.showToast({
-          title: '充值失败',
-          icon: 'error'
-        })
+      TaroCompat.showToast({
+        title: error.message || '充值失败，请重试',
+        icon: 'error'
+      })
     }
   }
 
@@ -621,6 +677,15 @@ export default function Charging() {
                  batteryStatus?.isSupported ? '✅ 已支持' : '🤖 智能模拟'}
               </Text>
             </View>
+            
+            {/* 新增智能预测时间项 */}
+            <View className='battery-info-item smart-prediction'>
+              <Text className='info-label'>智能预测:</Text>
+              <Text className='info-value smart-prediction-value'>
+                {getSmartPredictionTime()}
+              </Text>
+            </View>
+            
             {batteryStatus?.isSupported && (
               <>
                 {batteryStatus.chargingTime !== Infinity && (
@@ -649,17 +714,15 @@ export default function Charging() {
         </View>
         
         <View className='balance-main'>
-          <Text className='balance-label'>钱包余额</Text>
           <View className='balance-amount-container'>
-            <Text className='currency-symbol'>￥</Text>
-            <Text className='balance-amount'>{walletInfo?.balance.toFixed(2) || '0.00'}</Text>
+            <Text className='currency-symbol'>{dataJson.walletBalance.currency}</Text>
+            <Text className='balance-amount'>{walletInfo?.balance.toFixed(2) || dataJson.walletBalance.amount.toFixed(2)}</Text>
           </View>
           <Text className='battery-theme-hint'>
             {!batteryInitialized ? '🔄 正在检测电池状态...' :
              !batteryTheme ? '⏳ 主题加载中...' :
              batteryTheme.charging ? `⚡ 充电中 ${batteryTheme.level}%` : 
-             batteryStatus?.isSupported ? `🔋 ${batteryTheme.level}% 真实电量` : 
-             `🤖 ${batteryTheme.level}% 智能推测`}
+             `🔋 电量 ${batteryTheme.level}%`}
           </Text>
         </View>
 
@@ -750,9 +813,6 @@ export default function Charging() {
                   </View>
                 ))}
               </View>
-              <Button className='add-coupon-btn'>
-                ➕ 添加优惠券代码
-              </Button>
             </View>
           )}
 
@@ -794,10 +854,7 @@ export default function Charging() {
                       onClick={() => handlePaymentMethodSelect(method.id)}
                     >
                       <Text className='payment-icon'>
-                        {method.name === 'Visa卡' && '💳'}
-                        {method.name === '万事达卡' && '💳'}
-                        {method.name === 'PayPal' && '🅿️'}
-                        {method.name === '银行转账' && '🏦'}
+                        💰
                       </Text>
                       <Text className='payment-name'>{method.name}</Text>
                     </View>
@@ -808,13 +865,13 @@ export default function Charging() {
               <View className='quick-amounts-section'>
                 <Text className='input-label'>快速充值</Text>
                 <View className='quick-amounts'>
-                  {['10', '50', '100', '200', '500', 'Other'].map((amount) => (
+                  {['10', '50', '100', '200', '500'].map((amount) => (
                     <Button
                       key={amount}
                       className={`quick-amount ${selectedAmount === amount ? 'selected' : ''}`}
                       onClick={() => handleAmountSelect(amount)}
                     >
-                      {amount === 'Other' ? '其他' : `$${amount}`}
+                      ￥{amount}
                     </Button>
                   ))}
                 </View>

@@ -1,0 +1,107 @@
+{
+  "walletBalance": {
+    "amount": 1245.50,
+    "currency": "￥",
+    "lastUpdated": "2024-01-15T15:30:00.000Z"
+  },
+  "transactions": [
+    {
+      "id": "1",
+      "type": "recharge",
+      "amount": 200,
+      "description": "账户充值",
+      "paymentMethod": "visa",
+      "status": "completed",
+      "createdAt": "2024-01-15T10:30:00.000Z",
+      "updatedAt": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": "2",
+      "type": "consume",
+      "amount": 59.99,
+      "description": "充电桩使用费用",
+      "paymentMethod": "visa",
+      "status": "completed",
+      "createdAt": "2024-01-14T14:20:00.000Z",
+      "updatedAt": "2024-01-14T14:20:00.000Z"
+    },
+    {
+      "id": "3",
+      "type": "recharge",
+      "amount": 100,
+      "description": "钱包充值",
+      "paymentMethod": "paypal",
+      "status": "completed",
+      "createdAt": "2024-01-12T16:45:00.000Z",
+      "updatedAt": "2024-01-12T16:45:00.000Z"
+    },
+    {
+      "id": "4",
+      "type": "consume",
+      "amount": 25.50,
+      "description": "快充服务费",
+      "paymentMethod": "visa",
+      "status": "completed",
+      "createdAt": "2024-01-11T09:15:00.000Z",
+      "updatedAt": "2024-01-11T09:15:00.000Z"
+    },
+    {
+      "id": "5",
+      "type": "consume",
+      "amount": 18.75,
+      "description": "慢充充电费用",
+      "paymentMethod": "mastercard",
+      "status": "completed",
+      "createdAt": "2024-01-10T18:30:00.000Z",
+      "updatedAt": "2024-01-10T18:30:00.000Z"
+    }
+  ],
+  "coupons": [
+    {
+      "id": "1",
+      "title": "新年充电优惠",
+      "discount": "20%",
+      "description": "新年期间充电享受8折优惠",
+      "status": "active",
+      "expiryDate": "2024-02-29",
+      "minAmount": 50
+    },
+    {
+      "id": "2",
+      "title": "首次充电福利",
+      "discount": "¥10",
+      "description": "首次使用充电桩立减10元",
+      "status": "used",
+      "expiryDate": "2024-12-31",
+      "usedDate": "2024-01-05",
+      "minAmount": 30
+    },
+    {
+      "id": "3",
+      "title": "快充专享",
+      "discount": "15%",
+      "description": "快充服务享受85折优惠",
+      "status": "active",
+      "expiryDate": "2024-03-15",
+      "minAmount": 100
+    },
+    {
+      "id": "4",
+      "title": "春节特惠",
+      "discount": "¥25",
+      "description": "春节期间充电立减25元",
+      "status": "expired",
+      "expiryDate": "2024-01-01",
+      "minAmount": 150
+    },
+    {
+      "id": "5",
+      "title": "会员专属",
+      "discount": "30%",
+      "description": "VIP会员充电享受7折优惠",
+      "status": "active",
+      "expiryDate": "2024-06-30",
+      "minAmount": 200
+    }
+  ]
+}
