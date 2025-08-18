@@ -101,3 +101,10 @@ export const UPLOAD_CONFIG = {
   ALLOWED_TYPES: ['image/jpeg', 'image/png', 'image/gif'],
   QUALITY: 0.8
 }
+
+// 高德地图API配置
+export const AMAP_CONFIG = {
+  // 高德地图API密钥
+  // 申请地址：https://lbs.amap.com/dev/key/app
+  API_KEY: 'fe211b3e07c4e9b86b16adfd57925547'
+}

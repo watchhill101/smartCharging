@@ -1,15 +1,1295 @@
 .index {
-  padding: 20px;
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  height: 100vh;
+
+  .top-bar {
+    display: flex;
+    align-items: center;
+    padding: 20px 20px 16px;
+    background: #ffffff;
+    border-bottom: 1px solid #f0f0f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    
+    .city {
+      font-size: 28px;
+      color: #333;
+      margin-right: 20px;
+      cursor: pointer;
+      padding: 12px 16px;
+      border-radius: 20px;
+      background: #f8f9fa;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #e9ecef;
+      min-width: 120px;
+      justify-content: center;
+      
+      &::after {
+        content: '▼';
+        font-size: 18px;
+        color: #666;
+        margin-left: 4px;
+      }
+      
+      &:hover {
+        background: #e9ecef;
+        border-color: #007bff;
+        color: #007bff;
+      }
+    }
+    
+    .search {
+      flex: 1;
+      height: 56px;
+      background: #f8f9fa;
+      border-radius: 28px;
+      line-height: 56px;
+      padding: 0 20px 0 56px;
+      color: #999;
+      font-size: 26px;
+      position: relative;
+      border: 1px solid #e9ecef;
+      transition: all 0.3s ease;
+      
+      &::before {
+        content: '🔍';
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 22px;
+      }
+      
+      &:hover {
+        background: #ffffff;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+      }
+      
+      &:focus {
+        background: #ffffff;
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+      }
+    }
+    
+    .extra {
+      margin-left: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      
+      .star {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #666;
+        font-size: 24px;
+        padding: 8px 12px;
+        background: #f8f9fa;
+        border-radius: 16px;
+        border: 1px solid #e9ecef;
+        
+        .star-icon {
+          color: #ffc107;
+          font-size: 20px;
+        }
+      }
+      
+      .target {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+        font-size: 20px;
+        border: 1px solid #e9ecef;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background: #007bff;
+          color: #ffffff;
+          border-color: #007bff;
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+
+  .content {
+    padding: 16px;
+    position: relative;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #f5f5f5;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .feature-section {
+    padding: 20px 16px;
+    
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    
+    .feature-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 8px;
+      border-radius: 16px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      background: #ffffff;
+      border: none;
+      position: relative;
+      overflow: hidden;
+      height: 100px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      }
+      
+      .feature-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, currentColor, currentColor);
+        background-clip: padding-box;
+        border: 2px solid transparent;
+      }
+      
+      .feature-text {
+        font-size: 14px;
+        color: #333;
+        font-weight: 600;
   text-align: center;
-  
-  .welcome-text {
+        line-height: 1.2;
+      }
+    }
+  }
+
+  .service-section {
+    padding: 16px;
+    
+    .service-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .service-card {
+      padding: 16px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+      box-shadow: none;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      }
+      
+      .service-icon {
     font-size: 32px;
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+      }
+      
+      .service-content {
+        text-align: left;
+        flex: 1;
+        
+        .service-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: #333;
+          margin-bottom: 4px;
+          display: block;
+          line-height: 1.2;
+        }
+        
+        .service-subtitle {
+          font-size: 14px;
+          color: #666;
+          display: block;
+          line-height: 1.3;
+          font-weight: 400;
+        }
+      }
+    }
+  }
+
+  .bottom-features-section {
+    padding: 16px;
+    
+    .bottom-features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    
+    .bottom-feature-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 8px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      background: #ffffff;
+      border: none;
+      position: relative;
+      text-align: center;
+      overflow: hidden;
+      min-height: 80px;
+      box-shadow: none;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      }
+      
+      .bottom-feature-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+      }
+      
+      .bottom-feature-content {
+        text-align: center;
+        position: relative;
+        
+        .bottom-feature-text {
+          font-size: 14px;
+          color: #333;
+          display: block;
+          line-height: 1.2;
+          font-weight: 500;
+        }
+        
+        .bottom-feature-tag {
+          position: absolute;
+          top: -20px;
+          right: -10px;
+          background: #ff6b6b;
+          color: white;
+          font-size: 10px;
+          padding: 2px 6px;
+          border-radius: 8px;
+          font-weight: 600;
+          transform: rotate(12deg);
+        }
+      }
+    }
+  }
+
+  .filter-bar {
+    margin: 0;
+    padding: 16px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    position: relative;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+
+    .filter-tag {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid #e9ecef;
+      color: #666;
+      font-size: 14px;
+      background: #f8f9fa;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      min-height: 36px;
+      
+      &:hover {
+        border-color: #007bff;
+        color: #007bff;
+        background: #ffffff;
+        transform: translateY(-1px);
+      }
+      
+      &.selected {
+        color: #ffffff;
+        border-color: #007bff;
+        background: #007bff;
+        box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+      }
+      
+      &.distance {
+        position: relative;
+        
+        &::after {
+          content: '▼';
+          margin-left: 8px;
+          font-size: 10px;
+          transition: transform 0.3s ease;
+        }
+        
+        &.open::after {
+          transform: rotate(180deg);
+        }
+      }
+    }
+
+    .dropdown-mask {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 999;
+    }
+
+    .dropdown-panel {
+      position: absolute;
+      left: 0;
+      top: calc(100% + 8px);
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+      padding: 8px;
+      border: 1px solid #e9ecef;
+      min-width: 120px;
+      
+      &.top-layer {
+        z-index: 1000;
+      }
+      
+      .dropdown-option {
+        padding: 12px 16px;
+        font-size: 14px;
     color: #333;
-    margin-bottom: 40px;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        
+        &:hover {
+          background: #f8f9fa;
+          color: #007bff;
+        }
+        
+        &.active {
+          color: #007bff;
+          background: #e3f2fd;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  .bind-car-hint {
+    margin: 0;
+    padding: 16px;
+    background: #fff8e1;
+    border-radius: 12px;
+    color: #f57c00;
+    font-size: 14px;
+    border: 1px solid #ffecb3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    .action {
+      color: #1976d2;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 12px;
+      background: #e3f2fd;
+      transition: all 0.3s ease;
+      border: 1px solid #bbdefb;
+      font-size: 12px;
+      
+      &:hover {
+        background: #bbdefb;
+        transform: translateY(-1px);
+      }
+    }
   }
   
-  .demo-button {
-    margin: 20px 0;
+
+  
+
+  
+  // 充电站列表
+  .station-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      background: #ffffff;
+      border-radius: 12px;
+      
+      .empty-text {
+        color: #999;
+        font-size: 16px;
+      }
+    }
+    
+    .station-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      }
+      
+      .station-header {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 12px;
+        
+        .station-logo {
+          width: 40px;
+          height: 40px;
+          background: #52c41a;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-right: 12px;
+          flex-shrink: 0;
+          
+          .logo-icon {
+            color: white;
+            font-size: 20px;
+          }
+        }
+        
+        .station-info {
+          flex: 1;
+          
+          .station-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            line-height: 1.3;
+            margin-bottom: 8px;
+            display: block;
+          }
+          
+          .station-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            
+            .tag {
+              background: #f0f0f0;
+              color: #666;
+              padding: 2px 8px;
+              border-radius: 12px;
+              font-size: 12px;
+              font-weight: 500;
+            }
+          }
+        }
+        
+        .station-status {
+          text-align: center;
+          background: #ff9800;
+          color: white;
+          padding: 4px 8px;
+          border-radius: 8px;
+          min-width: 50px;
+          
+          .status-text {
+            font-size: 10px;
+            font-weight: 500;
+            line-height: 1;
+            display: block;
+          }
+          
+          .status-count {
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 2px;
+            line-height: 1;
+            display: block;
+          }
+        }
+      }
+      
+      .station-details {
+        margin-bottom: 12px;
+        
+        .detail-item {
+          display: flex;
+          align-items: center;
+          margin-bottom: 8px;
+          
+          .detail-icon {
+            width: 16px;
+            margin-right: 8px;
+            font-size: 12px;
+            text-align: center;
+          }
+          
+          .detail-text {
+            flex: 1;
+            color: #666;
+            font-size: 12px;
+            line-height: 1.3;
+          }
+          
+          .detail-status {
+            background: #fff3e0;
+            color: #f57c00;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 500;
+            margin-left: 8px;
+          }
+          
+          &.activity .detail-text {
+            color: #52c41a;
+            font-weight: 500;
+          }
+        }
+      }
+      
+      .station-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 12px;
+        border-top: 1px solid #f0f0f0;
+        
+        .price-section {
+          display: flex;
+          align-items: baseline;
+          gap: 2px;
+          
+          .price-symbol {
+            color: #f44336;
+            font-size: 14px;
+            font-weight: 600;
+          }
+          
+          .price-value {
+            color: #f44336;
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1;
+          }
+          
+          .price-unit {
+            color: #999;
+            font-size: 12px;
+            font-weight: 500;
+          }
+        }
+        
+        .distance-section {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          color: #2196F3;
+          font-size: 14px;
+          font-weight: 500;
+          
+          .distance-icon {
+            font-size: 12px;
+          }
+          
+          .distance-text {
+            line-height: 1;
+          }
+        }
+      }
+    }
+  }
+  
+  // 响应式设计
+  @media (max-width: 768px) {
+    .content {
+      padding: 12px;
+      gap: 12px;
+    }
+    
+    .feature-section {
+      padding: 16px 12px;
+      
+      .feature-grid {
+        gap: 12px;
+      }
+      
+      .feature-item {
+        padding: 16px 6px;
+        height: 90px;
+        
+        .feature-icon {
+          width: 48px;
+          height: 48px;
+          font-size: 24px;
+        }
+        
+        .feature-text {
+          font-size: 13px;
+        }
+      }
+    }
+    
+    .service-section {
+      padding: 12px;
+      
+      .service-card {
+        padding: 12px;
+        
+        .service-icon {
+          width: 48px;
+          height: 48px;
+          font-size: 28px;
+        }
+        
+        .service-content {
+          .service-title {
+            font-size: 16px;
+          }
+          
+          .service-subtitle {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+    
+    .bottom-features-section {
+      padding: 12px;
+      
+      .bottom-features-grid {
+        gap: 8px;
+      }
+      
+      .bottom-feature-item {
+        padding: 12px 6px;
+        min-height: 70px;
+        
+        .bottom-feature-icon {
+          width: 40px;
+          height: 40px;
+          font-size: 20px;
+        }
+        
+        .bottom-feature-text {
+          font-size: 12px;
+        }
+      }
+    }
+    
+    .filter-bar {
+      padding: 12px;
+    }
+    
+    .bind-car-hint {
+      padding: 12px;
+      font-size: 12px;
+    }
+    
+    .station-list {
+      gap: 8px;
+      
+      .station-card {
+        padding: 12px;
+        
+        .station-header {
+          margin-bottom: 8px;
+          
+          .station-logo {
+            width: 32px;
+            height: 32px;
+            margin-right: 8px;
+            
+            .logo-icon {
+              font-size: 16px;
+            }
+          }
+          
+          .station-info .station-name {
+            font-size: 14px;
+          }
+          
+          .station-status {
+            padding: 3px 6px;
+            min-width: 40px;
+            
+            .status-text {
+              font-size: 9px;
+            }
+            
+            .status-count {
+              font-size: 10px;
+            }
+          }
+        }
+        
+        .station-details {
+          margin-bottom: 8px;
+          
+          .detail-item {
+            margin-bottom: 6px;
+            
+            .detail-text {
+              font-size: 11px;
+            }
+            
+            .detail-status {
+              font-size: 9px;
+              padding: 1px 4px;
+            }
+          }
+        }
+        
+        .station-bottom {
+          padding-top: 8px;
+          
+          .price-section {
+            .price-symbol {
+              font-size: 12px;
+            }
+            
+            .price-value {
+              font-size: 16px;
+            }
+            
+            .price-unit {
+              font-size: 10px;
+            }
+          }
+          
+          .distance-section {
+            font-size: 12px;
+            
+            .distance-icon {
+              font-size: 10px;
+            }
+          }
+        }
+      }
+    }
+
+  }
+  
+  @media (max-width: 480px) {
+    .content {
+      padding: 8px;
+      gap: 8px;
+    }
+    
+    .feature-section {
+      padding: 12px 8px;
+      
+      .feature-grid {
+        gap: 8px;
+      }
+      
+      .feature-item {
+        padding: 14px 4px;
+        height: 80px;
+        
+        .feature-icon {
+          width: 40px;
+          height: 40px;
+          font-size: 20px;
+        }
+        
+        .feature-text {
+          font-size: 12px;
+        }
+      }
+    }
+    
+    .service-section {
+      padding: 8px;
+      
+      .service-card {
+        padding: 10px;
+        
+        .service-icon {
+          width: 44px;
+          height: 44px;
+          font-size: 24px;
+        }
+        
+        .service-content {
+          .service-title {
+            font-size: 14px;
+          }
+          
+          .service-subtitle {
+            font-size: 11px;
+          }
+        }
+      }
+    }
+    
+    .bottom-features-section {
+      padding: 8px;
+      
+      .bottom-features-grid {
+        gap: 6px;
+      }
+      
+      .bottom-feature-item {
+        padding: 10px 4px;
+        min-height: 60px;
+        
+        .bottom-feature-icon {
+          width: 36px;
+          height: 36px;
+          font-size: 18px;
+        }
+        
+        .bottom-feature-text {
+          font-size: 11px;
+        }
+      }
+    }
+    
+    .filter-bar {
+      padding: 8px;
+    }
+    
+    .bind-car-hint {
+      padding: 8px;
+      font-size: 11px;
+    }
+    
+    .station-list {
+      gap: 6px;
+      
+      .station-card {
+        padding: 10px;
+        
+        .station-header {
+          margin-bottom: 6px;
+          
+          .station-logo {
+            width: 28px;
+            height: 28px;
+            margin-right: 6px;
+            
+            .logo-icon {
+              font-size: 14px;
+            }
+          }
+          
+          .station-info .station-name {
+            font-size: 13px;
+          }
+          
+          .station-status {
+            padding: 2px 4px;
+            min-width: 36px;
+            
+            .status-text {
+              font-size: 8px;
+            }
+            
+            .status-count {
+              font-size: 9px;
+            }
+          }
+        }
+        
+        .station-details {
+          margin-bottom: 6px;
+          
+          .detail-item {
+            margin-bottom: 4px;
+            
+            .detail-text {
+              font-size: 10px;
+            }
+            
+            .detail-status {
+              font-size: 8px;
+              padding: 1px 3px;
+            }
+          }
+        }
+        
+        .station-bottom {
+          padding-top: 6px;
+          
+          .price-section {
+            .price-symbol {
+              font-size: 11px;
+            }
+            
+            .price-value {
+              font-size: 14px;
+            }
+            
+            .price-unit {
+              font-size: 9px;
+            }
+          }
+          
+          .distance-section {
+            font-size: 11px;
+            
+            .distance-icon {
+              font-size: 9px;
+            }
+          }
+        }
+      }
+    }
+
+  }
+  
+  @media (max-width: 375px) {
+    .top-bar {
+      padding: 12px 16px;
+      
+      .city {
+        font-size: 26px;
+        padding: 6px 10px;
+      }
+      
+      .search {
+        height: 44px;
+        font-size: 24px;
+      }
+    }
+    
+    .content {
+      padding: 12px 16px 0;
+    }
+    
+    .feature-section {
+      padding: 16px 12px;
+      
+      .feature-grid {
+        gap: 12px;
+      }
+      
+      .feature-item {
+        padding: 16px;
+        
+        .feature-icon {
+          width: 56px;
+          height: 56px;
+          font-size: 28px;
+          margin-bottom: 12px;
+        }
+        
+        .feature-text {
+          font-size: 24px;
+        }
+      }
+    }
+    
+    .service-section {
+      padding: 16px 12px;
+      
+      .service-grid {
+        gap: 12px;
+      }
+      
+      .service-card {
+        padding: 20px;
+        
+        .service-icon {
+          font-size: 40px;
+          width: 64px;
+          height: 64px;
+        }
+        
+        .service-title {
+          font-size: 26px;
+        }
+        
+        .service-subtitle {
+          font-size: 20px;
+        }
+      }
+    }
+    
+    .bottom-features-section {
+      padding: 16px 12px;
+      
+      .bottom-features-grid {
+        gap: 12px;
+      }
+      
+      .bottom-feature-item {
+        padding: 16px;
+        
+        .bottom-feature-icon {
+          width: 48px;
+          height: 48px;
+          font-size: 24px;
+          margin-bottom: 12px;
+        }
+        
+        .bottom-feature-text {
+          font-size: 22px;
+        }
+      }
+    }
+    
+    .filter-bar {
+      padding: 12px;
+      
+      .filter-tag {
+        padding: 10px 16px;
+        font-size: 22px;
+      }
+      
+      .filter-tag.equal {
+        width: 140px;
+        height: 56px;
+      }
+    }
+    
+    .station-list {
+      gap: 8px;
+      
+      .station-card {
+        padding: 12px;
+        
+        .station-header {
+          margin-bottom: 8px;
+          
+          .station-logo {
+            width: 36px;
+            height: 36px;
+            margin-right: 10px;
+            
+            .logo-icon {
+              font-size: 18px;
+            }
+          }
+          
+          .station-info .station-name {
+            font-size: 15px;
+            line-height: 1.4;
+          }
+          
+          .station-status {
+            padding: 4px 8px;
+            min-width: 48px;
+            
+            .status-text {
+              font-size: 10px;
+            }
+            
+            .status-count {
+              font-size: 11px;
+            }
+          }
+        }
+        
+        .station-details {
+          margin-bottom: 10px;
+          
+          .detail-item {
+            margin-bottom: 8px;
+            
+            .detail-text {
+              font-size: 12px;
+            }
+            
+            .detail-status {
+              font-size: 10px;
+              padding: 2px 6px;
+            }
+          }
+        }
+        
+        .station-bottom {
+          padding-top: 10px;
+          
+          .price-section {
+            .price-symbol {
+              font-size: 14px;
+            }
+            
+            .price-value {
+              font-size: 18px;
+            }
+            
+            .price-unit {
+              font-size: 11px;
+            }
+          }
+          
+          .distance-section {
+            font-size: 13px;
+            
+            .distance-icon {
+              font-size: 11px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // AI客服浮动按钮
+.ai-customer-service {
+  position: fixed;
+  right: 20px;
+  bottom: 120px;
+  z-index: 1000;
+  
+  .ai-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.05);
+    }
+    
+    &:active {
+      transform: scale(0.95);
+    }
+    
+    .ai-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #00D4AA 0%, #00B393 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(0, 212, 170, 0.3);
+      margin-bottom: 8px;
+      position: relative;
+      overflow: hidden;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transform: rotate(45deg);
+        animation: shine 2s infinite;
+      }
+      
+      .ai-text {
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        z-index: 1;
+      }
+    }
+    
+    .ai-label {
+      background: #00D4AA;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0, 212, 170, 0.2);
+      
+      .label-text {
+        line-height: 1;
+      }
+    }
+  }
+}
+
+
+
+  // 闪光动画
+  @keyframes shine {
+    0% {
+      transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+    100% {
+      transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
   }
 }
 
