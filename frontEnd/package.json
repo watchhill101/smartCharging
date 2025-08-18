@@ -46,6 +46,7 @@
   },
   "author": "",
   "dependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1",
     "@babel/runtime": "^7.24.4",
     "@fortawesome/fontawesome-svg-core": "^7.0.0",
     "@fortawesome/free-brands-svg-icons": "^7.0.0",
