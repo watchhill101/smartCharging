@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { View, Text, ScrollView, Button, Input } from '@tarojs/components'
-import Taro from '@tarojs/taro'
+import TaroCompat from '../../utils/taroCompat'
 import './index.scss'
 import WalletService, { WalletInfo, Transaction } from '../../utils/walletService'
 import MobileDetect from '../../utils/mobileDetect'
@@ -16,7 +16,27 @@ interface Coupon {
   usedDate?: string
 }
 
+// 电池状态接口
+interface BatteryStatus {
+  level: number // 0-1
+  charging: boolean
+  chargingTime: number
+  dischargingTime: number
+  isSupported: boolean
+}
 
+// 充电样式级别
+type ChargingStyleLevel = 'low' | 'medium' | 'high' | 'critical'
+
+// 电池主题接口
+interface BatteryTheme {
+  name: 'high' | 'medium' | 'low' | 'critical' | 'charging'
+  level: number // 0-100
+  charging: boolean
+  gradient: string
+  shadowColor: string
+  textColor: string
+}
 
 export default function Charging() {
   const [walletInfo, setWalletInfo] = useState<WalletInfo | null>(null)
@@ -28,6 +48,178 @@ export default function Charging() {
   const [customAmount, setCustomAmount] = useState<string>('')
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
   const [showRechargeModal, setShowRechargeModal] = useState(false)
+  
+  // 电池状态管理
+  const [batteryStatus, setBatteryStatus] = useState<BatteryStatus | null>(null)
+  const [batteryInitialized, setBatteryInitialized] = useState(false)
+  const [batteryTheme, setBatteryTheme] = useState<BatteryTheme | null>(null)
+  const [showBatteryInfo, setShowBatteryInfo] = useState(false)
+
+  // 初始化电池 API（带重试机制）
+  const initBatteryAPI = useCallback(async (retryCount = 0) => {
+    const maxRetries = 3
+    const retryDelay = 1000 * (retryCount + 1) // 递增延迟：1s, 2s, 3s
+    
+    try {
+      // 检查浏览器是否支持 Battery Status API
+      if ('getBattery' in navigator) {
+        console.log(`🔋 Battery Status API 初始化尝试 ${retryCount + 1}/${maxRetries + 1}...`)
+        
+        // 添加延迟，确保 API 准备就绪
+        if (retryCount > 0) {
+          console.log(`⏳ 等待 ${retryDelay}ms 后重试...`)
+          await new Promise(resolve => setTimeout(resolve, retryDelay))
+        }
+        
+        const battery = await (navigator as any).getBattery()
+        
+        // 验证电池对象是否有效
+        if (!battery || typeof battery.level !== 'number') {
+          throw new Error('Battery object is invalid')
+        }
+        
+        // 更新电池状态
+        const updateBatteryStatus = () => {
+          // 验证电池数据的有效性
+          if (typeof battery.level !== 'number' || battery.level < 0 || battery.level > 1) {
+            console.warn('⚠️ 电池数据无效，跳过更新')
+            return
+          }
+          
+          const newStatus: BatteryStatus = {
+            level: battery.level,
+            charging: battery.charging,
+            chargingTime: battery.chargingTime,
+            dischargingTime: battery.dischargingTime,
+            isSupported: true
+          }
+          
+          // 防止重复设置相同的状态
+          setBatteryStatus(prevStatus => {
+            if (prevStatus && 
+                Math.abs(prevStatus.level - newStatus.level) < 0.01 && 
+                prevStatus.charging === newStatus.charging) {
+              return prevStatus // 返回之前的状态，避免不必要的更新
+            }
+            return newStatus
+          })
+          
+          updateBatteryTheme(newStatus)
+          
+          // 只在第一次成功时设置为已初始化
+          if (!batteryInitialized) {
+            setBatteryInitialized(true)
+          }
+          
+          console.log('🔋 电池状态更新成功:', {
+            level: Math.round(battery.level * 100) + '%',
+            charging: battery.charging ? '充电中' : '未充电',
+            chargingTime: battery.chargingTime === Infinity ? '未知' : `${Math.round(battery.chargingTime / 60)}分钟`,
+            dischargingTime: battery.dischargingTime === Infinity ? '未知' : `${Math.round(battery.dischargingTime / 3600)}小时`
+          })
+        }
+        
+        // 初始状态更新
+        updateBatteryStatus()
+        
+        // 监听电池状态变化
+        battery.addEventListener('levelchange', updateBatteryStatus)
+        battery.addEventListener('chargingchange', updateBatteryStatus)
+        battery.addEventListener('chargingtimechange', updateBatteryStatus)
+        battery.addEventListener('dischargingtimechange', updateBatteryStatus)
+        
+        // 成功提示
+        TaroCompat.showToast({
+          title: `🔋 电池主题已激活 ${Math.round(battery.level * 100)}%`,
+          icon: 'success',
+          duration: 2000
+        })
+        
+        return // 成功初始化，退出函数
+        
+      } else {
+        console.warn('⚠️ 当前浏览器不支持 Battery Status API')
+        
+        // 使用基于时间的智能推测作为降级方案
+        const hour = new Date().getHours()
+        let estimatedLevel = 0.75 // 默认75%
+        
+        // 基于时间智能推测电量
+        if (hour >= 6 && hour <= 9) {
+          // 早上：通常电量较高
+          estimatedLevel = 0.8 + Math.random() * 0.2 // 80-100%
+        } else if (hour >= 10 && hour <= 18) {
+          // 白天：中等电量
+          estimatedLevel = 0.4 + Math.random() * 0.4 // 40-80%
+        } else if (hour >= 19 && hour <= 23) {
+          // 晚上：电量较低
+          estimatedLevel = 0.2 + Math.random() * 0.4 // 20-60%
+        } else {
+          // 深夜：电量很低或在充电
+          estimatedLevel = 0.1 + Math.random() * 0.3 // 10-40%
+        }
+        
+        const fallbackStatus: BatteryStatus = {
+          level: estimatedLevel,
+          charging: false,
+          chargingTime: Infinity,
+          dischargingTime: Infinity,
+          isSupported: false
+        }
+        setBatteryStatus(fallbackStatus)
+        updateBatteryTheme(fallbackStatus)
+        setBatteryInitialized(true)
+        
+        TaroCompat.showToast({
+          title: `⚠️ 模拟电量 ${Math.round(estimatedLevel * 100)}%`,
+          icon: 'none',
+          duration: 2000
+        })
+        return
+      }
+    } catch (error) {
+      console.error(`❌ Battery API 初始化失败 (尝试 ${retryCount + 1}):`, error)
+      
+      // 如果还有重试次数，则重试
+      if (retryCount < maxRetries) {
+        console.log(`🔄 ${retryDelay}ms 后进行第 ${retryCount + 2} 次尝试...`)
+        setTimeout(() => {
+          initBatteryAPI(retryCount + 1)
+        }, retryDelay)
+        return
+      }
+      
+      // 所有重试都失败了，使用智能默认值
+      console.error('💥 所有重试都失败，使用智能默认值')
+      
+      // 基于时间的智能推测
+      const hour = new Date().getHours()
+      let fallbackLevel = 0.6 // 基础60%
+      
+      if (hour >= 7 && hour <= 10) fallbackLevel = 0.85  // 早上高电量
+      else if (hour >= 11 && hour <= 17) fallbackLevel = 0.65  // 白天中等
+      else if (hour >= 18 && hour <= 22) fallbackLevel = 0.35  // 晚上较低
+      else fallbackLevel = 0.25  // 深夜低电量
+      
+      const errorStatus: BatteryStatus = {
+        level: fallbackLevel,
+        charging: false,
+        chargingTime: Infinity,
+        dischargingTime: Infinity,
+        isSupported: false
+      }
+      setBatteryStatus(errorStatus)
+      updateBatteryTheme(errorStatus)
+      setBatteryInitialized(true)
+      
+      TaroCompat.showToast({
+        title: `🤖 智能推测 ${Math.round(fallbackLevel * 100)}%`,
+        icon: 'none',
+        duration: 2000
+      })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     // 初始化移动端优化
@@ -35,11 +227,132 @@ export default function Charging() {
     
     loadWalletData()
     
+    // 延迟初始化电池状态监听，确保页面完全加载
+    const timer = setTimeout(() => {
+      initBatteryAPI()
+    }, 500) // 500ms延迟，确保页面稳定
+    
     // 监听屏幕方向变化
     MobileDetect.onOrientationChange((orientation) => {
       console.log('屏幕方向变化:', orientation)
     })
+    
+    return () => clearTimeout(timer)
+  }, [initBatteryAPI])
+
+  // 获取充电样式级别
+  const getChargingStyleLevel = (level: number): ChargingStyleLevel => {
+    if (level >= 80) return 'high'
+    if (level >= 50) return 'medium'
+    if (level >= 20) return 'low'
+    return 'critical'
+  }
+
+  // 更新电池主题
+  const updateBatteryTheme = useCallback((status: BatteryStatus) => {
+    const levelPercent = Math.round(status.level * 100)
+    let themeName: BatteryTheme['name']
+    let gradient: string
+    let shadowColor: string
+    let textColor: string = '#ffffff'
+
+    if (status.charging) {
+      // 充电状态主题 - 根据电量级别调整
+      themeName = 'charging'
+      const chargingLevel = getChargingStyleLevel(levelPercent)
+      
+      switch (chargingLevel) {
+        case 'high':
+          gradient = 'linear-gradient(135deg, #10b981 0%, #059669 30%, #047857 60%, #065f46 100%)'
+          shadowColor = 'rgba(16, 185, 129, 0.5)'
+          break
+        case 'medium':
+          gradient = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 30%, #1d4ed8 60%, #1e40af 100%)'
+          shadowColor = 'rgba(59, 130, 246, 0.5)'
+          break
+        case 'low':
+          gradient = 'linear-gradient(135deg, #f59e0b 0%, #d97706 30%, #b45309 60%, #92400e 100%)'
+          shadowColor = 'rgba(245, 158, 11, 0.5)'
+          break
+        case 'critical':
+          gradient = 'linear-gradient(135deg, #ef4444 0%, #dc2626 30%, #b91c1c 60%, #991b1b 100%)'
+          shadowColor = 'rgba(239, 68, 68, 0.6)'
+          break
+      }
+    } else {
+      // 根据电量级别设置主题
+      if (levelPercent >= 80) {
+        themeName = 'high'
+        gradient = 'linear-gradient(135deg, #4ade80 0%, #22c55e 50%, #16a34a 100%)'
+        shadowColor = 'rgba(34, 197, 94, 0.3)'
+      } else if (levelPercent >= 50) {
+        themeName = 'medium'
+        gradient = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)'
+        shadowColor = 'rgba(37, 99, 235, 0.3)'
+      } else if (levelPercent >= 20) {
+        themeName = 'low'
+        gradient = 'linear-gradient(135deg, #f97316 0%, #ea580c 50%, #dc2626 100%)'
+        shadowColor = 'rgba(234, 88, 12, 0.3)'
+      } else {
+        themeName = 'critical'
+        gradient = 'linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #991b1b 100%)'
+        shadowColor = 'rgba(220, 38, 38, 0.4)'
+      }
+    }
+
+    const newTheme: BatteryTheme = {
+      name: themeName,
+      level: levelPercent,
+      charging: status.charging,
+      gradient,
+      shadowColor,
+      textColor
+    }
+
+    setBatteryTheme(newTheme)
   }, [])
+
+  // 获取电池主题样式
+  const getBatteryCardStyle = () => {
+    if (!batteryTheme) {
+      // 初始化时的默认样式
+      return {
+        background: 'linear-gradient(135deg, #6b7280 0%, #4b5563 50%, #374151 100%)',
+        boxShadow: '0 8px 32px rgba(107, 114, 128, 0.3)',
+        color: '#ffffff',
+        transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
+      }
+    }
+    
+    return {
+      background: batteryTheme.gradient,
+      boxShadow: `0 8px 32px ${batteryTheme.shadowColor}`,
+      color: batteryTheme.textColor,
+      transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
+    }
+  }
+
+  // 获取电池主题类名
+  const getBatteryThemeClass = () => {
+    let baseClass = 'balance-card battery-theme'
+    
+    if (!batteryTheme) {
+      return `${baseClass} battery-loading`
+    }
+    
+    baseClass += ` battery-${batteryTheme.name}`
+    
+    if (batteryTheme.charging) {
+      const chargingLevel = getChargingStyleLevel(batteryTheme.level)
+      baseClass += ` charging-active charging-${chargingLevel}`
+    }
+    
+    if (batteryTheme.name === 'critical') {
+      baseClass += ' critical-pulse'
+    }
+    
+    return baseClass
+  }
 
   // 加载钱包数据
   const loadWalletData = async () => {
@@ -157,7 +470,7 @@ export default function Charging() {
     const amount = selectedAmount === 'custom' ? customAmount : selectedAmount.replace('¥', '')
     
     if (!amount || parseFloat(amount) <= 0) {
-      Taro.showToast({
+      TaroCompat.showToast({
         title: '请输入有效金额',
         icon: 'error'
       })
@@ -165,7 +478,7 @@ export default function Charging() {
     }
 
     if (!selectedPaymentMethod) {
-      Taro.showToast({
+      TaroCompat.showToast({
         title: '请选择支付方式',
         icon: 'error'
       })
@@ -175,7 +488,7 @@ export default function Charging() {
     try {
       await WalletService.createRecharge(parseFloat(amount), selectedPaymentMethod)
       
-      Taro.showToast({
+      TaroCompat.showToast({
         title: '充值订单创建成功',
         icon: 'success'
       })
@@ -184,10 +497,10 @@ export default function Charging() {
       loadWalletData()
     } catch (error) {
       console.error('充值失败', error)
-      Taro.showToast({
-        title: '充值失败',
-        icon: 'error'
-      })
+              TaroCompat.showToast({
+          title: '充值失败',
+          icon: 'error'
+        })
     }
   }
 
@@ -238,8 +551,99 @@ export default function Charging() {
   return (
     <View className='wallet-page'>
 
-      {/* Balance Card */}
-      <View className='balance-card' onClick={() => setShowRechargeModal(true)}>
+      {/* Balance Card with Battery Theme */}
+      <View 
+        className={`${getBatteryThemeClass()} ${
+          batteryTheme?.name === 'critical' ? 'critical-pulse' : 
+          batteryTheme?.charging ? 'charging-pulse' :
+          'battery-pulse'
+        }`} 
+        style={getBatteryCardStyle()}
+        onClick={() => setShowRechargeModal(true)}
+      >
+        {/* 电池状态指示器 */}
+        <View 
+          className='battery-indicator' 
+          onClick={(e) => {
+            e.stopPropagation()
+            setShowBatteryInfo(!showBatteryInfo)
+          }}
+        >
+          <View className='battery-icon'>
+            <View 
+              className='battery-level' 
+              style={{ 
+                width: batteryTheme ? `${batteryTheme.level}%` : '0%',
+                backgroundColor: batteryTheme ? 
+                  (batteryTheme.charging ? '#fbbf24' : 
+                   batteryTheme.level > 20 ? '#22c55e' : '#ef4444') : '#6b7280'
+              }}
+            />
+            <View className='battery-tip' />
+            {batteryTheme?.charging && (
+              <View className='charging-bolt'>⚡</View>
+            )}
+          </View>
+          <Text className='battery-percentage'>
+            {batteryTheme ? `${batteryTheme.level}%` : '--'}
+          </Text>
+        </View>
+
+        {/* 电池信息面板 */}
+        {showBatteryInfo && (
+          <View className='battery-info-panel' onClick={(e) => e.stopPropagation()}>
+            <View className='battery-info-item'>
+              <Text className='info-label'>电量:</Text>
+              <Text className='info-value'>{batteryTheme ? `${batteryTheme.level}%` : '--'}</Text>
+            </View>
+            <View className='battery-info-item'>
+              <Text className='info-label'>状态:</Text>
+              <Text className='info-value'>
+                {!batteryTheme ? '🔄 检测中...' :
+                 batteryTheme.charging ? '🔌 充电中' : '🔋 使用中'}
+              </Text>
+            </View>
+            <View className='battery-info-item'>
+              <Text className='info-label'>主题:</Text>
+              <Text className='info-value'>
+                {!batteryTheme ? '⏳ 加载中...' :
+                 batteryTheme.name === 'high' ? '🟢 高电量' :
+                 batteryTheme.name === 'medium' ? '🔵 中等电量' :
+                 batteryTheme.name === 'low' ? '🟠 低电量' :
+                 batteryTheme.name === 'critical' ? '🔴 电量危险' :
+                 batteryTheme.name === 'charging' ? '⚡ 充电模式' : '❓ 未知'}
+              </Text>
+            </View>
+            <View className='battery-info-item'>
+              <Text className='info-label'>API:</Text>
+              <Text className='info-value'>
+                {!batteryInitialized ? '🔄 初始化中...' : 
+                 batteryStatus?.isSupported ? '✅ 已支持' : '🤖 智能模拟'}
+              </Text>
+            </View>
+            {batteryStatus?.isSupported && (
+              <>
+                {batteryStatus.chargingTime !== Infinity && (
+                  <View className='battery-info-item'>
+                    <Text className='info-label'>充满:</Text>
+                    <Text className='info-value'>
+                      {Math.round(batteryStatus.chargingTime / 60)}分钟
+                    </Text>
+                  </View>
+                )}
+                {batteryStatus.dischargingTime !== Infinity && (
+                  <View className='battery-info-item'>
+                    <Text className='info-label'>续航:</Text>
+                    <Text className='info-value'>
+                      {Math.round(batteryStatus.dischargingTime / 3600)}小时
+                    </Text>
+                  </View>
+                )}
+              </>
+            )}
+          </View>
+        )}
+
         <View className='card-decoration'>
           <View className='waves'></View>
         </View>
@@ -250,6 +654,13 @@ export default function Charging() {
             <Text className='currency-symbol'>￥</Text>
             <Text className='balance-amount'>{walletInfo?.balance.toFixed(2) || '0.00'}</Text>
           </View>
+          <Text className='battery-theme-hint'>
+            {!batteryInitialized ? '🔄 正在检测电池状态...' :
+             !batteryTheme ? '⏳ 主题加载中...' :
+             batteryTheme.charging ? `⚡ 充电中 ${batteryTheme.level}%` : 
+             batteryStatus?.isSupported ? `🔋 ${batteryTheme.level}% 真实电量` : 
+             `🤖 ${batteryTheme.level}% 智能推测`}
+          </Text>
         </View>
 
          {/* Integrated Tab Navigation */}

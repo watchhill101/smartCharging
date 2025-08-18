@@ -1,0 +1,55 @@
+/* Taro 兼容层样式 */
+
+/* Toast 样式 */
+.taro-compat-toast {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  white-space: pre-wrap;
+  word-break: break-word;
+  animation: taro-toast-fade-in 0.3s ease-out;
+}
+
+@keyframes taro-toast-fade-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* 不同类型的 Toast 样式 */
+.taro-compat-toast.success {
+  background-color: rgba(16, 185, 129, 0.9);
+}
+
+.taro-compat-toast.error {
+  background-color: rgba(239, 68, 68, 0.9);
+}
+
+.taro-compat-toast.loading::after {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: taro-loading-spin 1s linear infinite;
+}
+
+@keyframes taro-loading-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .taro-compat-toast {
+    max-width: 280px;
+    font-size: 13px;
+    padding: 14px 20px;
+  }
+}

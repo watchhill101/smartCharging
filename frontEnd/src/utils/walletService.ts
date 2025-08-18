@@ -1,4 +1,4 @@
-import Taro from '@tarojs/taro'
+import TaroCompat from './taroCompat'
 
 // 钱包信息接口
 export interface WalletInfo {
@@ -101,12 +101,12 @@ class WalletService {
     
     try {
       // 获取token
-      const token = Taro.getStorageSync('token')
+      const token = TaroCompat.getStorageSync('token')
       if (token) {
         header['Authorization'] = `Bearer ${token}`
       }
 
-      const response = await Taro.request({
+      const response = await TaroCompat.request({
         url: `${this.baseUrl}${url}`,
         method,
         data,
