@@ -563,6 +563,49 @@ export default function Device(props: DeviceProps) {
         </View>
       </View>
 
+      {/* 充电站信息展示 */}
+      {props.stationInfo && (
+        <View style={{
+          padding: '16px',
+          background: '#fff',
+          borderBottom: '1px solid #e8e8e8',
+          zIndex: 8,
+          margin: '0 8px',
+          borderRadius: '12px',
+          marginBottom: '8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+        }}>
+          <View style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+            <View style={{
+              width: '12px',
+              height: '12px',
+              background: '#4caf50',
+              borderRadius: '50%',
+              marginRight: '10px'
+            }} />
+            <Text style={{ fontSize: '16px', fontWeight: '600', color: '#333' }}>
+              🔌 充电站信息
+            </Text>
+          </View>
+          <Text style={{ fontSize: '15px', fontWeight: '500', color: '#333', marginBottom: '6px', lineHeight: '1.4' }}>
+            {props.stationInfo.name}
+          </Text>
+          <Text style={{ fontSize: '13px', color: '#666', marginBottom: '6px', lineHeight: '1.4' }}>
+            📍 {props.stationInfo.address}
+          </Text>
+          {props.stationInfo.distance && (
+            <Text style={{ fontSize: '13px', color: '#4caf50', marginBottom: '4px' }}>
+              📏 距离: {(props.stationInfo.distance / 1000).toFixed(2)}km
+            </Text>
+          )}
+          {props.stationInfo.rating && (
+            <Text style={{ fontSize: '13px', color: '#ff9800' }}>
+              ⭐ 评分: {props.stationInfo.rating.toFixed(1)}
+            </Text>
+          )}
+        </View>
+      )}
+
       {/* 位置信息展示 */}
       {locationInfo && (
         <View style={{

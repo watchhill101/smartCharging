@@ -1,6 +1,7 @@
 export default defineAppConfig({
   pages: [
     'pages/index/index',
+    'pages/index/xiangx',
     'pages/map/index',
     'pages/charging/index',
     'pages/profile/index'
