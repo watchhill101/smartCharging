@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { authenticate } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
 import User from '../models/User';
@@ -6,7 +6,7 @@ import User from '../models/User';
 const router = express.Router();
 
 // 获取用户信息
-router.get('/profile', authenticate, asyncHandler(async (req: any, res) => {
+router.get('/profile', authenticate, asyncHandler(async (req: any, res: Response) => {
   const user = await User.findById(req.user._id).select('-faceFeatures');
   
   if (!user) {
@@ -24,7 +24,7 @@ router.get('/profile', authenticate, asyncHandler(async (req: any, res) => {
 }));
 
 // 更新用户信息
-router.put('/profile', authenticate, asyncHandler(async (req: any, res) => {
+router.put('/profile', authenticate, asyncHandler(async (req: any, res: Response) => {
   const { nickName, avatarUrl } = req.body;
   const userId = req.user._id;
 

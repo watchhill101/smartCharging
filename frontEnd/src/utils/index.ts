@@ -1,4 +1,8 @@
-import Taro from '@tarojs/taro'
+import {
+  showLoading as taroShowLoading,
+  hideLoading as taroHideLoading,
+  showModal as taroShowModal
+} from '@tarojs/taro'
 
 /**
  * 格式化时间
@@ -73,7 +77,7 @@ export const debounce = <T extends (...args: any[]) => any>(
   wait: number
 ): ((...args: Parameters<T>) => void) => {
   let timeout: NodeJS.Timeout | null = null
-  
+
   return (...args: Parameters<T>) => {
     if (timeout) {
       clearTimeout(timeout)
@@ -93,11 +97,11 @@ export const throttle = <T extends (...args: any[]) => any>(
 ): ((...args: Parameters<T>) => void) => {
   let timeout: NodeJS.Timeout | null = null
   let previous = 0
-  
+
   return (...args: Parameters<T>) => {
     const now = Date.now()
     const remaining = wait - (now - previous)
-    
+
     if (remaining <= 0 || remaining > wait) {
       if (timeout) {
         clearTimeout(timeout)
@@ -123,15 +127,15 @@ export const deepClone = <T>(obj: T): T => {
   if (obj === null || typeof obj !== 'object') {
     return obj
   }
-  
+
   if (obj instanceof Date) {
     return new Date(obj.getTime()) as unknown as T
   }
-  
+
   if (obj instanceof Array) {
     return obj.map(item => deepClone(item)) as unknown as T
   }
-  
+
   if (typeof obj === 'object') {
     const clonedObj = {} as T
     for (const key in obj) {
@@ -141,7 +145,7 @@ export const deepClone = <T>(obj: T): T => {
     }
     return clonedObj
   }
-  
+
   return obj
 }
 
@@ -205,32 +209,57 @@ export const calculateDistance = (
   return R * c
 }
 
-/**
- * 显示Toast消息
- * @param title 消息内容
- * @param icon 图标类型
- */
+// 显示提示信息
 export const showToast = (title: string, icon: 'success' | 'error' | 'loading' | 'none' = 'none') => {
-  Taro.showToast({
-    title,
-    icon,
-    duration: 2000
-  })
+  console.log(`Toast: ${title} (${icon})`)
+  // Taro.showToast({
+  //   title,
+  //   icon: icon === 'error' ? 'none' : icon,
+  //   duration: 2000
+  // })
 }
 
-/**
- * 显示加载中
- * @param title 加载文本
- */
-export const showLoading = (title = '加载中...') => {
-  Taro.showLoading({ title })
+// 显示加载中
+export const showLoading = (title: string = '加载中...') => {
+  try {
+    taroShowLoading({
+      title,
+      mask: true
+    })
+  } catch (error) {
+    console.log('showLoading 不可用:', error)
+  }
 }
 
-/**
- * 隐藏加载中
- */
+// 隐藏加载
 export const hideLoading = () => {
-  Taro.hideLoading()
+  try {
+    taroHideLoading()
+  } catch (error) {
+    console.log('hideLoading 不可用:', error)
+  }
+}
+
+// 显示模态框
+export const showModal = (options: {
+  title?: string
+  content: string
+  showCancel?: boolean
+  confirmText?: string
+  cancelText?: string
+}) => {
+  try {
+    return taroShowModal({
+      title: options.title || '提示',
+      content: options.content,
+      showCancel: options.showCancel !== false,
+      confirmText: options.confirmText || '确定',
+      cancelText: options.cancelText || '取消'
+    })
+  } catch (error) {
+    console.log('showModal 不可用:', error)
+    return Promise.resolve({ confirm: false, cancel: true })
+  }
 }
 
 /**
@@ -240,16 +269,21 @@ export const hideLoading = () => {
  */
 export const showConfirm = (content: string, title = '提示'): Promise<boolean> => {
   return new Promise((resolve) => {
-    Taro.showModal({
-      title,
-      content,
-      success: (res) => {
-        resolve(res.confirm)
-      },
-      fail: () => {
-        resolve(false)
-      }
-    })
+    try {
+      taroShowModal({
+        title,
+        content,
+        success: (res) => {
+          resolve(res.confirm)
+        },
+        fail: () => {
+          resolve(false)
+        }
+      })
+    } catch (error) {
+      console.log('showModal 不可用:', error)
+      resolve(false)
+    }
   })
 }
 
