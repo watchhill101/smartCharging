@@ -28,7 +28,7 @@
       "value": 10,
       "minAmount": 50,
       "validFrom": "2025-01-01T00:00:00.000Z",
-      "validUntil": "2025-01-16T00:00:00.000Z",
+      "validUntil": "2025-08-21T00:00:00.000Z",
       "status": "unused",
       "conditions": ["满50元可用", "仅限单次使用"],
       "applicableStations": [],
