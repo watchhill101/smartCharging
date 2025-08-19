@@ -49,392 +49,519 @@
 .start-page {
   min-height: 100vh;
   background: #ffffff;
-  padding: var(--spacing-lg);
   padding-bottom: 120px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-}
 
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  font-size: var(--font-size-lg);
-  color: var(--text-secondary);
-}
+  // 导航栏样式
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-light);
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
 
-// 站点信息卡片
-.station-card {
-  background: var(--bg-primary);
-  border-radius: var(--radius-large);
-  padding: var(--spacing-xl);
-  margin-bottom: var(--spacing-lg);
-  box-shadow: var(--shadow-light);
-  border: 1px solid var(--border-light);
-  transition: all 0.2s ease;
+    .back {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: var(--border-color);
+        transform: scale(1.05);
+      }
+      
+      &:active {
+        transform: scale(0.95);
+      }
+    }
 
-  &:hover {
-    box-shadow: var(--shadow-medium);
-    transform: translateY(-2px);
-  }
-}
-
-.station-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: var(--spacing-lg);
-}
-
-.station-name {
-  font-size: var(--font-size-xl);
-  font-weight: 600;
-  color: var(--text-primary);
-  flex: 1;
-  margin-right: var(--spacing-md);
-}
-
-.station-tags {
-  display: flex;
-  gap: var(--spacing-sm);
-  flex-wrap: wrap;
-}
-
-.tag {
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-small);
-  font-size: var(--font-size-xs);
-  font-weight: 500;
-  
-  &.slow {
-    background: #e6f7ff;
-    color: var(--primary-color);
-    border: 1px solid #bae7ff;
-  }
-  
-  &.power {
-    background: #f6ffed;
-    color: var(--success-color);
-    border: 1px solid #b7eb8f;
-  }
-  
-  &.invo {
-    background: #fff7e6;
-    color: var(--warning-color);
-    border: 1px solid #ffd591;
-  }
-}
-
-.price-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-sm) 0;
-  border-bottom: 1px solid var(--border-light);
-  
-  &:last-child {
-    border-bottom: none;
-  }
-}
-
-.label {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-}
-
-.value {
-  font-size: var(--font-size-sm);
-  color: var(--text-primary);
-  font-weight: 500;
-}
-
-// 充电说明
-.instruction-section {
-  background: var(--bg-secondary);
-  border-radius: var(--radius-medium);
-  padding: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
-  text-align: center;
-}
-
-.instruction-title {
-  font-size: var(--font-size-sm);
-  color: var(--text-tertiary);
-  margin-bottom: var(--spacing-sm);
-  display: block;
-}
-
-.instruction-text {
-  font-size: var(--font-size-lg);
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
-// 金额选择
-.amount-section {
-  margin-bottom: var(--spacing-lg);
-}
-
-.section-title {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-md);
-  display: block;
-}
-
-.amount-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-md);
-}
-
-.amount-option {
-  background: var(--bg-primary);
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-medium);
-  padding: var(--spacing-lg);
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    border-color: var(--primary-color);
-    transform: translateY(-2px);
-  }
-  
-  &.selected {
-    border-color: var(--primary-color);
-    background: #e6f7ff;
-    color: var(--primary-color);
-  }
-}
-
-.amount-value {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-}
-
-// 支付方式
-.payment-section {
-  margin-bottom: var(--spacing-lg);
-}
-
-.payment-options {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.payment-option {
-  display: flex;
-  align-items: center;
-  padding: var(--spacing-lg);
-  background: var(--bg-primary);
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-medium);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    border-color: var(--primary-color);
-  }
-  
-  &.selected {
-    border-color: var(--primary-color);
-    background: #e6f7ff;
-  }
-}
-
-.payment-icon {
-  font-size: var(--font-size-xl);
-  margin-right: var(--spacing-md);
-}
-
-.payment-name {
-  flex: 1;
-  font-size: var(--font-size-md);
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.payment-checkbox {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-small);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-primary);
-  
-  .checkmark {
-    color: var(--primary-color);
-    font-weight: bold;
-    font-size: var(--font-size-sm);
-  }
-}
-
-// 营业信息
-.business-card {
-  background: var(--bg-primary);
-  border-radius: var(--radius-large);
-  padding: var(--spacing-xl);
-  margin-bottom: var(--spacing-lg);
-  box-shadow: var(--shadow-light);
-  border: 1px solid var(--border-light);
-}
-
-.business-header {
-  margin-bottom: var(--spacing-lg);
-}
-
-.business-title {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.business-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-sm) 0;
-  border-bottom: 1px solid var(--border-light);
-  
-  &:last-child {
-    border-bottom: none;
-  }
-}
-
-.info-label {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-}
-
-.info-value {
-  font-size: var(--font-size-sm);
-  color: var(--text-primary);
-  font-weight: 500;
-  text-align: right;
-  max-width: 60%;
-}
-
-// 预付费确认
-.deposit-section {
-  margin-bottom: var(--spacing-lg);
-}
-
-.deposit-checkbox {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.checkbox {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-small);
-  margin-right: var(--spacing-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-primary);
-  transition: all 0.2s ease;
-  
-  &.checked {
-    border-color: var(--primary-color);
-    background: var(--primary-color);
+    .back-icon { 
+      font-size: 24px; 
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
     
-    .checkmark {
-      color: white;
-      font-weight: bold;
+    .title { 
+      font-size: var(--font-size-lg); 
+      font-weight: 600; 
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+    
+    .spacer { width: 40px; height: 40px; }
+  }
+
+  // 充电说明区域
+  .instruction-section {
+    margin: var(--spacing-md);
+    padding: var(--spacing-xl);
+    background: var(--bg-primary);
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-light);
+
+    .instruction-text {
+      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
+      line-height: 1.6;
+      text-align: center;
+
+      .clickable-link {
+        color: var(--primary-color);
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease;
+        
+        &:hover {
+          color: var(--primary-dark);
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  // 站点信息卡片
+  .station-card {
+    margin: var(--spacing-md) var(--spacing-md) 0;
+    background: var(--bg-primary);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-light);
+    transition: all 0.2s ease;
+    
+    &:hover {
+      box-shadow: var(--shadow-medium);
+      transform: translateY(-1px);
+    }
+
+    .station-name { 
+      font-size: var(--font-size-lg); 
+      font-weight: 700; 
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-md);
+      line-height: 1.4;
+    }
+    
+    .tags { 
+      display: flex; 
+      gap: var(--spacing-sm); 
+      margin-bottom: var(--spacing-lg);
+      flex-wrap: wrap;
+    }
+    
+    .tag { 
+      background: var(--bg-tertiary); 
+      color: var(--text-secondary); 
+      padding: var(--spacing-xs) var(--spacing-sm); 
+      border-radius: var(--radius-small); 
+      font-size: var(--font-size-xs);
+      font-weight: 500;
+      border: 1px solid var(--border-light);
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: var(--border-color);
+        transform: translateY(-1px);
+      }
+    }
+    
+    .tag.power { 
+      background: #e6f7ff; 
+      color: var(--primary-dark);
+      border-color: #91d5ff;
+    }
+    
+    .tag.invo { 
+      background: #f6ffed; 
+      color: var(--success-color);
+      border-color: #b7eb8f;
+    }
+
+    .price-row { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between;
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .label { 
+      color: var(--text-secondary); 
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+    }
+    
+    .price { 
+      color: var(--error-color);
+      font-weight: 600;
+    }
+    
+    .num { 
+      font-size: var(--font-size-xl); 
+      font-weight: 800; 
+      margin-right: var(--spacing-xs);
+    }
+
+    .period { 
+      background: var(--bg-tertiary); 
+      border-radius: var(--radius-small); 
+      padding: var(--spacing-xs) var(--spacing-sm); 
+      color: var(--text-tertiary); 
+      font-size: var(--font-size-xs);
+      display: inline-block;
+      border: 1px solid var(--border-light);
+    }
+  }
+
+  // 支付方式卡片
+  .pay-card {
+    margin: var(--spacing-md); 
+    background: var(--bg-primary); 
+    border-radius: var(--radius-medium); 
+    padding: var(--spacing-xl); 
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-light);
+    transition: all 0.2s ease;
+    
+    &:hover {
+      box-shadow: var(--shadow-medium);
+    }
+
+    .pay-head { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      margin-bottom: var(--spacing-lg);
+      padding-bottom: var(--spacing-md);
+      border-bottom: 1px solid var(--border-light);
+    }
+    
+    .pay-title { 
+      font-weight: 700; 
+      color: var(--text-primary);
+      font-size: var(--font-size-md);
+    }
+    
+    .pay-note { 
+      color: var(--primary-color);
+      font-size: var(--font-size-sm);
+      cursor: pointer;
+      transition: color 0.2s ease;
+      
+      &:hover {
+        color: var(--primary-dark);
+      }
+    }
+
+    .deposit { 
+      display: flex; 
+      align-items: center; 
+      gap: var(--spacing-sm); 
+      margin: var(--spacing-lg) 0;
+      padding: var(--spacing-md);
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-small);
+      border: 1px solid var(--border-light);
+    }
+    
+    .check { 
+      width: 20px; 
+      height: 20px; 
+      border-radius: 4px; 
+      border: 2px solid var(--border-color); 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      color: var(--bg-primary); 
+      background: var(--bg-primary); 
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        border-color: var(--primary-color);
+      }
+    }
+    
+    .check.checked { 
+      background: var(--success-color); 
+      border-color: var(--success-color);
+      transform: scale(1.1);
+    }
+    
+    .deposit-title { 
+      font-weight: 600; 
+      color: var(--text-primary);
+      font-size: var(--font-size-sm);
+    }
+    
+    .deposit-desc { 
+      color: var(--text-tertiary); 
+      font-size: var(--font-size-xs);
+    }
+
+    .amount-grid { 
+      display: grid; 
+      grid-template-columns: repeat(3, 1fr); 
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .amount-item { 
+      background: var(--bg-tertiary); 
+      border: 2px solid var(--border-light); 
+      height: 60px; 
+      border-radius: var(--radius-medium); 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 600;
+      
+      &:hover {
+        background: var(--bg-secondary);
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+      }
+    }
+    
+    .amount-item.selected { 
+      background: var(--primary-color); 
+      border-color: var(--primary-color);
+      color: var(--bg-primary);
+      transform: scale(1.05);
+      box-shadow: var(--shadow-medium);
+    }
+    
+    .amount-text { 
+      font-size: var(--font-size-md); 
+      color: inherit; 
+      font-weight: 700;
+    }
+
+    .pay-methods { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: var(--spacing-md);
+    }
+    
+    .method { 
+      background: var(--bg-tertiary); 
+      border: 2px solid var(--border-light); 
+      border-radius: var(--radius-medium); 
+      padding: var(--spacing-lg); 
+      display: flex; 
+      align-items: center; 
+      gap: var(--spacing-md); 
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: var(--bg-secondary);
+        border-color: var(--primary-color);
+        transform: translateY(-1px);
+      }
+    }
+    
+    .method.active { 
+      border-color: var(--success-color); 
+      background: #f6ffed;
+      box-shadow: var(--shadow-light);
+    }
+    
+    .icon { 
+      font-size: 24px;
+      filter: grayscale(0.3);
+    }
+    
+    .text { 
+      font-weight: 600; 
+      color: var(--text-primary);
       font-size: var(--font-size-sm);
     }
   }
-}
 
-.deposit-text {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-}
+  // 营业信息卡片
+  .business-card {
+    margin: var(--spacing-md); 
+    background: var(--bg-primary); 
+    border-radius: var(--radius-medium); 
+    padding: var(--spacing-xl); 
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-light);
+    transition: all 0.2s ease;
+    
+    &:hover {
+      box-shadow: var(--shadow-medium);
+    }
 
-// 充电操作区域
-.charging-action-section {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--bg-primary);
-  border-top: 1px solid var(--border-light);
-  padding: var(--spacing-lg);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  box-shadow: var(--shadow-heavy);
-}
+    .business-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-lg);
+      padding-bottom: var(--spacing-md);
+      border-bottom: 1px solid var(--border-light);
+    }
 
-.charging-mode {
-  flex: 1;
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-  border-radius: var(--radius-medium);
-  padding: var(--spacing-md) var(--spacing-lg);
-  text-align: center;
-}
+    .business-title { 
+      font-size: var(--font-size-md); 
+      font-weight: 700; 
+      color: var(--text-primary);
+    }
 
-.mode-text {
-  color: white;
-  font-size: var(--font-size-md);
-  font-weight: 600;
-}
+    .business-tag { 
+      background: #f6ffed; 
+      color: var(--success-color); 
+      padding: var(--spacing-xs) var(--spacing-sm); 
+      border-radius: var(--radius-small); 
+      font-size: var(--font-size-xs); 
+      font-weight: 600;
+      border: 1px solid #b7eb8f;
+    }
 
-.start-btn {
-  background: var(--success-color);
-  border-radius: var(--radius-medium);
-  padding: var(--spacing-md) var(--spacing-xl);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    background: #389e0d;
-    transform: scale(1.05);
+    .business-details {
+      .info-line {
+        display: flex;
+        align-items: center;
+        margin-bottom: var(--spacing-md);
+        position: relative;
+        padding: var(--spacing-sm) 0;
+
+        .label {
+          color: var(--text-secondary);
+          font-size: var(--font-size-sm);
+          min-width: 80px;
+          margin-right: var(--spacing-md);
+          font-weight: 500;
+        }
+
+        .value {
+          color: var(--text-primary);
+          font-size: var(--font-size-sm);
+          flex: 1;
+          font-weight: 500;
+        }
+
+        .license-link {
+          color: var(--primary-color);
+          font-size: var(--font-size-sm);
+          cursor: pointer;
+          margin-left: auto;
+          font-weight: 500;
+          transition: color 0.2s ease;
+          
+          &:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+          }
+        }
+      }
+    }
   }
-  
-  &:active {
-    transform: scale(0.95);
-  }
-}
 
-.start-text {
-  color: white;
-  font-size: var(--font-size-md);
-  font-weight: 600;
+  // 充电操作区域
+  .charging-action-section {
+    position: fixed;
+    left: var(--spacing-md);
+    right: var(--spacing-md);
+    bottom: var(--spacing-md);
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-heavy);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--border-light);
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    
+    .charging-mode {
+      background: linear-gradient(135deg, #ff6b35, #f7931e);
+      color: var(--bg-primary);
+      padding: var(--spacing-sm) var(--spacing-lg);
+      border-radius: var(--radius-large);
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: var(--shadow-light);
+      transition: all 0.2s ease;
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-medium);
+      }
+    }
+    
+    .start-btn {
+      background: var(--text-tertiary);
+      color: var(--bg-primary);
+      border-radius: var(--radius-large);
+      height: 52px;
+      flex: 1;
+      margin-left: var(--spacing-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 700;
+      
+      &:hover {
+        background: var(--text-secondary);
+        transform: translateY(-1px);
+      }
+      
+      &:active {
+        transform: translateY(0);
+      }
+    }
+    
+    .start-text {
+      font-size: var(--font-size-md);
+      font-weight: 700;
+    }
+  }
 }
 
 // 响应式设计
 @media (max-width: 768px) {
   .start-page {
-    padding: var(--spacing-md);
-  }
-  
-  .amount-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .charging-action-section {
-    padding: var(--spacing-md);
-  }
-  
-  .station-card,
-  .business-card {
-    padding: var(--spacing-lg);
+    .station-card,
+    .pay-card,
+    .business-card {
+      margin: var(--spacing-sm);
+      padding: var(--spacing-lg);
+    }
+    
+    .amount-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .pay-methods {
+      grid-template-columns: 1fr;
+    }
+    
+    .charging-action-section {
+      left: var(--spacing-sm);
+      right: var(--spacing-sm);
+      bottom: var(--spacing-sm);
+      padding: var(--spacing-lg);
+    }
   }
 }
 
@@ -442,12 +569,12 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg-primary: #1f1f1f;
-    --bg-secondary: #2a2a2a;
-    --bg-tertiary: #333333;
+    --bg-secondary: #141414;
+    --bg-tertiary: #262626;
     --text-primary: #ffffff;
-    --text-secondary: #cccccc;
-    --text-tertiary: #999999;
-    --border-color: #404040;
-    --border-light: #333333;
+    --text-secondary: #d9d9d9;
+    --text-tertiary: #8c8c8c;
+    --border-color: #434343;
+    --border-light: #303030;
   }
 }

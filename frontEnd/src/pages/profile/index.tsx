@@ -38,10 +38,10 @@ interface FaceVerificationResult {
 
 export default function Profile() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+
   const [showFaceVerification, setShowFaceVerification] = useState(false);
   const [showVerificationHistory, setShowVerificationHistory] = useState(false);
-  const [faceVerificationStatus, setFaceVerificationStatus] = useState<'none' | 'pending' | 'success' | 'failed'>('none');
+
 
   useLoad(() => {
     console.log('🏠 个人中心页面加载');
@@ -61,7 +61,7 @@ export default function Profile() {
 
   const loadUserProfile = async () => {
     try {
-      setIsLoading(true);
+
       console.log('🔄 开始加载用户信息...');
 
       // 首先尝试从存储中获取用户信息
@@ -92,7 +92,6 @@ export default function Profile() {
         };
         console.log('📋 设置用户配置:', profileData);
         setUserProfile(profileData);
-        setIsLoading(false);
         return;
       }
 
@@ -109,7 +108,6 @@ export default function Profile() {
           chargingCount: 0,
           points: 0
         });
-        setIsLoading(false);
         return;
       }
 
@@ -159,14 +157,11 @@ export default function Profile() {
           points: 0
         });
       }
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handleFaceVerificationSuccess = async (result: FaceVerificationResult) => {
     console.log('人脸验证成功:', result);
-    setFaceVerificationStatus('success');
     setShowFaceVerification(false);
 
     try {
@@ -198,15 +193,11 @@ export default function Profile() {
 
   const handleFaceVerificationError = (error: string) => {
     console.error('人脸验证失败:', error);
-    setFaceVerificationStatus('failed');
     setShowFaceVerification(false);
     Taro.showToast({ title: error, icon: 'error' });
   };
 
-  const startFaceVerification = () => {
-    setFaceVerificationStatus('pending');
-    setShowFaceVerification(true);
-  };
+
 
   const navigateToFunction = (functionName: string) => {
     if (functionName === '我的订单') {
@@ -215,20 +206,23 @@ export default function Profile() {
       });
       return;
     }
-
+    
     if (functionName === '我的车辆') {
       Taro.navigateTo({
         url: '/pages/vehicles/index'
       });
       return;
     }
-
+    
     if (functionName === '钱包' || functionName === '我的钱包') {
       Taro.navigateTo({
         url: '/pages/wallet/index'
       });
       return;
     }
+<<<<<<< Updated upstream
+    
+=======
 
     if (functionName === '卡券中心') {
       Taro.navigateTo({
@@ -237,17 +231,22 @@ export default function Profile() {
       return;
     }
 
+    // 画圈的功能跳转到开发中页面
+    if (['我的电卡', '包月套餐', '充电会员', '常用设置', '电池报告'].includes(functionName)) {
+      Taro.navigateTo({
+        url: `/pages/feature-dev/index?featureName=${encodeURIComponent(functionName)}`
+      });
+      return;
+    }
+
+>>>>>>> Stashed changes
     Taro.showToast({
       title: `${functionName}功能开发中`,
       icon: 'none'
     });
   };
 
-  const switchToCharging = () => {
-    Taro.switchTab({
-      url: '/pages/charging/index'
-    });
-  };
+
 
   if (showFaceVerification) {
     return (
@@ -298,12 +297,15 @@ export default function Profile() {
                 </Text>
                 <View className='user-id-section'>
                   <Text className='user-id-label'>ID</Text>
-                  <Text className='user-id'>{userProfile?.phone || '71178870'}</Text><br />
+                  <Text className='user-id'>{userProfile?.phone || '71178870'}</Text>
                   <Text className='user-type'>电瓶车充电</Text>
                 </View>
               </View>
             </View>
 
+            <Button className='switch-button' onClick={switchToCharging}>
+              切换汽车充电
+            </Button>
           </View>
 
           {/* 完善资料提示 */}
@@ -332,9 +334,9 @@ export default function Profile() {
           <Text className='stat-label'>钱包(元)</Text>
         </View>
         <View className='stat-divider'></View>
-        <View className='stat-item' onClick={() => navigateToFunction('卡券中心')}>
+        <View className='stat-item'>
           <View className='card-center-icon'>🎫</View>
-          <Text className='stat-label'>卡券中心</Text>
+          <Text className='stat-label'>卡包中心</Text>
         </View>
       </View>
 
@@ -342,7 +344,7 @@ export default function Profile() {
       <View className='service-section'>
         <View className='service-content'>
           <View className='service-info'>
-            <Text className='service-title'>安心充电服务</Text>
+            <Text className='service-title'>安心充电{'\n'}服务</Text>
             <Text className='service-desc'>服务升级，守护您的每次充电</Text>
           </View>
           <Button className='service-button' onClick={() => navigateToFunction('安心充电服务')}>
@@ -387,10 +389,14 @@ export default function Profile() {
             <View className='function-icon avatar-icon'>👑</View>
             <Text className='function-label'>头像装扮</Text>
           </View>
-          <View className='function-item' onClick={() => navigateToFunction('电池报告')}>
-            <View className='function-icon battery-icon'>🔋</View>
-            <Text className='function-label'>电池报告</Text>
-          </View>
+        </View>
+      </View>
+
+      {/* 电池报告 */}
+      <View className='battery-report-section'>
+        <View className='battery-report-item' onClick={() => navigateToFunction('电池报告')}>
+          <View className='battery-icon-large'>🔋</View>
+          <Text className='battery-label'>电池报告</Text>
         </View>
       </View>
 

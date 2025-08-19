@@ -133,11 +133,11 @@ export default function XiangX() {
   const handleSelectTerminal = (charger: ChargingStationDetail['chargers'][number], index: number) => {
     try {
       const payload = {
-        terminalId: charger.chargerId,
         stationId: stationInfo?._id,
         stationName: stationInfo?.name,
         address: stationInfo?.address,
         chargerOrder: index + 1,
+        chargerId: charger.chargerId,
         chargerType: charger.type,
         chargerPower: charger.power,
         pricePerKwh: (charger.pricing.electricityFee + charger.pricing.serviceFee).toFixed(4),
@@ -641,11 +641,11 @@ export default function XiangX() {
                 <Text className='pricing-title'>价格信息</Text>
                 <View className='price-tag'>实时价格</View>
               </View>
-               
+              
               <View className='current-period'>
                 当前时段: {stationInfo.operatingHours.open}-{stationInfo.operatingHours.close}
               </View>
-               
+              
               <View className='price-breakdown'>
                 <View className='price-item'>
                   <Text className='price-label'>电费:</Text>
@@ -821,7 +821,7 @@ export default function XiangX() {
               </View>
               <Text className='modal-title'>用户评价</Text>
             </View>
-             
+            
             <View className='modal-body'>
               {/* 评论输入框 */}
               <View className='comment-input-section'>
@@ -849,7 +849,7 @@ export default function XiangX() {
                     {userRating === 5 && '很好'}
                   </Text>
                 </View>
-                 
+                
                 <View className='input-wrapper'>
                   <input
                     className='comment-input'
@@ -890,11 +890,11 @@ export default function XiangX() {
                       </View>
                       <Text className='comment-time'>{comment.time}</Text>
                     </View>
-                     
+                    
                     <View className='comment-content'>
                       <Text className='content-text'>{comment.content}</Text>
                     </View>
-                     
+                    
                     <View className='comment-actions'>
                       <View className='like-btn' onClick={() => likeComment(comment.id)}>
                         <Text className='like-icon'>👍</Text>
