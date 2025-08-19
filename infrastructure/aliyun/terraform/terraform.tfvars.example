@@ -1,27 +1,62 @@
 # Terraform变量配置文件示例
 # 复制此文件为 terraform.tfvars 并填入实际值
 
+# ========================================
 # 阿里云认证信息
-access_key = "your-access-key-here"
-secret_key = "your-secret-key-here"
+# ========================================
+access_key = "LTAI5t7xxxxxxxxxxxxxxxxx"  # 替换为您的Access Key ID
+secret_key = "xxxxxxxxxxxxxxxxxxxxxxxx"  # 替换为您的Access Key Secret
 
+# ========================================
 # 基础配置
-region       = "cn-beijing"
-project_name = "smart-charging"
-environment  = "production"
+# ========================================
+region       = "cn-beijing"      # 阿里云地域
+project_name = "smart-charging"   # 项目名称
+environment  = "production"       # 环境名称
 
+# ========================================
 # 域名配置
-domain_name = "smartcharging.com"
+# ========================================
+domain_name = "smartcharging.com"  # 主域名（需要已备案）
 
-# 数据库密码
-mongodb_password = "YourStrongMongoDBPassword2024!"
-redis_password   = "YourStrongRedisPassword2024!"
+# ========================================
+# 数据库配置
+# ========================================
+mongodb_password = "YourStrongMongoDBPassword2024!"  # MongoDB密码（至少8位）
+redis_password   = "YourStrongRedisPassword2024!"    # Redis密码（至少8位）
 
+# 数据库实例规格
+mongodb_instance_class = "dds.mongo.mid"                    # MongoDB实例规格
+redis_instance_class   = "redis.master.small.default"      # Redis实例规格
+
+# ========================================
 # ECS实例配置
-web_instance_type = "ecs.c6.large"
-app_instance_type = "ecs.c6.xlarge"
+# ========================================
+web_instance_type  = "ecs.c6.large"   # Web服务器实例规格
+app_instance_type  = "ecs.c6.xlarge"  # 应用服务器实例规格
+web_instance_count = 2                 # Web服务器实例数量
+app_instance_count = 2                 # 应用服务器实例数量
 
+# ========================================
+# 负载均衡配置
+# ========================================
+slb_spec = "slb.s2.small"  # 负载均衡器规格
+
+# ========================================
 # 存储配置
-oss_static_acl  = "public-read"
-oss_uploads_acl = "private"
-oss_backup_acl  = "private"
+# ========================================
+oss_static_acl  = "public-read"  # 静态资源存储桶权限
+oss_uploads_acl = "private"      # 用户上传存储桶权限
+oss_backup_acl  = "private"      # 备份存储桶权限
+
+# ========================================
+# 通用标签
+# ========================================
+common_tags = {
+  Project     = "smart-charging"
+  Environment = "production"
+  Owner       = "smart-charging-team"
+  ManagedBy   = "terraform"
+  CostCenter  = "engineering"
+  Department  = "technology"
+}

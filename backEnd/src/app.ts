@@ -17,6 +17,12 @@ import chargingRoutes from './routes/charging';
 import paymentRoutes from './routes/payment';
 import walletRoutes from './routes/wallet';
 import faceRoutes from './routes/face';
+import helpRoutes from './routes/help';
+import couponRoutes from './routes/coupon';
+import notificationRoutes from './routes/notification';
+import notificationTestRoutes from './routes/notificationTest';
+import smsRoutes from './routes/sms';
+import smsTestRoutes from './routes/smsTest';
 
 // 验证和设置配置
 setDefaults();
@@ -127,6 +133,12 @@ app.use('/api/charging', chargingRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/face', faceRoutes);
+app.use('/api/help', helpRoutes);
+app.use('/api/coupon', couponRoutes);
+app.use('/api/notification', notificationRoutes);
+app.use('/api/notification-test', notificationTestRoutes);
+app.use('/api/sms', smsRoutes);
+app.use('/api/sms-test', smsTestRoutes);
 
 // 错误处理中间件
 app.use(notFound);
@@ -144,10 +156,60 @@ async function startServer() {
     console.log('✅ Redis connected successfully');
 
     // 启动HTTP服务器
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📍 Environment: ${process.env.NODE_ENV}`);
     });
+
+    // 初始化WebSocket和通知服务
+    const { getRedisClient } = require('./config/redis');
+    const { WebSocketService } = require('./services/WebSocketService');
+    const { NotificationService } = require('./services/NotificationService');
+    const { SmsService } = require('./services/SmsService');
+    const { SmsNotificationService } = require('./services/SmsNotificationService');
+    const { RedisService } = require('./services/RedisService');
+
+    const redisService = new RedisService({
+      host: process.env.REDIS_HOST || 'localhost',
+      port: parseInt(process.env.REDIS_PORT || '6379'),
+      password: process.env.REDIS_PASSWORD
+    });
+
+    // 初始化WebSocket服务
+    const webSocketService = new WebSocketService(server, redisService);
+    console.log('📡 WebSocket service initialized');
+
+    // 初始化通知服务
+    const notificationService = new NotificationService(redisService, webSocketService);
+    notificationService.startScheduledTasks();
+    console.log('🔔 Notification service initialized');
+
+    // 初始化短信服务
+    const smsService = new SmsService({
+      provider: (process.env.SMS_PROVIDER as 'aliyun' | 'tencent' | 'mock') || 'mock',
+      accessKeyId: process.env.SMS_ACCESS_KEY_ID,
+      accessKeySecret: process.env.SMS_ACCESS_KEY_SECRET,
+      signName: process.env.SMS_SIGN_NAME || '智能充电',
+      endpoint: process.env.SMS_ENDPOINT
+    });
+    console.log('📱 SMS service initialized');
+
+    // 初始化短信通知服务
+    const smsNotificationService = new SmsNotificationService(smsService, notificationService);
+    console.log('📲 SMS notification service initialized');
+
+    // 初始化短信集成
+    const { createSmsIntegration } = require('./utils/smsIntegration');
+    const smsIntegration = createSmsIntegration(notificationService, smsNotificationService);
+    console.log('🔗 SMS integration initialized');
+
+    // 将服务实例附加到app，供其他模块使用
+    app.locals.webSocketService = webSocketService;
+    app.locals.notificationService = notificationService;
+    app.locals.smsService = smsService;
+    app.locals.smsNotificationService = smsNotificationService;
+    app.locals.smsIntegration = smsIntegration;
+
   } catch (error) {
     console.error('❌ Failed to start server:', error);
     process.exit(1);

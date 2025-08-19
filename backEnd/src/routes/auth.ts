@@ -1,8 +1,17 @@
 import express, { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
+import multer from 'multer';
 import { asyncHandler } from '../middleware/errorHandler';
 import User from '../models/User';
+import SliderVerifyService from '../services/SliderVerifyService';
+import UserAuthService from '../services/UserAuthService';
+import {
+  sliderVerifyRateLimit,
+  sliderVerifyLogger,
+  sliderVerifyValidator,
+  sliderVerifySecurityCheck
+} from '../middleware/sliderVerifyMiddleware';
+import { authenticate as authenticateToken, userRateLimit, requireOwnership, logApiAccess } from '../middleware/auth';
 
 const router = express.Router();
 
@@ -11,6 +20,26 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
+
+// 服务实例
+const sliderVerifyService = new SliderVerifyService();
+const userAuthService = new UserAuthService();
+
+// 配置multer用于处理文件上传（人脸图片）
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB
+    files: 1
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('只允许上传图片文件'));
+    }
+  }
+});
 
 // 生成JWT token
 const generateToken = (userId: string) => {
@@ -69,7 +98,117 @@ router.post('/send-verify-code', asyncHandler(async (req: Request, res: Response
   });
 }));
 
-// 验证码登录
+// 用户登录（支持密码、滑块验证、人脸识别）
+router.post('/login', 
+  upload.single('faceImage'),
+  logApiAccess,
+  userRateLimit(10, 60000), // 每分钟最多10次登录尝试
+  asyncHandler(async (req: Request, res: Response) => {
+  console.log('🔐 收到登录请求:', { 
+    phone: req.body.phone, 
+    hasVerifyToken: !!req.body.verifyToken,
+    hasPassword: !!req.body.password,
+    hasFaceImage: !!req.file
+  });
+  
+  const { phone, password, verifyToken, userInfo } = req.body;
+  const faceImage = req.file?.buffer;
+  
+  // 获取设备信息
+  const deviceInfo = {
+    userAgent: req.get('User-Agent') || 'unknown',
+    platform: req.get('X-Platform') || 'unknown',
+    ip: req.ip || req.socket.remoteAddress || 'unknown'
+  };
+
+  try {
+    const result = await userAuthService.login({
+      phone,
+      password,
+      verificationToken: verifyToken,
+      faceImage,
+      deviceInfo
+    });
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: result.message,
+        data: result.data
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: result.message
+      });
+    }
+
+  } catch (error) {
+    console.error('❌ 登录处理失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '登录过程中出现错误，请稍后重试'
+    });
+  }
+}));
+
+// 用户注册
+router.post('/register', 
+  upload.single('faceImage'),
+  logApiAccess,
+  userRateLimit(5, 60000), // 每分钟最多5次注册尝试
+  asyncHandler(async (req: Request, res: Response) => {
+  console.log('📝 收到注册请求:', { 
+    phone: req.body.phone,
+    hasPassword: !!req.body.password,
+    hasVerifyToken: !!req.body.verifyToken,
+    hasFaceImage: !!req.file
+  });
+  
+  const { phone, password, nickName, avatarUrl, verifyToken } = req.body;
+  const faceImage = req.file?.buffer;
+  
+  // 获取设备信息
+  const deviceInfo = {
+    userAgent: req.get('User-Agent') || 'unknown',
+    platform: req.get('X-Platform') || 'unknown',
+    ip: req.ip || req.socket.remoteAddress || 'unknown'
+  };
+
+  try {
+    const result = await userAuthService.register({
+      phone,
+      password,
+      nickName,
+      avatarUrl,
+      verificationToken: verifyToken,
+      faceImage,
+      deviceInfo
+    });
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: result.message,
+        data: result.data
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: result.message
+      });
+    }
+
+  } catch (error) {
+    console.error('❌ 注册处理失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '注册过程中出现错误，请稍后重试'
+    });
+  }
+}));
+
+// 验证码登录（兼容旧版本）
 router.post('/login-with-code', asyncHandler(async (req: Request, res: Response) => {
   console.log('🔐 收到验证码登录请求:', { ...req.body, verifyCode: '***' });
   const { phone, verifyCode, verifyToken } = req.body;
@@ -89,16 +228,24 @@ router.post('/login-with-code', asyncHandler(async (req: Request, res: Response)
     });
   }
 
-  // 验证token格式
-  if (!verifyToken.startsWith('mock_token_')) {
-    console.log('❌ 验证token格式错误:', verifyToken);
-    return res.status(400).json({
+  // 使用滑块验证服务验证token
+  try {
+    const isTokenValid = await sliderVerifyService.validateToken(verifyToken);
+    if (!isTokenValid) {
+      console.log('❌ 验证token无效或已过期:', verifyToken);
+      return res.status(400).json({
+        success: false,
+        message: '验证令牌无效或已过期，请重新验证'
+      });
+    }
+    console.log('✅ 验证token有效:', verifyToken);
+  } catch (error) {
+    console.error('❌ 验证token检查失败:', error);
+    return res.status(500).json({
       success: false,
-      message: '验证令牌格式错误，请重新验证'
+      message: '验证令牌检查失败，请重试'
     });
   }
-
-  console.log('✅ 验证token格式正确:', verifyToken);
 
   // 检查验证码
   const storedVerification = verificationCodes.get(phone);
@@ -191,102 +338,140 @@ router.post('/login-with-code', asyncHandler(async (req: Request, res: Response)
   }
 }));
 
-// 滑动验证
-router.post('/slider-verify', asyncHandler(async (req: Request, res: Response) => {
-  console.log('🎯 收到滑动验证请求:', req.body);
-  const { slideDistance, puzzleOffset, accuracy, duration, verifyPath, trackData } = req.body;
+// 生成滑块验证挑战
+router.post('/slider-challenge', 
+  sliderVerifyRateLimit(),
+  sliderVerifyLogger,
+  sliderVerifySecurityCheck,
+  asyncHandler(async (req: Request, res: Response) => {
+  console.log('🎯 收到生成滑块验证挑战请求');
+  const { width } = req.body;
 
-  // 基本参数验证
-  if (typeof slideDistance !== 'number' || typeof puzzleOffset !== 'number') {
+  try {
+    const challenge = await sliderVerifyService.generateChallenge(width);
+    
+    res.json({
+      success: true,
+      message: '挑战生成成功',
+      data: {
+        sessionId: challenge.sessionId,
+        puzzleOffset: challenge.puzzleOffset,
+        timestamp: challenge.timestamp
+      }
+    });
+  } catch (error) {
+    console.error('❌ 生成滑块验证挑战失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '生成挑战失败，请稍后重试'
+    });
+  }
+}));
+
+// 滑动验证
+router.post('/slider-verify',
+  sliderVerifyRateLimit(),
+  sliderVerifyLogger,
+  sliderVerifySecurityCheck,
+  sliderVerifyValidator,
+  asyncHandler(async (req: Request, res: Response) => {
+  console.log('🎯 收到滑动验证请求:', req.body);
+  const { slideDistance, puzzleOffset, accuracy, duration, verifyPath, trackData, sessionId } = req.body;
+
+  try {
+    // 获取客户端信息
+    const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
+    const userAgent = req.get('User-Agent') || 'unknown';
+
+    const result = await sliderVerifyService.verifySlider({
+      slideDistance,
+      puzzleOffset,
+      accuracy,
+      duration,
+      verifyPath,
+      trackData,
+      sessionId
+    }, clientIp, userAgent);
+
+    if (result.verified) {
+      console.log('✅ 滑动验证成功, token:', result.token);
+      res.json({
+        success: true,
+        message: '验证成功',
+        data: {
+          verified: true,
+          token: result.token,
+          accuracy: result.accuracy,
+          duration: result.duration,
+          sessionId: result.sessionId
+        }
+      });
+    } else {
+      console.log('❌ 滑动验证失败:', result.reason);
+      res.status(400).json({
+        success: false,
+        message: '验证失败，请重试',
+        data: {
+          verified: false,
+          accuracy: result.accuracy,
+          duration: result.duration,
+          reason: result.reason,
+          sessionId: result.sessionId
+        }
+      });
+    }
+  } catch (error) {
+    console.error('❌ 滑动验证处理失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '验证处理失败，请稍后重试'
+    });
+  }
+}));
+
+// 验证滑块验证令牌
+router.post('/validate-slider-token',
+  sliderVerifyRateLimit(),
+  sliderVerifyLogger,
+  asyncHandler(async (req: Request, res: Response) => {
+  console.log('🔍 收到验证滑块令牌请求');
+  const { token } = req.body;
+
+  if (!token) {
     return res.status(400).json({
       success: false,
-      message: '参数错误'
+      message: '令牌不能为空'
     });
   }
 
-  // 验证逻辑：允许一定的误差范围
-  const errorThreshold = 15; // 允许15像素的误差，更宽松
-  const isAccurate = accuracy <= errorThreshold;
-
-  // 验证时间合理性（防止机器人）
-  const minDuration = 300; // 最少300ms，更宽松
-  const maxDuration = 15000; // 最多15s，更宽松
-  const isDurationValid = duration >= minDuration && duration <= maxDuration;
-
-  // 轨迹验证：检查是否有连续的移动轨迹
-  const hasValidTrajectory = trackData && trackData.length > 5;
-
-  // 综合判断：满足精度或有合理的移动轨迹即可
-  const isVerified = (isAccurate || accuracy <= 25) && isDurationValid && hasValidTrajectory;
-
-  if (isVerified) {
-    // 生成验证token（与前端期望的格式匹配）
-    const verifyToken = `mock_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-    console.log('✅ 滑动验证成功, token:', verifyToken);
+  try {
+    const isValid = await sliderVerifyService.validateToken(token);
+    
     res.json({
       success: true,
-      message: '验证成功',
       data: {
-        verified: true,
-        token: verifyToken,
-        accuracy: accuracy,
-        duration: duration
+        valid: isValid,
+        token: isValid ? token : null
       }
     });
-  } else {
-    const reasons = [];
-    if (!isAccurate && accuracy > 25) reasons.push(`精度不够(${accuracy.toFixed(1)}px > 25px)`);
-    if (!isDurationValid) reasons.push(`时间异常(${duration}ms)`);
-    if (!hasValidTrajectory) reasons.push('轨迹异常');
-
-    console.log('❌ 滑动验证失败:', {
-      accuracy,
-      duration,
-      isAccurate,
-      isDurationValid,
-      hasValidTrajectory,
-      reasons
-    });
-
-    res.status(400).json({
+  } catch (error) {
+    console.error('❌ 验证滑块令牌失败:', error);
+    res.status(500).json({
       success: false,
-      message: '验证失败，请重试',
-      data: {
-        verified: false,
-        accuracy: accuracy,
-        duration: duration,
-        reason: reasons.join(', ') || '未知原因'
-      }
+      message: '令牌验证失败'
     });
   }
 }));
 
 // 获取当前用户信息
-router.get('/me', asyncHandler(async (req: Request, res: Response) => {
+router.get('/me', 
+  authenticateToken,
+  logApiAccess,
+  asyncHandler(async (req: Request, res: Response) => {
   console.log('👤 收到获取用户信息请求');
 
-  // 从请求头获取token
-  const token = req.headers.authorization?.replace('Bearer ', '');
-
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: '未提供认证令牌'
-    });
-  }
-
   try {
-    // 验证token
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
-    const user = await User.findById(decoded.userId);
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: '用户不存在'
-      });
-    }
+    const user = req.user!;
 
     console.log('✅ 获取用户信息成功:', user.phone);
 
@@ -295,78 +480,189 @@ router.get('/me', asyncHandler(async (req: Request, res: Response) => {
       message: '获取用户信息成功',
       data: {
         user: {
-          id: user._id,
+          id: user._id.toString(),
           phone: user.phone,
           nickName: user.nickName,
           balance: user.balance,
-          verificationLevel: user.verificationLevel || 'basic',
-          vehicles: user.vehicles || [],
+          verificationLevel: user.verificationLevel || 1,
+          faceAuthEnabled: user.faceAuthEnabled || false,
           avatarUrl: user.avatarUrl,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt
+          hasPassword: !!user.password
         }
       }
     });
 
   } catch (error) {
-    console.error('❌ 验证token失败:', error);
-    res.status(401).json({
+    console.error('❌ 获取用户信息失败:', error);
+    res.status(500).json({
       success: false,
-      message: '认证令牌无效'
+      message: '获取用户信息失败'
     });
   }
 }));
 
-// 退出登录
-router.post('/logout', asyncHandler(async (req: Request, res: Response) => {
+// 用户登出
+router.post('/logout', 
+  authenticateToken,
+  logApiAccess,
+  asyncHandler(async (req: Request, res: Response) => {
   console.log('👋 收到退出登录请求');
+  const { refreshToken } = req.body;
+  const userId = req.user!._id.toString();
 
-  // 这里可以添加token黑名单逻辑
-  // 目前只是简单返回成功
-  res.json({
-    success: true,
-    message: '退出登录成功'
-  });
+  try {
+    const result = await userAuthService.logout(userId, refreshToken);
+
+    res.json({
+      success: result.success,
+      message: result.message
+    });
+
+  } catch (error) {
+    console.error('❌ 用户登出失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '登出过程中出现错误'
+    });
+  }
 }));
 
 // 刷新token
-router.post('/refresh-token', asyncHandler(async (req: Request, res: Response) => {
+router.post('/refresh-token', 
+  logApiAccess,
+  userRateLimit(20, 60000), // 每分钟最多20次刷新
+  asyncHandler(async (req: Request, res: Response) => {
   const { refreshToken } = req.body;
 
   if (!refreshToken) {
-    return res.status(401).json({
+    return res.status(400).json({
       success: false,
-      message: '刷新令牌不能为空'
+      message: 'Refresh token不能为空'
     });
   }
 
   try {
-    const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as any;
-    const user = await User.findById(decoded.userId);
+    const result = await userAuthService.refreshToken(refreshToken);
 
-    if (!user) {
-      return res.status(401).json({
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'Token刷新成功',
+        data: result.data
+      });
+    } else {
+      res.status(401).json({
         success: false,
-        message: '用户不存在'
+        message: result.message
       });
     }
 
-    // 生成新的tokens
-    const newToken = generateToken(user._id.toString());
-    const newRefreshToken = generateRefreshToken(user._id.toString());
+  } catch (error) {
+    console.error('❌ Token刷新失败:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Token刷新过程中出现错误'
+    });
+  }
+}));
+
+// 更新密码
+router.post('/update-password', 
+  authenticateToken,
+  logApiAccess,
+  userRateLimit(5, 60000), // 每分钟最多5次密码更新
+  asyncHandler(async (req: Request, res: Response) => {
+  const { oldPassword, newPassword } = req.body;
+  const userId = req.user!._id.toString();
+
+  if (!newPassword || newPassword.length < 6) {
+    return res.status(400).json({
+      success: false,
+      message: '新密码长度至少6位'
+    });
+  }
+
+  try {
+    const result = await userAuthService.updatePassword(userId, oldPassword, newPassword);
+
+    res.json({
+      success: result.success,
+      message: result.message
+    });
+
+  } catch (error) {
+    console.error('❌ 更新密码失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '更新密码过程中出现错误'
+    });
+  }
+}));
+
+// 重置密码
+router.post('/reset-password', 
+  logApiAccess,
+  userRateLimit(3, 60000), // 每分钟最多3次密码重置
+  asyncHandler(async (req: Request, res: Response) => {
+  const { phone, newPassword, verifyToken } = req.body;
+
+  if (!phone || !newPassword || !verifyToken) {
+    return res.status(400).json({
+      success: false,
+      message: '参数不完整'
+    });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({
+      success: false,
+      message: '密码长度至少6位'
+    });
+  }
+
+  try {
+    const result = await userAuthService.resetPassword(phone, newPassword, verifyToken);
+
+    res.json({
+      success: result.success,
+      message: result.message
+    });
+
+  } catch (error) {
+    console.error('❌ 重置密码失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '重置密码过程中出现错误'
+    });
+  }
+}));
+
+// 获取登录历史
+router.get('/login-history', 
+  authenticateToken,
+  logApiAccess,
+  requireOwnership('userId'),
+  asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user!._id.toString();
+  const limit = parseInt(req.query.limit as string) || 10;
+
+  try {
+    const history = await userAuthService.getLoginHistory(userId, limit);
 
     res.json({
       success: true,
+      message: '获取登录历史成功',
       data: {
-        token: newToken,
-        refreshToken: newRefreshToken
+        history,
+        total: history.length
       }
     });
 
   } catch (error) {
-    res.status(401).json({
+    console.error('❌ 获取登录历史失败:', error);
+    res.status(500).json({
       success: false,
-      message: '刷新令牌无效'
+      message: '获取登录历史过程中出现错误'
     });
   }
 }));

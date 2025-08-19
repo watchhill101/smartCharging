@@ -1,0 +1,4 @@
+# 此目录用于存放SSL证书文件
+# 请将以下文件放入此目录：
+# - domain.crt (SSL证书文件)
+# - domain.key (SSL私钥文件)

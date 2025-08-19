@@ -118,3 +118,60 @@ export const verifyToken = (token: string): { userId: string } => {
 
   return jwt.verify(token, jwtSecret) as { userId: string };
 };
+
+// 速率限制中间件
+export const userRateLimit = (maxRequests: number, windowMs: number) => {
+  const requests = new Map<string, { count: number; resetTime: number }>();
+  
+  return (req: Request, res: Response, next: NextFunction) => {
+    const clientId = req.ip || 'unknown';
+    const now = Date.now();
+    
+    const clientData = requests.get(clientId);
+    
+    if (!clientData || now > clientData.resetTime) {
+      requests.set(clientId, { count: 1, resetTime: now + windowMs });
+      return next();
+    }
+    
+    if (clientData.count >= maxRequests) {
+      return next(new AppError('Too many requests', 429, 'RATE_LIMIT_EXCEEDED'));
+    }
+    
+    clientData.count++;
+    next();
+  };
+};
+
+// 所有权检查中间件
+export const requireOwnership = (resourceIdField: string) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return next(new AppError('Authentication required', 401, 'AUTH_REQUIRED'));
+    }
+    
+    const resourceId = req.params[resourceIdField] || req.body[resourceIdField];
+    const userId = req.user._id.toString();
+    
+    if (resourceId && resourceId !== userId) {
+      return next(new AppError('Access denied', 403, 'ACCESS_DENIED'));
+    }
+    
+    next();
+  };
+};
+
+// API访问日志中间件
+export const logApiAccess = (req: Request, res: Response, next: NextFunction) => {
+  const startTime = Date.now();
+  
+  res.on('finish', () => {
+    const duration = Date.now() - startTime;
+    console.log(`${req.method} ${req.path} - ${res.statusCode} - ${duration}ms`);
+  });
+  
+  next();
+};
+
+// 别名导出，保持向后兼容
+export const authenticateToken = authenticate;

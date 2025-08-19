@@ -1,25 +1,33 @@
 import crypto from 'crypto';
+import { RedisService } from './RedisService';
 
-// 人脸识别结果接口
 export interface FaceDetectionResult {
   success: boolean;
-  message: string;
+  message?: string;
   data?: {
     faceDetected: boolean;
-    faceCount: number;
-    confidence: number;
-    features?: {
+    features: {
       encoding: number[];
       landmarks: number[][];
+      confidence: number;
     };
-    quality: 'excellent' | 'good' | 'fair' | 'poor';
+    confidence: number;
+    livenessScore?: number;
+    quality?: {
+      brightness: number;
+      sharpness: number;
+      pose: {
+        yaw: number;
+        pitch: number;
+        roll: number;
+      };
+    };
   };
 }
 
-// 人脸比对结果接口
 export interface FaceComparisonResult {
   success: boolean;
-  message: string;
+  message?: string;
   data?: {
     isMatch: boolean;
     similarity: number;
@@ -28,77 +36,75 @@ export interface FaceComparisonResult {
   };
 }
 
+export interface LivenessDetectionResult {
+  success: boolean;
+  message?: string;
+  data?: {
+    isLive: boolean;
+    score: number;
+    confidence: number;
+    actions?: string[];
+  };
+}
+
 export class FaceRecognitionService {
-  private readonly SIMILARITY_THRESHOLD = 0.75; // 相似度阈值
-  private readonly MIN_CONFIDENCE = 0.6; // 最小置信度
-  private readonly MAX_FACE_PROFILES = 3; // 每个用户最多人脸档案数
+  private redis: RedisService;
+  private readonly SIMILARITY_THRESHOLD = 0.8;
+  private readonly LIVENESS_THRESHOLD = 0.7;
+  private readonly QUALITY_THRESHOLD = 0.6;
+  private readonly MAX_FACE_PROFILES = 3;
+
+  constructor() {
+    this.redis = new RedisService();
+  }
 
   /**
-   * 检测图片中的人脸
+   * 检测人脸并提取特征
    */
-  async detectFace(imageData: Buffer): Promise<FaceDetectionResult> {
+  async detectFace(imageBuffer: Buffer): Promise<FaceDetectionResult> {
     try {
-      // 模拟人脸检测过程
-      console.log('🔍 开始人脸检测...');
+      console.log('🔍 开始人脸检测，图片大小:', imageBuffer.length);
 
-      // 检查图片大小
-      if (imageData.length === 0) {
+      // 验证图片格式和大小
+      const validation = this.validateImage(imageBuffer);
+      if (!validation.valid) {
         return {
           success: false,
-          message: '图片数据为空'
+          message: validation.message
         };
       }
 
-      if (imageData.length > 5 * 1024 * 1024) { // 5MB限制
+      // 模拟人脸检测API调用
+      // 在实际项目中，这里会调用真实的人脸识别服务API
+      const detectionResult = await this.mockFaceDetection(imageBuffer);
+
+      if (!detectionResult.faceDetected) {
         return {
           success: false,
-          message: '图片文件过大，请选择小于5MB的图片'
+          message: '未检测到人脸，请确保面部清晰可见'
         };
       }
 
-      // 模拟人脸检测算法
-      const mockDetection = this.simulateFaceDetection(imageData);
-
-      if (!mockDetection.faceDetected) {
+      // 检查图片质量
+      const qualityCheck = this.checkImageQuality(detectionResult.quality!);
+      if (!qualityCheck.passed) {
         return {
           success: false,
-          message: '未检测到人脸，请确保面部清晰可见',
-          data: {
-            ...mockDetection,
-            quality: mockDetection.quality as 'excellent' | 'good' | 'fair' | 'poor'
-          }
+          message: qualityCheck.message
         };
       }
 
-      if (mockDetection.faceCount > 1) {
-        return {
-          success: false,
-          message: '检测到多个人脸，请确保画面中只有一个人',
-          data: {
-            ...mockDetection,
-            quality: mockDetection.quality as 'excellent' | 'good' | 'fair' | 'poor'
-          }
-        };
-      }
+      console.log('✅ 人脸检测成功，置信度:', detectionResult.confidence);
 
-      if (mockDetection.confidence < this.MIN_CONFIDENCE) {
-        return {
-          success: false,
-          message: '人脸识别置信度不足，请调整光线或角度',
-          data: {
-            ...mockDetection,
-            quality: mockDetection.quality as 'excellent' | 'good' | 'fair' | 'poor'
-          }
-        };
-      }
-
-      console.log('✅ 人脸检测成功');
       return {
         success: true,
         message: '人脸检测成功',
         data: {
-          ...mockDetection,
-          quality: mockDetection.quality as 'excellent' | 'good' | 'fair' | 'poor'
+          faceDetected: true,
+          features: detectionResult.features,
+          confidence: detectionResult.confidence,
+          livenessScore: detectionResult.livenessScore,
+          quality: detectionResult.quality
         }
       };
 
@@ -106,7 +112,51 @@ export class FaceRecognitionService {
       console.error('❌ 人脸检测失败:', error);
       return {
         success: false,
-        message: '人脸检测服务异常，请稍后重试'
+        message: '人脸检测服务暂时不可用，请稍后重试'
+      };
+    }
+  }
+
+  /**
+   * 活体检测
+   */
+  async detectLiveness(imageBuffer: Buffer, actions?: string[]): Promise<LivenessDetectionResult> {
+    try {
+      console.log('👁️ 开始活体检测');
+
+      // 模拟活体检测API调用
+      const livenessResult = await this.mockLivenessDetection(imageBuffer, actions);
+
+      if (!livenessResult.isLive) {
+        return {
+          success: false,
+          message: '活体检测失败，请确保是真人操作',
+          data: {
+            isLive: false,
+            score: livenessResult.score,
+            confidence: livenessResult.confidence
+          }
+        };
+      }
+
+      console.log('✅ 活体检测通过，得分:', livenessResult.score);
+
+      return {
+        success: true,
+        message: '活体检测通过',
+        data: {
+          isLive: true,
+          score: livenessResult.score,
+          confidence: livenessResult.confidence,
+          actions: livenessResult.actions
+        }
+      };
+
+    } catch (error) {
+      console.error('❌ 活体检测失败:', error);
+      return {
+        success: false,
+        message: '活体检测服务暂时不可用'
       };
     }
   }
@@ -114,34 +164,28 @@ export class FaceRecognitionService {
   /**
    * 比较两个人脸特征
    */
-  async compareFaces(features1: number[], features2: number[]): Promise<FaceComparisonResult> {
+  async compareFaces(encoding1: number[], encoding2: number[]): Promise<FaceComparisonResult> {
     try {
-      if (!features1 || !features2) {
+      if (!encoding1 || !encoding2 || encoding1.length !== encoding2.length) {
         return {
           success: false,
           message: '人脸特征数据无效'
         };
       }
 
-      if (features1.length !== features2.length) {
-        return {
-          success: false,
-          message: '人脸特征向量长度不匹配'
-        };
-      }
-
-      // 计算余弦相似度
-      const similarity = this.calculateCosineSimilarity(features1, features2);
+      // 计算欧几里得距离
+      const distance = this.calculateEuclideanDistance(encoding1, encoding2);
+      
+      // 将距离转换为相似度（0-1之间）
+      const similarity = Math.max(0, 1 - distance / 2);
+      
       const isMatch = similarity >= this.SIMILARITY_THRESHOLD;
+      const confidence = Math.min(similarity * 1.2, 1.0); // 调整置信度
 
-      // 基于相似度计算置信度
-      const confidence = Math.min(similarity * 1.2, 1.0);
-
-      console.log(`🔄 人脸比对结果: 相似度=${similarity.toFixed(3)}, 匹配=${isMatch}`);
+      console.log(`🔍 人脸比较结果: 相似度=${similarity.toFixed(3)}, 匹配=${isMatch}`);
 
       return {
         success: true,
-        message: isMatch ? '人脸匹配成功' : '人脸不匹配',
         data: {
           isMatch,
           similarity,
@@ -151,191 +195,231 @@ export class FaceRecognitionService {
       };
 
     } catch (error) {
-      console.error('❌ 人脸比对失败:', error);
+      console.error('❌ 人脸比较失败:', error);
       return {
         success: false,
-        message: '人脸比对服务异常，请稍后重试'
+        message: '人脸比较过程中出现错误'
       };
     }
   }
 
   /**
-   * 生成唯一的人脸ID
+   * 生成人脸ID
    */
   generateFaceId(): string {
-    const timestamp = Date.now();
-    const random = crypto.randomBytes(8).toString('hex');
+    const timestamp = Date.now().toString();
+    const random = Math.random().toString(36).substring(2);
     return `face_${timestamp}_${random}`;
   }
 
   /**
-   * 验证图片质量
+   * 验证图片格式和大小
    */
-  validateImageQuality(imageData: Buffer): { success: boolean; message?: string } {
-    try {
-      if (imageData.length === 0) {
-        return { success: false, message: '图片数据为空' };
-      }
-
-      if (imageData.length < 100) { // 降低到100字节
-        return { success: false, message: '图片文件过小，可能损坏' };
-      }
-
-      if (imageData.length > 10 * 1024 * 1024) { // 10MB
-        return { success: false, message: '图片文件过大，请压缩后上传' };
-      }
-
-      // 检查图片格式
-      const header = imageData.slice(0, 4);
-      if (!this.isValidImageHeader(header)) {
-        console.log('⚠️ 图片格式可能不正确，但允许继续处理');
-      }
-
-      console.log(`📷 图片质量验证: 大小=${imageData.length} bytes`);
-      return { success: true };
-    } catch (error) {
-      console.error('图片质量验证错误:', error);
-      return { success: false, message: '图片质量验证失败' };
+  private validateImage(imageBuffer: Buffer): { valid: boolean; message?: string } {
+    // 检查文件大小（最大5MB）
+    if (imageBuffer.length > 5 * 1024 * 1024) {
+      return {
+        valid: false,
+        message: '图片文件过大，请选择小于5MB的图片'
+      };
     }
+
+    // 检查最小文件大小
+    if (imageBuffer.length < 1024) {
+      return {
+        valid: false,
+        message: '图片文件过小，请选择有效的图片文件'
+      };
+    }
+
+    // 检查图片格式（简单的魔数检查）
+    const jpegHeader = Buffer.from([0xFF, 0xD8, 0xFF]);
+    const pngHeader = Buffer.from([0x89, 0x50, 0x4E, 0x47]);
+    
+    const isJpeg = imageBuffer.subarray(0, 3).equals(jpegHeader);
+    const isPng = imageBuffer.subarray(0, 4).equals(pngHeader);
+
+    if (!isJpeg && !isPng) {
+      return {
+        valid: false,
+        message: '不支持的图片格式，请使用JPEG或PNG格式'
+      };
+    }
+
+    return { valid: true };
   }
 
   /**
-   * 模拟人脸检测（生产环境中应该使用真实的人脸识别库）
+   * 检查图片质量
    */
-  private simulateFaceDetection(imageData: Buffer) {
-    // 基于图片数据生成模拟结果
-    const hash = crypto.createHash('md5').update(imageData).digest('hex');
-    const seed = parseInt(hash.substring(0, 8), 16);
-
-    // 使用种子生成确定性的随机数
-    const random = (seed % 1000) / 1000;
-
-    // 基于图片大小调整检测成功率
-    const sizeBonus = Math.min(imageData.length / (500 * 1024), 1); // 500KB为基准
-    const baseSuccessRate = 0.85 + sizeBonus * 0.13; // 85%-98%的成功率
-
-    // 模拟检测结果
-    const faceDetected = random < baseSuccessRate;
-    const faceCount = faceDetected ? 1 : 0;
-
-    // 更智能的置信度计算
-    let confidence = 0;
-    if (faceDetected) {
-      // 基于图片质量和随机因子计算置信度
-      const qualityFactor = Math.min(imageData.length / (1024 * 1024), 1); // 基于文件大小的质量因子
-      const randomFactor = 0.5 + random * 0.5; // 0.5-1.0的随机因子
-      confidence = Math.max(0.6, 0.7 + qualityFactor * 0.2 + randomFactor * 0.1);
-    } else {
-      confidence = random * 0.5; // 未检测到时的低置信度
+  private checkImageQuality(quality: any): { passed: boolean; message?: string } {
+    if (quality.brightness < 0.3 || quality.brightness > 0.9) {
+      return {
+        passed: false,
+        message: '图片亮度不合适，请在光线充足的环境下拍摄'
+      };
     }
 
-    // 生成模拟的人脸特征
-    const encoding = faceDetected ? this.generateMockFaceEncoding(seed) : [];
-    const landmarks = faceDetected ? this.generateMockLandmarks(seed) : [];
+    if (quality.sharpness < 0.5) {
+      return {
+        passed: false,
+        message: '图片模糊，请重新拍摄清晰的照片'
+      };
+    }
 
-    // 质量评估
-    const quality = confidence > 0.9 ? 'excellent' :
-      confidence > 0.8 ? 'good' :
-        confidence > 0.7 ? 'fair' : 'poor';
+    // 检查人脸角度
+    const { yaw, pitch, roll } = quality.pose;
+    if (Math.abs(yaw) > 30 || Math.abs(pitch) > 20 || Math.abs(roll) > 15) {
+      return {
+        passed: false,
+        message: '请保持面部正对摄像头，避免过度倾斜'
+      };
+    }
 
-    console.log(`🎭 人脸检测模拟: 检测到=${faceDetected}, 置信度=${confidence.toFixed(3)}, 质量=${quality}, 图片大小=${(imageData.length / 1024).toFixed(1)}KB`);
+    return { passed: true };
+  }
+
+  /**
+   * 计算欧几里得距离
+   */
+  private calculateEuclideanDistance(vector1: number[], vector2: number[]): number {
+    let sum = 0;
+    for (let i = 0; i < vector1.length; i++) {
+      const diff = vector1[i] - vector2[i];
+      sum += diff * diff;
+    }
+    return Math.sqrt(sum);
+  }
+
+  /**
+   * 模拟人脸检测API
+   */
+  private async mockFaceDetection(imageBuffer: Buffer): Promise<any> {
+    // 模拟API延迟
+    await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
+
+    // 基于图片大小和内容生成模拟结果
+    const hash = crypto.createHash('md5').update(imageBuffer).digest('hex');
+    const seed = parseInt(hash.substring(0, 8), 16);
+    
+    // 使用种子生成一致的随机结果
+    const random = this.seededRandom(seed);
+    
+    // 90%的概率检测到人脸
+    const faceDetected = random() > 0.1;
+    
+    if (!faceDetected) {
+      return { faceDetected: false };
+    }
+
+    // 生成模拟的人脸特征编码（128维向量）
+    const encoding = Array.from({ length: 128 }, () => (random() - 0.5) * 2);
+    
+    // 生成模拟的关键点坐标
+    const landmarks = Array.from({ length: 68 }, () => [
+      random() * 200 + 100, // x坐标
+      random() * 200 + 100  // y坐标
+    ]);
+
+    const confidence = 0.7 + random() * 0.25; // 0.7-0.95之间
+    const livenessScore = 0.6 + random() * 0.35; // 0.6-0.95之间
 
     return {
-      faceDetected,
-      faceCount,
-      confidence: Math.min(confidence, 1.0), // 确保不超过1.0
-      features: faceDetected ? { encoding, landmarks } : undefined,
-      quality
+      faceDetected: true,
+      features: {
+        encoding,
+        landmarks,
+        confidence
+      },
+      confidence,
+      livenessScore,
+      quality: {
+        brightness: 0.4 + random() * 0.4, // 0.4-0.8
+        sharpness: 0.6 + random() * 0.3,  // 0.6-0.9
+        pose: {
+          yaw: (random() - 0.5) * 40,   // -20到20度
+          pitch: (random() - 0.5) * 30, // -15到15度
+          roll: (random() - 0.5) * 20   // -10到10度
+        }
+      }
     };
   }
 
   /**
-   * 生成模拟的人脸编码向量
+   * 模拟活体检测API
    */
-  private generateMockFaceEncoding(seed: number): number[] {
-    const encoding: number[] = [];
+  private async mockLivenessDetection(imageBuffer: Buffer, actions?: string[]): Promise<any> {
+    // 模拟API延迟
+    await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
+
+    const hash = crypto.createHash('md5').update(imageBuffer).digest('hex');
+    const seed = parseInt(hash.substring(8, 16), 16);
     const random = this.seededRandom(seed);
 
-    // 生成128维特征向量
-    for (let i = 0; i < 128; i++) {
-      encoding.push((random() - 0.5) * 2); // -1 到 1 之间的值
-    }
+    // 85%的概率通过活体检测
+    const isLive = random() > 0.15;
+    const score = isLive ? 0.7 + random() * 0.25 : 0.3 + random() * 0.3;
+    const confidence = 0.8 + random() * 0.15;
 
-    return encoding;
+    return {
+      isLive,
+      score,
+      confidence,
+      actions: actions || ['blink', 'turn_head']
+    };
   }
 
   /**
-   * 生成模拟的面部关键点
-   */
-  private generateMockLandmarks(seed: number): number[][] {
-    const landmarks: number[][] = [];
-    const random = this.seededRandom(seed + 1000);
-
-    // 生成68个关键点（标准面部关键点数量）
-    for (let i = 0; i < 68; i++) {
-      landmarks.push([
-        random() * 640, // x坐标 (假设640px宽度)
-        random() * 480  // y坐标 (假设480px高度)
-      ]);
-    }
-
-    return landmarks;
-  }
-
-  /**
-   * 计算余弦相似度
-   */
-  private calculateCosineSimilarity(vec1: number[], vec2: number[]): number {
-    let dotProduct = 0;
-    let norm1 = 0;
-    let norm2 = 0;
-
-    for (let i = 0; i < vec1.length; i++) {
-      dotProduct += vec1[i] * vec2[i];
-      norm1 += vec1[i] * vec1[i];
-      norm2 += vec2[i] * vec2[i];
-    }
-
-    norm1 = Math.sqrt(norm1);
-    norm2 = Math.sqrt(norm2);
-
-    if (norm1 === 0 || norm2 === 0) {
-      return 0;
-    }
-
-    return dotProduct / (norm1 * norm2);
-  }
-
-  /**
-   * 检查图片文件头
-   */
-  private isValidImageHeader(header: Buffer): boolean {
-    // JPEG: FF D8 FF
-    if (header[0] === 0xFF && header[1] === 0xD8 && header[2] === 0xFF) {
-      return true;
-    }
-
-    // PNG: 89 50 4E 47
-    if (header[0] === 0x89 && header[1] === 0x50 && header[2] === 0x4E && header[3] === 0x47) {
-      return true;
-    }
-
-    // WebP: 52 49 46 46 (RIFF)
-    if (header[0] === 0x52 && header[1] === 0x49 && header[2] === 0x46 && header[3] === 0x46) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * 种子随机数生成器
+   * 基于种子的伪随机数生成器
    */
   private seededRandom(seed: number): () => number {
     let state = seed;
-    return function () {
-      state = (state * 1664525 + 1013904223) % 4294967296;
-      return state / 4294967296;
+    return () => {
+      state = (state * 1664525 + 1013904223) % Math.pow(2, 32);
+      return state / Math.pow(2, 32);
     };
   }
-} 
+
+  /**
+   * 获取人脸识别配置
+   */
+  getConfiguration(): any {
+    return {
+      similarityThreshold: this.SIMILARITY_THRESHOLD,
+      livenessThreshold: this.LIVENESS_THRESHOLD,
+      qualityThreshold: this.QUALITY_THRESHOLD,
+      maxFaceProfiles: this.MAX_FACE_PROFILES,
+      supportedFormats: ['JPEG', 'PNG'],
+      maxFileSize: '5MB',
+      minImageSize: '100x100',
+      recommendedSize: '640x480'
+    };
+  }
+
+  /**
+   * 健康检查
+   */
+  async healthCheck(): Promise<{ status: string; message: string; timestamp: number }> {
+    try {
+      // 创建一个小的测试图片buffer
+      const testBuffer = Buffer.alloc(1024, 0xFF);
+      
+      // 测试基本功能
+      const validation = this.validateImage(testBuffer);
+      
+      return {
+        status: 'healthy',
+        message: '人脸识别服务运行正常',
+        timestamp: Date.now()
+      };
+    } catch (error) {
+      return {
+        status: 'unhealthy',
+        message: '人脸识别服务异常',
+        timestamp: Date.now()
+      };
+    }
+  }
+}
+
+export default FaceRecognitionService;

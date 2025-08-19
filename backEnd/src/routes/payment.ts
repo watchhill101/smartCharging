@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { authenticate } from "../middleware/auth";
 import { asyncHandler } from "../middleware/errorHandler";
 import { alipaySdk, generateOrderNo } from "../config/alipay";
+import { PaymentService } from "../services/PaymentService";
 import Order from "../models/Order";
 import User from "../models/User";
 import ChargingSession from "../models/ChargingSession";
@@ -14,64 +15,51 @@ router.post(
   "/wallet/recharge",
   authenticate,
   asyncHandler(async (req: any, res: any) => {
-    const { amount } = req.body;
+    const { amount, paymentMethod = "alipay" } = req.body;
     const userId = req.user.id;
 
-    // 验证金额
-    if (!amount || amount < 1 || amount > 1000) {
+    // 验证支付参数
+    const validation = PaymentService.validatePaymentParams({
+      userId,
+      amount,
+      type: "recharge"
+    });
+
+    if (!validation.valid) {
       return res.status(400).json({
         success: false,
-        message: "充值金额必须在1-1000元之间",
+        message: validation.message,
       });
     }
 
-    // 创建订单
-    const order = new Order({
-      orderId: generateOrderNo("RECHARGE", userId),
-      userId,
-      type: "recharge",
-      amount,
-      paymentMethod: "alipay",
-      description: `钱包充值 ¥${amount}`,
-    });
-
-    await order.save();
-
-    // 创建支付宝支付链接
-    const orderParams = {
-      bizContent: {
-        out_trade_no: order.orderId,
-        total_amount: amount.toString(),
-        subject: `智能充电-钱包充值`,
-        product_code: "FAST_INSTANT_TRADE_PAY",
-        notify_url: `${process.env.API_BASE_URL}/api/payments/alipay/notify`,
-        return_url: `${process.env.FRONTEND_URL}/payment/success`,
-      },
-    };
-
-    try {
-      const payUrl = await alipaySdk.pageExec("alipay.trade.page.pay", {
-        method: "GET",
-        bizContent: orderParams.bizContent,
-        notifyUrl: orderParams.bizContent.notify_url,
-        returnUrl: orderParams.bizContent.return_url,
+    let result;
+    if (paymentMethod === "alipay") {
+      result = await PaymentService.createAlipayOrder({
+        userId,
+        amount,
+        type: "recharge",
+        description: `钱包充值 ¥${amount}`
       });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "钱包充值暂不支持余额支付",
+      });
+    }
 
+    if (result.success) {
       res.json({
         success: true,
         data: {
-          orderId: order.orderId,
-          payUrl,
+          orderId: result.orderId,
+          payUrl: result.payUrl,
           amount,
         },
       });
-    } catch (error) {
-      console.error("支付宝接口错误:", error);
-      await (order as any).markAsCancelled("支付接口调用失败");
-
-      res.status(500).json({
+    } else {
+      res.status(400).json({
         success: false,
-        message: "支付请求失败，请稍后重试",
+        message: result.message,
       });
     }
   })
@@ -84,6 +72,13 @@ router.post(
   asyncHandler(async (req: any, res: any) => {
     const { sessionId, paymentMethod = "balance" } = req.body;
     const userId = req.user.id;
+
+    if (!sessionId) {
+      return res.status(400).json({
+        success: false,
+        message: "充电会话ID不能为空",
+      });
+    }
 
     // 获取充电会话
     const session = await ChargingSession.findOne({ sessionId, userId });
@@ -101,220 +96,79 @@ router.post(
       });
     }
 
-    const user = await User.findById(userId);
+    // 验证支付参数
+    const validation = PaymentService.validatePaymentParams({
+      userId,
+      amount: session.totalCost,
+      type: "charging",
+      sessionId
+    });
 
-    // 余额支付 - 使用事务保证原子性
-    if (paymentMethod === "balance") {
-      const session_transaction = await mongoose.startSession();
-      
-      try {
-        await session_transaction.withTransaction(async () => {
-          // 重新获取用户信息（带锁）
-          const userWithLock = await User.findById(userId).session(session_transaction);
-          
-          if (!userWithLock || userWithLock.balance < session.totalCost) {
-            throw new Error(`余额不足，当前余额: ¥${userWithLock?.balance || 0}, 需要: ¥${session.totalCost}`);
-          }
-
-          // 原子性扣除余额
-          const updateResult = await User.findByIdAndUpdate(
-            userId,
-            { $inc: { balance: -session.totalCost } },
-            { new: true, session: session_transaction }
-          );
-
-          if (!updateResult) {
-            throw new Error("余额扣除失败");
-          }
-
-          // 创建订单记录
-          const order = new Order({
-            orderId: generateOrderNo("CHARGE", userId),
-            userId,
-            type: "charging",
-            amount: session.totalCost,
-            paymentMethod: "balance",
-            sessionId: session._id,
-            description: `充电支付 - ${session.energyDelivered}kWh`,
-            status: "paid",
-          });
-
-          await order.save({ session: session_transaction });
-
-          // 更新充电会话支付状态
-          await ChargingSession.findByIdAndUpdate(
-            session._id,
-            { paymentStatus: "paid" },
-            { session: session_transaction }
-          );
-
-          return res.json({
-            success: true,
-            message: "余额支付成功",
-            data: {
-              orderId: order.orderId,
-              remainingBalance: updateResult.balance,
-            },
-          });
-        });
-      } catch (error) {
-        console.error("余额支付事务失败:", error);
-        return res.status(400).json({
-          success: false,
-          message: error instanceof Error ? error.message : "支付失败，请重试",
-        });
-      } finally {
-        await session_transaction.endSession();
-      }
+    if (!validation.valid) {
+      return res.status(400).json({
+        success: false,
+        message: validation.message,
+      });
     }
 
-    // 支付宝支付
-    if (paymentMethod === "alipay") {
-      const order = new Order({
-        orderId: generateOrderNo("CHARGE", userId),
+    let result;
+    if (paymentMethod === "balance") {
+      result = await PaymentService.processBalancePayment({
         userId,
-        type: "charging",
         amount: session.totalCost,
-        paymentMethod: "alipay",
-        sessionId: session._id,
-        description: `充电支付 - ${session.energyDelivered}kWh`,
+        type: "charging",
+        sessionId,
+        description: `充电支付 - ${session.energyDelivered}kWh`
       });
+    } else if (paymentMethod === "alipay") {
+      result = await PaymentService.createAlipayOrder({
+        userId,
+        amount: session.totalCost,
+        type: "charging",
+        sessionId,
+        description: `充电支付 - ${session.energyDelivered}kWh`
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "不支持的支付方式",
+      });
+    }
 
-      await order.save();
-
-      const orderParams = {
-        bizContent: {
-          out_trade_no: order.orderId,
-          total_amount: session.totalCost.toString(),
-          subject: `智能充电-${session.energyDelivered}kWh`,
-          product_code: "FAST_INSTANT_TRADE_PAY",
-          notify_url: `${process.env.API_BASE_URL}/api/payments/alipay/notify`,
-          return_url: `${process.env.FRONTEND_URL}/payment/success`,
+    if (result.success) {
+      res.json({
+        success: true,
+        message: result.message,
+        data: {
+          orderId: result.orderId,
+          payUrl: result.payUrl,
+          amount: session.totalCost,
+          ...result.data
         },
-      };
-
-      try {
-        const payUrl = await alipaySdk.pageExec("alipay.trade.page.pay", {
-          method: "GET",
-          bizContent: orderParams.bizContent,
-          notifyUrl: orderParams.bizContent.notify_url,
-          returnUrl: orderParams.bizContent.return_url,
-        });
-
-        res.json({
-          success: true,
-          data: {
-            orderId: order.orderId,
-            payUrl,
-            amount: session.totalCost,
-          },
-        });
-      } catch (error) {
-        console.error("支付宝接口错误:", error);
-        await (order as any).markAsCancelled("支付接口调用失败");
-
-        res.status(500).json({
-          success: false,
-          message: "支付请求失败，请稍后重试",
-        });
-      }
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: result.message,
+      });
     }
   })
 );
 
-// 3. 支付宝支付回调 (修正版)
+// 3. 支付宝支付回调 (使用PaymentService处理)
 router.post(
   "/alipay/notify",
   asyncHandler(async (req: any, res: any) => {
     const params = req.body;
 
     try {
-      // 验证签名
-      const signVerified = alipaySdk.checkNotifySign(params);
-
-      if (!signVerified) {
-        console.error("支付宝回调签名验证失败");
-        return res.status(400).send("invalid signature");
+      const success = await PaymentService.handleAlipayNotify(params);
+      
+      if (success) {
+        res.send("success");
+      } else {
+        res.status(400).send("error");
       }
-
-      const { out_trade_no, trade_status, total_amount, trade_no } = params;
-
-      // 查找订单
-      const order = await Order.findOne({ orderId: out_trade_no });
-      if (!order) {
-        console.error("订单不存在:", out_trade_no);
-        return res.send("success"); // 避免支付宝重复通知
-      }
-
-      // 支付成功 - 使用事务处理并防重复
-      if (trade_status === "TRADE_SUCCESS") {
-        if (order.status !== "paid") {
-          const session_transaction = await mongoose.startSession();
-          
-          try {
-            await session_transaction.withTransaction(async () => {
-              // 再次检查订单状态（防止并发）
-              const latestOrder = await Order.findOne({ 
-                orderId: out_trade_no 
-              }).session(session_transaction);
-              
-              if (!latestOrder || latestOrder.status === "paid") {
-                console.log(`订单${out_trade_no}已处理，跳过重复处理`);
-                return;
-              }
-
-              // 标记订单为已支付
-              await Order.findByIdAndUpdate(
-                latestOrder._id,
-                { 
-                  status: "paid",
-                  thirdPartyOrderId: trade_no,
-                  metadata: { 
-                    ...latestOrder.metadata, 
-                    paidAt: new Date(),
-                    alipayTradeNo: trade_no 
-                  }
-                },
-                { session: session_transaction }
-              );
-
-              // 处理业务逻辑
-              if (latestOrder.type === "recharge") {
-                // 钱包充值 - 原子性增加余额
-                const updatedUser = await User.findByIdAndUpdate(
-                  latestOrder.userId,
-                  { $inc: { balance: latestOrder.amount } },
-                  { new: true, session: session_transaction }
-                );
-
-                console.log(
-                  `钱包充值成功: 用户${updatedUser?.nickName} 充值¥${latestOrder.amount}, 当前余额¥${updatedUser?.balance}`
-                );
-              } else if (latestOrder.type === "charging") {
-                // 充电支付
-                await ChargingSession.findByIdAndUpdate(
-                  latestOrder.sessionId,
-                  { paymentStatus: "paid" },
-                  { session: session_transaction }
-                );
-
-                console.log(
-                  `充电支付成功: 订单${out_trade_no} 金额¥${total_amount}`
-                );
-              }
-            });
-          } catch (error) {
-            console.error(`支付回调处理失败: 订单${out_trade_no}`, error);
-            // 这里不抛出错误，避免支付宝重复回调
-          } finally {
-            await session_transaction.endSession();
-          }
-        } else {
-          console.log(`订单${out_trade_no}已支付，跳过处理`);
-        }
-      }
-
-      res.send("success");
     } catch (error) {
       console.error("支付回调处理错误:", error);
       res.status(500).send("error");
@@ -413,6 +267,95 @@ router.get(
           startDate: start?.toISOString(),
           endDate: end?.toISOString(),
         },
+      },
+    });
+  })
+);
+
+// 7. 查询支付宝订单状态
+router.get(
+  "/alipay/query/:orderId",
+  authenticate,
+  asyncHandler(async (req: any, res: any) => {
+    const { orderId } = req.params;
+    const userId = req.user.id;
+
+    // 验证订单归属
+    const order = await Order.findOne({ orderId, userId });
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "订单不存在",
+      });
+    }
+
+    try {
+      const alipayResult = await PaymentService.queryAlipayOrder(orderId);
+      
+      res.json({
+        success: true,
+        data: {
+          orderId,
+          localStatus: order.status,
+          alipayStatus: alipayResult,
+        },
+      });
+    } catch (error) {
+      console.error("查询支付宝订单状态失败:", error);
+      res.status(500).json({
+        success: false,
+        message: "查询订单状态失败",
+      });
+    }
+  })
+);
+
+// 8. 取消支付订单
+router.post(
+  "/orders/:orderId/cancel",
+  authenticate,
+  asyncHandler(async (req: any, res: any) => {
+    const { orderId } = req.params;
+    const { reason } = req.body;
+    const userId = req.user.id;
+
+    const result = await PaymentService.cancelOrder(orderId, userId, reason);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: result.message,
+        data: { orderId }
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: result.message,
+      });
+    }
+  })
+);
+
+// 9. 获取用户钱包余额
+router.get(
+  "/wallet/balance",
+  authenticate,
+  asyncHandler(async (req: any, res: any) => {
+    const userId = req.user.id;
+
+    const user = await User.findById(userId, "balance");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "用户不存在",
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        balance: user.balance,
+        userId
       },
     });
   })
