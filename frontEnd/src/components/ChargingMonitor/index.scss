@@ -1,0 +1,487 @@
+.charging-monitor {
+  background: #f5f5f5;
+  min-height: 100vh;
+  padding: 16px;
+
+  &.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+
+    .loading-text {
+      margin-top: 16px;
+      color: #666;
+      font-size: 14px;
+    }
+  }
+
+  &.error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+
+    .error-content {
+      text-align: center;
+
+      .error-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        display: block;
+      }
+
+      .error-text {
+        color: #666;
+        font-size: 16px;
+        margin-bottom: 24px;
+        display: block;
+      }
+    }
+  }
+
+  // 连接状态
+  .connection-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 8px;
+
+      &.connected {
+        background: #52c41a;
+        animation: pulse 2s infinite;
+      }
+
+      &.disconnected {
+        background: #ff4d4f;
+      }
+    }
+
+    .status-text {
+      font-size: 14px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .update-time {
+      font-size: 12px;
+      color: #999;
+    }
+  }
+
+  // 卡片通用样式
+  .nut-card {
+    margin-bottom: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 16px;
+      display: block;
+
+      &.error {
+        color: #ff4d4f;
+      }
+    }
+  }
+
+  // 充电站信息
+  .station-info {
+    .station-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+
+      .station-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .pile-name {
+        font-size: 14px;
+        color: #666;
+      }
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+
+      .status-icon {
+        font-size: 20px;
+      }
+    }
+
+    .warnings {
+      padding-top: 12px;
+      border-top: 1px solid #f0f0f0;
+
+      .warning-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 6px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        &.warning {
+          .warning-text {
+            color: #faad14;
+          }
+        }
+
+        &.critical {
+          .warning-text {
+            color: #ff4d4f;
+          }
+        }
+
+        .warning-text {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+
+  // 充电进度
+  .charging-progress {
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+
+      .progress-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .progress-percentage {
+        font-size: 24px;
+        font-weight: 700;
+        color: #52c41a;
+      }
+    }
+
+    .progress-bar {
+      margin-bottom: 12px;
+      height: 8px;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .progress-text {
+        font-size: 14px;
+        color: #666;
+      }
+
+      .remaining-time {
+        font-size: 14px;
+        color: #1890ff;
+        font-weight: 500;
+      }
+    }
+  }
+
+  // 实时数据
+  .realtime-data {
+    .data-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+
+      .data-item {
+        text-align: center;
+        padding: 16px;
+        background: #f8f9fa;
+        border-radius: 8px;
+
+        .data-label {
+          font-size: 12px;
+          color: #666;
+          margin-bottom: 8px;
+          display: block;
+        }
+
+        .data-value {
+          font-size: 18px;
+          font-weight: 600;
+          display: block;
+
+          &.power {
+            color: #1890ff;
+          }
+
+          &.energy {
+            color: #52c41a;
+          }
+
+          &.duration {
+            color: #722ed1;
+          }
+
+          &.cost {
+            color: #fa541c;
+          }
+        }
+      }
+    }
+  }
+
+  // 电气参数
+  .electrical-params {
+    .params-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+
+      .param-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+
+        .param-icon {
+          font-size: 20px;
+          margin-right: 12px;
+        }
+
+        .param-info {
+          flex: 1;
+
+          .param-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+            display: block;
+          }
+
+          .param-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+          }
+        }
+      }
+    }
+  }
+
+  // 异常信息
+  .error-info {
+    border-left: 4px solid #ff4d4f;
+
+    .error-details {
+      .error-code {
+        font-size: 14px;
+        color: #ff4d4f;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .error-message {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.4;
+      }
+    }
+  }
+
+  // 异常列表
+  .anomalies-card {
+    .anomalies-list {
+      .anomaly-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 8px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .anomaly-severity {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          margin-right: 12px;
+
+          &.safe {
+            background: #52c41a;
+          }
+
+          &.warning {
+            background: #faad14;
+          }
+
+          &.danger {
+            background: #ff7a45;
+          }
+
+          &.critical {
+            background: #ff4d4f;
+          }
+        }
+
+        .anomaly-content {
+          flex: 1;
+
+          .anomaly-message {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+            display: block;
+          }
+
+          .anomaly-time {
+            font-size: 12px;
+            color: #999;
+          }
+        }
+      }
+    }
+  }
+
+  // 刷新区域
+  .refresh-section {
+    margin-top: 16px;
+
+    .refresh-btn {
+      width: 100%;
+      height: 48px;
+      background: #f5f5f5;
+      border-color: #d9d9d9;
+      color: #666;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+    }
+  }
+}
+
+// 动画效果
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+// 响应式适配
+@media (max-width: 375px) {
+  .charging-monitor {
+    padding: 12px;
+
+    .realtime-data {
+      .data-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+    }
+
+    .electrical-params {
+      .params-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+    }
+  }
+}
+
+// 深色模式适配
+@media (prefers-color-scheme: dark) {
+  .charging-monitor {
+    background: #1a1a1a;
+
+    .connection-status,
+    .nut-card {
+      background: #2a2a2a;
+      color: #fff;
+    }
+
+    .card-title {
+      color: #fff;
+    }
+
+    .station-header {
+      .station-name {
+        color: #fff;
+      }
+
+      .pile-name {
+        color: #ccc;
+      }
+    }
+
+    .data-item,
+    .param-item,
+    .anomaly-item {
+      background: #3a3a3a;
+
+      .data-label,
+      .param-label {
+        color: #ccc;
+      }
+
+      .param-value,
+      .anomaly-message {
+        color: #fff;
+      }
+    }
+
+    .refresh-btn {
+      background: #3a3a3a;
+      border-color: #4a4a4a;
+      color: #ccc;
+    }
+  }
+}
+
+// 横屏适配
+@media (orientation: landscape) {
+  .charging-monitor {
+    .realtime-data {
+      .data-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .electrical-params {
+      .params-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  }
+}

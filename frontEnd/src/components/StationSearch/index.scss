@@ -1,0 +1,809 @@
+.station-search-popup {
+  .nut-popup {
+    height: 90vh;
+    border-radius: 0 0 16px 16px;
+  }
+}
+
+.station-search {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  
+  &__header {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 12px;
+    
+    .search-bar {
+      flex: 1;
+      
+      .nut-searchbar {
+        background: #f5f5f5;
+        border-radius: 24px;
+        
+        .nut-searchbar-input {
+          background: transparent;
+          font-size: 16px;
+        }
+        
+        .nut-searchbar-search-icon {
+          color: #999;
+        }
+      }
+    }
+    
+    .filter-btn {
+      background: #fa2c19;
+      border-color: #fa2c19;
+      border-radius: 20px;
+      padding: 8px 16px;
+      
+      &:active {
+        background: #e02418;
+      }
+    }
+  }
+  
+  &__quick-filters {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    
+    .quick-filters-scroll {
+      white-space: nowrap;
+    }
+    
+    .quick-filters-list {
+      display: flex;
+      gap: 8px;
+      padding-bottom: 4px;
+      
+      .quick-filter-tag {
+        flex-shrink: 0;
+        background: #f5f5f5;
+        color: #666;
+        border-color: #e8e8e8;
+        
+        &:active {
+          background: #fa2c19;
+          color: #fff;
+          border-color: #fa2c19;
+        }
+      }
+    }
+  }
+  
+  &__filters {
+    border-bottom: 1px solid #f0f0f0;
+    background: #fafafa;
+    
+    .filters-content {
+      max-height: 300px;
+      padding: 16px;
+      
+      .filter-section {
+        margin-bottom: 16px;
+        
+        .filter-title {
+          display: block;
+          font-size: 16px;
+          font-weight: 500;
+          color: #333;
+          margin-bottom: 12px;
+        }
+        
+        .nut-radio-group {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 16px;
+          
+          .nut-radio {
+            margin-bottom: 8px;
+          }
+        }
+        
+        .nut-checkbox-group {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          
+          .nut-checkbox {
+            margin-bottom: 8px;
+          }
+        }
+        
+        .operator-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          
+          .operator-tag {
+            background: #f5f5f5;
+            color: #666;
+            border-color: #e8e8e8;
+            
+            &.nut-tag--primary {
+              background: #fa2c19;
+              border-color: #fa2c19;
+            }
+          }
+        }
+        
+        .distance-range,
+        .power-range,
+        .price-range {
+          margin-top: 8px;
+          
+          .nut-range {
+            .nut-range-button {
+              background: #fa2c19;
+              border-color: #fa2c19;
+            }
+            
+            .nut-range-bar {
+              background: #fa2c19;
+            }
+          }
+        }
+      }
+      
+      .nut-divider {
+        margin: 16px 0;
+        border-color: #e8e8e8;
+      }
+    }
+    
+    .filters-actions {
+      display: flex;
+      padding: 16px;
+      gap: 12px;
+      border-top: 1px solid #e8e8e8;
+      
+      .reset-btn {
+        flex: 1;
+        background: #f5f5f5;
+        color: #666;
+        border: none;
+        
+        &:active {
+          background: #e8e8e8;
+        }
+      }
+      
+      .apply-btn {
+        flex: 2;
+        background: #fa2c19;
+        border-color: #fa2c19;
+        
+        &:active {
+          background: #e02418;
+        }
+      }
+    }
+  }
+  
+  &__content {
+    flex: 1;
+    overflow: hidden;
+    
+    .search-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+      
+      .nut-loading {
+        margin-bottom: 16px;
+      }
+      
+      .loading-text {
+        font-size: 14px;
+        color: #666;
+      }
+    }
+    
+    .search-results {
+      height: 100%;
+      
+      .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        border-bottom: 1px solid #f0f0f0;
+        
+        .results-count {
+          font-size: 14px;
+          color: #666;
+        }
+        
+        .sort-options {
+          display: flex;
+          gap: 8px;
+          
+          .nut-tag {
+            &.nut-tag--primary {
+              background: #fa2c19;
+              border-color: #fa2c19;
+            }
+            
+            &.nut-tag--default {
+              background: #f5f5f5;
+              color: #666;
+              border-color: #e8e8e8;
+            }
+          }
+        }
+      }
+      
+      .result-item {
+        .nut-cell {
+          padding: 16px;
+          
+          .nut-cell__title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+          }
+        }
+        
+        .station-desc {
+          .station-address {
+            display: block;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.4;
+          }
+          
+          .station-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            
+            .station-operator {
+              font-size: 13px;
+              color: #999;
+            }
+            
+            .station-piles {
+              font-size: 13px;
+              color: #52c41a;
+              font-weight: 500;
+            }
+            
+            .station-distance {
+              font-size: 13px;
+              color: #fa2c19;
+              font-weight: 500;
+            }
+          }
+          
+          .station-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            
+            .nut-tag {
+              font-size: 11px;
+              padding: 2px 6px;
+              
+              &.rating-tag {
+                background: #fff7e6;
+                color: #d46b08;
+                border-color: #ffe7ba;
+              }
+              
+              &.price-tag {
+                background: #f6ffed;
+                color: #52c41a;
+                border-color: #d9f7be;
+              }
+              
+              &.service-tag {
+                background: #f0f0f0;
+                color: #666;
+                border-color: #d9d9d9;
+              }
+            }
+          }
+        }
+        
+        &:active {
+          background: #f8f8f8;
+        }
+      }
+      
+      .load-more {
+        display: flex;
+        justify-content: center;
+        padding: 16px;
+        
+        .nut-loading {
+          color: #fa2c19;
+        }
+        
+        .nut-button {
+          background: transparent;
+          color: #fa2c19;
+          border-color: #fa2c19;
+          
+          &:active {
+            background: #fff2f0;
+          }
+        }
+      }
+    }
+    
+    .search-empty {
+      padding: 60px 20px;
+      
+      .nut-empty {
+        .nut-empty-description {
+          color: #999;
+          font-size: 14px;
+        }
+      }
+    }
+    
+    .search-history {
+      padding: 16px;
+      
+      .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        
+        .history-title {
+          font-size: 16px;
+          font-weight: 500;
+          color: #333;
+        }
+        
+        .clear-btn {
+          background: transparent;
+          color: #666;
+          border: 1px solid #e8e8e8;
+          
+          &:active {
+            background: #f5f5f5;
+          }
+        }
+      }
+      
+      .history-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 24px;
+        
+        .history-tag {
+          background: #f5f5f5;
+          color: #666;
+          border-color: #e8e8e8;
+          
+          &:active {
+            background: #e8e8e8;
+          }
+        }
+      }
+      
+      .search-tips {
+        .tips-title {
+          font-size: 16px;
+          font-weight: 500;
+          color: #333;
+          display: block;
+          margin-bottom: 12px;
+        }
+        
+        .tips-item {
+          display: block;
+          font-size: 14px;
+          color: #666;
+          line-height: 1.6;
+          margin-bottom: 8px;
+          
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+  
+  &__tip {
+    padding: 12px 16px;
+    background: #fff7e6;
+    border-top: 1px solid #ffe7ba;
+    
+    .tip-text {
+      font-size: 13px;
+      color: #d46b08;
+      line-height: 1.4;
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 375px) {
+  .station-search {
+    &__header {
+      padding: 12px;
+      gap: 8px;
+      
+      .filter-btn {
+        padding: 6px 12px;
+        font-size: 14px;
+      }
+    }
+    
+    &__quick-filters {
+      padding: 8px 12px;
+      
+      .quick-filters-list {
+        gap: 6px;
+        
+        .quick-filter-tag {
+          font-size: 12px;
+          padding: 4px 8px;
+        }
+      }
+    }
+    
+    &__filters {
+      .filters-content {
+        padding: 12px;
+        
+        .filter-section {
+          margin-bottom: 12px;
+          
+          .filter-title {
+            font-size: 15px;
+            margin-bottom: 10px;
+          }
+          
+          .operator-list {
+            gap: 6px;
+            
+            .operator-tag {
+              font-size: 12px;
+              padding: 4px 8px;
+            }
+          }
+        }
+      }
+      
+      .filters-actions {
+        padding: 12px;
+        gap: 8px;
+      }
+    }
+    
+    &__content {
+      .search-results {
+        .results-header {
+          padding: 12px;
+          
+          .results-count {
+            font-size: 13px;
+          }
+          
+          .sort-options {
+            gap: 6px;
+            
+            .nut-tag {
+              font-size: 11px;
+              padding: 3px 6px;
+            }
+          }
+        }
+        
+        .result-item {
+          .nut-cell {
+            padding: 12px;
+            
+            .nut-cell__title {
+              font-size: 15px;
+            }
+          }
+          
+          .station-desc {
+            .station-address {
+              font-size: 13px;
+            }
+            
+            .station-info {
+              gap: 8px;
+              
+              .station-operator,
+              .station-piles,
+              .station-distance {
+                font-size: 12px;
+              }
+            }
+          }
+        }
+      }
+      
+      .search-history {
+        padding: 12px;
+        
+        .history-header {
+          margin-bottom: 12px;
+          
+          .history-title {
+            font-size: 15px;
+          }
+        }
+        
+        .history-list {
+          gap: 6px;
+          margin-bottom: 20px;
+          
+          .history-tag {
+            font-size: 12px;
+            padding: 4px 8px;
+          }
+        }
+        
+        .search-tips {
+          .tips-title {
+            font-size: 15px;
+            margin-bottom: 10px;
+          }
+          
+          .tips-item {
+            font-size: 13px;
+          }
+        }
+      }
+    }
+    
+    &__tip {
+      padding: 10px 12px;
+      
+      .tip-text {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+// 暗色主题支持
+@media (prefers-color-scheme: dark) {
+  .station-search {
+    background: #1f1f1f;
+    
+    &__header {
+      border-bottom-color: #333;
+      
+      .search-bar {
+        .nut-searchbar {
+          background: #2a2a2a;
+          
+          .nut-searchbar-input {
+            color: #fff;
+            
+            &::placeholder {
+              color: #999;
+            }
+          }
+        }
+      }
+    }
+    
+    &__quick-filters {
+      border-bottom-color: #333;
+      
+      .quick-filters-list {
+        .quick-filter-tag {
+          background: #2a2a2a;
+          color: #ccc;
+          border-color: #444;
+          
+          &:active {
+            background: #fa2c19;
+            color: #fff;
+          }
+        }
+      }
+    }
+    
+    &__filters {
+      background: #2a2a2a;
+      border-bottom-color: #333;
+      
+      .filters-content {
+        .filter-section {
+          .filter-title {
+            color: #fff;
+          }
+          
+          .operator-list {
+            .operator-tag {
+              background: #333;
+              color: #ccc;
+              border-color: #555;
+            }
+          }
+        }
+        
+        .nut-divider {
+          border-color: #444;
+        }
+      }
+      
+      .filters-actions {
+        border-top-color: #444;
+        
+        .reset-btn {
+          background: #333;
+          color: #ccc;
+          
+          &:active {
+            background: #444;
+          }
+        }
+      }
+    }
+    
+    &__content {
+      .search-results {
+        .results-header {
+          border-bottom-color: #333;
+          
+          .results-count {
+            color: #ccc;
+          }
+          
+          .sort-options {
+            .nut-tag.nut-tag--default {
+              background: #2a2a2a;
+              color: #ccc;
+              border-color: #444;
+            }
+          }
+        }
+        
+        .result-item {
+          .nut-cell {
+            .nut-cell__title {
+              color: #fff;
+            }
+          }
+          
+          .station-desc {
+            .station-address {
+              color: #ccc;
+            }
+            
+            .station-info {
+              .station-operator {
+                color: #999;
+              }
+            }
+          }
+          
+          &:active {
+            background: #2a2a2a;
+          }
+        }
+      }
+      
+      .search-empty {
+        .nut-empty {
+          .nut-empty-description {
+            color: #666;
+          }
+        }
+      }
+      
+      .search-history {
+        .history-header {
+          .history-title {
+            color: #fff;
+          }
+          
+          .clear-btn {
+            color: #ccc;
+            border-color: #444;
+            
+            &:active {
+              background: #2a2a2a;
+            }
+          }
+        }
+        
+        .history-list {
+          .history-tag {
+            background: #2a2a2a;
+            color: #ccc;
+            border-color: #444;
+            
+            &:active {
+              background: #333;
+            }
+          }
+        }
+        
+        .search-tips {
+          .tips-title {
+            color: #fff;
+          }
+          
+          .tips-item {
+            color: #ccc;
+          }
+        }
+      }
+    }
+    
+    &__tip {
+      background: #2a2a2a;
+      border-top-color: #444;
+      
+      .tip-text {
+        color: #d89614;
+      }
+    }
+  }
+}
+
+// 动画效果
+.station-search {
+  &__quick-filters {
+    .quick-filter-tag {
+      transition: all 0.2s ease;
+      
+      &:hover {
+        transform: translateY(-1px);
+      }
+    }
+  }
+  
+  &__content {
+    .result-item {
+      transition: background-color 0.2s ease;
+    }
+    
+    .history-list {
+      .history-tag {
+        transition: all 0.2s ease;
+        
+        &:hover {
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+}
+
+// 滚动条样式
+.search-results::-webkit-scrollbar,
+.filters-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.search-results::-webkit-scrollbar-track,
+.filters-content::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+.search-results::-webkit-scrollbar-thumb,
+.filters-content::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 2px;
+}
+
+.search-results::-webkit-scrollbar-thumb:hover,
+.filters-content::-webkit-scrollbar-thumb:hover {
+  background: #ccc;
+}

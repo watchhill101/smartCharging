@@ -1,0 +1,442 @@
+.help-center {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* 头部区域 */
+.help-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40rpx 30rpx 60rpx;
+  text-align: center;
+  color: white;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -20rpx;
+    left: 0;
+    right: 0;
+    height: 40rpx;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 40rpx 40rpx 0 0;
+  }
+}
+
+.help-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  margin-bottom: 16rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+}
+
+.help-subtitle {
+  font-size: 28rpx;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+/* 标签页导航 */
+.tab-navigation {
+  display: flex;
+  background: white;
+  margin: 20rpx 30rpx;
+  border-radius: 16rpx;
+  padding: 8rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 16rpx;
+  border-radius: 12rpx;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  
+  &.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: translateY(-2rpx);
+    box-shadow: 0 8rpx 20rpx rgba(102, 126, 234, 0.3);
+  }
+}
+
+.tab-icon {
+  font-size: 32rpx;
+  margin-bottom: 8rpx;
+}
+
+.tab-text {
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+/* 内容区域 */
+.content-area {
+  height: calc(100vh - 300rpx);
+  padding: 0 30rpx 40rpx;
+}
+
+/* FAQ 样式 */
+.faq-container {
+  .search-section {
+    margin-bottom: 30rpx;
+  }
+  
+  .search-box {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 50rpx;
+    padding: 20rpx 30rpx;
+    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  }
+  
+  .search-icon {
+    font-size: 32rpx;
+    color: #999;
+    margin-right: 20rpx;
+  }
+  
+  .search-input {
+    flex: 1;
+    font-size: 28rpx;
+    border: none;
+    outline: none;
+    background: transparent;
+    
+    &::placeholder {
+      color: #ccc;
+    }
+  }
+}
+
+.category-section {
+  margin-bottom: 30rpx;
+}
+
+.category-scroll {
+  white-space: nowrap;
+}
+
+.category-list {
+  display: flex;
+  gap: 20rpx;
+  padding: 0 10rpx;
+}
+
+.category-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 24rpx;
+  background: white;
+  border-radius: 16rpx;
+  min-width: 120rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  
+  &.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: translateY(-4rpx);
+    box-shadow: 0 8rpx 20rpx rgba(102, 126, 234, 0.3);
+  }
+}
+
+.category-icon {
+  font-size: 28rpx;
+  margin-bottom: 8rpx;
+}
+
+.category-name {
+  font-size: 24rpx;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.faq-list {
+  .faq-item {
+    background: white;
+    border-radius: 16rpx;
+    margin-bottom: 20rpx;
+    overflow: hidden;
+    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2rpx);
+      box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.12);
+    }
+  }
+  
+  .faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30rpx;
+    cursor: pointer;
+    border-bottom: 1rpx solid #f5f5f5;
+  }
+  
+  .question-text {
+    flex: 1;
+    font-size: 30rpx;
+    font-weight: 500;
+    color: #333;
+    line-height: 1.4;
+  }
+  
+  .expand-icon {
+    font-size: 24rpx;
+    color: #999;
+    transition: transform 0.3s ease;
+    margin-left: 20rpx;
+    
+    &.expanded {
+      transform: rotate(180deg);
+      color: #667eea;
+    }
+  }
+  
+  .faq-answer {
+    padding: 0 30rpx 30rpx;
+    animation: slideDown 0.3s ease;
+  }
+  
+  .answer-text {
+    font-size: 28rpx;
+    color: #666;
+    line-height: 1.6;
+    white-space: pre-line;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500rpx;
+  }
+}
+
+.no-results {
+  text-align: center;
+  padding: 100rpx 30rpx;
+  
+  .no-results-icon {
+    font-size: 80rpx;
+    margin-bottom: 30rpx;
+    opacity: 0.5;
+  }
+  
+  .no-results-text {
+    font-size: 32rpx;
+    color: #666;
+    margin-bottom: 16rpx;
+  }
+  
+  .no-results-tip {
+    font-size: 26rpx;
+    color: #999;
+  }
+}
+
+/* 联系客服样式 */
+.contact-container {
+  .contact-header {
+    text-align: center;
+    margin-bottom: 40rpx;
+  }
+  
+  .contact-title {
+    font-size: 36rpx;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 16rpx;
+  }
+  
+  .contact-subtitle {
+    font-size: 28rpx;
+    color: #666;
+  }
+}
+
+.contact-methods {
+  .contact-item {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 16rpx;
+    padding: 30rpx;
+    margin-bottom: 20rpx;
+    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    
+    &:active {
+      transform: translateY(2rpx);
+      box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  .contact-icon {
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: 16rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36rpx;
+    margin-right: 24rpx;
+    
+    &.online-chat {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    &.phone {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+    
+    &.email {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+    
+    &.feedback {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    }
+  }
+  
+  .contact-info {
+    flex: 1;
+  }
+  
+  .contact-method {
+    font-size: 32rpx;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8rpx;
+  }
+  
+  .contact-number,
+  .contact-email {
+    font-size: 28rpx;
+    color: #667eea;
+    font-weight: 500;
+    margin-bottom: 4rpx;
+  }
+  
+  .contact-desc,
+  .contact-hours {
+    font-size: 24rpx;
+    color: #999;
+  }
+  
+  .contact-status {
+    font-size: 24rpx;
+    
+    &.online {
+      color: #52c41a;
+    }
+  }
+  
+  .contact-arrow {
+    font-size: 32rpx;
+    color: #ccc;
+    margin-left: 20rpx;
+  }
+}
+
+.contact-tips {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-top: 30rpx;
+  
+  .tips-title {
+    font-size: 28rpx;
+    font-weight: 600;
+    color: #d4691a;
+    margin-bottom: 20rpx;
+  }
+  
+  .tips-text {
+    font-size: 26rpx;
+    color: #8b4513;
+    line-height: 1.5;
+    margin-bottom: 8rpx;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .help-header {
+    padding: 30rpx 20rpx 50rpx;
+  }
+  
+  .help-title {
+    font-size: 40rpx;
+  }
+  
+  .tab-navigation {
+    margin: 15rpx 20rpx;
+  }
+  
+  .content-area {
+    padding: 0 20rpx 30rpx;
+  }
+  
+  .contact-item {
+    padding: 24rpx;
+  }
+  
+  .contact-icon {
+    width: 70rpx;
+    height: 70rpx;
+    font-size: 32rpx;
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .help-center {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  }
+  
+  .tab-item,
+  .search-box,
+  .category-item,
+  .faq-item,
+  .contact-item {
+    background: #34495e;
+    color: #ecf0f1;
+  }
+  
+  .faq-question {
+    border-bottom-color: #4a5f7a;
+  }
+  
+  .question-text {
+    color: #ecf0f1;
+  }
+  
+  .answer-text {
+    color: #bdc3c7;
+  }
+  
+  .contact-tips {
+    background: linear-gradient(135deg, #5d4e75 0%, #8b5a3c 100%);
+  }
+}

@@ -1,0 +1,423 @@
+.coupon-center {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* 头部统计区域 */
+.coupon-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40rpx 30rpx;
+  color: white;
+  text-align: center;
+}
+
+.header-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  margin-bottom: 30rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20rpx;
+  padding: 30rpx 20rpx;
+  backdrop-filter: blur(10rpx);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-number {
+  font-size: 48rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+}
+
+.stat-label {
+  font-size: 26rpx;
+  opacity: 0.9;
+}
+
+/* 标签页导航 */
+.tab-navigation {
+  display: flex;
+  background: white;
+  margin: 20rpx 30rpx 0;
+  border-radius: 16rpx;
+  padding: 8rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 16rpx;
+  border-radius: 12rpx;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  
+  &.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: translateY(-2rpx);
+    box-shadow: 0 8rpx 20rpx rgba(102, 126, 234, 0.3);
+  }
+}
+
+.tab-icon {
+  font-size: 32rpx;
+  margin-bottom: 8rpx;
+}
+
+.tab-text {
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.tab-badge {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  background: #ff4d4f;
+  border-radius: 20rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge-text {
+  font-size: 20rpx;
+  color: white;
+  font-weight: bold;
+}
+
+/* 优惠券列表 */
+.coupon-list {
+  height: calc(100vh - 400rpx);
+  padding: 20rpx 30rpx 0;
+}
+
+.coupon-items {
+  padding-bottom: 40rpx;
+}
+
+.coupon-item {
+  background: white;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2rpx);
+    box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.12);
+  }
+}
+
+.coupon-main {
+  display: flex;
+  padding: 30rpx;
+}
+
+.coupon-left {
+  width: 160rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 2rpx dashed #e8e8e8;
+  margin-right: 30rpx;
+  position: relative;
+}
+
+.coupon-value {
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+
+.value-text {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #ff4d4f;
+  display: block;
+  line-height: 1;
+}
+
+.value-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+  display: block;
+}
+
+.coupon-status {
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  
+  &.available {
+    background: #f6ffed;
+    color: #52c41a;
+    border: 1rpx solid #b7eb8f;
+  }
+  
+  &.used {
+    background: #f5f5f5;
+    color: #999;
+    border: 1rpx solid #d9d9d9;
+  }
+  
+  &.expired {
+    background: #fff2f0;
+    color: #ff4d4f;
+    border: 1rpx solid #ffccc7;
+  }
+}
+
+.coupon-right {
+  flex: 1;
+}
+
+.coupon-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.coupon-desc {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+  display: block;
+  line-height: 1.4;
+}
+
+.coupon-info {
+  margin-bottom: 20rpx;
+}
+
+.info-item {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 8rpx;
+  display: block;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.coupon-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.action-btn {
+  height: 60rpx;
+  line-height: 60rpx;
+  border-radius: 30rpx;
+  font-size: 24rpx;
+  padding: 0 24rpx;
+  
+  &.copy-btn {
+    background: #f5f5f5;
+    color: #666;
+    border: 1rpx solid #d9d9d9;
+  }
+  
+  &.use-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+  }
+}
+
+.coupon-code {
+  background: #f8f9fa;
+  padding: 20rpx 30rpx;
+  border-top: 1rpx solid #f0f0f0;
+  display: flex;
+  align-items: center;
+}
+
+.code-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-right: 16rpx;
+}
+
+.code-text {
+  font-size: 24rpx;
+  color: #333;
+  font-family: monospace;
+  font-weight: 500;
+}
+
+/* 空状态 */
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: 100rpx 30rpx;
+}
+
+.loading-text {
+  font-size: 32rpx;
+  color: #666;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 30rpx;
+  opacity: 0.5;
+  display: block;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.empty-tip {
+  font-size: 26rpx;
+  color: #999;
+  display: block;
+}
+
+/* 底部区域 */
+.coupon-footer {
+  background: white;
+  margin: 20rpx 30rpx 40rpx;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.footer-tips {
+  margin-bottom: 30rpx;
+}
+
+.tips-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.tips-text {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 8rpx;
+  display: block;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.get-more-btn {
+  width: 100%;
+  height: 88rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  box-shadow: 0 8rpx 20rpx rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+  
+  &:active {
+    transform: translateY(2rpx);
+    box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.4);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .coupon-header {
+    padding: 30rpx 20rpx;
+  }
+  
+  .header-title {
+    font-size: 40rpx;
+  }
+  
+  .tab-navigation {
+    margin: 15rpx 20rpx 0;
+  }
+  
+  .coupon-list {
+    padding: 15rpx 20rpx 0;
+  }
+  
+  .coupon-main {
+    padding: 24rpx;
+  }
+  
+  .coupon-left {
+    width: 140rpx;
+    margin-right: 24rpx;
+  }
+  
+  .value-text {
+    font-size: 40rpx;
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .coupon-center {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  }
+  
+  .tab-item,
+  .coupon-item,
+  .coupon-footer {
+    background: #34495e;
+    color: #ecf0f1;
+  }
+  
+  .coupon-name {
+    color: #ecf0f1;
+  }
+  
+  .coupon-desc,
+  .info-item {
+    color: #bdc3c7;
+  }
+  
+  .coupon-code {
+    background: #2c3e50;
+    border-top-color: #4a5f7a;
+  }
+  
+  .code-text {
+    color: #ecf0f1;
+  }
+  
+  .action-btn.copy-btn {
+    background: #4a5f7a;
+    color: #ecf0f1;
+    border-color: #5a6f8a;
+  }
+}

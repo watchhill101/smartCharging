@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import Taro from '@tarojs/taro'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import './device.scss'
+import { showToast } from '../utils/toast'
 
 interface DeviceProps {
   onBack?: () => void
@@ -18,7 +19,7 @@ interface DeviceProps {
 // 安全 Toast 调用
 function showToast(params: { title: string; icon?: 'none' | 'success' | 'error'; duration?: number }) {
   try {
-    if (typeof Taro?.showToast === 'function') return Taro.showToast(params)
+    if (typeof Taro?.showToast === 'function') return showToast(params)
   } catch {}
   console.warn('[Toast]', params.title)
 }

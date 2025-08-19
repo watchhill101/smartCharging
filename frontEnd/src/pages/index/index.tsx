@@ -4,6 +4,7 @@ import Taro from '@tarojs/taro'
 import { useState, useMemo } from 'react'
 import CitySelector from './CitySelector'
 import './index.scss'
+import { TaroSafe } from '../../utils/taroSafe'
 
 // 充电站数据接口
 interface ChargingStation {
@@ -305,7 +306,7 @@ export default function Index() {
 									// 保存选中的充电站信息
 									try {
 										if (typeof Taro.setStorageSync === 'function') {
-											Taro.setStorageSync('selected_station', station)
+											TaroSafe.setStorageSync('selected_station', station)
 											console.log('充电站数据已保存到Taro存储')
 										} else {
 											localStorage.setItem('selected_station', JSON.stringify(station))
@@ -389,11 +390,11 @@ export default function Index() {
 										// 保存地图目标位置信息
 										try {
 											if (typeof Taro.setStorageSync === 'function') {
-												Taro.setStorageSync('map_target_coord', {
+												TaroSafe.setStorageSync('map_target_coord', {
 													lng: station.location.coordinates[0],
 													lat: station.location.coordinates[1]
 												})
-												Taro.setStorageSync('map_target_station', {
+												TaroSafe.setStorageSync('map_target_station', {
 													name: station.name,
 													address: station.address,
 													distance: station.distance,

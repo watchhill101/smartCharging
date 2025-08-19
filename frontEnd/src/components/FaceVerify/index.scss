@@ -1,0 +1,339 @@
+.face-verify-popup {
+  .nut-popup {
+    width: 90%;
+    max-width: 400px;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+}
+
+.face-verify {
+  padding: 20px;
+  background: #fff;
+  
+  &__header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  
+  &__title {
+    display: block;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  
+  &__description {
+    display: block;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+  }
+  
+  &__content {
+    margin-bottom: 20px;
+  }
+  
+  &__camera {
+    margin-bottom: 20px;
+    
+    .camera-container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      background: #f5f5f5;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .camera-frame {
+      position: relative;
+      width: 200px;
+      height: 250px;
+      border: 2px solid #fa2c19;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      
+      .frame-corners {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        
+        .corner {
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          border: 3px solid #fa2c19;
+          
+          &--top-left {
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+            border-top-left-radius: 8px;
+          }
+          
+          &--top-right {
+            top: -2px;
+            right: -2px;
+            border-left: none;
+            border-bottom: none;
+            border-top-right-radius: 8px;
+          }
+          
+          &--bottom-left {
+            bottom: -2px;
+            left: -2px;
+            border-right: none;
+            border-top: none;
+            border-bottom-left-radius: 8px;
+          }
+          
+          &--bottom-right {
+            bottom: -2px;
+            right: -2px;
+            border-left: none;
+            border-top: none;
+            border-bottom-right-radius: 8px;
+          }
+        }
+      }
+    }
+    
+    .camera-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      color: #999;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+    }
+    
+    .captured-image {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+    
+    .camera-controls {
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+      
+      .capture-btn {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        font-size: 14px;
+        background: #fa2c19;
+        border: 4px solid #fff;
+        box-shadow: 0 0 0 2px #fa2c19;
+        
+        &:active {
+          transform: scale(0.95);
+        }
+      }
+    }
+  }
+  
+  &__status {
+    text-align: center;
+    margin-bottom: 20px;
+    
+    .progress-bar {
+      margin-bottom: 12px;
+      
+      .nut-progress {
+        height: 8px;
+        border-radius: 4px;
+        
+        .nut-progress-outer {
+          background: #f0f0f0;
+        }
+        
+        .nut-progress-inner {
+          background: linear-gradient(90deg, #fa2c19 0%, #ff6b35 100%);
+          border-radius: 4px;
+        }
+      }
+    }
+    
+    .status-message {
+      display: block;
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    .confidence-score,
+    .liveness-score {
+      display: block;
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+  }
+  
+  &__actions {
+    .nut-button {
+      margin-bottom: 12px;
+      height: 48px;
+      border-radius: 24px;
+      font-size: 16px;
+      font-weight: 500;
+      
+      &.nut-button--primary {
+        background: linear-gradient(90deg, #fa2c19 0%, #ff6b35 100%);
+        border: none;
+      }
+      
+      &.cancel-btn {
+        background: #f5f5f5;
+        color: #666;
+        border: none;
+        
+        &:active {
+          background: #e8e8e8;
+        }
+      }
+    }
+  }
+  
+  &__tips {
+    margin-top: 20px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #fa2c19;
+    
+    .tips-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    
+    .tips-item {
+      display: block;
+      font-size: 12px;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 4px;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// 动画效果
+.face-verify__camera .camera-frame {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(250, 44, 25, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(250, 44, 25, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(250, 44, 25, 0);
+  }
+}
+
+// 成功状态样式
+.face-verify__status .status-message {
+  &.success {
+    color: #52c41a;
+  }
+  
+  &.error {
+    color: #ff4d4f;
+  }
+}
+
+// 响应式设计
+@media (max-width: 375px) {
+  .face-verify {
+    padding: 16px;
+    
+    &__camera .camera-container {
+      height: 250px;
+    }
+    
+    &__camera .camera-frame {
+      width: 160px;
+      height: 200px;
+    }
+  }
+}
+
+// 暗色主题支持
+@media (prefers-color-scheme: dark) {
+  .face-verify {
+    background: #1f1f1f;
+    color: #fff;
+    
+    &__title {
+      color: #fff;
+    }
+    
+    &__description {
+      color: #ccc;
+    }
+    
+    &__camera .camera-container {
+      background: #2a2a2a;
+    }
+    
+    &__camera .camera-placeholder {
+      background: rgba(42, 42, 42, 0.8);
+      color: #ccc;
+    }
+    
+    &__status .status-message {
+      color: #fff;
+    }
+    
+    &__status .confidence-score,
+    &__status .liveness-score {
+      color: #ccc;
+    }
+    
+    &__tips {
+      background: #2a2a2a;
+      color: #ccc;
+      
+      .tips-title {
+        color: #fff;
+      }
+    }
+    
+    &__actions .cancel-btn {
+      background: #2a2a2a;
+      color: #ccc;
+      
+      &:active {
+        background: #333;
+      }
+    }
+  }
+}

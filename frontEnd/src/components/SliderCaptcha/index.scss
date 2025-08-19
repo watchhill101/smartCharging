@@ -1,0 +1,342 @@
+.slider-captcha {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  // 验证码图片区域
+  .captcha-image-container {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    background: #f5f5f5;
+    overflow: hidden;
+
+    .loading-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      background: #f8f9fa;
+
+      .loading-text {
+        color: #666;
+        font-size: 14px;
+      }
+    }
+
+    .background-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .puzzle-hole {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid #fff;
+      border-radius: 4px;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+      z-index: 2;
+    }
+
+    .puzzle-piece {
+      position: absolute;
+      background-size: cover;
+      background-position: center;
+      border: 2px solid #fff;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      z-index: 3;
+      transition: all 0.3s ease;
+    }
+
+    .refresh-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 32px;
+      height: 32px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 4;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.8);
+        transform: scale(1.1);
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+
+      .refresh-icon {
+        color: #fff;
+        font-size: 16px;
+      }
+    }
+  }
+
+  // 滑块控制区域
+  .slider-container {
+    padding: 16px;
+    background: #fff;
+
+    .slider-track {
+      position: relative;
+      width: 100%;
+      height: 40px;
+      background: #f5f5f5;
+      border-radius: 20px;
+      overflow: hidden;
+
+      .track-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #e9ecef;
+        border-radius: 20px;
+
+        .track-fill {
+          height: 100%;
+          background: #1890ff;
+          border-radius: 20px;
+          transition: all 0.3s ease;
+          min-width: 40px;
+        }
+      }
+
+      .slider-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 14px;
+        color: #666;
+        pointer-events: none;
+        z-index: 1;
+        transition: all 0.3s ease;
+
+        &.success {
+          color: #52c41a;
+          font-weight: 600;
+        }
+
+        &.fail {
+          color: #ff4d4f;
+          font-weight: 600;
+        }
+
+        &.verifying {
+          color: #1890ff;
+        }
+      }
+
+      .slider-button {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 40px;
+        height: 40px;
+        background: #fff;
+        border: 2px solid #1890ff;
+        border-radius: 50%;
+        cursor: grab;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+
+        &:active {
+          cursor: grabbing;
+          transform: scale(1.05);
+        }
+
+        &.dragging {
+          box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+          border-color: #40a9ff;
+        }
+
+        &.success {
+          background: #52c41a;
+          border-color: #52c41a;
+          color: #fff;
+          box-shadow: 0 2px 8px rgba(82, 196, 26, 0.3);
+        }
+
+        &.fail {
+          background: #ff4d4f;
+          border-color: #ff4d4f;
+          color: #fff;
+          box-shadow: 0 2px 8px rgba(255, 77, 79, 0.3);
+          animation: shake 0.5s ease-in-out;
+        }
+
+        &.verifying {
+          border-color: #1890ff;
+          
+          .slider-icon {
+            animation: spin 1s linear infinite;
+          }
+        }
+
+        .slider-icon {
+          font-size: 16px;
+          font-weight: 600;
+          color: inherit;
+        }
+      }
+    }
+  }
+
+  // 调试信息
+  .debug-info {
+    padding: 8px 16px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+
+    .debug-text {
+      font-size: 12px;
+      color: #666;
+      font-family: monospace;
+    }
+  }
+}
+
+// 动画效果
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// 响应式适配
+@media (max-width: 375px) {
+  .slider-captcha {
+    .captcha-image-container {
+      height: 120px;
+    }
+
+    .slider-container {
+      padding: 12px;
+
+      .slider-track {
+        height: 36px;
+
+        .slider-button {
+          width: 36px;
+          height: 36px;
+
+          .slider-icon {
+            font-size: 14px;
+          }
+        }
+
+        .track-fill {
+          min-width: 36px;
+        }
+      }
+    }
+  }
+}
+
+// 深色模式适配
+@media (prefers-color-scheme: dark) {
+  .slider-captcha {
+    background: #2a2a2a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    .captcha-image-container {
+      background: #1a1a1a;
+
+      .loading-placeholder {
+        background: #2a2a2a;
+
+        .loading-text {
+          color: #ccc;
+        }
+      }
+
+      .refresh-btn {
+        background: rgba(255, 255, 255, 0.2);
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+      }
+    }
+
+    .slider-container {
+      background: #2a2a2a;
+
+      .slider-track {
+        background: #1a1a1a;
+
+        .track-bg {
+          background: #3a3a3a;
+        }
+
+        .slider-text {
+          color: #ccc;
+        }
+
+        .slider-button {
+          background: #2a2a2a;
+          border-color: #1890ff;
+          color: #1890ff;
+        }
+      }
+    }
+
+    .debug-info {
+      background: #1a1a1a;
+      border-color: #3a3a3a;
+
+      .debug-text {
+        color: #ccc;
+      }
+    }
+  }
+}
+
+// 禁用状态
+.slider-captcha.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+
+  .slider-button {
+    cursor: not-allowed;
+  }
+}
+
+// 加载状态
+.slider-captcha.loading {
+  .captcha-image-container {
+    .background-image {
+      opacity: 0.5;
+    }
+  }
+
+  .slider-container {
+    pointer-events: none;
+  }
+}

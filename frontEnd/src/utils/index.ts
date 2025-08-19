@@ -1,4 +1,5 @@
 import {
+// 移除循环导入
   showLoading as taroShowLoading,
   hideLoading as taroHideLoading,
   showModal as taroShowModal
@@ -212,7 +213,7 @@ export const calculateDistance = (
 // 显示提示信息
 export const showToast = (title: string, icon: 'success' | 'error' | 'loading' | 'none' = 'none') => {
   console.log(`Toast: ${title} (${icon})`)
-  // Taro.showToast({
+  // showToast({
   //   title,
   //   icon: icon === 'error' ? 'none' : icon,
   //   duration: 2000

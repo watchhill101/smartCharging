@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import Taro from '@tarojs/taro'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import './CitySelector.scss'
+import { showToast } from '../utils/toast'
 
 interface CitySelectorProps {
   currentCity: string
@@ -13,7 +14,7 @@ interface CitySelectorProps {
 // 安全 Toast 调用
 function showToast(params: { title: string; icon?: 'none' | 'success' | 'error'; duration?: number }) {
   try {
-    if (typeof Taro?.showToast === 'function') return Taro.showToast(params)
+    if (typeof Taro?.showToast === 'function') return showToast(params)
   } catch {}
   console.warn('[Toast]', params.title)
 }

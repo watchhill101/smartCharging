@@ -5,12 +5,13 @@ import './index.scss'
 // 引入自定义图标字体
 import '../../assets/icons/ChangeIt/iconfont.css'
 import { AIService } from '../../utils/aiService'
+import { showToast } from '../utils/toast'
 
 // 安全的 Taro API 调用
 const showToast = (options: any) => {
   try {
     if (Taro.showToast && typeof Taro.showToast === 'function') {
-      Taro.showToast(options)
+      showToast(options)
     } else {
       console.log('Toast:', options.title)
     }

@@ -1,22 +1,29 @@
 // Taro 浏览器环境兼容层
 import Taro from '@tarojs/taro'
+// 移除循环导入
 
 // 检测当前运行环境
 const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined'
 const isWeapp = typeof wx !== 'undefined' && wx.getSystemInfoSync
 const isAlipay = typeof my !== 'undefined' && my.getSystemInfoSync
+const isH5 = process.env.TARO_ENV === 'h5'
 
-console.log('🌐 运行环境检测:', { isBrowser, isWeapp, isAlipay })
+console.log('🌐 运行环境检测:', { isBrowser, isWeapp, isAlipay, isH5 })
 
 // Storage 兼容实现
 export const storage = {
   // 同步获取存储
   getSync: (key: string): string => {
     try {
-      if (isBrowser) {
+      if (isBrowser || isH5) {
         return localStorage.getItem(key) || ''
       }
-      return Taro.getStorageSync(key)
+      // 检查 Taro.getStorageSync 是否存在
+      if (typeof Taro.getStorageSync === 'function') {
+        return TaroSafe.getStorageSync(key)
+      }
+      // 降级到 localStorage
+      return localStorage.getItem(key) || ''
     } catch (error) {
       console.warn(`获取存储失败 (${key}):`, error)
       return ''
@@ -26,10 +33,13 @@ export const storage = {
   // 同步设置存储
   setSync: (key: string, value: string): void => {
     try {
-      if (isBrowser) {
+      if (isBrowser || isH5) {
         localStorage.setItem(key, value)
+      } else if (typeof Taro.setStorageSync === 'function') {
+        TaroSafe.setStorageSync(key, value)
       } else {
-        Taro.setStorageSync(key, value)
+        // 降级到 localStorage
+        localStorage.setItem(key, value)
       }
     } catch (error) {
       console.warn(`设置存储失败 (${key}):`, error)
@@ -39,10 +49,14 @@ export const storage = {
   // 异步获取存储
   get: async (key: string): Promise<string> => {
     try {
-      if (isBrowser) {
+      if (isBrowser || isH5) {
         return localStorage.getItem(key) || ''
       }
-      return await Taro.getStorage({ key }).then(res => res.data)
+      if (typeof Taro.getStorage === 'function') {
+        return await Taro.getStorage({ key }).then(res => res.data)
+      }
+      // 降级到 localStorage
+      return localStorage.getItem(key) || ''
     } catch (error) {
       console.warn(`异步获取存储失败 (${key}):`, error)
       return ''
@@ -52,10 +66,13 @@ export const storage = {
   // 异步设置存储
   set: async (key: string, value: string): Promise<void> => {
     try {
-      if (isBrowser) {
+      if (isBrowser || isH5) {
         localStorage.setItem(key, value)
-      } else {
+      } else if (typeof Taro.setStorage === 'function') {
         await Taro.setStorage({ key, data: value })
+      } else {
+        // 降级到 localStorage
+        localStorage.setItem(key, value)
       }
     } catch (error) {
       console.warn(`异步设置存储失败 (${key}):`, error)
@@ -65,10 +82,13 @@ export const storage = {
   // 删除存储
   remove: async (key: string): Promise<void> => {
     try {
-      if (isBrowser) {
+      if (isBrowser || isH5) {
         localStorage.removeItem(key)
-      } else {
+      } else if (typeof Taro.removeStorage === 'function') {
         await Taro.removeStorage({ key })
+      } else {
+        // 降级到 localStorage
+        localStorage.removeItem(key)
       }
     } catch (error) {
       console.warn(`删除存储失败 (${key}):`, error)
@@ -78,10 +98,13 @@ export const storage = {
   // 清空存储
   clear: async (): Promise<void> => {
     try {
-      if (isBrowser) {
+      if (isBrowser || isH5) {
         localStorage.clear()
-      } else {
+      } else if (typeof Taro.clearStorage === 'function') {
         await Taro.clearStorage()
+      } else {
+        // 降级到 localStorage
+        localStorage.clear()
       }
     } catch (error) {
       console.warn('清空存储失败:', error)
@@ -100,16 +123,19 @@ export const toast = {
     const { title, icon = 'none', duration = 2000 } = options
 
     try {
-      if (isBrowser) {
+      if (isBrowser || isH5) {
         // 浏览器环境使用自定义 Toast
         showBrowserToast(title, icon, duration)
-      } else {
+      } else if (typeof Taro.showToast === 'function') {
         // 小程序环境使用原生 Toast
-        Taro.showToast({
+        showToast({
           title,
           icon,
           duration
         })
+      } else {
+        // 降级到自定义 Toast
+        showBrowserToast(title, icon, duration)
       }
     } catch (error) {
       console.warn('显示Toast失败:', error)
@@ -120,10 +146,12 @@ export const toast = {
 
   hide: (): void => {
     try {
-      if (isBrowser) {
+      if (isBrowser || isH5) {
         hideBrowserToast()
-      } else {
+      } else if (typeof Taro.hideToast === 'function') {
         Taro.hideToast()
+      } else {
+        hideBrowserToast()
       }
     } catch (error) {
       console.warn('隐藏Toast失败:', error)
@@ -241,7 +269,7 @@ export const request = async (options: {
   const { url, method = 'GET', data, header = {} } = options
 
   try {
-    if (isBrowser) {
+    if (isBrowser || isH5) {
       // 浏览器环境使用 fetch
       const fetchOptions: RequestInit = {
         method,
@@ -263,7 +291,7 @@ export const request = async (options: {
         statusCode: response.status,
         header: response.headers
       }
-    } else {
+    } else if (typeof Taro.request === 'function') {
       // 小程序环境使用 Taro.request
       return await Taro.request({
         url,
@@ -271,6 +299,28 @@ export const request = async (options: {
         data,
         header
       })
+    } else {
+      // 降级到 fetch
+      const fetchOptions: RequestInit = {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          ...header
+        }
+      }
+
+      if (data && method !== 'GET') {
+        fetchOptions.body = JSON.stringify(data)
+      }
+
+      const response = await fetch(url, fetchOptions)
+      const result = await response.json()
+
+      return {
+        data: result,
+        statusCode: response.status,
+        header: response.headers
+      }
     }
   } catch (error) {
     console.error('请求失败:', error)
@@ -295,7 +345,23 @@ export const TaroCompat = {
   ENV: {
     isBrowser,
     isWeapp,
-    isAlipay
+    isAlipay,
+    isH5
+  },
+
+  // 安全的API调用
+  safeCall: (apiName: string, ...args: any[]) => {
+    try {
+      if (typeof Taro[apiName] === 'function') {
+        return Taro[apiName](...args)
+      } else {
+        console.warn(`Taro.${apiName} 不可用，跳过调用`)
+        return Promise.resolve()
+      }
+    } catch (error) {
+      console.warn(`调用 Taro.${apiName} 失败:`, error)
+      return Promise.resolve()
+    }
   }
 }
 

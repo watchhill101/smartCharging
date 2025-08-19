@@ -1,0 +1,525 @@
+.charging-control {
+  padding: 16px;
+  background: #f5f5f5;
+
+  // 状态卡片
+  .status-card {
+    margin-bottom: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .status-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+
+      .status-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .status-icon {
+          font-size: 20px;
+        }
+      }
+
+      .session-info {
+        text-align: right;
+
+        .session-id {
+          font-size: 12px;
+          color: #666;
+          display: block;
+          margin-bottom: 4px;
+        }
+
+        .duration {
+          font-size: 14px;
+          color: #333;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .progress-section {
+      .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+
+        .progress-label {
+          font-size: 14px;
+          color: #666;
+        }
+
+        .progress-value {
+          font-size: 18px;
+          font-weight: 600;
+          color: #52c41a;
+        }
+      }
+
+      .progress-bar {
+        margin-bottom: 8px;
+        height: 8px;
+      }
+
+      .estimated-time {
+        font-size: 12px;
+        color: #1890ff;
+        text-align: center;
+        display: block;
+      }
+    }
+
+    .warnings {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #f0f0f0;
+
+      .warning-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 6px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .warning-text {
+          font-size: 12px;
+          color: #faad14;
+        }
+      }
+    }
+  }
+
+  // 数据卡片
+  .data-card {
+    margin-bottom: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .data-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+
+      .data-item {
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        text-align: center;
+
+        .data-label {
+          font-size: 12px;
+          color: #666;
+          margin-bottom: 6px;
+          display: block;
+        }
+
+        .data-value {
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 4px;
+          display: block;
+
+          &.power {
+            color: #1890ff;
+          }
+
+          &.energy {
+            color: #52c41a;
+          }
+
+          &.cost {
+            color: #fa541c;
+          }
+
+          &.soc {
+            color: #722ed1;
+          }
+        }
+
+        .data-target {
+          font-size: 10px;
+          color: #999;
+        }
+
+        .power-bar {
+          margin-top: 6px;
+        }
+      }
+    }
+  }
+
+  // 控制区域
+  .control-section {
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .control-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+
+      .nut-button {
+        height: 48px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+      }
+
+      .pause-btn {
+        background: #faad14;
+        border-color: #faad14;
+      }
+
+      .stop-btn {
+        background: #ff4d4f;
+        border-color: #ff4d4f;
+      }
+
+      .resume-btn {
+        background: #52c41a;
+        border-color: #52c41a;
+      }
+
+      .settings-btn {
+        background: #f5f5f5;
+        border-color: #d9d9d9;
+        color: #666;
+      }
+    }
+
+    .emergency-section {
+      text-align: center;
+      padding: 16px;
+      background: #fff2f0;
+      border: 1px solid #ffccc7;
+      border-radius: 8px;
+
+      .emergency-btn {
+        background: #ff4d4f;
+        border-color: #ff4d4f;
+        color: #fff;
+        margin-bottom: 8px;
+      }
+
+      .emergency-tip {
+        font-size: 12px;
+        color: #ff4d4f;
+        line-height: 1.4;
+      }
+    }
+
+    .processing-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px;
+      background: #e6f7ff;
+      border-radius: 6px;
+      margin-top: 12px;
+
+      .processing-text {
+        font-size: 14px;
+        color: #1890ff;
+      }
+    }
+  }
+
+  // 对话框内容
+  .stop-dialog-content {
+    .dialog-text {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.4;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .reason-section {
+      .reason-label {
+        font-size: 14px;
+        color: #333;
+        font-weight: 500;
+        margin-bottom: 12px;
+        display: block;
+      }
+
+      .nut-radio-group {
+        .nut-radio {
+          margin-bottom: 8px;
+          
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .emergency-dialog-content {
+    .dialog-text {
+      font-size: 14px;
+      line-height: 1.4;
+      margin-bottom: 12px;
+      display: block;
+
+      &.warning {
+        color: #ff4d4f;
+        font-weight: 500;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+        color: #666;
+      }
+    }
+  }
+
+  // 设置弹窗
+  .settings-popup {
+    .settings-content {
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px 12px 0 0;
+
+      .settings-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f0f0f0;
+
+        .settings-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: #333;
+        }
+      }
+
+      .settings-form {
+        .form-item {
+          margin-bottom: 16px;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          &.switch-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+
+          .form-label {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+          }
+
+          .nut-input {
+            width: 100%;
+          }
+        }
+      }
+
+      .settings-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid #f0f0f0;
+
+        .nut-button {
+          flex: 1;
+          height: 44px;
+        }
+      }
+    }
+  }
+}
+
+// 响应式适配
+@media (max-width: 375px) {
+  .charging-control {
+    padding: 12px;
+
+    .data-card {
+      .data-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+    }
+
+    .control-section {
+      .control-buttons {
+        .nut-button {
+          height: 44px;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+
+// 深色模式适配
+@media (prefers-color-scheme: dark) {
+  .charging-control {
+    background: #1a1a1a;
+
+    .status-card,
+    .data-card {
+      background: #2a2a2a;
+      color: #fff;
+    }
+
+    .card-title,
+    .section-title {
+      color: #fff;
+    }
+
+    .session-info {
+      .session-id {
+        color: #ccc;
+      }
+
+      .duration {
+        color: #fff;
+      }
+    }
+
+    .data-item {
+      background: #3a3a3a;
+
+      .data-label {
+        color: #ccc;
+      }
+    }
+
+    .settings-btn {
+      background: #3a3a3a;
+      border-color: #4a4a4a;
+      color: #ccc;
+    }
+
+    .emergency-section {
+      background: #2a1f1f;
+      border-color: #4a3333;
+    }
+
+    .processing-status {
+      background: #1f2a3a;
+    }
+
+    .settings-popup {
+      .settings-content {
+        background: #2a2a2a;
+        color: #fff;
+
+        .settings-header {
+          border-bottom-color: #4a4a4a;
+
+          .settings-title {
+            color: #fff;
+          }
+        }
+
+        .form-item {
+          .form-label {
+            color: #fff;
+          }
+        }
+
+        .settings-actions {
+          border-top-color: #4a4a4a;
+        }
+      }
+    }
+  }
+}
+
+// 横屏适配
+@media (orientation: landscape) {
+  .charging-control {
+    .data-card {
+      .data-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .control-section {
+      .control-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        .nut-button {
+          flex: 1;
+          min-width: 120px;
+        }
+      }
+    }
+  }
+}
+
+// 动画效果
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.charging-control {
+  .processing-status {
+    .nut-icon {
+      animation: pulse 1.5s infinite;
+    }
+  }
+
+  .emergency-btn {
+    transition: all 0.2s ease;
+
+    &:active {
+      transform: scale(0.95);
+      background: #d9363e;
+    }
+  }
+
+  .control-buttons {
+    .nut-button {
+      transition: all 0.2s ease;
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+}

@@ -1,0 +1,587 @@
+.station-detail {
+  background: #f5f5f5;
+  min-height: 100vh;
+
+  &.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+
+    .loading-text {
+      margin-top: 16px;
+      color: #666;
+      font-size: 14px;
+    }
+  }
+
+  &.error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+
+    .error-text {
+      color: #999;
+      font-size: 16px;
+    }
+  }
+
+  .detail-scroll {
+    height: 100vh;
+    background: #f5f5f5;
+  }
+
+  // 充电站图片轮播
+  .station-images {
+    position: relative;
+    height: 200px;
+    background: #fff;
+
+    .images-swiper {
+      height: 100%;
+
+      .station-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .image-indicator {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+  }
+
+  // 充电站基本信息
+  .station-info {
+    background: #fff;
+    padding: 16px;
+    margin-bottom: 8px;
+
+    .info-header {
+      margin-bottom: 12px;
+
+      .station-title {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+
+        .station-name {
+          font-size: 18px;
+          font-weight: 600;
+          color: #333;
+          margin-right: 8px;
+        }
+
+        .verified-tag {
+          flex-shrink: 0;
+        }
+      }
+
+      .station-rating {
+        display: flex;
+        align-items: center;
+
+        .rating-stars {
+          margin-right: 8px;
+        }
+
+        .rating-text {
+          font-size: 14px;
+          color: #666;
+        }
+      }
+    }
+
+    .info-content {
+      .station-address,
+      .operator-name,
+      .distance-info {
+        display: block;
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 8px;
+        line-height: 1.4;
+      }
+
+      .station-status {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #f0f0f0;
+
+        .pile-status {
+          margin-bottom: 8px;
+
+          .status-text {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+            display: block;
+          }
+
+          .availability-progress {
+            height: 6px;
+          }
+        }
+
+        .open-status {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .open-text {
+            font-size: 14px;
+            font-weight: 500;
+
+            &.open {
+              color: #52c41a;
+            }
+
+            &.closed {
+              color: #ff4d4f;
+            }
+          }
+
+          .open-time {
+            font-size: 12px;
+            color: #999;
+          }
+        }
+      }
+    }
+  }
+
+  // 操作按钮
+  .action-buttons {
+    display: flex;
+    gap: 12px;
+    padding: 0 16px 16px;
+
+    .nav-btn {
+      flex: 2;
+    }
+
+    .favorite-btn {
+      flex: 1;
+    }
+  }
+
+  // 充电桩列表
+  .charging-piles {
+    background: #fff;
+    padding: 16px;
+    margin-bottom: 8px;
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+
+      .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .pile-count {
+        font-size: 12px;
+        color: #999;
+      }
+    }
+
+    .piles-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+
+      .pile-card {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 12px;
+        position: relative;
+        transition: all 0.2s ease;
+
+        &:active {
+          transform: scale(0.98);
+          background: #f0f1f2;
+        }
+
+        &.available {
+          border-color: #52c41a;
+          background: #f6ffed;
+        }
+
+        &.occupied {
+          border-color: #faad14;
+          background: #fffbe6;
+        }
+
+        &.offline,
+        &.maintenance {
+          border-color: #d9d9d9;
+          background: #f5f5f5;
+          opacity: 0.7;
+        }
+
+        .pile-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+
+          .pile-number {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+          }
+
+          .pile-status {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+
+            .status-icon {
+              margin-right: 2px;
+            }
+          }
+        }
+
+        .pile-info {
+          display: flex;
+          align-items: center;
+          margin-bottom: 8px;
+
+          .pile-type {
+            margin-right: 8px;
+          }
+
+          .pile-power {
+            font-size: 12px;
+            color: #666;
+          }
+        }
+
+        .pile-price {
+          margin-bottom: 8px;
+
+          .price-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fa2c19;
+          }
+        }
+
+        .pile-connectors {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+          margin-bottom: 8px;
+
+          .connector-tag {
+            font-size: 10px;
+          }
+        }
+
+        .start-charging-btn {
+          width: 100%;
+          margin-top: 8px;
+        }
+      }
+    }
+  }
+
+  // 服务设施
+  .station-services {
+    background: #fff;
+    padding: 16px;
+    margin-bottom: 8px;
+
+    .section-header {
+      margin-bottom: 16px;
+
+      .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+      }
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+
+      .service-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+
+        .service-icon {
+          font-size: 24px;
+          margin-bottom: 4px;
+        }
+
+        .service-label {
+          font-size: 12px;
+          color: #666;
+        }
+      }
+    }
+  }
+
+  // 价格信息、联系信息等通用样式
+  .price-info,
+  .contact-info,
+  .user-reviews,
+  .station-description,
+  .station-stats,
+  .report-section {
+    background: #fff;
+    padding: 16px;
+    margin-bottom: 8px;
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+
+      .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .rate-btn {
+        font-size: 12px;
+      }
+    }
+  }
+
+  // 联系信息特殊样式
+  .contact-info {
+    .contact-cell {
+      cursor: pointer;
+
+      &:active {
+        background: #f5f5f5;
+      }
+
+      &.emergency {
+        .nut-cell__title {
+          color: #ff4d4f;
+        }
+      }
+    }
+  }
+
+  // 用户评价
+  .user-reviews {
+    .rating-distribution {
+      .rating-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+
+        .rating-label {
+          width: 40px;
+          font-size: 12px;
+          color: #666;
+        }
+
+        .rating-progress {
+          flex: 1;
+          margin: 0 12px;
+          height: 6px;
+        }
+
+        .rating-count {
+          width: 30px;
+          text-align: right;
+          font-size: 12px;
+          color: #666;
+        }
+      }
+    }
+  }
+
+  // 充电站描述
+  .station-description {
+    .description-text {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+    }
+  }
+
+  // 统计信息
+  .station-stats {
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+
+      .stat-item {
+        text-align: center;
+        padding: 16px;
+        background: #f8f9fa;
+        border-radius: 8px;
+
+        .stat-value {
+          display: block;
+          font-size: 20px;
+          font-weight: 600;
+          color: #1890ff;
+          margin-bottom: 4px;
+        }
+
+        .stat-label {
+          font-size: 12px;
+          color: #666;
+        }
+      }
+    }
+  }
+
+  // 问题反馈
+  .report-section {
+    .report-btn {
+      width: 100%;
+    }
+  }
+}
+
+// 弹窗样式
+.rating-popup {
+  .rating-content {
+    padding: 24px;
+    text-align: center;
+
+    .rating-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .rating-input {
+      margin-bottom: 24px;
+    }
+
+    .rating-actions {
+      display: flex;
+      gap: 12px;
+
+      .nut-button {
+        flex: 1;
+      }
+    }
+  }
+}
+
+.pile-detail-popup {
+  .pile-detail {
+    padding: 16px;
+
+    .pile-detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+
+      .pile-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+      }
+    }
+
+    .pile-actions {
+      margin-top: 16px;
+    }
+  }
+}
+
+// 响应式适配
+@media (max-width: 375px) {
+  .station-detail {
+    .charging-piles {
+      .piles-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .station-services {
+      .services-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .station-stats {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}
+
+// 深色模式适配
+@media (prefers-color-scheme: dark) {
+  .station-detail {
+    background: #1a1a1a;
+
+    .station-info,
+    .charging-piles,
+    .station-services,
+    .price-info,
+    .contact-info,
+    .user-reviews,
+    .station-description,
+    .station-stats,
+    .report-section {
+      background: #2a2a2a;
+      color: #fff;
+
+      .section-title {
+        color: #fff;
+      }
+    }
+
+    .charging-piles {
+      .pile-card {
+        background: #3a3a3a;
+        border-color: #4a4a4a;
+        color: #fff;
+
+        &.available {
+          background: #1f3a1f;
+          border-color: #52c41a;
+        }
+
+        &.occupied {
+          background: #3a2f1f;
+          border-color: #faad14;
+        }
+      }
+    }
+
+    .station-stats {
+      .stat-item {
+        background: #3a3a3a;
+        color: #fff;
+      }
+    }
+  }
+}

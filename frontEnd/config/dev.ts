@@ -23,7 +23,7 @@ export default {
       cors: true,       // 启用CORS
       https: {
         key: fs.readFileSync(path.join(__dirname, '../cert/key.pem')),
-        cert: fs.readFileSync(path.join(__dirname, '../cert/cert.pem'))
+        cert:fs.readFileSync(path.join(__dirname, '../cert/cert.pem'))
       },
       proxy: {
         "/v1_0/auth": {

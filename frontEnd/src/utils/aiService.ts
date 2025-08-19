@@ -271,6 +271,8 @@ export class AIService {
       return errorResponses.quota
     }
 
-    return `${errorResponses.default}\n\n如需帮助，请联系人工客服：19503102993`
+    return `${errorResponses.default}
+
+如需帮助，请联系人工客服：19503102993`
   }
 }

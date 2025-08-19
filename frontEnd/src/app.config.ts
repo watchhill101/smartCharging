@@ -7,7 +7,11 @@ export default {
     'pages/charging/index',
     'pages/profile/index',
     'pages/aiserver/index',  // 新增 Ai客服 页面
-    'pages/scan/index'
+    'pages/help/index',      // 新增帮助中心页面
+    'pages/feedback/index',  // 新增意见反馈页面
+    'pages/coupons/index',   // 新增优惠券页面
+    'pages/scan/index',
+    'pages/stationDetail/index'  // 新增充电站详情页面
   ],
   window: {
     backgroundTextStyle: "light",

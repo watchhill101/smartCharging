@@ -1,0 +1,433 @@
+.qr-scanner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+
+  // 扫描器头部
+  .scanner-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    position: relative;
+    z-index: 10;
+
+    .header-left,
+    .header-right {
+      width: 60px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .header-center {
+      flex: 1;
+      text-align: center;
+
+      .scanner-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+      }
+    }
+
+    .close-btn,
+    .flashlight-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 14px;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+
+    .flashlight-btn.nut-button--primary {
+      background: #1890ff;
+      border-color: #1890ff;
+    }
+  }
+
+  // 扫描内容区域
+  .scanner-content {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .camera-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+
+      .camera-view {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .scan-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.5);
+
+        .scan-area {
+          position: relative;
+          border: 2px solid #00ff00;
+          border-radius: 8px;
+          background: transparent;
+
+          .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff00, transparent);
+            animation: scanLine 2s linear infinite;
+          }
+
+          .corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #00ff00;
+
+            &.corner-top-left {
+              top: -3px;
+              left: -3px;
+              border-right: none;
+              border-bottom: none;
+            }
+
+            &.corner-top-right {
+              top: -3px;
+              right: -3px;
+              border-left: none;
+              border-bottom: none;
+            }
+
+            &.corner-bottom-left {
+              bottom: -3px;
+              left: -3px;
+              border-right: none;
+              border-top: none;
+            }
+
+            &.corner-bottom-right {
+              bottom: -3px;
+              right: -3px;
+              border-left: none;
+              border-top: none;
+            }
+          }
+        }
+      }
+    }
+
+    .error-container,
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      color: #fff;
+
+      .error-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+
+      .error-text,
+      .loading-text {
+        font-size: 16px;
+        color: #fff;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .rescan-btn {
+        background: #1890ff;
+        border-color: #1890ff;
+        color: #fff;
+      }
+    }
+  }
+
+  // 提示文字
+  .scanner-tip {
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.8);
+    text-align: center;
+
+    .tip-text {
+      font-size: 14px;
+      color: #ccc;
+      line-height: 1.4;
+    }
+  }
+
+  // 底部操作栏
+  .scanner-actions {
+    display: flex;
+    gap: 16px;
+    padding: 20px 16px;
+    background: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+
+    .action-btn {
+      flex: 1;
+      max-width: 120px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      border-radius: 20px;
+      padding: 12px 16px;
+      font-size: 14px;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+  }
+}
+
+// 手动输入弹窗
+.manual-input-popup {
+  .manual-input-content {
+    padding: 24px;
+    background: #fff;
+
+    .input-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .manual-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #d9d9d9;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      background: #fff;
+
+      &:focus {
+        border-color: #1890ff;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      }
+    }
+
+    .input-actions {
+      display: flex;
+      gap: 12px;
+
+      .input-cancel-btn,
+      .input-confirm-btn {
+        flex: 1;
+        padding: 12px 16px;
+        border-radius: 6px;
+        font-size: 16px;
+      }
+
+      .input-cancel-btn {
+        background: #f5f5f5;
+        border-color: #d9d9d9;
+        color: #666;
+      }
+
+      .input-confirm-btn {
+        background: #1890ff;
+        border-color: #1890ff;
+        color: #fff;
+      }
+    }
+  }
+}
+
+// 扫描线动画
+@keyframes scanLine {
+  0% {
+    top: 0;
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    top: calc(100% - 2px);
+    opacity: 0;
+  }
+}
+
+// 响应式适配
+@media (max-width: 375px) {
+  .qr-scanner {
+    .scanner-header {
+      padding: 10px 12px;
+
+      .scanner-title {
+        font-size: 14px;
+      }
+
+      .close-btn,
+      .flashlight-btn {
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+    }
+
+    .scanner-content {
+      .scan-overlay {
+        .scan-area {
+          width: 180px !important;
+          height: 180px !important;
+
+          .corner {
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+    }
+
+    .scanner-tip {
+      padding: 12px;
+
+      .tip-text {
+        font-size: 12px;
+      }
+    }
+
+    .scanner-actions {
+      padding: 16px 12px;
+      gap: 12px;
+
+      .action-btn {
+        padding: 10px 12px;
+        font-size: 12px;
+      }
+    }
+  }
+
+  .manual-input-popup {
+    .manual-input-content {
+      padding: 20px;
+
+      .input-title {
+        font-size: 14px;
+      }
+
+      .manual-input {
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+
+      .input-actions {
+        .input-cancel-btn,
+        .input-confirm-btn {
+          padding: 10px 12px;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+
+// 深色模式适配
+@media (prefers-color-scheme: dark) {
+  .manual-input-popup {
+    .manual-input-content {
+      background: #2a2a2a;
+
+      .input-title {
+        color: #fff;
+      }
+
+      .manual-input {
+        background: #3a3a3a;
+        border-color: #4a4a4a;
+        color: #fff;
+
+        &::placeholder {
+          color: #999;
+        }
+
+        &:focus {
+          border-color: #1890ff;
+          box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+      }
+
+      .input-actions {
+        .input-cancel-btn {
+          background: #3a3a3a;
+          border-color: #4a4a4a;
+          color: #ccc;
+        }
+      }
+    }
+  }
+}
+
+// 横屏适配
+@media (orientation: landscape) {
+  .qr-scanner {
+    .scanner-content {
+      .scan-overlay {
+        .scan-area {
+          width: 150px !important;
+          height: 150px !important;
+        }
+      }
+    }
+
+    .scanner-actions {
+      flex-direction: row;
+      padding: 12px 16px;
+    }
+  }
+}
+
+// 安全区域适配
+@supports (padding: max(0px)) {
+  .qr-scanner {
+    .scanner-header {
+      padding-top: max(12px, env(safe-area-inset-top));
+    }
+
+    .scanner-actions {
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+  }
+}

@@ -1,0 +1,616 @@
+.station-list {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
+  
+  .list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    
+    .total-count {
+      font-size: 14px;
+      color: #666;
+      font-weight: 500;
+    }
+    
+    .location-info {
+      font-size: 13px;
+      color: #999;
+    }
+  }
+  
+  .pull-refresh {
+    flex: 1;
+    
+    .nut-pull-refresh {
+      height: 100%;
+    }
+  }
+  
+  .station-scroll {
+    height: 100%;
+    
+    .station-item {
+      display: flex;
+      background: #fff;
+      margin-bottom: 8px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s ease;
+      
+      &:active {
+        transform: scale(0.98);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      }
+      
+      &.skeleton-item {
+        padding: 16px;
+        
+        .nut-skeleton {
+          .nut-skeleton-content {
+            .nut-skeleton-block {
+              background: #f0f0f0;
+              border-radius: 4px;
+            }
+          }
+        }
+      }
+      
+      .station-image {
+        width: 100px;
+        height: 120px;
+        flex-shrink: 0;
+        
+        .image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+      
+      .station-content {
+        flex: 1;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        
+        .station-header {
+          margin-bottom: 8px;
+          
+          .station-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+            
+            .station-name {
+              flex: 1;
+              font-size: 16px;
+              font-weight: 600;
+              color: #333;
+              line-height: 1.3;
+              margin-right: 8px;
+            }
+            
+            .favorite-btn {
+              font-size: 18px;
+              padding: 4px;
+              border-radius: 50%;
+              transition: all 0.2s ease;
+              
+              &:active {
+                transform: scale(1.2);
+              }
+              
+              &.favorited {
+                animation: heartbeat 0.6s ease-in-out;
+              }
+            }
+          }
+          
+          .station-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            
+            .operator-name {
+              font-size: 13px;
+              color: #666;
+            }
+            
+            .distance {
+              font-size: 13px;
+              color: #fa2c19;
+              font-weight: 500;
+            }
+          }
+        }
+        
+        .station-address {
+          font-size: 14px;
+          color: #666;
+          line-height: 1.4;
+          margin-bottom: 12px;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        
+        .pile-status {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+          
+          .pile-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            
+            .pile-count {
+              font-size: 14px;
+              font-weight: 600;
+            }
+            
+            .status-indicator {
+              width: 8px;
+              height: 8px;
+              border-radius: 50%;
+            }
+          }
+          
+          .station-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            
+            .rating-text {
+              font-size: 13px;
+              color: #faad14;
+              font-weight: 500;
+            }
+            
+            .rating-count {
+              font-size: 12px;
+              color: #999;
+            }
+          }
+        }
+        
+        .price-info {
+          margin-bottom: 8px;
+          
+          .price-tag {
+            background: #f6ffed;
+            color: #52c41a;
+            border-color: #d9f7be;
+            font-weight: 500;
+          }
+        }
+        
+        .services {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin-bottom: 12px;
+          
+          .service-tag {
+            background: #f0f0f0;
+            color: #666;
+            border-color: #d9d9d9;
+            font-size: 11px;
+            padding: 2px 6px;
+          }
+          
+          .expand-tag {
+            background: #fa2c19;
+            color: #fff;
+            border-color: #fa2c19;
+            font-size: 11px;
+            padding: 2px 6px;
+          }
+        }
+        
+        .station-actions {
+          display: flex;
+          gap: 8px;
+          margin-top: auto;
+          
+          .nav-btn {
+            background: #fa2c19;
+            border-color: #fa2c19;
+            color: #fff;
+            border-radius: 16px;
+            padding: 6px 12px;
+            font-size: 13px;
+            
+            &:active {
+              background: #e02418;
+            }
+          }
+          
+          .detail-btn {
+            background: #f5f5f5;
+            color: #666;
+            border: 1px solid #e8e8e8;
+            border-radius: 16px;
+            padding: 6px 12px;
+            font-size: 13px;
+            
+            &:active {
+              background: #e8e8e8;
+            }
+          }
+        }
+      }
+    }
+    
+    .infinite-loading {
+      .loading-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        
+        .nut-loading {
+          margin-bottom: 8px;
+          color: #fa2c19;
+        }
+        
+        .loading-text {
+          font-size: 14px;
+          color: #666;
+        }
+        
+        .load-more-text {
+          font-size: 14px;
+          color: #999;
+        }
+        
+        .no-more-text {
+          font-size: 14px;
+          color: #ccc;
+        }
+      }
+    }
+    
+    .empty-state {
+      padding: 60px 20px;
+      
+      .nut-empty {
+        .nut-empty-description {
+          color: #999;
+          font-size: 14px;
+          margin-bottom: 16px;
+        }
+      }
+      
+      .refresh-btn {
+        background: #fa2c19;
+        border-color: #fa2c19;
+        border-radius: 20px;
+        
+        &:active {
+          background: #e02418;
+        }
+      }
+    }
+  }
+}
+
+// 心跳动画
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.3);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.3);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+// 响应式设计
+@media (max-width: 375px) {
+  .station-list {
+    .list-header {
+      padding: 10px 12px;
+      
+      .total-count {
+        font-size: 13px;
+      }
+      
+      .location-info {
+        font-size: 12px;
+      }
+    }
+    
+    .station-scroll {
+      .station-item {
+        margin-bottom: 6px;
+        border-radius: 8px;
+        
+        .station-image {
+          width: 80px;
+          height: 100px;
+        }
+        
+        .station-content {
+          padding: 12px;
+          
+          .station-header {
+            margin-bottom: 6px;
+            
+            .station-title {
+              .station-name {
+                font-size: 15px;
+              }
+              
+              .favorite-btn {
+                font-size: 16px;
+              }
+            }
+            
+            .station-info {
+              .operator-name,
+              .distance {
+                font-size: 12px;
+              }
+            }
+          }
+          
+          .station-address {
+            font-size: 13px;
+            margin-bottom: 10px;
+          }
+          
+          .pile-status {
+            margin-bottom: 6px;
+            
+            .pile-info {
+              .pile-count {
+                font-size: 13px;
+              }
+            }
+            
+            .station-rating {
+              .rating-text {
+                font-size: 12px;
+              }
+              
+              .rating-count {
+                font-size: 11px;
+              }
+            }
+          }
+          
+          .price-info {
+            margin-bottom: 6px;
+            
+            .price-tag {
+              font-size: 11px;
+              padding: 2px 6px;
+            }
+          }
+          
+          .services {
+            gap: 4px;
+            margin-bottom: 10px;
+            
+            .service-tag,
+            .expand-tag {
+              font-size: 10px;
+              padding: 1px 4px;
+            }
+          }
+          
+          .station-actions {
+            gap: 6px;
+            
+            .nav-btn,
+            .detail-btn {
+              padding: 4px 8px;
+              font-size: 12px;
+              border-radius: 12px;
+            }
+          }
+        }
+      }
+      
+      .infinite-loading {
+        .loading-content {
+          padding: 16px;
+          
+          .loading-text,
+          .load-more-text,
+          .no-more-text {
+            font-size: 13px;
+          }
+        }
+      }
+      
+      .empty-state {
+        padding: 40px 16px;
+        
+        .nut-empty {
+          .nut-empty-description {
+            font-size: 13px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// 暗色主题支持
+@media (prefers-color-scheme: dark) {
+  .station-list {
+    background: #1f1f1f;
+    
+    .list-header {
+      background: #2a2a2a;
+      border-bottom-color: #333;
+      
+      .total-count {
+        color: #ccc;
+      }
+      
+      .location-info {
+        color: #999;
+      }
+    }
+    
+    .station-scroll {
+      .station-item {
+        background: #2a2a2a;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        
+        .station-content {
+          .station-header {
+            .station-title {
+              .station-name {
+                color: #fff;
+              }
+            }
+            
+            .station-info {
+              .operator-name {
+                color: #ccc;
+              }
+            }
+          }
+          
+          .station-address {
+            color: #ccc;
+          }
+          
+          .pile-status {
+            .station-rating {
+              .rating-count {
+                color: #999;
+              }
+            }
+          }
+          
+          .services {
+            .service-tag {
+              background: #333;
+              color: #ccc;
+              border-color: #555;
+            }
+          }
+          
+          .station-actions {
+            .detail-btn {
+              background: #333;
+              color: #ccc;
+              border-color: #555;
+              
+              &:active {
+                background: #444;
+              }
+            }
+          }
+        }
+      }
+      
+      .infinite-loading {
+        .loading-content {
+          .loading-text,
+          .load-more-text {
+            color: #ccc;
+          }
+          
+          .no-more-text {
+            color: #666;
+          }
+        }
+      }
+      
+      .empty-state {
+        .nut-empty {
+          .nut-empty-description {
+            color: #666;
+          }
+        }
+      }
+    }
+  }
+}
+
+// 动画效果
+.station-list {
+  .station-scroll {
+    .station-item {
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      
+      .station-content {
+        .services {
+          .service-tag,
+          .expand-tag {
+            transition: all 0.2s ease;
+            
+            &:hover {
+              transform: translateY(-1px);
+            }
+          }
+        }
+        
+        .station-actions {
+          .nav-btn,
+          .detail-btn {
+            transition: all 0.2s ease;
+            
+            &:hover {
+              transform: translateY(-1px);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// 滚动条样式
+.station-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.station-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.station-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+
+.station-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+// 加载状态优化
+.station-list {
+  .pull-refresh {
+    .nut-pull-refresh-loading {
+      color: #fa2c19;
+    }
+  }
+}

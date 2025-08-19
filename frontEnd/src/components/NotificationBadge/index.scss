@@ -1,0 +1,182 @@
+.notification-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  .notification-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #f5f5f5;
+    transition: background-color 0.2s ease;
+
+    .icon-text {
+      line-height: 1;
+    }
+
+    .connection-indicator {
+      position: absolute;
+      bottom: -2rpx;
+      right: -2rpx;
+      width: 12rpx;
+      height: 12rpx;
+      border-radius: 50%;
+      border: 2rpx solid #fff;
+
+      &.offline {
+        background-color: #ff4d4f;
+      }
+    }
+  }
+
+  .notification-count {
+    position: absolute;
+    top: -8rpx;
+    right: -8rpx;
+    min-width: 32rpx;
+    height: 32rpx;
+    background-color: #ff4d4f;
+    border-radius: 16rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8rpx;
+    border: 2rpx solid #fff;
+
+    .count-text {
+      font-size: 20rpx;
+      color: #fff;
+      font-weight: 600;
+      line-height: 1;
+      transform: scale(0.9);
+    }
+  }
+
+  // 尺寸变体
+  &--small {
+    .notification-icon {
+      width: 48rpx;
+      height: 48rpx;
+
+      .icon-text {
+        font-size: 24rpx;
+      }
+    }
+
+    .notification-count {
+      min-width: 28rpx;
+      height: 28rpx;
+      top: -6rpx;
+      right: -6rpx;
+
+      .count-text {
+        font-size: 18rpx;
+      }
+    }
+  }
+
+  &--medium {
+    .notification-icon {
+      width: 60rpx;
+      height: 60rpx;
+
+      .icon-text {
+        font-size: 32rpx;
+      }
+    }
+
+    .notification-count {
+      min-width: 32rpx;
+      height: 32rpx;
+      top: -8rpx;
+      right: -8rpx;
+
+      .count-text {
+        font-size: 20rpx;
+      }
+    }
+  }
+
+  &--large {
+    .notification-icon {
+      width: 80rpx;
+      height: 80rpx;
+
+      .icon-text {
+        font-size: 40rpx;
+      }
+    }
+
+    .notification-count {
+      min-width: 36rpx;
+      height: 36rpx;
+      top: -10rpx;
+      right: -10rpx;
+
+      .count-text {
+        font-size: 22rpx;
+      }
+    }
+  }
+
+  // 连接状态
+  &.connected {
+    .notification-icon {
+      &:hover {
+        background-color: #e6f7ff;
+      }
+    }
+  }
+
+  &.disconnected {
+    .notification-icon {
+      background-color: #fff2f0;
+      
+      .icon-text {
+        opacity: 0.6;
+      }
+    }
+  }
+
+  // 动画效果
+  &.has-new-notification {
+    animation: notification-pulse 0.6s ease-in-out;
+  }
+}
+
+@keyframes notification-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+// 响应式适配
+@media (max-width: 750rpx) {
+  .notification-badge {
+    &--large {
+      .notification-icon {
+        width: 70rpx;
+        height: 70rpx;
+
+        .icon-text {
+          font-size: 36rpx;
+        }
+      }
+    }
+  }
+}

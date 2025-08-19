@@ -1,5 +1,6 @@
 import Taro, { useLoad, getCurrentInstance, useDidShow } from '@tarojs/taro'
 import { useMemo, useState } from 'react'
+import { TaroSafe } from '../../utils/taroSafe'
 import Device from './device'
 import './index.scss'
 
@@ -7,9 +8,9 @@ export default function Map() {
 	// 同步读取（storage 优先，其次 query），避免首次渲染时拿不到坐标
 	const initCoord = (() => {
 		try {
-			const cached = Taro.getStorageSync('map_target_coord') as any
+			const cached = TaroSafe.getStorageSync('map_target_coord') as any
 			if (cached && typeof cached.lng === 'number' && typeof cached.lat === 'number') {
-				Taro.removeStorageSync('map_target_coord')
+				TaroSafe.removeStorageSync('map_target_coord')
 				return { lng: cached.lng, lat: cached.lat } as { lng: number; lat: number }
 			}
 		} catch {}
@@ -25,9 +26,9 @@ export default function Map() {
 
 	const initStation = (() => {
 		try {
-			const cached = Taro.getStorageSync('map_target_station') as any
+			const cached = TaroSafe.getStorageSync('map_target_station') as any
 			if (cached && cached.name) {
-				Taro.removeStorageSync('map_target_station')
+				TaroSafe.removeStorageSync('map_target_station')
 				return cached
 			}
 		} catch {}
@@ -45,19 +46,19 @@ export default function Map() {
 		let station = undefined
 		if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
 			try {
-				const cached = Taro.getStorageSync('map_target_coord') as any
+				const cached = TaroSafe.getStorageSync('map_target_coord') as any
 				if (cached && typeof cached.lng === 'number' && typeof cached.lat === 'number') {
 					lng = cached.lng
 					lat = cached.lat
-					Taro.removeStorageSync('map_target_coord')
+					TaroSafe.removeStorageSync('map_target_coord')
 				}
 			} catch {}
 		}
 		try {
-			const cachedStation = Taro.getStorageSync('map_target_station') as any
+			const cachedStation = TaroSafe.getStorageSync('map_target_station') as any
 			if (cachedStation && cachedStation.name) {
 				station = cachedStation
-				Taro.removeStorageSync('map_target_station')
+				TaroSafe.removeStorageSync('map_target_station')
 			}
 		} catch {}
 		

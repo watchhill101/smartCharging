@@ -10,6 +10,7 @@ import FaceVerification from '../../components/FaceVerification';
 import request from '../../utils/request';
 import { STORAGE_KEYS } from '../../utils/constants';
 import './index.scss';
+import { showToast } from '../../utils/toast'
 
 interface UserProfile {
   id: string;
@@ -183,7 +184,7 @@ export default function Profile() {
 
         if (response.data.success) {
           await loadUserProfile();
-          Taro.showToast({
+          showToast({
             title: '人脸验证成功，验证级别已提升',
             icon: 'success',
             duration: 3000
@@ -192,7 +193,7 @@ export default function Profile() {
       }
     } catch (error: any) {
       console.error('更新验证级别失败:', error);
-      Taro.showToast({ title: '验证成功但级别更新失败', icon: 'none' });
+      showToast({ title: '验证成功但级别更新失败', icon: 'none' });
     }
   };
 
@@ -200,7 +201,7 @@ export default function Profile() {
     console.error('人脸验证失败:', error);
     setFaceVerificationStatus('failed');
     setShowFaceVerification(false);
-    Taro.showToast({ title: error, icon: 'error' });
+    showToast({ title: error, icon: 'error' });
   };
 
   const startFaceVerification = () => {
@@ -209,7 +210,7 @@ export default function Profile() {
   };
 
   const navigateToFunction = (functionName: string) => {
-    Taro.showToast({
+    showToast({
       title: `${functionName}功能开发中`,
       icon: 'none'
     });
@@ -377,6 +378,14 @@ export default function Profile() {
             <View className='function-icon member-icon'>💎</View>
             <Text className='function-label'>充电会员</Text>
           </View>
+          <View className='function-item' onClick={() => {
+            Taro.navigateTo({
+              url: '/pages/coupons/index'
+            })
+          }}>
+            <View className='function-icon coupon-icon'>🎫</View>
+            <Text className='function-label'>我的优惠券</Text>
+          </View>
           <View className='function-item' onClick={() => navigateToFunction('我的车辆')}>
             <View className='function-icon vehicle-icon'>🛵</View>
             <Text className='function-label'>我的车辆</Text>
@@ -385,9 +394,23 @@ export default function Profile() {
             <View className='function-icon settings-icon'>⚙️</View>
             <Text className='function-label'>常用设置</Text>
           </View>
-          <View className='function-item' onClick={() => navigateToFunction('AI客服')}>
+          <View className='function-item' onClick={() => {
+            Taro.navigateTo({
+              url: '/pages/aiserver/index'
+            })
+          }}
+          >
             <View className='function-icon ai-icon'>🤖</View>
             <Text className='function-label'>AI客服</Text>
+          </View>
+          <View className='function-item' onClick={() => {
+            Taro.navigateTo({
+              url: '/pages/help/index'
+            })
+          }}
+          >
+            <View className='function-icon help-icon'>❓</View>
+            <Text className='function-label'>帮助中心</Text>
           </View>
           <View className='function-item' onClick={() => navigateToFunction('头像装扮')}>
             <View className='function-icon avatar-icon'>👑</View>
