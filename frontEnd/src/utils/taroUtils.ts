@@ -182,21 +182,50 @@ export const isTaroApiAvailable = (apiName: string): boolean => {
  */
 export const safeGetStorage = (key: string, defaultValue: any = null): any => {
   try {
+    let result: any = null
+    
     // 优先使用Taro存储
     if (typeof Taro !== 'undefined' && Taro.getStorageSync && typeof Taro.getStorageSync === 'function') {
-      return Taro.getStorageSync(key) || defaultValue
+      result = Taro.getStorageSync(key)
+      if (result !== null && result !== undefined && result !== '') {
+        console.log(`✅ Taro存储读取成功 (${key})`)
+        return result
+      }
     }
     
     // 降级到localStorage
     if (typeof localStorage !== 'undefined') {
-      return localStorage.getItem(key) || defaultValue
+      const storedValue = localStorage.getItem(key)
+      if (storedValue !== null) {
+        try {
+          result = JSON.parse(storedValue)
+          console.log(`✅ localStorage读取成功 (${key}):`, typeof result)
+          return result
+        } catch (parseError) {
+          console.warn(`⚠️ JSON解析失败 (${key}):`, parseError)
+          // 如果解析失败，返回原始字符串
+          return storedValue !== '' ? storedValue : defaultValue
+        }
+      }
     }
     
     // 降级到sessionStorage
     if (typeof sessionStorage !== 'undefined') {
-      return sessionStorage.getItem(key) || defaultValue
+      const storedValue = sessionStorage.getItem(key)
+      if (storedValue !== null) {
+        try {
+          result = JSON.parse(storedValue)
+          console.log(`✅ sessionStorage读取成功 (${key}):`, typeof result)
+          return result
+        } catch (parseError) {
+          console.warn(`⚠️ JSON解析失败 (${key}):`, parseError)
+          // 如果解析失败，返回原始字符串
+          return storedValue !== '' ? storedValue : defaultValue
+        }
+      }
     }
     
+    console.log(`⚠️ 存储中没有找到数据 (${key})，返回默认值`)
     return defaultValue
   } catch (error) {
     console.warn(`⚠️ 存储访问失败 (${key}):`, error)
@@ -215,21 +244,27 @@ export const safeSetStorage = (key: string, value: any): boolean => {
     // 优先使用Taro存储
     if (typeof Taro !== 'undefined' && Taro.setStorageSync && typeof Taro.setStorageSync === 'function') {
       Taro.setStorageSync(key, value)
+      console.log(`✅ Taro存储成功 (${key})`)
       return true
     }
     
     // 降级到localStorage
     if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(key, value)
+      const jsonValue = JSON.stringify(value)
+      localStorage.setItem(key, jsonValue)
+      console.log(`✅ localStorage存储成功 (${key}):`, jsonValue.length, '字符')
       return true
     }
     
     // 降级到sessionStorage
     if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem(key, value)
+      const jsonValue = JSON.stringify(value)
+      sessionStorage.setItem(key, jsonValue)
+      console.log(`✅ sessionStorage存储成功 (${key}):`, jsonValue.length, '字符')
       return true
     }
     
+    console.warn(`⚠️ 没有可用的存储方式 (${key})`)
     return false
   } catch (error) {
     console.warn(`⚠️ 存储设置失败 (${key}):`, error)

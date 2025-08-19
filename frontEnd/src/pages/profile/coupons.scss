@@ -227,6 +227,39 @@
           }
         }
 
+        // 使用按钮样式
+        .use-button-container {
+          margin-top: 20rpx;
+          display: flex;
+          justify-content: center;
+          
+          .use-button {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            padding: 16rpx 32rpx;
+            border-radius: 25rpx;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4rpx 12rpx rgba(76, 175, 80, 0.3);
+            
+            &:hover {
+              transform: translateY(-2rpx);
+              box-shadow: 0 6rpx 16rpx rgba(76, 175, 80, 0.4);
+            }
+            
+            &:active {
+              transform: translateY(0);
+              box-shadow: 0 2rpx 8rpx rgba(76, 175, 80, 0.3);
+            }
+            
+            .use-button-text {
+              color: white;
+              font-size: 28rpx;
+              font-weight: 600;
+              text-align: center;
+            }
+          }
+        }
+
         // 不同类型优惠券的左边框颜色
         &:nth-child(4n + 1) {
           border-left-color: #22c55e; // 绿色
@@ -591,6 +624,100 @@
   }
 }
 
+// 使用确认对话框特殊样式
+.use-confirm-modal {
+  .modal-body {
+    .coupon-preview {
+      background: #f8f9fa;
+      border-radius: 12rpx;
+      padding: 24rpx;
+      margin-bottom: 24rpx;
+      
+      .coupon-preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16rpx;
+        
+        .coupon-preview-title {
+          font-size: 32rpx;
+          font-weight: 600;
+          color: #333;
+        }
+        
+        .coupon-preview-value {
+          .value-text {
+            font-size: 36rpx;
+            font-weight: 700;
+            color: #4CAF50;
+          }
+        }
+      }
+      
+      .coupon-preview-desc {
+        font-size: 28rpx;
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 16rpx;
+      }
+      
+      .coupon-preview-condition {
+        font-size: 24rpx;
+        color: #ff6b47;
+        background: #fff5f5;
+        padding: 8rpx 16rpx;
+        border-radius: 8rpx;
+        display: inline-block;
+        margin-bottom: 16rpx;
+      }
+      
+      .coupon-preview-validity {
+        font-size: 24rpx;
+        color: #999;
+      }
+    }
+    
+    .use-notice {
+      background: #fff3cd;
+      border: 1rpx solid #ffeaa7;
+      border-radius: 8rpx;
+      padding: 20rpx;
+      
+      .notice-title {
+        font-size: 28rpx;
+        font-weight: 600;
+        color: #856404;
+        margin-bottom: 12rpx;
+        display: block;
+      }
+      
+      .notice-text {
+        font-size: 24rpx;
+        color: #856404;
+        line-height: 1.6;
+        margin-bottom: 8rpx;
+        display: block;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+  
+  .modal-footer {
+    .modal-button.confirm.use {
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+      
+      &:hover {
+        background: linear-gradient(135deg, #45a049, #3d8b40);
+        transform: translateY(-1px);
+        box-shadow: 0 4rpx 12rpx rgba(76, 175, 80, 0.3);
+      }
+    }
+  }
+}
+
 /* 响应式适配 */
 @media (max-width: 750px) {
   .coupons-page {
@@ -692,6 +819,16 @@
                 padding: 4rpx 8rpx;
                 border-radius: 8rpx;
               }
+            }
+          }
+
+          // 使用按钮样式
+          .use-button-container {
+            margin-top: 16rpx;
+
+            .use-button {
+              padding: 12rpx 24rpx;
+              font-size: 24rpx;
             }
           }
 
