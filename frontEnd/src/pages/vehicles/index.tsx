@@ -1,6 +1,6 @@
-import { View, Text, Button, ScrollView, Input, Picker, Image } from '@tarojs/components';
+import { View, Text, Button, ScrollView, Input, Picker } from '@tarojs/components';
 import { useState, useEffect } from 'react';
-import Taro, { useLoad, getStorageSync as taroGetStorageSync, showToast, chooseImage } from '@tarojs/taro';
+import Taro, { useLoad, getStorageSync as taroGetStorageSync, showToast } from '@tarojs/taro';
 import request from '../../utils/request';
 import { STORAGE_KEYS } from '../../utils/constants';
 import './index.scss';
@@ -11,7 +11,9 @@ interface Vehicle {
   model: string;
   licensePlate: string;
   batteryCapacity?: number;
-  vehiclePhoto?: string;
+  vehicleUsage?: string;
+  vinCode?: string;
+  isNewEnergy?: boolean;
 }
 
 export default function Vehicles() {
@@ -24,16 +26,26 @@ export default function Vehicles() {
     model: '',
     licensePlate: '',
     batteryCapacity: 60,
-    vehiclePhoto: ''
+    vehicleUsage: '',
+    vinCode: '',
+    isNewEnergy: false
   });
   const [provinceIndex, setProvinceIndex] = useState(0);
-  const [uploadedPhoto, setUploadedPhoto] = useState<string>('');
+  const [plateDigits, setPlateDigits] = useState<string[]>(['', '', '', '', '', '']);
 
   // 省份简称数组
   const provinces = ['京', '津', '沪', '渝', '冀', '豫', '云', '辽', '黑', '湘', '皖', '鲁', '新', '苏', '浙', '赣', '鄂', '桂', '甘', '晋', '蒙', '陕', '吉', '闽', '贵', '粤', '青', '藏', '川', '宁', '琼'];
   
   // 常见车辆品牌
   const vehicleBrands = ['雅迪', '爱玛', '台铃', '绿源', '新日', '小牛', '哈啰', '九号', '立马', '小刀', '其他'];
+
+  // 车辆用途选项
+  const vehicleUsageOptions = [
+    { key: 'ride_hailing', label: '网约车', icon: '🚗' },
+    { key: 'private', label: '私家车', icon: '🚙' },
+    { key: 'taxi', label: '出租车', icon: '🚕' },
+    { key: 'logistics', label: '物流车/商用车', icon: '🚐' }
+  ];
 
   useLoad(() => {
     console.log('🚗 车辆管理页面加载');
@@ -85,33 +97,29 @@ export default function Vehicles() {
     }
   };
 
-  const handleChooseImage = () => {
-    chooseImage({
-      count: 1,
-      sizeType: ['compressed'],
-      sourceType: ['album', 'camera'],
-      success: (res) => {
-        const tempFilePath = res.tempFilePaths[0];
-        setUploadedPhoto(tempFilePath);
-        setNewVehicle({...newVehicle, vehiclePhoto: tempFilePath});
-        showToast({
-          title: '照片已选择',
-          icon: 'success',
-          duration: 1500
-        });
-      },
-      fail: (err) => {
-        console.error('选择图片失败:', err);
-        showToast({
-          title: '选择图片失败',
-          icon: 'error',
-          duration: 2000
-        });
-      }
-    });
+
+
+  const handlePlateDigitChange = (index: number, value: string) => {
+    const newDigits = [...plateDigits];
+    newDigits[index] = value.toUpperCase();
+    setPlateDigits(newDigits);
+    
+    // 自动跳转到下一个输入框
+    if (value && index < 5) {
+      // 这里可以添加自动聚焦下一个输入框的逻辑
+    }
   };
 
   const validateForm = () => {
+    if (!newVehicle.vehicleUsage) {
+      showToast({
+        title: '请选择车辆用途',
+        icon: 'error',
+        duration: 2000
+      });
+      return false;
+    }
+
     if (!newVehicle.brand.trim()) {
       showToast({
         title: '请选择车辆品牌',
@@ -130,20 +138,11 @@ export default function Vehicles() {
       return false;
     }
 
-    if (!newVehicle.licensePlate.trim()) {
+    // 验证车牌号是否完整
+    const isPlateComplete = plateDigits.every(digit => digit.trim() !== '');
+    if (!isPlateComplete) {
       showToast({
-        title: '请输入车牌号',
-        icon: 'error',
-        duration: 2000
-      });
-      return false;
-    }
-
-    // 验证车牌号格式（简单验证）
-    const platePattern = /^[A-Z0-9]{5,6}$/i;
-    if (!platePattern.test(newVehicle.licensePlate)) {
-      showToast({
-        title: '车牌号格式不正确',
+        title: '请输入完整的车牌号',
         icon: 'error',
         duration: 2000
       });
@@ -165,7 +164,7 @@ export default function Vehicles() {
   const handleAddVehicle = async () => {
     if (!validateForm()) return;
 
-    const fullLicensePlate = provinces[provinceIndex] + newVehicle.licensePlate;
+    const fullLicensePlate = provinces[provinceIndex] + plateDigits.join('');
 
     try {
       setIsLoading(true);
@@ -184,7 +183,10 @@ export default function Vehicles() {
         brand: newVehicle.brand.trim(),
         model: newVehicle.model.trim(),
         licensePlate: fullLicensePlate,
-        batteryCapacity: Number(newVehicle.batteryCapacity)
+        batteryCapacity: Number(newVehicle.batteryCapacity),
+        vehicleUsage: newVehicle.vehicleUsage,
+        vinCode: newVehicle.vinCode,
+        isNewEnergy: newVehicle.isNewEnergy
       };
 
       const response = await request({
@@ -229,10 +231,12 @@ export default function Vehicles() {
       model: '',
       licensePlate: '',
       batteryCapacity: 60,
-      vehiclePhoto: ''
+      vehicleUsage: '',
+      vinCode: '',
+      isNewEnergy: false
     });
     setProvinceIndex(0);
-    setUploadedPhoto('');
+    setPlateDigits(['', '', '', '', '', '']);
     setEditingVehicle(null);
   };
 
@@ -243,7 +247,9 @@ export default function Vehicles() {
       model: vehicle.model,
       licensePlate: vehicle.licensePlate.slice(1), // 去掉省份简称
       batteryCapacity: vehicle.batteryCapacity || 60,
-      vehiclePhoto: vehicle.vehiclePhoto || ''
+      vehicleUsage: vehicle.vehicleUsage || '',
+      vinCode: vehicle.vinCode || '',
+      isNewEnergy: vehicle.isNewEnergy || false
     });
     
     // 设置省份索引
@@ -251,7 +257,12 @@ export default function Vehicles() {
     const foundIndex = provinces.indexOf(provinceChar);
     setProvinceIndex(foundIndex !== -1 ? foundIndex : 0);
     
-    setUploadedPhoto(vehicle.vehiclePhoto || '');
+    // 设置车牌号数字
+    const plateNumbers = vehicle.licensePlate.slice(1);
+    const digits = plateNumbers.split('').slice(0, 6);
+    while (digits.length < 6) digits.push('');
+    setPlateDigits(digits);
+    
     setShowAddForm(true);
   };
 
@@ -274,7 +285,10 @@ export default function Vehicles() {
       const vehicleData = {
         brand: newVehicle.brand.trim(),
         model: newVehicle.model.trim(),
-        batteryCapacity: Number(newVehicle.batteryCapacity)
+        batteryCapacity: Number(newVehicle.batteryCapacity),
+        vehicleUsage: newVehicle.vehicleUsage,
+        vinCode: newVehicle.vinCode,
+        isNewEnergy: newVehicle.isNewEnergy
       };
 
       const response = await request({
@@ -396,12 +410,16 @@ export default function Vehicles() {
     <View className='vehicles-page'>
       {/* 头部导航 */}
       <View className='vehicles-header'>
-        <View className='header-nav'>
-          <Button className='back-button' onClick={navigateBack}>
-            ← 返回
-          </Button>
-          <Text className='page-title'>我的车辆</Text>
-          <View className='header-placeholder'></View>
+        <Button className='back-button' onClick={navigateBack}>
+          &lt;
+        </Button>
+        <View className='header-content'>
+          <Text className='page-title'>绑定车辆</Text>
+          <View className='header-controls'>
+            <Text className='control-icon'>⋯</Text>
+            <Text className='control-icon'>−</Text>
+            <Text className='control-icon'>◎</Text>
+          </View>
         </View>
       </View>
 
@@ -415,7 +433,7 @@ export default function Vehicles() {
         {!isLoading && vehicles.length === 0 && !showAddForm && (
           <View className='empty-container'>
             <View className='empty-illustration'>
-              <View className='scooter-icon'>🛵</View>
+              <View className='car-icon'>🚗</View>
               <View className='clouds'>
                 <View className='cloud cloud-1'>☁️</View>
                 <View className='cloud cloud-2'>☁️</View>
@@ -447,10 +465,11 @@ export default function Vehicles() {
 
             {vehicles.map((vehicle, index) => (
               <View key={vehicle._id || index} className='vehicle-item'>
-                <View className='vehicle-icon'>🛵</View>
+                <View className='vehicle-icon'>🚗</View>
                 <View className='vehicle-info'>
                   <Text className='vehicle-name'>{vehicle.brand} {vehicle.model}</Text>
                   <Text className='vehicle-plate'>{vehicle.licensePlate}</Text>
+                  <Text className='vehicle-usage'>{vehicle.vehicleUsage || '未设置用途'}</Text>
                   <Text className='vehicle-battery'>电池容量: {vehicle.batteryCapacity || 60}Ah</Text>
                 </View>
                 <View className='vehicle-actions'>
@@ -476,8 +495,77 @@ export default function Vehicles() {
 
         {showAddForm && (
           <View className='add-form'>
-            <Text className='form-title'>{editingVehicle ? '编辑车辆' : '添加车辆'}</Text>
+            <Text className='form-title'>{editingVehicle ? '编辑车辆' : '绑定车辆'}</Text>
             
+            {/* 车牌号码输入 */}
+            <View className='form-section'>
+              <View className='section-title'>
+                <View className='title-indicator'></View>
+                <Text className='section-label'>请填写车牌号码 *</Text>
+              </View>
+              <Text className='section-hint'>绑定车牌,可享部分场站减免停车费</Text>
+              <View className='license-plate-input'>
+                <Picker
+                  mode='selector'
+                  range={provinces}
+                  value={provinceIndex}
+                  onChange={(e) => setProvinceIndex(Number(e.detail.value))}
+                  disabled={!!editingVehicle}
+                >
+                  <View className={`province-picker ${editingVehicle ? 'disabled' : ''}`}>
+                    <Text className='province-text'>{provinces[provinceIndex]}</Text>
+                    <Text className='picker-arrow'>▼</Text>
+                  </View>
+                </Picker>
+                
+                <View className='plate-digits-container'>
+                  {plateDigits.map((digit, index) => (
+                    <Input
+                      key={index}
+                      className={`plate-digit ${index === 1 ? 'separator-left' : ''} ${index === 2 ? 'separator-right' : ''}`}
+                      value={digit}
+                      onInput={(e) => handlePlateDigitChange(index, e.detail.value)}
+                      maxlength={1}
+                      disabled={!!editingVehicle}
+                    />
+                  ))}
+                </View>
+
+                <View className='new-energy-option'>
+                  <View 
+                    className={`new-energy-toggle ${newVehicle.isNewEnergy ? 'active' : ''}`}
+                    onClick={() => !editingVehicle && setNewVehicle({...newVehicle, isNewEnergy: !newVehicle.isNewEnergy})}
+                  >
+                    <Text className='new-energy-text'>新能源</Text>
+                  </View>
+                </View>
+              </View>
+              {editingVehicle && (
+                <Text className='edit-note'>编辑模式下不能修改车牌号</Text>
+              )}
+            </View>
+
+            {/* 车辆用途选择 */}
+            <View className='form-section'>
+              <View className='section-title'>
+                <View className='title-indicator'></View>
+                <Text className='section-label'>请选择车辆用途 *</Text>
+              </View>
+              <Text className='section-hint'>为您提供更精准的服务</Text>
+              <View className='usage-options-grid'>
+                {vehicleUsageOptions.map((option) => (
+                  <View 
+                    key={option.key}
+                    className={`usage-option ${newVehicle.vehicleUsage === option.key ? 'selected' : ''}`}
+                    onClick={() => setNewVehicle({...newVehicle, vehicleUsage: option.key})}
+                  >
+                    <Text className='usage-icon'>{option.icon}</Text>
+                    <Text className='usage-label'>{option.label}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+
             {/* 车辆品牌 */}
             <View className='form-section'>
               <View className='section-title'>
@@ -517,39 +605,6 @@ export default function Vehicles() {
               />
             </View>
 
-            {/* 车辆号码 */}
-            <View className='form-section'>
-              <View className='section-title'>
-                <View className='title-indicator'></View>
-                <Text className='section-label'>车辆号码：</Text>
-              </View>
-              <View className='license-plate-input'>
-                <Picker
-                  mode='selector'
-                  range={provinces}
-                  value={provinceIndex}
-                  onChange={(e) => setProvinceIndex(Number(e.detail.value))}
-                  disabled={!!editingVehicle}
-                >
-                  <View className={`province-picker ${editingVehicle ? 'disabled' : ''}`}>
-                    <Text className='province-text'>{provinces[provinceIndex]}</Text>
-                    <Text className='picker-arrow'>▼</Text>
-                  </View>
-                </Picker>
-                <Input
-                  className='plate-input'
-                  placeholder='请输入车辆车牌'
-                  value={newVehicle.licensePlate}
-                  onInput={(e) => setNewVehicle({...newVehicle, licensePlate: e.detail.value.toUpperCase()})}
-                  maxlength={6}
-                  disabled={!!editingVehicle}
-                />
-              </View>
-              {editingVehicle && (
-                <Text className='edit-note'>编辑模式下不能修改车牌号</Text>
-              )}
-            </View>
-
             {/* 电池容量 */}
             <View className='form-section'>
               <View className='section-title'>
@@ -566,36 +621,28 @@ export default function Vehicles() {
               />
             </View>
 
-            {/* 车辆照片 */}
+            {/* VIN码输入 */}
             <View className='form-section'>
               <View className='section-title'>
                 <View className='title-indicator'></View>
-                <Text className='section-label'>车辆照片：</Text>
+                <Text className='section-label'>车辆VIN码 (选填)</Text>
               </View>
-              <View className='photo-upload'>
-                {uploadedPhoto ? (
-                  <View className='photo-preview'>
-                    <Image 
-                      src={uploadedPhoto} 
-                      className='preview-image'
-                      mode='aspectFit'
-                    />
-                    <Button 
-                      className='change-photo-btn'
-                      size='mini'
-                      onClick={handleChooseImage}
-                    >
-                      重新选择
-                    </Button>
-                  </View>
-                ) : (
-                  <View className='upload-area' onClick={handleChooseImage}>
-                    <View className='upload-icon'>📷</View>
-                    <Text className='upload-text'>点击上传照片</Text>
-                  </View>
-                )}
+              <View className='vin-input-container'>
+                <Input
+                  className='vin-input'
+                  placeholder='请输入VIN码'
+                  value={newVehicle.vinCode}
+                  onInput={(e) => setNewVehicle({...newVehicle, vinCode: e.detail.value})}
+                  maxlength={17}
+                />
+                <View className='manual-vin-option'>
+                  <Text className='manual-vin-text'>手动输入VIN</Text>
+                  <Text className='help-icon'>?</Text>
+                </View>
               </View>
             </View>
+
+
 
             {/* 注意事项 */}
             <View className='notice'>
@@ -614,11 +661,11 @@ export default function Vehicles() {
                 取消
               </Button>
               <Button 
-                className='confirm-submit-btn'
+                className='next-step-btn'
                 onClick={editingVehicle ? handleUpdateVehicle : handleAddVehicle}
                 loading={isLoading}
               >
-                {editingVehicle ? '确认更新' : '确认提交'}
+                {editingVehicle ? '确认更新' : '下一步'}
               </Button>
             </View>
           </View>

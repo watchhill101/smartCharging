@@ -5,65 +5,102 @@
 
 /* 头部导航 */
 .orders-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding-top: calc(var(--status-bar-height, 0px) + 10px);
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
   color: white;
-}
-
-.header-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px 20px;
+  position: relative;
+  padding: calc(var(--status-bar-height, 0px) + 15px) 15px 15px;
 }
 
 .back-button {
+  position: absolute;
+  top: calc(var(--status-bar-height, 0px) + 10px);
+  left: 15px;
   background: rgba(255, 255, 255, 0.2);
   color: white;
   border: none;
-  border-radius: 20px;
-  padding: 8px 15px;
-  font-size: 14px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 600;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
   &::after {
     border: none;
   }
 }
 
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding-top: 10px;
+}
+
 .page-title {
   font-size: 18px;
   font-weight: 600;
   color: white;
-}
-
-.header-placeholder {
-  width: 70px;
+  text-align: center;
 }
 
 /* 标签切换 */
 .tab-bar {
   display: flex;
   padding: 0 20px 15px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 15px 15px;
+  border-radius: 12px;
 }
 
 .tab-item {
   flex: 1;
   text-align: center;
-  padding: 10px 0;
-  border-bottom: 2px solid transparent;
+  padding: 12px 0;
+  border-bottom: 3px solid transparent;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
   
   &.active {
     border-bottom-color: white;
+    background: rgba(255, 255, 255, 0.1);
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 3px;
+      background: white;
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    }
   }
 }
 
 .tab-text {
   color: rgba(255, 255, 255, 0.8);
   font-size: 15px;
+  font-weight: 500;
+  transition: all 0.3s ease;
   
   .active & {
     color: white;
-    font-weight: 600;
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.5px;
   }
 }
 
@@ -153,7 +190,7 @@
 .order-status {
   padding: 4px 12px;
   border-radius: 15px;
-  background-color: rgba(52, 199, 89, 0.1);
+  background-color: rgba(76, 175, 80, 0.1);
 }
 
 .status-text {
@@ -200,7 +237,7 @@
 .order-amount .amount-text {
   font-size: 18px;
   font-weight: 600;
-  color: #007aff;
+  color: #4CAF50;
 }
 
 /* 刷新按钮 */
@@ -212,7 +249,7 @@
 
 .refresh-button {
   width: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
   color: white;
   border: none;
   border-radius: 25px;
@@ -290,7 +327,7 @@
   margin-bottom: 10px;
   
   &:focus {
-    border-color: #667eea;
+    border-color: #4CAF50;
     outline: none;
   }
 }
@@ -308,7 +345,7 @@
 }
 
 .login-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
   color: white;
   border: none;
   border-radius: 15px;

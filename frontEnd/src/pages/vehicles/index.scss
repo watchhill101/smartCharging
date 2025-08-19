@@ -1,43 +1,70 @@
+@import '../../styles/variables.scss';
+
 .vehicles-page {
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: $background-color;
 }
 
 /* 头部导航 */
 .vehicles-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding-top: calc(var(--status-bar-height, 0px) + 10px);
+  background: $primary-gradient;
   color: white;
-}
-
-.header-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px 20px;
+  position: relative;
+  padding: calc(var(--status-bar-height, 0px) + 15px) 15px 15px;
 }
 
 .back-button {
-  background: rgba(255, 255, 255, 0.2);
+  position: absolute;
+  top: calc(var(--status-bar-height, 0px) + 10px);
+  left: 15px;
+  background: $white-transparent-20;
   color: white;
   border: none;
-  border-radius: 20px;
-  padding: 8px 15px;
-  font-size: 14px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 600;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
   &::after {
     border: none;
   }
 }
 
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding-top: 10px;
+}
+
 .page-title {
   font-size: 18px;
   font-weight: 600;
   color: white;
+  text-align: center;
 }
 
-.header-placeholder {
-  width: 70px;
+.header-controls {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.control-icon {
+  font-size: 14px;
+  color: white;
+  opacity: 0.8;
 }
 
 /* 内容区域 */
@@ -56,7 +83,7 @@
 }
 
 .loading-text {
-  color: #999;
+  color: $text-tertiary;
   font-size: 16px;
 }
 
@@ -67,7 +94,7 @@
   align-items: center;
   justify-content: center;
   height: 400px;
-  background: white;
+  background: $surface-color;
   border-radius: 20px;
   padding: 40px;
   margin-top: 50px;
@@ -80,7 +107,7 @@
   height: 120px;
 }
 
-.scooter-icon {
+.car-icon {
   font-size: 60px;
   position: absolute;
   left: 50%;
@@ -147,7 +174,7 @@
 }
 
 .add-vehicle-btn {
-  background: #4CAF50;
+  background: $primary-color;
   color: white;
   border: none;
   border-radius: 25px;
@@ -163,7 +190,7 @@
 
 /* 车辆列表 */
 .vehicles-list {
-  background: white;
+  background: $surface-color;
   border-radius: 15px;
   padding: 20px;
 }
@@ -174,7 +201,7 @@
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid $border-color;
 }
 
 .vehicles-count {
@@ -184,7 +211,7 @@
 }
 
 .add-more-btn {
-  background: #4CAF50;
+  background: $primary-color;
   color: white;
   border: none;
   border-radius: 15px;
@@ -200,7 +227,7 @@
   display: flex;
   align-items: center;
   padding: 15px 0;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid $background-color;
   
   &:last-child {
     border-bottom: none;
@@ -219,15 +246,25 @@
 .vehicle-name {
   font-size: 16px;
   font-weight: 600;
-  color: #333;
+  color: $text-primary;
   display: block;
   margin-bottom: 5px;
 }
 
 .vehicle-plate {
   font-size: 14px;
-  color: #666;
-  background: #f0f0f0;
+  color: $text-secondary;
+  background: $border-color;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+
+.vehicle-usage {
+  font-size: 12px;
+  color: $primary-color;
+  background: $primary-transparent-10;
   padding: 2px 8px;
   border-radius: 4px;
   display: inline-block;
@@ -236,7 +273,7 @@
 
 .vehicle-battery {
   font-size: 12px;
-  color: #999;
+  color: $text-tertiary;
   display: block;
 }
 
@@ -247,7 +284,7 @@
 }
 
 .edit-btn {
-  background: #2196F3;
+  background: $info-color;
   color: white;
   border: none;
   border-radius: 12px;
@@ -260,7 +297,7 @@
 }
 
 .delete-btn {
-  background: #ff4757;
+  background: $error-color;
   color: white;
   border: none;
   border-radius: 12px;
@@ -274,7 +311,7 @@
 
 /* 添加表单 */
 .add-form {
-  background: white;
+  background: $surface-color;
   border-radius: 15px;
   padding: 25px;
 }
@@ -282,7 +319,7 @@
 .form-title {
   font-size: 18px;
   font-weight: 600;
-  color: #333;
+  color: $text-primary;
   margin-bottom: 25px;
   text-align: center;
 }
@@ -295,13 +332,13 @@
 .section-title {
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 8px;
 }
 
 .title-indicator {
   width: 4px;
   height: 16px;
-  background: #4CAF50;
+  background: $primary-color;
   border-radius: 2px;
   margin-right: 8px;
 }
@@ -309,14 +346,22 @@
 .section-label {
   font-size: 16px;
   font-weight: 600;
-  color: #333;
+  color: $text-primary;
 }
 
-/* 车牌号输入 */
+.section-hint {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+/* 车牌号输入 - 6个方框样式 */
 .license-plate-input {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .province-picker {
@@ -347,7 +392,117 @@
   margin-left: 5px;
 }
 
-.plate-input {
+.plate-digits-container {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.plate-digit {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  background: #fafafa;
+  box-sizing: border-box;
+  
+  &:focus {
+    border-color: #4CAF50;
+    background: white;
+  }
+  
+  &.separator-left {
+    margin-right: 8px;
+  }
+  
+  &.separator-right {
+    margin-left: 8px;
+  }
+}
+
+.new-energy-option {
+  margin-left: auto;
+}
+
+.new-energy-toggle {
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &.active {
+    background: #4CAF50;
+    color: white;
+  }
+}
+
+.new-energy-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4CAF50;
+  
+  .active & {
+    color: white;
+  }
+}
+
+/* 车辆用途选择网格 */
+.usage-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.usage-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 15px;
+  border: 2px solid #f0f0f0;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: #4CAF50;
+    transform: translateY(-2px);
+  }
+  
+  &.selected {
+    border-color: #4CAF50;
+    background: rgba(76, 175, 80, 0.05);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+  }
+}
+
+.usage-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.usage-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+/* VIN码输入 */
+.vin-input-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.vin-input {
   flex: 1;
   padding: 12px 15px;
   border: 1px solid #ddd;
@@ -355,19 +510,30 @@
   font-size: 16px;
   box-sizing: border-box;
   background: #fafafa;
-  
-  &:disabled {
-    background: #f0f0f0;
-    color: #999;
-  }
 }
 
-/* 编辑提示 */
-.edit-note {
+.manual-vin-option {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.manual-vin-text {
   font-size: 12px;
+  color: #666;
+}
+
+.help-icon {
+  font-size: 14px;
   color: #999;
-  margin-top: 8px;
-  text-align: center;
+  background: #f0f0f0;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* 品牌选择器 */
@@ -412,114 +578,7 @@
   background: #fafafa;
 }
 
-/* 车辆类型选择器 */
-.type-picker {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #fafafa;
-}
 
-.type-text {
-  font-size: 16px;
-  color: #333;
-  
-  &.placeholder {
-    color: #999;
-  }
-}
-
-/* 车主信息 */
-.owner-field {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.field-label {
-  font-size: 14px;
-  color: #333;
-  min-width: 80px;
-  margin-right: 10px;
-}
-
-.owner-input {
-  flex: 1;
-  padding: 10px 15px;
-  border: none;
-  border-bottom: 1px solid #ddd;
-  font-size: 16px;
-  background: transparent;
-  
-  &:focus {
-    border-bottom-color: #4CAF50;
-  }
-}
-
-/* 照片上传 */
-.photo-upload {
-  margin-top: 10px;
-}
-
-.upload-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 30px;
-  border: 2px dashed #ddd;
-  border-radius: 8px;
-  background: #fafafa;
-  cursor: pointer;
-  transition: border-color 0.3s ease;
-
-  &:hover {
-    border-color: #4CAF50;
-  }
-}
-
-.upload-icon {
-  font-size: 24px;
-  margin-bottom: 8px;
-  opacity: 0.6;
-}
-
-.upload-text {
-  font-size: 14px;
-  color: #999;
-}
-
-/* 照片预览 */
-.photo-preview {
-  position: relative;
-  text-align: center;
-}
-
-.preview-image {
-  width: 200px;
-  height: 150px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  background: #f5f5f5;
-  object-fit: cover;
-}
-
-.change-photo-btn {
-  margin-top: 10px;
-  background: #2196F3;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 6px 12px;
-  font-size: 12px;
-  
-  &::after {
-    border: none;
-  }
-}
 
 /* 注意事项 */
 .notice {
@@ -533,6 +592,14 @@
   font-size: 12px;
   color: #666;
   line-height: 1.4;
+}
+
+/* 编辑提示 */
+.edit-note {
+  font-size: 12px;
+  color: #999;
+  margin-top: 8px;
+  text-align: center;
 }
 
 /* 底部按钮组 */
@@ -557,8 +624,8 @@
   }
 }
 
-/* 确认提交按钮 */
-.confirm-submit-btn {
+/* 下一步按钮 */
+.next-step-btn {
   flex: 2;
   background: #4CAF50;
   color: white;

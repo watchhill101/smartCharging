@@ -40,6 +40,14 @@ export default function Wallet() {
 
   useLoad(() => {
     console.log('💰 钱包页面加载');
+    
+    // 检查页面来源，设置返回逻辑
+    const pages = Taro.getCurrentPages();
+    if (pages.length === 1) {
+      // 如果是直接进入钱包页面，显示提示
+      console.log('直接进入钱包页面，返回按钮将跳转到个人中心');
+    }
+    
     loadWalletData();
   });
 
@@ -174,29 +182,72 @@ export default function Wallet() {
 
   const navigateBack = () => {
     try {
+      // 获取当前页面栈信息
+      const pages = Taro.getCurrentPages();
+      
+      // 如果是从个人中心页面跳转过来的，则返回个人中心
+      if (pages.length > 1) {
+        const previousPage = pages[pages.length - 2];
+        if (previousPage.route === 'pages/profile/index') {
+          Taro.navigateBack();
+          return;
+        }
+      }
+      
+      // 如果是从其他页面跳转过来的，尝试返回上一页
+      if (pages.length > 1) {
+        Taro.navigateBack();
+        return;
+      }
+      
+      // 如果没有上一页，则跳转到个人中心
       Taro.switchTab({
         url: '/pages/profile/index'
       });
+      
     } catch (error) {
-      console.error('返回个人中心失败:', error);
+      console.error('返回逻辑执行失败:', error);
+      
+      // 兜底方案：跳转到个人中心
       try {
-        Taro.navigateBack();
-      } catch (backError) {
-        console.error('返回失败:', backError);
+        Taro.switchTab({
+          url: '/pages/profile/index'
+        });
+      } catch (switchError) {
+        console.error('跳转个人中心失败:', switchError);
+        
+        // 最后的兜底方案：返回上一页
+        try {
+          Taro.navigateBack();
+        } catch (backError) {
+          console.error('返回失败:', backError);
+          // 如果所有方案都失败，显示错误提示
+          Taro.showToast({
+            title: '返回失败，请手动操作',
+            icon: 'error',
+            duration: 2000
+          });
+        }
       }
     }
   };
+
+
 
   return (
     <View className='wallet-page'>
       {/* 头部导航 */}
       <View className='wallet-header'>
-        <View className='header-nav'>
-          <Button className='back-button' onClick={navigateBack}>
-            ← 返回
-          </Button>
+        <Button className='back-button' onClick={navigateBack}>
+          &lt;
+        </Button>
+        <View className='header-content'>
           <Text className='page-title'>钱包</Text>
-          <View className='header-placeholder'></View>
+          <View className='header-controls'>
+            <Text className='control-icon'>⋯</Text>
+            <Text className='control-icon'>−</Text>
+            <Text className='control-icon'>◎</Text>
+          </View>
         </View>
       </View>
 
@@ -217,14 +268,15 @@ export default function Wallet() {
 
         {/* 账户余额区域 */}
         <View className='balance-section'>
-          <View className='account-protection'>
-            <View className='protection-icon'>🛡️</View>
-            <Text className='protection-text'>账户保障中</Text>
-          </View>
-          
-          <View className='balance-display'>
-            <Text className='balance-label'>账户余额(元)</Text>
-            <Text className='balance-amount'>{walletData.balance.toFixed(2)}</Text>
+          <View className='balance-header'>
+            <View className='balance-info'>
+              <Text className='balance-label'>账户余额(元)</Text>
+              <Text className='balance-amount'>{walletData.balance.toFixed(2)}</Text>
+            </View>
+            <View className='account-protection'>
+              <View className='protection-icon'>✓</View>
+              <Text className='protection-text'>账户保障中</Text>
+            </View>
           </View>
 
           <View className='wallet-stats'>
@@ -245,44 +297,42 @@ export default function Wallet() {
 
         {/* 电子充电卡 */}
         <View className='charging-card-section'>
-          <View >
-            <Text className='card-title'>电子充电卡·购卡充电更便捷</Text>
+          <View className='card-content'>
+            <Text className='card-title'>
+              <Text className='card-highlight'>电子充电卡</Text>
+              <Text className='card-separator'>·</Text>
+              <Text className='card-subtitle'>购卡充电更便捷</Text>
+            </Text>
           </View>
           <Button className='buy-card-button' onClick={handleBuyCard}>
             去购卡
           </Button>
         </View>
 
-        {/* 积分任务系统 */}
-        <View className='points-section'>
-          <View className='points-header'>
-            <Text className='points-title'>做任务赚积分</Text>
-            <Text className='points-subtitle'>积分好礼随心兑</Text>
-            <Text className='more-link'>更多 &gt;</Text>
-          </View>
-
-          <View className='tasks-list'>
-            {walletData.tasks.map((task) => (
-              <View key={task.id} className='task-item'>
-                <View className='task-icon'>{task.icon}</View>
-                <View className='task-content'>
-                  <View className='task-header'>
-                    <Text className='task-title'>
-                      {task.title}({task.current}/{task.target}) 
-                      <Text className='task-points'>+{task.points}</Text>
-                    </Text>
-                    <Text className='task-badge'>APP端充电可得积分</Text>
-                  </View>
-                  <Text className='task-description'>{task.description}</Text>
-                </View>
-                <Button 
-                  className='task-button'
-                  onClick={() => handleTaskAction(task)}
-                >
-                  {task.buttonText}
-                </Button>
+        {/* 热门推荐 */}
+        <View className='hot-recommendations'>
+          <Text className='section-title'>热门推荐</Text>
+          <View className='recommendations-grid'>
+            <View className='recommendation-card'>
+              <View className='card-icon coupon-icon'>🎫</View>
+              <View className='card-content'>
+                <Text className='card-title'>领2元充电券</Text>
+                <Text className='card-subtitle'>新用户车险报价即领</Text>
               </View>
-            ))}
+            </View>
+            <View className='recommendation-card'>
+              <View className='card-icon battery-icon'>
+                <View className='battery-container'>
+                  <View className='battery-outline'>
+                    <View className='battery-lightning'>⚡</View>
+                  </View>
+                </View>
+              </View>
+              <View className='card-content'>
+                <Text className='card-title'>新能源电池评测</Text>
+                <Text className='card-subtitle'>电池衰减及风险排查</Text>
+              </View>
+            </View>
           </View>
         </View>
       </ScrollView>

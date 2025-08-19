@@ -355,12 +355,11 @@ export default function Orders() {
     <View className='orders-page'>
       {/* 头部导航 */}
       <View className='orders-header'>
-        <View className='header-nav'>
-          <Button className='back-button' onClick={navigateBack}>
-            ← 返回
-          </Button>
+        <Button className='back-button' onClick={navigateBack}>
+          &lt;
+        </Button>
+        <View className='header-content'>
           <Text className='page-title'>我的订单</Text>
-          <View className='header-placeholder'></View>
         </View>
 
         {/* 标签切换 */}
