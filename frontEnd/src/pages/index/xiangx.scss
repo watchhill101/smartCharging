@@ -71,3 +71,611 @@
     }
   }
 }
+<<<<<<< Updated upstream
+=======
+
+@media (max-width: 480px) {
+  .xiangx-page {
+    .station-info-card {
+      .station-header .station-name {
+        font-size: 18px;
+      }
+
+      .station-details .detail-row {
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
+
+    .tabs-section .tabs-header .tab {
+      padding: 16px;
+      font-size: 14px;
+    }
+  }
+}
+
+// 地图选择器模态框样式
+.map-selector-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  
+  .modal-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+  
+  .modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.3s ease-out;
+    overflow: hidden;
+    
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 20px 15px;
+      border-bottom: 1px solid #f0f0f0;
+      
+      .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+      }
+      
+      .modal-close {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        
+        &:hover {
+          background: #e0e0e0;
+        }
+        
+        .close-icon {
+          font-size: 16px;
+          color: #666;
+          font-weight: bold;
+        }
+      }
+    }
+    
+    .modal-body {
+      padding: 0;
+      
+      .map-option {
+        display: flex;
+        align-items: center;
+        padding: 16px 20px;
+        border-bottom: 1px solid #f8f8f8;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        
+        &:hover {
+          background: #f8f9fa;
+        }
+        
+        &:active {
+          background: #e9ecef;
+        }
+        
+        &:last-child {
+          border-bottom: none;
+        }
+        
+        .map-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 8px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-right: 16px;
+          
+          .icon-text {
+            font-size: 20px;
+          }
+        }
+        
+        .map-name {
+          flex: 1;
+          font-size: 16px;
+          color: #333;
+          font-weight: 500;
+        }
+        
+        .map-arrow {
+          width: 24px;
+          height: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          
+          .arrow-icon {
+            font-size: 18px;
+            color: #999;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+    
+    .modal-footer {
+      padding: 20px;
+      border-top: 1px solid #f0f0f0;
+      
+      .cancel-btn {
+        width: 100%;
+        height: 48px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        
+        &:hover {
+          background: #e9ecef;
+          border-color: #dee2e6;
+        }
+        
+        &:active {
+          background: #dee2e6;
+        }
+        
+        .cancel-text {
+          font-size: 16px;
+          color: #666;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
+// 动画效果
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// 响应式设计
+@media (max-width: 480px) {
+  .map-selector-modal {
+    .modal-content {
+      max-width: 100%;
+      border-radius: 20px 20px 0 0;
+      
+      .modal-header {
+        padding: 18px 16px 14px;
+        
+        .modal-title {
+          font-size: 17px;
+        }
+      }
+      
+      .modal-body {
+        .map-option {
+          padding: 15px 16px;
+          
+          .map-icon {
+            width: 36px;
+            height: 36px;
+            margin-right: 14px;
+            
+            .icon-text {
+              font-size: 18px;
+            }
+          }
+          
+          .map-name {
+            font-size: 15px;
+          }
+        }
+      }
+      
+      .modal-footer {
+        padding: 18px 16px;
+        
+        .cancel-btn {
+          height: 44px;
+          
+          .cancel-text {
+            font-size: 15px;
+          }
+        }
+      }
+    }
+  }
+  
+  .comments-modal {
+    .modal-content {
+      .modal-body {
+        .comment-input-section {
+          .rating-selector {
+            .stars-container {
+              gap: 6px;
+              
+              .star-item {
+                width: 40px;
+                height: 40px;
+                
+                .star-icon {
+                  font-size: 20px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// 评论区样式
+.comments-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: flex-end;
+  
+  .modal-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+  
+  .modal-content {
+    position: relative;
+    width: 100%;
+    max-height: 90vh;
+    background: white;
+    border-radius: 20px 20px 0 0;
+    animation: slideUp 0.3s ease-out;
+    overflow: hidden;
+    
+    .modal-header {
+      position: relative;
+      padding: 20px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      .back-btn {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        
+        &:hover {
+          background: #e9ecef;
+        }
+        
+        .back-icon {
+          color: #666;
+          font-size: 24px;
+          font-weight: bold;
+        }
+      }
+      
+      .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+      }
+    }
+    
+    .modal-body {
+      padding: 20px;
+      max-height: calc(90vh - 80px);
+      overflow-y: auto;
+      
+      .comment-input-section {
+        margin-bottom: 24px;
+        padding: 16px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        
+        .rating-selector {
+          margin-bottom: 16px;
+          text-align: center;
+          
+          .rating-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+          }
+          
+          .stars-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            
+            .star-item {
+              width: 48px;
+              height: 48px;
+              border-radius: 50%;
+              background: white;
+              border: 2px solid #e9ecef;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+              transition: all 0.2s ease;
+              
+              &:hover {
+                transform: scale(1.1);
+                border-color: #ffd700;
+                background: #fffbf0;
+              }
+              
+              &.selected {
+                border-color: #ffd700;
+                background: #fffbf0;
+                box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+              }
+              
+              .star-icon {
+                font-size: 24px;
+                color: #ffd700;
+                filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+              }
+            }
+          }
+          
+          .rating-text {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+          }
+        }
+        
+        .input-wrapper {
+          position: relative;
+          margin-bottom: 12px;
+          
+          .comment-input {
+            width: 100%;
+            height: 48px;
+            padding: 12px 16px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            outline: none;
+            
+            &:focus {
+              border-color: #00d4aa;
+              box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.1);
+            }
+            
+            &::placeholder {
+              color: #adb5bd;
+            }
+          }
+          
+          .input-counter {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            
+            .counter-text {
+              font-size: 12px;
+              color: #adb5bd;
+            }
+          }
+        }
+        
+        .submit-btn {
+          width: 100%;
+          height: 44px;
+          background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
+          border: none;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s;
+          
+          &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 212, 170, 0.3);
+          }
+          
+          &:active {
+            transform: translateY(0);
+          }
+          
+          .submit-text {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+          }
+        }
+      }
+      
+      .comments-list {
+        .comment-item {
+          padding: 16px 0;
+          border-bottom: 1px solid #f0f0f0;
+          
+          &:last-child {
+            border-bottom: none;
+          }
+          
+          .comment-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            
+            .user-info {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              
+              .user-avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: #f8f9fa;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                
+                .avatar-text {
+                  font-size: 20px;
+                }
+              }
+              
+              .user-details {
+                .user-name {
+                  font-size: 16px;
+                  font-weight: 600;
+                  color: #333;
+                  margin-bottom: 4px;
+                }
+                
+                .comment-rating {
+                  display: flex;
+                  gap: 2px;
+                  
+                  .star {
+                    font-size: 14px;
+                    color: #ddd;
+                    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+                    
+                    &.filled {
+                      color: #ffd700;
+                      filter: drop-shadow(0 1px 2px rgba(255, 215, 0, 0.3));
+                    }
+                  }
+                }
+              }
+            }
+            
+            .comment-time {
+              font-size: 12px;
+              color: #adb5bd;
+            }
+          }
+          
+          .comment-content {
+            margin-bottom: 12px;
+            
+            .content-text {
+              font-size: 15px;
+              color: #333;
+              line-height: 1.5;
+            }
+          }
+          
+          .comment-actions {
+            .like-btn {
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              padding: 6px 12px;
+              background: #f8f9fa;
+              border-radius: 16px;
+              cursor: pointer;
+              transition: all 0.2s;
+              
+              &:hover {
+                background: #e9ecef;
+              }
+              
+              .like-icon {
+                font-size: 14px;
+              }
+              
+              .like-count {
+                font-size: 14px;
+                color: #666;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// 评分区域可点击样式
+.rating-section {
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: #f8f9fa;
+    transform: translateY(-1px);
+  }
+  
+  .rating-arrow {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    
+    .arrow-icon {
+      color: #adb5bd;
+      font-size: 20px;
+      font-weight: bold;
+    }
+  }
+}
+>>>>>>> Stashed changes

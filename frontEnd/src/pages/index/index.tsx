@@ -3,6 +3,7 @@ import { useLoad } from '@tarojs/taro'
 import Taro from '@tarojs/taro'
 import { useState, useMemo } from 'react'
 import CitySelector from './CitySelector'
+import chargingStationsData from '../../data/chargingStations.json'
 import './index.scss'
 
 // 充电站数据接口
@@ -67,6 +68,7 @@ export default function Index() {
 		)
 	}
 
+<<<<<<< Updated upstream
 	// 模拟充电站数据
 	const allStations: ChargingStation[] = useMemo(() => [
 		{
@@ -158,6 +160,10 @@ export default function Index() {
 			updatedAt: '2024-01-01T00:00:00Z'
 		}
 	], [])
+=======
+	// 从JSON文件导入充电站数据
+	const allStations: ChargingStation[] = useMemo(() => chargingStationsData as unknown as ChargingStation[], [])
+>>>>>>> Stashed changes
 
 	// 筛选后的充电站
 	const filteredStations = useMemo(() => {
@@ -231,6 +237,11 @@ export default function Index() {
 									if (item.text === '设备地图') {
 										Taro.navigateTo({
 											url: '/pages/map/index'
+										})
+									} else if (item.text === '券包中心') {
+										// 券包中心跳转到卡券中心页面
+										Taro.navigateTo({
+											url: '/pages/profile/coupons'
 										})
 									}
 								}}

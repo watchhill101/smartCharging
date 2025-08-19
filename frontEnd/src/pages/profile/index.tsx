@@ -38,10 +38,10 @@ interface FaceVerificationResult {
 
 export default function Profile() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+
   const [showFaceVerification, setShowFaceVerification] = useState(false);
   const [showVerificationHistory, setShowVerificationHistory] = useState(false);
-  const [faceVerificationStatus, setFaceVerificationStatus] = useState<'none' | 'pending' | 'success' | 'failed'>('none');
+
 
   useLoad(() => {
     console.log('🏠 个人中心页面加载');
@@ -61,7 +61,7 @@ export default function Profile() {
 
   const loadUserProfile = async () => {
     try {
-      setIsLoading(true);
+
       console.log('🔄 开始加载用户信息...');
 
       // 首先尝试从存储中获取用户信息
@@ -92,7 +92,6 @@ export default function Profile() {
         };
         console.log('📋 设置用户配置:', profileData);
         setUserProfile(profileData);
-        setIsLoading(false);
         return;
       }
 
@@ -109,7 +108,6 @@ export default function Profile() {
           chargingCount: 0,
           points: 0
         });
-        setIsLoading(false);
         return;
       }
 
@@ -159,14 +157,11 @@ export default function Profile() {
           points: 0
         });
       }
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handleFaceVerificationSuccess = async (result: FaceVerificationResult) => {
     console.log('人脸验证成功:', result);
-    setFaceVerificationStatus('success');
     setShowFaceVerification(false);
 
     try {
@@ -198,15 +193,11 @@ export default function Profile() {
 
   const handleFaceVerificationError = (error: string) => {
     console.error('人脸验证失败:', error);
-    setFaceVerificationStatus('failed');
     setShowFaceVerification(false);
     Taro.showToast({ title: error, icon: 'error' });
   };
 
-  const startFaceVerification = () => {
-    setFaceVerificationStatus('pending');
-    setShowFaceVerification(true);
-  };
+
 
   const navigateToFunction = (functionName: string) => {
     if (functionName === '我的订单') {
@@ -229,18 +220,33 @@ export default function Profile() {
       });
       return;
     }
+<<<<<<< Updated upstream
     
+=======
+
+    if (functionName === '卡券中心') {
+      Taro.navigateTo({
+        url: '/pages/profile/coupons'
+      });
+      return;
+    }
+
+    // 画圈的功能跳转到开发中页面
+    if (['我的电卡', '包月套餐', '充电会员', '常用设置', '电池报告'].includes(functionName)) {
+      Taro.navigateTo({
+        url: `/pages/feature-dev/index?featureName=${encodeURIComponent(functionName)}`
+      });
+      return;
+    }
+
+>>>>>>> Stashed changes
     Taro.showToast({
       title: `${functionName}功能开发中`,
       icon: 'none'
     });
   };
 
-  const switchToCharging = () => {
-    Taro.switchTab({
-      url: '/pages/charging/index'
-    });
-  };
+
 
   if (showFaceVerification) {
     return (
