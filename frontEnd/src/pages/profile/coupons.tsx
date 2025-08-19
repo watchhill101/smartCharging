@@ -1,10 +1,10 @@
 import { View, Text, Input, Picker } from '@tarojs/components'
 import { useLoad } from '@tarojs/taro'
 import Taro from '@tarojs/taro'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { showSafeToast, safeNavigateBack, showSafeActionSheet } from '../../utils/taroUtils'
 import { logEnvironmentInfo } from '../../utils/environment'
-import couponService, { Coupon, CouponCounts, CouponQueryOptions } from '../../services/couponService'
+import couponService, { Coupon, CouponCounts } from '../../services/couponService'
 import './coupons.scss'
 
 // 使用数据服务管理优惠券数据
@@ -12,42 +12,25 @@ import './coupons.scss'
 export default function Coupons() {
   const [activeTab, setActiveTab] = useState<'unused' | 'used' | 'expired'>('unused')
   const [coupons, setCoupons] = useState<Coupon[]>([])
-  const [filteredCoupons, setFilteredCoupons] = useState<Coupon[]>([])
   const [counts, setCounts] = useState<CouponCounts>({ unused: 0, used: 0, expired: 0, total: 0 })
   const [loading, setLoading] = useState(false)
   const [showUseConfirm, setShowUseConfirm] = useState(false)
   const [couponToUse, setCouponToUse] = useState<Coupon | null>(null)
-  
-  // 筛选和排序状态
   const [searchText, setSearchText] = useState('')
   const [selectedType, setSelectedType] = useState<string>('all')
   const [sortBy, setSortBy] = useState<'validUntil' | 'value' | 'createdAt'>('validUntil')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
   const [showFilters, setShowFilters] = useState(false)
   const [showExpiringSoon, setShowExpiringSoon] = useState(false)
-  
-  // 新增高级筛选状态
   const [minValue, setMinValue] = useState<string>('')
   const [maxValue, setMaxValue] = useState<string>('')
-  const [selectedStations, setSelectedStations] = useState<string[]>([])
-  const [selectedChargers, setSelectedChargers] = useState<string[]>([])
-  const [dateRange, setDateRange] = useState<{start: string, end: string}>({start: '', end: ''})
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
-  
-  // 批量操作状态
   const [selectedCoupons, setSelectedCoupons] = useState<Set<string>>(new Set())
   const [selectAll, setSelectAll] = useState(false)
-  const [showBatchActions, setShowBatchActions] = useState(false)
-  
-  // 智能推荐状态
-  const [recommendations, setRecommendations] = useState<Coupon[]>([])
   const [showRecommendations, setShowRecommendations] = useState(false)
-  
-  // 分页状态
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize] = useState(10)
   const [hasMore, setHasMore] = useState(false)
-  const [totalCount, setTotalCount] = useState(0)
+  const [recommendations] = useState<Coupon[]>([])
+  const [dateRange, setDateRange] = useState<{start: string, end: string}>({start: '', end: ''})
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
 
   // 处理返回功能
   const handleGoBack = () => {
@@ -57,7 +40,7 @@ export default function Coupons() {
   // 处理更多操作
   const handleMoreOptions = () => {
     showSafeActionSheet(
-      ['分享', '收藏', '举报', '联系客服', '数据导出', '重置数据'],
+      ['分享', '收藏', '举报', '联系客服'],
       (res) => {
         console.log('选择了操作:', res.tapIndex)
         // 根据选择执行相应操作
@@ -74,12 +57,6 @@ export default function Coupons() {
           case 3:
             showSafeToast('联系客服功能开发中', 'none')
             break
-          case 4:
-            handleExportData()
-            break
-          case 5:
-            handleResetData()
-            break
           default:
             break
         }
@@ -91,200 +68,22 @@ export default function Coupons() {
     )
   }
 
-  // 数据导出功能
-  const handleExportData = () => {
+  // 加载模拟数据
+  const loadMockData = () => {
     try {
-      const exportData = couponService.exportData()
-      const blob = new Blob([exportData], { type: 'application/json' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `coupons_${new Date().toISOString().split('T')[0]}.json`
-      a.click()
-      URL.revokeObjectURL(url)
-      showSafeToast('数据导出成功', 'success')
-    } catch (error) {
-      console.error('数据导出失败:', error)
-      showSafeToast('数据导出失败', 'error')
-    }
-  }
-
-  // 重置数据功能
-  const handleResetData = () => {
-    Taro.showModal({
-      title: '确认重置',
-      content: '这将重置所有优惠券数据到初始状态，已使用的优惠券将恢复为未使用状态。确定继续吗？',
-      success: (res) => {
-        if (res.confirm) {
-          try {
-            couponService.resetToDefault()
-            loadCouponsData(true)
-            showSafeToast('数据已重置', 'success')
-          } catch (error) {
-            console.error('重置数据失败:', error)
-            showSafeToast('重置数据失败', 'error')
-          }
-        }
-      }
-    })
-  }
-
-  // 构建查询选项
-  const buildQueryOptions = (): CouponQueryOptions => {
-    const options: CouponQueryOptions = {
-      status: activeTab === 'unused' ? 'unused' : activeTab === 'used' ? 'used' : 'expired',
-      sortBy,
-      sortOrder,
-    }
-
-    if (searchText.trim()) {
-      options.search = searchText.trim()
-    }
-
-    if (selectedType && selectedType !== 'all') {
-      options.type = selectedType as any
-    }
-
-    if (showExpiringSoon && activeTab === 'unused') {
-      options.expiringSoon = true
-    }
-
-    // 新增高级筛选选项
-    if (minValue && !isNaN(Number(minValue))) {
-      options.minValue = Number(minValue)
-    }
-    if (maxValue && !isNaN(Number(maxValue))) {
-      options.maxValue = Number(maxValue)
-    }
-    if (dateRange.start) {
-      options.validFrom = new Date(dateRange.start)
-    }
-    if (dateRange.end) {
-      options.validUntil = new Date(dateRange.end)
-    }
-
-    return options
-  }
-
-  // 加载优惠券数据（支持筛选、排序、分页）
-  const loadCouponsData = (resetPage = false) => {
-    try {
-      setLoading(true)
-      
-      const page = resetPage ? 1 : currentPage
-      const queryOptions = buildQueryOptions()
-      
-      // 使用分页查询
-      const result = couponService.getCouponsPaginated(page, pageSize, queryOptions)
-      
-      if (resetPage) {
-        setFilteredCoupons(result.coupons)
-        setCurrentPage(1)
-      } else {
-        // 加载更多时追加数据
-        setFilteredCoupons(prev => page === 1 ? result.coupons : [...prev, ...result.coupons])
-        setCurrentPage(page)
-      }
-      
-      setHasMore(result.hasMore)
-      setTotalCount(result.total)
-      
-      // 加载所有数据和统计
+      // 使用数据服务加载数据
       const allCoupons = couponService.getAllCoupons()
       const allCounts = couponService.getCounts()
+      
       setCoupons(allCoupons)
       setCounts(allCounts)
-      
-      // 加载智能推荐
-      loadRecommendations()
-      
-      console.log('✅ 加载优惠券数据成功:', {
-        total: result.total,
-        currentPage: page,
-        pageSize,
-        hasMore: result.hasMore,
-        filters: queryOptions
-      })
-      
+      console.log('✅ 从数据服务加载优惠券数据:', allCoupons.length, '张')
     } catch (error) {
-      console.error('❌ 加载优惠券数据失败:', error)
-      showSafeToast('数据加载失败，请重试', 'error')
-      
+      console.error('加载模拟数据失败:', error)
       // 降级到空数据
-      setFilteredCoupons([])
       setCoupons([])
       setCounts({ unused: 0, used: 0, expired: 0, total: 0 })
-      setHasMore(false)
-      setTotalCount(0)
-      
-      // 3秒后自动重试
-      setTimeout(() => {
-        if (!loading) {
-          console.log('🔄 自动重试加载数据...')
-          loadCouponsData(resetPage)
-        }
-      }, 3000)
-    } finally {
-      setLoading(false)
     }
-  }
-
-  // 加载智能推荐
-  const loadRecommendations = () => {
-    try {
-      // 获取即将过期的优惠券作为推荐
-      const expiringSoon = couponService.getExpiringSoonCoupons(7)
-      // 获取高价值优惠券
-      const highValue = couponService.queryCoupons({
-        status: 'unused',
-        sortBy: 'value',
-        sortOrder: 'desc',
-        limit: 3
-      })
-      
-      const recommendations = [...expiringSoon, ...highValue]
-        .filter((coupon, index, arr) => arr.findIndex(c => c._id === coupon._id) === index)
-        .slice(0, 5)
-      
-      setRecommendations(recommendations)
-    } catch (error) {
-      console.error('加载推荐失败:', error)
-    }
-  }
-
-  // 加载更多数据
-  const loadMoreCoupons = () => {
-    if (!loading && hasMore) {
-      setCurrentPage(prev => {
-        const nextPage = prev + 1
-        setTimeout(() => loadCouponsData(false), 10)
-        return nextPage
-      })
-    }
-  }
-
-  // 重置筛选条件
-  const resetFilters = () => {
-    setSearchText('')
-    setSelectedType('all')
-    setSortBy('validUntil')
-    setSortOrder('asc')
-    setShowExpiringSoon(false)
-    setMinValue('')
-    setMaxValue('')
-    setSelectedStations([])
-    setSelectedChargers([])
-    setDateRange({start: '', end: ''})
-    setCurrentPage(1)
-    setTimeout(() => loadCouponsData(true), 10)
-  }
-
-  // 应用筛选条件
-  const applyFilters = () => {
-    setCurrentPage(1)
-    loadCouponsData(true)
-    setShowFilters(false)
-    setShowAdvancedFilters(false)
   }
 
   // 显示使用确认对话框
@@ -303,7 +102,7 @@ export default function Coupons() {
       
       if (usedCoupon) {
         // 重新加载数据
-        loadCouponsData(true)
+        loadMockData()
         showSafeToast('优惠券使用成功！', 'success')
         console.log('✅ 优惠券使用成功:', usedCoupon.title)
       } else {
@@ -331,18 +130,64 @@ export default function Coupons() {
     return coupons.filter(coupon => coupon.status === status)
   }
 
-  // 初始化数据服务
-  const initializeDataService = () => {
+  // 加载优惠券数据
+  const loadCouponsData = (refresh: boolean = false) => {
     try {
-      // 加载初始数据
-      loadCouponsData(true)
+      if (refresh) {
+        setHasMore(true)
+      }
       
-      console.log('✅ 数据服务初始化成功')
+      // 使用数据服务加载数据
+      const allCoupons = couponService.getAllCoupons()
+      const allCounts = couponService.getCounts()
+      
+      setCoupons(allCoupons)
+      setCounts(allCounts)
+      console.log('✅ 从数据服务加载优惠券数据:', allCoupons.length, '张')
     } catch (error) {
-      console.error('❌ 数据服务初始化失败:', error)
-      showSafeToast('数据服务初始化失败', 'error')
+      console.error('加载优惠券数据失败:', error)
+      showSafeToast('加载数据失败', 'error')
     }
   }
+
+  // 加载更多优惠券
+  const loadMoreCoupons = () => {
+    if (!hasMore || loading) return
+    
+    setLoading(true)
+    try {
+      // 模拟分页加载
+      setTimeout(() => {
+        setHasMore(false) // 假设没有更多数据
+        setLoading(false)
+      }, 1000)
+    } catch (error) {
+      console.error('加载更多数据失败:', error)
+      setLoading(false)
+    }
+  }
+
+  // 重置筛选器
+  const resetFilters = () => {
+    setSearchText('')
+    setSelectedType('all')
+    setSortBy('validUntil')
+    setSortOrder('asc')
+    setMinValue('')
+    setMaxValue('')
+    setDateRange({start: '', end: ''})
+    setShowAdvancedFilters(false)
+    setShowFilters(false)
+  }
+
+  // 应用筛选器
+  const applyFilters = () => {
+    // 这里可以实现筛选逻辑
+    console.log('应用筛选器')
+    setShowFilters(false)
+  }
+
+
 
   // 格式化优惠券值显示
   const formatCouponValue = (coupon: Coupon) => {
@@ -467,8 +312,8 @@ export default function Coupons() {
     // 检测当前运行环境
     logEnvironmentInfo()
     
-    // 初始化数据服务并加载优惠券数据
-    initializeDataService()
+    // 使用模拟数据系统
+    loadMockData()
     
     // 检查过期优惠券
     setTimeout(() => {
@@ -476,19 +321,22 @@ export default function Coupons() {
     }, 1000)
   })
 
-  // 刷新优惠券数据
-  const refreshCoupons = async () => {
+  // 获取优惠券数据（现在使用模拟数据）
+  const fetchCoupons = async () => {
     try {
       setLoading(true)
-      console.log('🔄 开始刷新优惠券数据...')
+      console.log('🔄 开始加载优惠券数据...')
       
-      // 重新加载优惠券数据
-      loadCouponsData(true)
+      // 重新加载模拟数据
+      loadMockData()
+      
+      // 检查过期优惠券
+      // checkExpiredCoupons() // Removed
       
       showSafeToast('数据已刷新', 'success')
     } catch (error) {
-      console.error('❌ 刷新优惠券数据失败:', error)
-      showSafeToast('数据刷新失败', 'error')
+      console.error('❌ 加载优惠券数据失败:', error)
+      showSafeToast('数据加载失败', 'error')
     } finally {
       setLoading(false)
     }
@@ -510,7 +358,7 @@ export default function Coupons() {
           <Text className='navbar-title'>我的优惠券</Text>
         </View>
         <View className='navbar-right'>
-          <View className='refresh-button' onClick={() => refreshCoupons()}>
+          <View className='refresh-button' onClick={() => fetchCoupons()}>
             <Text className='refresh-icon'>🔄</Text>
           </View>
           <View className='more-button' onClick={handleMoreOptions}>

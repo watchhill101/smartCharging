@@ -1,0 +1,706 @@
+/* 启动充电页面样式 - 现代化设计 */
+.start-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding-bottom: 120px;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+    pointer-events: none;
+  }
+}
+
+/* 页面标题和说明区域 */
+.page-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  margin: 16px;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  .page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 16px;
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .charging-instructions {
+    font-size: 14px;
+    color: var(--text-color-secondary);
+    line-height: 1.6;
+    text-align: center;
+    padding: 16px;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    
+    .instruction-text {
+      margin-bottom: 8px;
+    }
+    
+    .instruction-link {
+      color: var(--primary-color);
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: 500;
+      
+      &:hover {
+        color: var(--primary-color-dark);
+      }
+    }
+  }
+}
+
+/* 顶部充电站信息卡片 */
+.station-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  margin: 16px;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeIn 0.6s ease-out;
+  
+  .station-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    
+    .station-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 20px;
+      color: white;
+      font-size: 28px;
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    }
+    
+    .station-info {
+      flex: 1;
+      
+      .station-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: 12px;
+        line-height: 1.4;
+      }
+      
+      .station-details {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        font-size: 13px;
+        color: var(--text-color-secondary);
+        
+        .detail-item {
+          display: flex;
+          align-items: center;
+          
+          .detail-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+            opacity: 0.7;
+          }
+        }
+      }
+    }
+  }
+  
+  .terminal-info {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      
+      .terminal-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-color);
+      }
+      
+      .terminal-status {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        background: linear-gradient(135deg, rgba(0, 212, 170, 0.2) 0%, rgba(0, 212, 170, 0.1) 100%);
+        color: var(--success-color);
+        border: 1px solid rgba(0, 212, 170, 0.3);
+      }
+    }
+    
+    .terminal-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 16px;
+      font-size: 13px;
+      color: var(--text-color-secondary);
+      
+      .detail-item {
+        display: flex;
+        align-items: center;
+        
+        .detail-icon {
+          width: 16px;
+          height: 16px;
+          margin-right: 8px;
+          opacity: 0.7;
+        }
+      }
+    }
+  }
+}
+
+/* 支付方式选择 */
+.payment-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  margin: 16px;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeIn 0.6s ease-out 0.1s both;
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+    
+    .section-icon {
+      width: 28px;
+      height: 28px;
+      margin-right: 12px;
+      color: var(--primary-color);
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-color);
+    }
+    
+    .checkmark {
+      margin-left: auto;
+      width: 24px;
+      height: 24px;
+      color: var(--success-color);
+    }
+  }
+  
+  .refund-policy {
+    background: rgba(0, 212, 170, 0.05);
+    border: 1px solid rgba(0, 212, 170, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: var(--text-color-secondary);
+    text-align: center;
+  }
+  
+  .payment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    
+    .payment-option {
+      display: flex;
+      align-items: center;
+      padding: 20px;
+      border: 2px solid var(--border-color-light);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.5);
+      
+      &:hover {
+        border-color: var(--primary-color);
+        background: rgba(102, 126, 234, 0.05);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+      }
+      
+      &.selected {
+        border-color: var(--primary-color);
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
+      }
+      
+      .payment-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 20px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        
+        &.alipay {
+          background: linear-gradient(135deg, #00A0E9 0%, #0078D4 100%);
+          font-size: 18px;
+        }
+        
+        &.wechat {
+          background: linear-gradient(135deg, #07C160 0%, #00AE42 100%);
+          font-size: 16px;
+        }
+      }
+      
+      .payment-info {
+        flex: 1;
+        
+        .payment-name {
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--text-color);
+          margin-bottom: 6px;
+        }
+        
+        .payment-desc {
+          font-size: 13px;
+          color: var(--text-color-muted);
+        }
+      }
+      
+      .radio-button {
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--border-color);
+        border-radius: 50%;
+        position: relative;
+        transition: all 0.3s ease;
+        
+        &.selected {
+          border-color: var(--primary-color);
+          background: var(--primary-color);
+          
+          &::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            animation: fadeInScale 0.3s ease;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 充电金额选择 */
+.amount-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  margin: 16px 16px 16px 26px;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeIn 0.6s ease-out 0.2s both;
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+    
+    .section-icon {
+      width: 28px;
+      height: 28px;
+      margin-right: 12px;
+      color: var(--primary-color);
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-color);
+    }
+  }
+  
+  .amount-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    
+    .amount-option {
+      padding: 20px 16px;
+      border: 2px solid var(--border-color-light);
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 1;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+      }
+      
+      &:hover {
+        border-color: var(--primary-color);
+        background: rgba(102, 126, 234, 0.08);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+        
+        &::before {
+          left: 100%;
+        }
+      }
+      
+      &.selected {
+        border-color: var(--primary-color);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        
+        .amount-value,
+        .amount-unit {
+          color: white;
+        }
+        
+        &::after {
+          content: '✓';
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          font-size: 16px;
+          font-weight: bold;
+          color: white;
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 50%;
+          width: 24px;
+          height: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: fadeInScale 0.3s ease;
+        }
+      }
+      
+      .amount-value {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: 4px;
+        transition: color 0.3s ease;
+      }
+      
+      .amount-unit {
+        font-size: 12px;
+        color: var(--text-color-secondary);
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+    }
+  }
+}
+
+/* 营业信息 */
+.business-info {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  margin: 16px;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeIn 0.6s ease-out 0.3s both;
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    
+    .section-icon {
+      width: 28px;
+      height: 28px;
+      margin-right: 12px;
+      color: var(--primary-color);
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-color);
+    }
+  }
+  
+  .business-details {
+    .detail-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .detail-label {
+        font-size: 14px;
+        color: var(--text-color-secondary);
+      }
+      
+      .detail-value {
+        font-size: 14px;
+        color: var(--text-color);
+        font-weight: 600;
+        
+        &.clickable {
+          color: var(--primary-color);
+          cursor: pointer;
+          text-decoration: underline;
+          
+          &:hover {
+            color: var(--primary-color-dark);
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 底部充电操作区域 */
+.charging-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  padding: 24px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
+  z-index: var(--z-fixed);
+  animation: slideInUp 0.6s ease-out;
+  
+  .action-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    
+    .summary-info {
+      .summary-label {
+        font-size: 14px;
+        color: var(--text-color-secondary);
+        margin-bottom: 6px;
+      }
+      
+      .summary-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--error-color);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+    }
+    
+    .summary-actions {
+      display: flex;
+      gap: 12px;
+      
+      .action-btn {
+        padding: 10px 18px;
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.8);
+        color: var(--text-color);
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background: var(--border-color-light);
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+  
+  .start-charging-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    padding: 20px 24px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+    }
+    
+    &:active {
+      transform: translateY(-1px);
+    }
+    
+    &:disabled {
+      background: var(--text-color-disabled);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .page-header,
+  .station-card,
+  .payment-section,
+  .amount-section,
+  .business-info {
+    margin: 12px;
+    padding: 20px;
+  }
+  
+  .amount-options {
+    gap: 8px;
+    
+    .amount-option {
+      padding: 16px 12px;
+      
+      .amount-value {
+        font-size: 18px;
+      }
+      
+      .amount-unit {
+        font-size: 11px;
+      }
+      
+      &.selected::after {
+        width: 20px;
+        height: 20px;
+        font-size: 14px;
+      }
+    }
+  }
+  
+  .charging-actions {
+    padding: 20px 16px;
+    
+    .action-summary .summary-value {
+      font-size: 20px;
+    }
+    
+    .start-charging-btn {
+      padding: 18px 20px;
+      font-size: 18px;
+    }
+  }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* 加载状态 */
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--text-color-secondary);
+  
+  .loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-color-light);
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 12px;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

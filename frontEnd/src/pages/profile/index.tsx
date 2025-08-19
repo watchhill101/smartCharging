@@ -163,6 +163,7 @@ export default function Profile() {
       return;
     }
     
+    
     if (functionName === '我的车辆') {
       console.log('🛵 跳转到我的车辆页面');
       navigateTo({
@@ -172,6 +173,7 @@ export default function Profile() {
       });
       return;
     }
+    
     
     if (functionName === '钱包' || functionName === '我的钱包') {
       console.log('💰 跳转到钱包页面');
@@ -228,13 +230,6 @@ export default function Profile() {
       });
     }, 1500);
   };
-
-
-
-
-
-
-
   return (
     <View className='profile-page'>
       {/* 头部区域 */}
@@ -347,6 +342,7 @@ export default function Profile() {
             <Text className='function-label'>包月套餐</Text>
           </View>
 
+
           <View className='function-item' onClick={() => navigateToFunction('我的车辆')}>
             <View className='function-icon vehicle-icon'>🛵</View>
             <Text className='function-label'>我的车辆</Text>
@@ -386,6 +382,7 @@ export default function Profile() {
           </View>
         </View>
       </View>
+
 
 
     </View>
