@@ -6,7 +6,6 @@ import Taro, {
   setStorageSync as taroSetStorageSync
 } from '@tarojs/taro';
 import VerificationHistory from '../../components/VerificationHistory';
-import FaceVerification from '../../components/FaceVerification';
 import request from '../../utils/request';
 import { STORAGE_KEYS } from '../../utils/constants';
 import './index.scss';
