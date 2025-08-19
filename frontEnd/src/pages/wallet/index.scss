@@ -88,7 +88,7 @@
 }
 
 /* 充电防护通知 */
-.protection-alert {
+.wallet-page .protection-alert {
   position: relative;
   display: flex;
   align-items: center;
@@ -115,7 +115,7 @@
   line-height: 1.4;
 }
 
-.claim-button {
+.wallet-page .claim-button {
   background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
   color: white;
   border: none;
@@ -157,7 +157,7 @@
 }
 
 /* 账户余额区域 */
-.balance-section {
+.wallet-page .balance-section {
   background: #37C960;
   border-radius: 16px;
   padding: 24px;
@@ -212,7 +212,7 @@
   font-weight: 500;
 }
 
-.balance-amount {
+.wallet-page .balance-amount {
   font-size: 42px;
   font-weight: 800;
   color: white;
@@ -238,7 +238,7 @@
   }
 }
 
-.stat-number {
+.wallet-page .stat-number {
   font-size: 28px;
   font-weight: 700;
   color: white;
@@ -247,14 +247,14 @@
   text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.stat-label {
+.wallet-page .stat-label {
   font-size: 13px;
   color: white;
   font-weight: 500;
 }
 
 /* 电子充电卡 */
-.charging-card-section {
+.wallet-page .charging-card-section {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -310,7 +310,7 @@
   line-height: 1.4;
 }
 
-.buy-card-button {
+.wallet-page .buy-card-button {
   background: #37C960;
   color: white;
   border: none;
@@ -335,7 +335,7 @@
 }
 
 /* 热门推荐 */
-.hot-recommendations {
+.wallet-page .hot-recommendations {
   background: white;
   border-radius: 16px;
   padding: 24px;
@@ -372,7 +372,7 @@
   }
 }
 
-.card-icon {
+.wallet-page .card-icon {
   width: 40px;
   height: 40px;
   border-radius: 8px;
@@ -419,7 +419,7 @@
   justify-content: center;
 }
 
-.battery-outline {
+.wallet-page .battery-outline {
   width: 24px;
   height: 32px;
   border: 2px solid white;
@@ -439,7 +439,7 @@
   }
 }
 
-.battery-lightning {
+.wallet-page .battery-lightning {
   color: white;
   font-size: 12px;
   font-weight: bold;
@@ -535,11 +535,11 @@
     padding: 12px 16px 20px;
   }
   
-  .balance-amount {
+  .wallet-page .balance-amount {
     font-size: 36px;
   }
   
-  .balance-section {
+  .wallet-page .balance-section {
     padding: 20px;
     margin: 16px 0;
     box-shadow: 0 4px 20px rgba(55, 201, 96, 0.2);
@@ -556,12 +556,12 @@
     width: 100%;
   }
   
-  .charging-card-section {
+  .wallet-page .charging-card-section {
     padding: 16px 20px;
     margin: 20px 0;
   }
   
-  .hot-recommendations {
+  .wallet-page .hot-recommendations {
     padding: 20px;
     margin: 20px 0;
   }
@@ -579,22 +579,22 @@
   }
 }
 
-.protection-alert,
-.balance-section,
-.charging-card-section,
-.hot-recommendations {
+.wallet-page .protection-alert,
+.wallet-page .balance-section,
+.wallet-page .charging-card-section,
+.wallet-page .hot-recommendations {
   animation: slideInUp 0.6s ease-out;
 }
 
-.balance-section {
+.wallet-page .balance-section {
   animation-delay: 0.1s;
 }
 
-.charging-card-section {
+.wallet-page .charging-card-section {
   animation-delay: 0.2s;
 }
 
-.hot-recommendations {
+.wallet-page .hot-recommendations {
   animation-delay: 0.3s;
 }
 
