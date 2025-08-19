@@ -227,6 +227,39 @@
           }
         }
 
+        // 使用按钮样式
+        .use-button-container {
+          margin-top: 20rpx;
+          display: flex;
+          justify-content: center;
+          
+          .use-button {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            padding: 16rpx 32rpx;
+            border-radius: 25rpx;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4rpx 12rpx rgba(76, 175, 80, 0.3);
+            
+            &:hover {
+              transform: translateY(-2rpx);
+              box-shadow: 0 6rpx 16rpx rgba(76, 175, 80, 0.4);
+            }
+            
+            &:active {
+              transform: translateY(0);
+              box-shadow: 0 2rpx 8rpx rgba(76, 175, 80, 0.3);
+            }
+            
+            .use-button-text {
+              color: white;
+              font-size: 28rpx;
+              font-weight: 600;
+              text-align: center;
+            }
+          }
+        }
+
         // 不同类型优惠券的左边框颜色
         &:nth-child(4n + 1) {
           border-left-color: #22c55e; // 绿色
@@ -324,6 +357,362 @@
         font-size: 32rpx;
         color: #333;
         font-weight: 500;
+      }
+    }
+  }
+}
+
+// 操作按钮样式
+.coupon-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  
+  .action-button {
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    .action-text {
+      color: white;
+      font-weight: 500;
+    }
+    
+    &.use-button {
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+      }
+    }
+    
+    &.edit-button {
+      background: linear-gradient(135deg, #2196F3, #1976D2);
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+      }
+    }
+    
+    &.delete-button {
+      background: linear-gradient(135deg, #f44336, #d32f2f);
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
+      }
+    }
+  }
+}
+
+// 头部按钮样式
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  .add-button {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    .add-icon {
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+    }
+  }
+  
+  .refresh-button {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    .refresh-icon {
+      color: white;
+      font-size: 16px;
+    }
+    
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+    }
+  }
+}
+
+// 模态框样式
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  
+  .modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      
+      .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+      }
+      
+      .modal-close {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        
+        .close-icon {
+          color: #666;
+          font-size: 20px;
+          font-weight: bold;
+        }
+        
+        &:hover {
+          background: #e0e0e0;
+          transform: scale(1.1);
+        }
+      }
+    }
+    
+    .modal-body {
+      padding: 20px;
+      
+      .form-group {
+        margin-bottom: 20px;
+        
+        .form-label {
+          display: block;
+          font-size: 14px;
+          font-weight: 500;
+          color: #333;
+          margin-bottom: 8px;
+        }
+        
+        .form-select {
+          display: flex;
+          gap: 8px;
+          
+          .select-option {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            color: #666;
+            
+            &.active {
+              border-color: #4CAF50;
+              background: #4CAF50;
+              color: white;
+            }
+            
+            &:hover {
+              border-color: #4CAF50;
+              transform: translateY(-1px);
+            }
+          }
+        }
+        
+        .form-input {
+          width: 100%;
+          padding: 12px 16px;
+          border: 2px solid #e0e0e0;
+          border-radius: 8px;
+          font-size: 14px;
+          color: #333;
+          background: #f9f9f9;
+          transition: all 0.2s ease;
+          
+          &:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+          }
+        }
+      }
+    }
+    
+    .modal-footer {
+      padding: 20px;
+      border-top: 1px solid #eee;
+      display: flex;
+      gap: 12px;
+      
+      .modal-button {
+        flex: 1;
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 14px;
+        font-weight: 500;
+        
+        .button-text {
+          color: white;
+        }
+        
+        &.cancel {
+          background: #9e9e9e;
+          
+          &:hover {
+            background: #757575;
+            transform: translateY(-1px);
+          }
+        }
+        
+        &.confirm {
+          background: linear-gradient(135deg, #4CAF50, #45a049);
+          
+          &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+          }
+        }
+      }
+    }
+  }
+}
+
+// 使用确认对话框特殊样式
+.use-confirm-modal {
+  .modal-body {
+    .coupon-preview {
+      background: #f8f9fa;
+      border-radius: 12rpx;
+      padding: 24rpx;
+      margin-bottom: 24rpx;
+      
+      .coupon-preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16rpx;
+        
+        .coupon-preview-title {
+          font-size: 32rpx;
+          font-weight: 600;
+          color: #333;
+        }
+        
+        .coupon-preview-value {
+          .value-text {
+            font-size: 36rpx;
+            font-weight: 700;
+            color: #4CAF50;
+          }
+        }
+      }
+      
+      .coupon-preview-desc {
+        font-size: 28rpx;
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 16rpx;
+      }
+      
+      .coupon-preview-condition {
+        font-size: 24rpx;
+        color: #ff6b47;
+        background: #fff5f5;
+        padding: 8rpx 16rpx;
+        border-radius: 8rpx;
+        display: inline-block;
+        margin-bottom: 16rpx;
+      }
+      
+      .coupon-preview-validity {
+        font-size: 24rpx;
+        color: #999;
+      }
+    }
+    
+    .use-notice {
+      background: #fff3cd;
+      border: 1rpx solid #ffeaa7;
+      border-radius: 8rpx;
+      padding: 20rpx;
+      
+      .notice-title {
+        font-size: 28rpx;
+        font-weight: 600;
+        color: #856404;
+        margin-bottom: 12rpx;
+        display: block;
+      }
+      
+      .notice-text {
+        font-size: 24rpx;
+        color: #856404;
+        line-height: 1.6;
+        margin-bottom: 8rpx;
+        display: block;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+  
+  .modal-footer {
+    .modal-button.confirm.use {
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+      
+      &:hover {
+        background: linear-gradient(135deg, #45a049, #3d8b40);
+        transform: translateY(-1px);
+        box-shadow: 0 4rpx 12rpx rgba(76, 175, 80, 0.3);
       }
     }
   }
@@ -430,6 +819,16 @@
                 padding: 4rpx 8rpx;
                 border-radius: 8rpx;
               }
+            }
+          }
+
+          // 使用按钮样式
+          .use-button-container {
+            margin-top: 16rpx;
+
+            .use-button {
+              padding: 12rpx 24rpx;
+              font-size: 24rpx;
             }
           }
 

@@ -12,8 +12,7 @@ export default {
     'pages/orders/index',
     'pages/vehicles/index',
     'pages/wallet/index',
-    'pages/feature-dev/index',
-    'pages/charging/start/index'
+
   ],
   window: {
     backgroundTextStyle: 'light',

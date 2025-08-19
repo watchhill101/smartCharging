@@ -38,10 +38,8 @@ interface FaceVerificationResult {
 
 export default function Profile() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-
   const [showFaceVerification, setShowFaceVerification] = useState(false);
   const [showVerificationHistory, setShowVerificationHistory] = useState(false);
-
 
   useLoad(() => {
     console.log('🏠 个人中心页面加载');
@@ -61,7 +59,6 @@ export default function Profile() {
 
   const loadUserProfile = async () => {
     try {
-
       console.log('🔄 开始加载用户信息...');
 
       // 首先尝试从存储中获取用户信息
@@ -100,8 +97,8 @@ export default function Profile() {
         // 使用模拟数据而不是直接跳转登录
         setUserProfile({
           id: 'demo_user',
-          phone: '71178870',
-          nickName: '充电用户',
+          phone: '17728203358',
+          nickName: '用户3358',
           balance: 0.00,
           verificationLevel: 'basic',
           vehicles: [],
@@ -148,8 +145,8 @@ export default function Profile() {
         // 使用模拟数据作为最后的后备
         setUserProfile({
           id: 'demo_user',
-          phone: '71178870',
-          nickName: '充电用户',
+          phone: '17728203358',
+          nickName: '用户3358',
           balance: 0.00,
           verificationLevel: 'basic',
           vehicles: [],
@@ -197,8 +194,6 @@ export default function Profile() {
     Taro.showToast({ title: error, icon: 'error' });
   };
 
-
-
   const navigateToFunction = (functionName: string) => {
     if (functionName === '我的订单') {
       Taro.navigateTo({
@@ -220,26 +215,14 @@ export default function Profile() {
       });
       return;
     }
-<<<<<<< Updated upstream
     
-=======
-
-    if (functionName === '卡券中心') {
+    if (functionName === '我的卡券') {
       Taro.navigateTo({
         url: '/pages/profile/coupons'
       });
       return;
     }
-
-    // 画圈的功能跳转到开发中页面
-    if (['我的电卡', '包月套餐', '充电会员', '常用设置', '电池报告'].includes(functionName)) {
-      Taro.navigateTo({
-        url: `/pages/feature-dev/index?featureName=${encodeURIComponent(functionName)}`
-      });
-      return;
-    }
-
->>>>>>> Stashed changes
+    
     Taro.showToast({
       title: `${functionName}功能开发中`,
       icon: 'none'
@@ -277,8 +260,6 @@ export default function Profile() {
       <View className='profile-header'>
         <View className='header-bg'></View>
         <View className='header-content'>
-          <Text className='page-title'>电瓶车个人中心</Text>
-
           {/* 用户信息区域 */}
           <View className='user-info-section'>
             <View className='user-basic-info'>
@@ -293,19 +274,15 @@ export default function Profile() {
               </View>
               <View className='user-details'>
                 <Text className='user-name'>
-                  {userProfile?.nickName || userProfile?.phone ? `用户${userProfile.phone?.slice(-4)}` : '充电用户'}
+                  {userProfile?.nickName || `用户${userProfile?.phone?.slice(-4) || '3358'}`}
                 </Text>
                 <View className='user-id-section'>
                   <Text className='user-id-label'>ID</Text>
-                  <Text className='user-id'>{userProfile?.phone || '71178870'}</Text>
-                  <Text className='user-type'>电瓶车充电</Text>
+                  <Text className='user-id'>{userProfile?.phone || '17728203358'}</Text>
+                  <Text className='user-type'>汽车充电</Text>
                 </View>
               </View>
             </View>
-
-            <Button className='switch-button' onClick={switchToCharging}>
-              切换汽车充电
-            </Button>
           </View>
 
           {/* 完善资料提示 */}
@@ -320,23 +297,22 @@ export default function Profile() {
       <View className='stats-section'>
         <View className='stat-item'>
           <Text className='stat-number'>{userProfile?.chargingCount || 0}</Text>
-          <Text className='stat-label'>充电中(条)</Text>
+          <Text className='stat-label'>充电中</Text>
         </View>
         <View className='stat-divider'></View>
         <View className='stat-item'>
           <Text className='stat-number'>{userProfile?.points || 0}</Text>
           <Text className='stat-label'>积分</Text>
-          <View className='stat-badge'>未签到</View>
         </View>
         <View className='stat-divider'></View>
         <View className='stat-item' onClick={() => navigateToFunction('钱包')}>
           <Text className='stat-number'>{userProfile?.balance?.toFixed(2) || '0.00'}</Text>
-          <Text className='stat-label'>钱包(元)</Text>
+          <Text className='stat-label'>我的余额</Text>
         </View>
         <View className='stat-divider'></View>
-        <View className='stat-item'>
-          <View className='card-center-icon'>🎫</View>
-          <Text className='stat-label'>卡包中心</Text>
+        <View className='stat-item' onClick={() => navigateToFunction('我的卡券')}>
+          <Text className='stat-number'>0</Text>
+          <Text className='stat-label'>我的卡券</Text>
         </View>
       </View>
 
@@ -344,11 +320,14 @@ export default function Profile() {
       <View className='service-section'>
         <View className='service-content'>
           <View className='service-info'>
-            <Text className='service-title'>安心充电{'\n'}服务</Text>
+            <Text className='service-title'>安心充电服务</Text>
             <Text className='service-desc'>服务升级，守护您的每次充电</Text>
           </View>
           <Button className='service-button' onClick={() => navigateToFunction('安心充电服务')}>
-            去开通 {'>'}
+            <Text className='button-text'>立即实时防护</Text>
+            <View className='button-icon'>
+              <Text className='arrow-icon'>→</Text>
+            </View>
           </Button>
         </View>
       </View>
@@ -358,21 +337,35 @@ export default function Profile() {
         <Text className='section-title'>常用功能</Text>
         <View className='functions-grid'>
           <View className='function-item' onClick={() => navigateToFunction('我的订单')}>
-            <View className='function-icon order-icon'>📋</View>
+            <View className='function-icon order-icon'>
+              <View className='order-box'>
+                <View className='order-lid'></View>
+                <View className='order-lightning'>⚡</View>
+              </View>
+            </View>
             <Text className='function-label'>我的订单</Text>
           </View>
           <View className='function-item' onClick={() => navigateToFunction('我的电卡')}>
-            <View className='function-icon card-icon'>💳</View>
+            <View className='function-icon card-icon'>
+              <View className='card-tag'>
+                <View className='card-hole'></View>
+                <View className='card-lightning'>⚡</View>
+                <View className='card-shadow'></View>
+              </View>
+            </View>
             <Text className='function-label'>我的电卡</Text>
           </View>
           <View className='function-item' onClick={() => navigateToFunction('包月套餐')}>
-            <View className='function-icon package-icon'>📦</View>
+            <View className='function-icon package-icon'>
+              <View className='package-tag'>
+                <View className='package-crescent'></View>
+                <Text className='package-number'>30</Text>
+                <View className='package-flap'></View>
+              </View>
+            </View>
             <Text className='function-label'>包月套餐</Text>
           </View>
-          <View className='function-item' onClick={() => navigateToFunction('充电会员')}>
-            <View className='function-icon member-icon'>💎</View>
-            <Text className='function-label'>充电会员</Text>
-          </View>
+
           <View className='function-item' onClick={() => navigateToFunction('我的车辆')}>
             <View className='function-icon vehicle-icon'>🛵</View>
             <Text className='function-label'>我的车辆</Text>
@@ -382,84 +375,38 @@ export default function Profile() {
             <Text className='function-label'>常用设置</Text>
           </View>
           <View className='function-item' onClick={() => navigateToFunction('AI客服')}>
-            <View className='function-icon ai-icon'>🤖</View>
+            <View className='function-icon ai-icon'>
+              <View className='ai-bubble'>
+                <Text className='ai-text'>Ai</Text>
+              </View>
+            </View>
             <Text className='function-label'>AI客服</Text>
           </View>
           <View className='function-item' onClick={() => navigateToFunction('头像装扮')}>
-            <View className='function-icon avatar-icon'>👑</View>
+            <View className='function-icon avatar-icon'>
+              <View className='shirt-container'>
+                <View className='shirt-outline'>
+                  <View className='shirt-pocket'></View>
+                </View>
+              </View>
+            </View>
             <Text className='function-label'>头像装扮</Text>
           </View>
-        </View>
-      </View>
-
-      {/* 电池报告 */}
-      <View className='battery-report-section'>
-        <View className='battery-report-item' onClick={() => navigateToFunction('电池报告')}>
-          <View className='battery-icon-large'>🔋</View>
-          <Text className='battery-label'>电池报告</Text>
-        </View>
-      </View>
-
-      {/* 充电会员推广 */}
-      <View className='membership-section'>
-        <View className='membership-card'>
-          <View className='membership-header'>
-            <View className='membership-icon'>👑</View>
-            <Text className='membership-title'>充电会员</Text>
-            <Text className='membership-subtitle'>充电省钱又省心</Text>
-          </View>
-
-          <View className='membership-benefits'>
-            <View className='benefit-item'>
-              <Text className='benefit-title'>充电优惠</Text>
-              <Text className='benefit-value'>8.5折</Text>
+          <View className='function-item' onClick={() => navigateToFunction('电池报告')}>
+            <View className='function-icon battery-icon'>
+              <View className='battery-container'>
+                <View className='battery-outline'>
+                  <View className='battery-wave'></View>
+                </View>
+                <View className='new-badge'>NEW</View>
+              </View>
             </View>
-            <View className='benefit-item'>
-              <Text className='benefit-title'>积分兑</Text>
-              <Text className='benefit-value'>充电券</Text>
-            </View>
-            <View className='benefit-item'>
-              <Text className='benefit-title'>充电防护</Text>
-              <Text className='benefit-value'>30天不限量</Text>
-            </View>
-          </View>
-
-          <Button className='membership-join-btn' onClick={() => navigateToFunction('开通会员')}>
-            立即省钱
-          </Button>
-        </View>
-      </View>
-
-      {/* 换电业务 */}
-      <View className='battery-swap-section'>
-        <Text className='section-title'>换电业务</Text>
-        <View className='swap-functions-grid'>
-          <View className='swap-function-item' onClick={() => navigateToFunction('我的套餐')}>
-            <View className='swap-icon package-swap-icon'>📊</View>
-            <Text className='swap-label'>我的套餐</Text>
-          </View>
-          <View className='swap-function-item' onClick={() => navigateToFunction('我的押金')}>
-            <View className='swap-icon deposit-icon'>💰</View>
-            <Text className='swap-label'>我的押金</Text>
-          </View>
-          <View className='swap-function-item' onClick={() => navigateToFunction('换电记录')}>
-            <View className='swap-icon record-icon'>📝</View>
-            <Text className='swap-label'>换电记录</Text>
-          </View>
-          <View className='swap-function-item' onClick={() => navigateToFunction('我的电池')}>
-            <View className='swap-icon battery-swap-icon'>🔋</View>
-            <Text className='swap-label'>我的电池</Text>
-          </View>
-          <View className='swap-function-item' onClick={() => navigateToFunction('认证信息')}>
-            <View className='swap-icon auth-icon'>✅</View>
-            <Text className='swap-label'>认证信息</Text>
-          </View>
-          <View className='swap-function-item' onClick={() => navigateToFunction('服务网点')}>
-            <View className='swap-icon service-icon'>📍</View>
-            <Text className='swap-label'>服务网点</Text>
+            <Text className='function-label'>电池报告</Text>
           </View>
         </View>
       </View>
+
+
     </View>
   );
 }

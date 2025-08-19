@@ -1,54 +1,6 @@
 [
   {
     "_id": "cs001",
-    "name": "天鹅湾充电站",
-    "address": "河北省保定市竞秀区丽园路和润家园",
-    "location": {
-      "type": "Point",
-      "coordinates": [115.4901, 38.8731]
-    },
-    "operator": "河北省-保定市-李*丽",
-    "operatingHours": { "open": "00:00", "close": "24:00" },
-    "parkingFee": 0,
-    "photos": ["https://example.com/station1.jpg"],
-    "chargers": [
-      {
-        "chargerId": "ch001",
-        "type": "fast",
-        "power": 60,
-        "status": "offline",
-        "pricing": { "electricityFee": 0.83, "serviceFee": 0.12 }
-      },
-      {
-        "chargerId": "ch002",
-        "type": "slow",
-        "power": 7,
-        "status": "available",
-        "pricing": { "electricityFee": 0.75, "serviceFee": 0.10 }
-      },
-      {
-        "chargerId": "ch003",
-        "type": "slow",
-        "power": 7,
-        "status": "available",
-        "pricing": { "electricityFee": 0.75, "serviceFee": 0.10 }
-      },
-      {
-        "chargerId": "ch004",
-        "type": "slow",
-        "power": 7,
-        "status": "available",
-        "pricing": { "electricityFee": 0.75, "serviceFee": 0.10 }
-      }
-    ],
-    "rating": 4.5,
-    "reviewCount": 28,
-    "distance": 1340,
-    "createdAt": "2024-01-01T00:00:00Z",
-    "updatedAt": "2024-01-01T00:00:00Z"
-  },
-  {
-    "_id": "cs002",
     "name": "保定市志广好滋味快餐饮食连锁有限公司保定市东兴东路店",
     "address": "河北省保定市莲池区东兴东路与东三环交叉口",
     "location": {
@@ -61,10 +13,24 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch005",
+        "chargerId": "ch001",
         "type": "slow",
         "power": 7,
         "status": "available",
+        "pricing": { "electricityFee": 0.65, "serviceFee": 0.05 }
+      },
+      {
+        "chargerId": "ch002",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 0.85, "serviceFee": 0.08 }
+      },
+      {
+        "chargerId": "ch003",
+        "type": "slow",
+        "power": 7,
+        "status": "busy",
         "pricing": { "electricityFee": 0.65, "serviceFee": 0.05 }
       }
     ],
@@ -75,7 +41,7 @@
     "updatedAt": "2024-01-01T00:00:00Z"
   },
   {
-    "_id": "cs003",
+    "_id": "cs002",
     "name": "董傲国际仓储充电站",
     "address": "河北省保定市清苑区董傲国际仓储物流园",
     "location": {
@@ -88,23 +54,64 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch006",
+        "chargerId": "ch004",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 0.95, "serviceFee": 0.05 }
       },
       {
-        "chargerId": "ch007",
+        "chargerId": "ch005",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 0.95, "serviceFee": 0.05 }
+      },
+      {
+        "chargerId": "ch006",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "offline",
+        "pricing": { "electricityFee": 1.25, "serviceFee": 0.10 }
       }
     ],
     "rating": 4.6,
     "reviewCount": 28,
     "distance": 11000,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "_id": "cs003",
+    "name": "董傲国际仓储内充电站",
+    "address": "河北省保定市清苑区董傲国际仓储物流园内部",
+    "location": {
+      "type": "Point",
+      "coordinates": [115.5055, 38.8803]
+    },
+    "operator": "星星充电",
+    "operatingHours": { "open": "00:00", "close": "23:59" },
+    "parkingFee": 0,
+    "photos": [],
+    "chargers": [
+      {
+        "chargerId": "ch007",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.75, "serviceFee": 0.05 }
+      },
+      {
+        "chargerId": "ch008",
+        "type": "fast",
+        "power": 60,
+        "status": "busy",
+        "pricing": { "electricityFee": 0.90, "serviceFee": 0.08 }
+      }
+    ],
+    "rating": 4.4,
+    "reviewCount": 15,
+    "distance": 22000,
     "createdAt": "2024-01-01T00:00:00Z",
     "updatedAt": "2024-01-01T00:00:00Z"
   },
@@ -122,18 +129,25 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch008",
-        "type": "fast",
+        "chargerId": "ch009",
+        "type": "ultra-fast",
         "power": 120,
         "status": "available",
         "pricing": { "electricityFee": 1.20, "serviceFee": 0.15 }
       },
       {
-        "chargerId": "ch009",
+        "chargerId": "ch010",
         "type": "slow",
         "power": 7,
         "status": "available",
         "pricing": { "electricityFee": 0.85, "serviceFee": 0.10 }
+      },
+      {
+        "chargerId": "ch011",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 1.00, "serviceFee": 0.12 }
       }
     ],
     "rating": 4.7,
@@ -156,25 +170,32 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch010",
+        "chargerId": "ch012",
         "type": "fast",
         "power": 60,
         "status": "busy",
         "pricing": { "electricityFee": 0.90, "serviceFee": 0.08 }
       },
       {
-        "chargerId": "ch011",
+        "chargerId": "ch013",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 0.90, "serviceFee": 0.08 }
       },
       {
-        "chargerId": "ch012",
+        "chargerId": "ch014",
         "type": "slow",
         "power": 7,
         "status": "available",
         "pricing": { "electricityFee": 0.70, "serviceFee": 0.05 }
+      },
+      {
+        "chargerId": "ch015",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "offline",
+        "pricing": { "electricityFee": 1.15, "serviceFee": 0.12 }
       }
     ],
     "rating": 4.5,
@@ -185,6 +206,177 @@
   },
   {
     "_id": "cs006",
+    "name": "保定市万和城购物中心充电站",
+    "address": "河北省保定市莲池区万和城购物中心地面停车场",
+    "location": {
+      "type": "Point",
+      "coordinates": [115.4851, 38.8651]
+    },
+    "operator": "特来电",
+    "operatingHours": { "open": "09:00", "close": "21:00" },
+    "parkingFee": 3,
+    "photos": [],
+    "chargers": [
+      {
+        "chargerId": "ch016",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 1.05, "serviceFee": 0.12 }
+      },
+      {
+        "chargerId": "ch017",
+        "type": "slow",
+        "power": 7,
+        "status": "offline",
+        "pricing": { "electricityFee": 0.80, "serviceFee": 0.08 }
+      },
+      {
+        "chargerId": "ch018",
+        "type": "fast",
+        "power": 60,
+        "status": "busy",
+        "pricing": { "electricityFee": 1.05, "serviceFee": 0.12 }
+      }
+    ],
+    "rating": 4.3,
+    "reviewCount": 18,
+    "distance": 15800,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "_id": "cs007",
+    "name": "保定市植物园充电站",
+    "address": "河北省保定市竞秀区植物园西门停车场",
+    "location": {
+      "type": "Point",
+      "coordinates": [115.4751, 38.8801]
+    },
+    "operator": "星星充电",
+    "operatingHours": { "open": "06:00", "close": "20:00" },
+    "parkingFee": 0,
+    "photos": [],
+    "chargers": [
+      {
+        "chargerId": "ch019",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.75, "serviceFee": 0.05 }
+      },
+      {
+        "chargerId": "ch020",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.75, "serviceFee": 0.05 }
+      },
+      {
+        "chargerId": "ch021",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 0.95, "serviceFee": 0.08 }
+      }
+    ],
+    "rating": 4.6,
+    "reviewCount": 25,
+    "distance": 18200,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "_id": "cs008",
+    "name": "保定市高新区科技园充电站",
+    "address": "河北省保定市高新区科技园A区停车场",
+    "location": {
+      "type": "Point",
+      "coordinates": [115.5101, 38.8851]
+    },
+    "operator": "小鹏充电",
+    "operatingHours": { "open": "00:00", "close": "24:00" },
+    "parkingFee": 0,
+    "photos": [],
+    "chargers": [
+      {
+        "chargerId": "ch022",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "available",
+        "pricing": { "electricityFee": 1.15, "serviceFee": 0.18 }
+      },
+      {
+        "chargerId": "ch023",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "available",
+        "pricing": { "electricityFee": 1.15, "serviceFee": 0.18 }
+      },
+      {
+        "chargerId": "ch024",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.90, "serviceFee": 0.10 }
+      },
+      {
+        "chargerId": "ch025",
+        "type": "fast",
+        "power": 60,
+        "status": "busy",
+        "pricing": { "electricityFee": 1.00, "serviceFee": 0.12 }
+      }
+    ],
+    "rating": 4.9,
+    "reviewCount": 31,
+    "distance": 25000,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "_id": "cs009",
+    "name": "保定市大学城充电站",
+    "address": "河北省保定市莲池区大学城商业街停车场",
+    "location": {
+      "type": "Point",
+      "coordinates": [115.4951, 38.8751]
+    },
+    "operator": "特来电",
+    "operatingHours": { "open": "08:00", "close": "23:00" },
+    "parkingFee": 2,
+    "photos": [],
+    "chargers": [
+      {
+        "chargerId": "ch026",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 0.95, "serviceFee": 0.10 }
+      },
+      {
+        "chargerId": "ch027",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.70, "serviceFee": 0.05 }
+      },
+      {
+        "chargerId": "ch028",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 0.95, "serviceFee": 0.10 }
+      }
+    ],
+    "rating": 4.4,
+    "reviewCount": 22,
+    "distance": 9200,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "_id": "cs010",
     "name": "北京国贸CBD充电站",
     "address": "北京市朝阳区建国门外大街1号国贸商城地下停车场",
     "location": {
@@ -197,18 +389,32 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch013",
-        "type": "fast",
+        "chargerId": "ch029",
+        "type": "ultra-fast",
         "power": 120,
         "status": "available",
         "pricing": { "electricityFee": 1.50, "serviceFee": 0.20 }
       },
       {
-        "chargerId": "ch014",
+        "chargerId": "ch030",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 1.20, "serviceFee": 0.15 }
+      },
+      {
+        "chargerId": "ch031",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "busy",
+        "pricing": { "electricityFee": 1.50, "serviceFee": 0.20 }
+      },
+      {
+        "chargerId": "ch032",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.95, "serviceFee": 0.10 }
       }
     ],
     "rating": 4.8,
@@ -218,7 +424,89 @@
     "updatedAt": "2024-01-01T00:00:00Z"
   },
   {
-    "_id": "cs007",
+    "_id": "cs011",
+    "name": "北京西单大悦城充电站",
+    "address": "北京市西城区西单北大街131号大悦城地下停车场",
+    "location": {
+      "type": "Point",
+      "coordinates": [116.3701, 39.9131]
+    },
+    "operator": "特来电",
+    "operatingHours": { "open": "09:00", "close": "22:00" },
+    "parkingFee": 8,
+    "photos": [],
+    "chargers": [
+      {
+        "chargerId": "ch033",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 1.25, "serviceFee": 0.18 }
+      },
+      {
+        "chargerId": "ch034",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "available",
+        "pricing": { "electricityFee": 1.45, "serviceFee": 0.22 }
+      },
+      {
+        "chargerId": "ch035",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.90, "serviceFee": 0.12 }
+      }
+    ],
+    "rating": 4.6,
+    "reviewCount": 89,
+    "distance": 12000,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "_id": "cs012",
+    "name": "北京三里屯太古里充电站",
+    "address": "北京市朝阳区三里屯路19号太古里北区停车场",
+    "location": {
+      "type": "Point",
+      "coordinates": [116.4551, 39.9351]
+    },
+    "operator": "小鹏充电",
+    "operatingHours": { "open": "10:00", "close": "22:00" },
+    "parkingFee": 12,
+    "photos": [],
+    "chargers": [
+      {
+        "chargerId": "ch036",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "available",
+        "pricing": { "electricityFee": 1.60, "serviceFee": 0.25 }
+      },
+      {
+        "chargerId": "ch037",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 1.30, "serviceFee": 0.20 }
+      },
+      {
+        "chargerId": "ch038",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "busy",
+        "pricing": { "electricityFee": 1.60, "serviceFee": 0.25 }
+      }
+    ],
+    "rating": 4.7,
+    "reviewCount": 67,
+    "distance": 15000,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "_id": "cs013",
     "name": "邯郸市丛台公园充电站",
     "address": "河北省邯郸市丛台区丛台公园东门停车场",
     "location": {
@@ -231,18 +519,25 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch015",
+        "chargerId": "ch039",
         "type": "slow",
         "power": 7,
         "status": "available",
         "pricing": { "electricityFee": 0.75, "serviceFee": 0.05 }
       },
       {
-        "chargerId": "ch016",
+        "chargerId": "ch040",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 1.10, "serviceFee": 0.12 }
+      },
+      {
+        "chargerId": "ch041",
+        "type": "slow",
+        "power": 7,
+        "status": "busy",
+        "pricing": { "electricityFee": 0.75, "serviceFee": 0.05 }
       }
     ],
     "rating": 4.5,
@@ -252,7 +547,89 @@
     "updatedAt": "2024-01-01T00:00:00Z"
   },
   {
-    "_id": "cs008",
+    "_id": "cs014",
+    "name": "邯郸市火车站充电站",
+    "address": "河北省邯郸市丛台区火车站广场停车场",
+    "location": {
+      "type": "Point",
+      "coordinates": [114.4801, 36.6151]
+    },
+    "operator": "国家电网",
+    "operatingHours": { "open": "00:00", "close": "24:00" },
+    "parkingFee": 0,
+    "photos": [],
+    "chargers": [
+      {
+        "chargerId": "ch042",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 1.00, "serviceFee": 0.10 }
+      },
+      {
+        "chargerId": "ch043",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "available",
+        "pricing": { "electricityFee": 1.30, "serviceFee": 0.15 }
+      },
+      {
+        "chargerId": "ch044",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.80, "serviceFee": 0.08 }
+      }
+    ],
+    "rating": 4.3,
+    "reviewCount": 28,
+    "distance": 8500,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "_id": "cs015",
+    "name": "邯郸市万达广场充电站",
+    "address": "河北省邯郸市丛台区万达广场地下停车场",
+    "location": {
+      "type": "Point",
+      "coordinates": [114.5051, 36.6351]
+    },
+    "operator": "特来电",
+    "operatingHours": { "open": "09:00", "close": "21:00" },
+    "parkingFee": 5,
+    "photos": [],
+    "chargers": [
+      {
+        "chargerId": "ch045",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 1.15, "serviceFee": 0.15 }
+      },
+      {
+        "chargerId": "ch046",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "available",
+        "pricing": { "electricityFee": 1.35, "serviceFee": 0.18 }
+      },
+      {
+        "chargerId": "ch047",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.85, "serviceFee": 0.10 }
+      }
+    ],
+    "rating": 4.6,
+    "reviewCount": 42,
+    "distance": 11000,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "_id": "cs016",
     "name": "武汉市光谷广场充电站",
     "address": "湖北省武汉市洪山区光谷广场地下停车场",
     "location": {
@@ -265,18 +642,32 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch017",
-        "type": "fast",
+        "chargerId": "ch048",
+        "type": "ultra-fast",
         "power": 120,
         "status": "available",
         "pricing": { "electricityFee": 1.40, "serviceFee": 0.20 }
       },
       {
-        "chargerId": "ch018",
+        "chargerId": "ch049",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 1.20, "serviceFee": 0.15 }
+      },
+      {
+        "chargerId": "ch050",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "busy",
+        "pricing": { "electricityFee": 1.40, "serviceFee": 0.20 }
+      },
+      {
+        "chargerId": "ch051",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.90, "serviceFee": 0.12 }
       }
     ],
     "rating": 4.8,
@@ -286,7 +677,89 @@
     "updatedAt": "2024-01-01T00:00:00Z"
   },
   {
-    "_id": "cs009",
+    "_id": "cs017",
+    "name": "武汉市黄鹤楼充电站",
+    "address": "湖北省武汉市武昌区黄鹤楼景区停车场",
+    "location": {
+      "type": "Point",
+      "coordinates": [114.3101, 30.5451]
+    },
+    "operator": "星星充电",
+    "operatingHours": { "open": "07:00", "close": "19:00" },
+    "parkingFee": 8,
+    "photos": [],
+    "chargers": [
+      {
+        "chargerId": "ch052",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.80, "serviceFee": 0.08 }
+      },
+      {
+        "chargerId": "ch053",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 1.10, "serviceFee": 0.12 }
+      },
+      {
+        "chargerId": "ch054",
+        "type": "slow",
+        "power": 7,
+        "status": "busy",
+        "pricing": { "electricityFee": 0.80, "serviceFee": 0.08 }
+      }
+    ],
+    "rating": 4.4,
+    "reviewCount": 45,
+    "distance": 14000,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "_id": "cs018",
+    "name": "武汉市东湖绿道充电站",
+    "address": "湖北省武汉市武昌区东湖绿道游客中心停车场",
+    "location": {
+      "type": "Point",
+      "coordinates": [114.3701, 30.5551]
+    },
+    "operator": "国家电网",
+    "operatingHours": { "open": "06:00", "close": "20:00" },
+    "parkingFee": 0,
+    "photos": [],
+    "chargers": [
+      {
+        "chargerId": "ch055",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 1.10, "serviceFee": 0.12 }
+      },
+      {
+        "chargerId": "ch056",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.75, "serviceFee": 0.08 }
+      },
+      {
+        "chargerId": "ch057",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 1.10, "serviceFee": 0.12 }
+      }
+    ],
+    "rating": 4.7,
+    "reviewCount": 56,
+    "distance": 16000,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "_id": "cs019",
     "name": "成都市春熙路充电站",
     "address": "四川省成都市锦江区春熙路步行街地下停车场",
     "location": {
@@ -299,23 +772,126 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch019",
-        "type": "fast",
+        "chargerId": "ch058",
+        "type": "ultra-fast",
         "power": 120,
         "status": "available",
         "pricing": { "electricityFee": 1.35, "serviceFee": 0.18 }
       },
       {
-        "chargerId": "ch020",
+        "chargerId": "ch059",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 1.15, "serviceFee": 0.15 }
+      },
+      {
+        "chargerId": "ch060",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "busy",
+        "pricing": { "electricityFee": 1.35, "serviceFee": 0.18 }
+      },
+      {
+        "chargerId": "ch061",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.85, "serviceFee": 0.10 }
       }
     ],
     "rating": 4.6,
     "reviewCount": 92,
     "distance": 7000,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "_id": "cs020",
+    "name": "成都市宽窄巷子充电站",
+    "address": "四川省成都市青羊区宽窄巷子景区停车场",
+    "location": {
+      "type": "Point",
+      "coordinates": [104.0601, 30.6651]
+    },
+    "operator": "小鹏充电",
+    "operatingHours": { "open": "08:00", "close": "21:00" },
+    "parkingFee": 6,
+    "photos": [],
+    "chargers": [
+      {
+        "chargerId": "ch062",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 1.20, "serviceFee": 0.16 }
+      },
+      {
+        "chargerId": "ch063",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "available",
+        "pricing": { "electricityFee": 1.40, "serviceFee": 0.20 }
+      },
+      {
+        "chargerId": "ch064",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.90, "serviceFee": 0.12 }
+      }
+    ],
+    "rating": 4.5,
+    "reviewCount": 38,
+    "distance": 12000,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "_id": "cs021",
+    "name": "成都市天府软件园充电站",
+    "address": "四川省成都市高新区天府软件园C区停车场",
+    "location": {
+      "type": "Point",
+      "coordinates": [104.0701, 30.5851]
+    },
+    "operator": "星星充电",
+    "operatingHours": { "open": "00:00", "close": "24:00" },
+    "parkingFee": 0,
+    "photos": [],
+    "chargers": [
+      {
+        "chargerId": "ch065",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "available",
+        "pricing": { "electricityFee": 1.45, "serviceFee": 0.22 }
+      },
+      {
+        "chargerId": "ch066",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.85, "serviceFee": 0.10 }
+      },
+      {
+        "chargerId": "ch067",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "available",
+        "pricing": { "electricityFee": 1.45, "serviceFee": 0.22 }
+      },
+      {
+        "chargerId": "ch068",
+        "type": "fast",
+        "power": 60,
+        "status": "busy",
+        "pricing": { "electricityFee": 1.25, "serviceFee": 0.18 }
+      }
+    ],
+    "rating": 4.8,
+    "reviewCount": 67,
+    "distance": 18000,
     "createdAt": "2024-01-01T00:00:00Z",
     "updatedAt": "2024-01-01T00:00:00Z"
   }

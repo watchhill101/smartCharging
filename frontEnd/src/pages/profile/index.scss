@@ -1,586 +1,770 @@
 .profile-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
+  background: #f5f5f5;
+}
 
-  /* 头部区域 */
-  .profile-header {
+/* 头部区域 */
+.profile-header {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  padding-top: calc(var(--status-bar-height, 0px) + 10px);
+  padding-bottom: 40px;
+  color: white;
+  position: relative;
+}
+
+.header-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  padding: 0 20px;
+}
+
+/* 用户信息区域 */
+.user-info-section {
+  margin-bottom: 20px;
+}
+
+.user-basic-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.user-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.avatar-default {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-icon {
+  font-size: 30px;
+  color: white;
+}
+
+.user-details {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.user-id-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-id-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+.user-id {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.user-type {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* 完善资料提示 */
+.info-tip {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  backdrop-filter: blur(10px);
+}
+
+.tip-text {
+  font-size: 14px;
+  color: white;
+  flex: 1;
+}
+
+.complete-link {
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* 统计数据区域 */
+.stats-section {
+  background: white;
+  border-radius: 12px;
+  margin: -20px 20px 20px;
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  position: relative;
+  z-index: 10;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  display: block;
+  margin-bottom: 8px;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #666;
+  display: block;
+  font-weight: 500;
+}
+
+.stat-badge {
+  background: #ff6b35;
+  color: white;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  margin-top: 6px;
+  display: inline-block;
+  font-weight: 500;
+  position: absolute;
+  top: -8px;
+  right: 50%;
+  transform: translateX(50%);
+}
+
+.stat-divider {
+  width: 1px;
+  height: 50px;
+  background: #f0f0f0;
+  margin: 0 15px;
+}
+
+/* 安心充电服务 */
+.service-section {
+  margin: 0 20px 20px;
+  background: #2a2a3a;
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+      linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.03) 50%, transparent 70%);
+    pointer-events: none;
+  }
+}
+
+.service-content {
+  background: transparent;
+  border-radius: 15px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  z-index: 1;
+  gap: 0;
+}
+
+.service-info {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  min-width: 0;
+  margin-right: 20px;
+  overflow: hidden;
+}
+
+.service-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #e6b17a;
+  line-height: 1.1;
+  font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.service-desc {
+  font-size: 14px;
+  color: #b8c5d1;
+  line-height: 1.2;
+  font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+  opacity: 0.9;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.service-button {
+  background: linear-gradient(135deg, #ffb366 0%, #ff9800 100%);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 90px;
+  max-width: 90px;
+  box-shadow: 0 3px 8px rgba(255, 179, 102, 0.3);
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 179, 102, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &::after {
+    border: none;
+  }
+}
+
+/* 常用功能 */
+.functions-section {
+  background: white;
+  border-radius: 16px;
+  margin: 0 20px 20px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  
+  &::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: #4CAF50;
+    border-radius: 2px;
+    margin-right: 8px;
+  }
+}
+
+.functions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.function-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 8px;
+  border-radius: 12px;
+  
+  &:hover {
+    transform: translateY(-2px);
+    background: rgba(76, 175, 80, 0.05);
+  }
+}
+
+.function-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+  
+  &.order-icon,
+  &.card-icon,
+  &.package-icon,
+  &.vehicle-icon,
+  &.settings-icon,
+  &.ai-icon,
+  &.avatar-icon,
+  &.battery-icon {
+    background: transparent;
     position: relative;
-    padding: 40rpx 32rpx 24rpx;
-
-    .header-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-      backdrop-filter: blur(20rpx);
-    }
-
-    .header-content {
+  }
+  
+  &.order-icon {
+    .order-box {
+      width: 32px;
+      height: 32px;
+      background: #4CAF50;
+      border-radius: 6px;
       position: relative;
-      z-index: 1;
-    }
-
-    .page-title {
-      color: white;
-      font-size: 36rpx;
-      font-weight: 600;
-      text-align: center;
-      margin-bottom: 32rpx;
-    }
-
-    /* 用户信息区域 */
-    .user-info-section {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24rpx;
-
-      .user-basic-info {
-        display: flex;
-        align-items: center;
-
-        .user-avatar {
-          width: 100rpx;
-          height: 100rpx;
-          margin-right: 24rpx;
-
-          .avatar-image {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-          }
-
-          .avatar-default {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            .avatar-icon {
-              font-size: 40rpx;
-              color: rgba(255, 255, 255, 0.8);
-            }
-          }
-        }
-
-        .user-details {
-
-
-          .user-name {
-            color: white;
-            font-size: 28rpx;
-            font-weight: 600;
-            margin-bottom: 8rpx;
-          }
-
-          .user-id-section {
-            align-items: center;
-            gap: 8rpx;
-
-            .user-id-label {
-              background: rgba(255, 255, 255, 0.2);
-              color: white;
-              font-size: 18rpx;
-              padding: 4rpx 12rpx;
-              border-radius: 12rpx;
-            }
-
-            .user-id {
-              color: white;
-              font-size: 22rpx;
-              font-weight: 500;
-            }
-
-            .user-type {
-              color: rgba(255, 255, 255, 0.8);
-              font-size: 22rpx;
-            }
-          }
-        }
+      justify-content: center;
+      
+      .order-lid {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 8px;
+        background: #45a049;
+        border-radius: 6px 6px 0 0;
       }
-
-      .switch-button {
+      
+      .order-lightning {
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        z-index: 1;
+        position: relative;
+      }
+    }
+  }
+  
+  &.card-icon {
+    .card-tag {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+      border-radius: 8px 8px 12px 8px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      .card-hole {
+        position: absolute;
+        top: 4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 6px;
+        height: 6px;
         background: white;
-        color: #22c55e;
-        border: none;
-        border-radius: 24rpx;
-        padding: 16rpx 24rpx;
-        font-size: 22rpx;
-        font-weight: 500;
-        box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-
-        &:active {
-          transform: scale(0.98);
-        }
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+      
+      .card-lightning {
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 1;
+        position: relative;
+      }
+      
+      .card-shadow {
+        position: absolute;
+        top: 2px;
+        right: -2px;
+        width: 28px;
+        height: 28px;
+        background: rgba(33, 150, 243, 0.4);
+        border-radius: 8px 8px 12px 8px;
+        z-index: -1;
       }
     }
-
-    /* 完善资料提示 */
-    .info-tip {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 16rpx;
-      padding: 20rpx 24rpx;
+  }
+  
+  &.package-icon {
+    .package-tag {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+      border-radius: 8px;
+      position: relative;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-
-      .tip-text {
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+      
+      .package-crescent {
+        position: absolute;
+        top: 4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 12px;
+        height: 6px;
+        background: white;
+        border-radius: 6px 6px 0 0;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      
+      .package-number {
         color: white;
-        font-size: 22rpx;
-
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 1;
+        position: relative;
+        line-height: 1;
       }
-
-      .complete-link {
-        color: white;
-        font-size: 22rpx;
-        font-weight: 500;
-        cursor: pointer;
-      }
-    }
-  }
-
-  /* 统计数据区域 */
-  .stats-section {
-    background: white;
-    margin: 0 32rpx 20rpx;
-    border-radius: 24rpx;
-    padding: 28rpx 0;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
-
-    .stat-item {
-      flex: 1;
-      text-align: center;
-      position: relative;
-
-      .stat-number {
-        display: block;
-        font-size: 36rpx;
-        font-weight: 700;
-        color: #333;
-        margin-bottom: 8rpx;
-      }
-
-      .stat-label {
-        font-size: 22rpx;
-        color: #666;
-      }
-
-      .stat-badge {
-        background: #ff6b47;
-        color: white;
-        font-size: 18rpx;
-        padding: 4rpx 12rpx;
-        border-radius: 12rpx;
-        margin-top: 8rpx;
-        display: inline-block;
-      }
-
-      .card-center-icon {
-        font-size: 28rpx;
-        margin-bottom: 8rpx;
-      }
-
-      // 为可点击的统计项添加样式
-      &:has(.card-center-icon),
-      &:has(.stat-number[onclick]) {
-        cursor: pointer;
-        transition: all 0.3s ease;
-
-        &:hover {
-          transform: translateY(-2rpx);
-        }
-
-        &:active {
-          transform: scale(0.98);
-        }
-      }
-    }
-
-    .stat-divider {
-      width: 2rpx;
-      height: 50rpx;
-      background: #f0f0f0;
-    }
-  }
-
-  /* 安心充电服务 */
-  .service-section {
-    margin: 0 32rpx 16rpx;
-
-    .service-content {
-      background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-      border-radius: 20rpx;
-      padding: 32rpx 24rpx;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      min-height: 120rpx;
-
-      .service-info {
-        display: flex;
-        align-items: center;
-        gap: 24rpx;
-
-        .service-title {
-          background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          font-size: 28rpx;
-          font-weight: 700;
-          line-height: 1.3;
-          margin-right: 16rpx;
-          white-space: nowrap;
-        }
-
-        .service-desc {
-          color: rgba(255, 255, 255, 0.8);
-          font-size: 22rpx;
-          line-height: 1.4;
-          flex: 1;
-        }
-      }
-
-      .service-button {
-        background: #ff6b47;
-        color: white;
-        border: none;
-        border-radius: 24rpx;
-        padding: 16rpx 32rpx;
-        font-size: 24rpx;
-        font-weight: 600;
-        min-width: 120rpx;
-        box-shadow: 0 4rpx 12rpx rgba(255, 107, 71, 0.3);
-        transition: all 0.3s ease;
-
-        &:active {
-          transform: scale(0.98);
-          box-shadow: 0 2rpx 8rpx rgba(255, 107, 71, 0.4);
-        }
-      }
-    }
-  }
-
-  /* 常用功能 */
-  .functions-section {
-    background: white;
-    margin: 0 32rpx 24rpx;
-    border-radius: 20rpx; // 稍微减小圆角
-    padding: 24rpx; // 减小内边距
-    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
-
-    .section-title {
-      font-size: 26rpx; // 减小字体
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 24rpx; // 减小间距
-      border-left: 5rpx solid #22c55e; // 减细边框
-      padding-left: 12rpx; // 减小内边距
-    }
-
-    .functions-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24rpx; // 减小间距
-
-      .function-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        cursor: pointer;
-
-        .function-icon {
-          width: 80rpx; // 减小图标容器尺寸
-          height: 80rpx;
-          background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-          border-radius: 16rpx; // 减小圆角
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 32rpx; // 减小图标尺寸
-          margin-bottom: 12rpx; // 减小间距
-          transition: all 0.3s ease;
-
-          &:active {
-            transform: scale(0.95);
-            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
-          }
-
-          // 特定图标样式
-          &.order-icon {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-          }
-
-          &.card-icon {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-          }
-
-          &.package-icon {
-            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-          }
-
-          &.member-icon {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-          }
-
-          &.vehicle-icon {
-            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
-          }
-
-          &.settings-icon {
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-          }
-
-          &.ai-icon {
-            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
-          }
-
-          &.avatar-icon {
-            background: linear-gradient(135deg, #fef7cd 0%, #fef3c7 100%);
-          }
-
-          &.battery-icon {
-            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-          }
-        }
-
-        .function-label {
-          font-size: 22rpx; // 减小字体
-          color: #333;
-          text-align: center;
-        }
-      }
-    }
-  }
-
-  /* 充电会员推广 */
-  .membership-section {
-    margin: 0 32rpx 16rpx;
-
-    .membership-card {
-      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-      border-radius: 20rpx;
-      padding: 24rpx;
-      box-shadow: 0 8rpx 32rpx rgba(245, 158, 11, 0.3);
-
-      .membership-header {
-        display: flex;
-        align-items: center;
-        gap: 12rpx;
-        margin-bottom: 20rpx;
-
-        .membership-icon {
-          font-size: 32rpx;
-        }
-
-        .membership-title {
-          color: white;
-          font-size: 26rpx;
-          font-weight: 600;
-          margin-right: auto;
-        }
-
-        .membership-subtitle {
-          color: rgba(255, 255, 255, 0.9);
-          font-size: 20rpx;
-        }
-      }
-
-      .membership-benefits {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 24rpx;
-
-        .benefit-item {
-          flex: 1;
-          text-align: center;
-
-          .benefit-title {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 20rpx;
-            margin-bottom: 4rpx;
-            display: block;
-          }
-
-          .benefit-value {
-            color: white;
-            font-size: 24rpx;
-            font-weight: 600;
-            display: block;
-          }
-        }
-      }
-
-      .membership-join-btn {
-        width: 100%;
-        background: rgba(255, 255, 255, 0.9);
-        color: #f59e0b;
-        border: none;
-        border-radius: 16rpx;
-        padding: 16rpx;
-        font-size: 24rpx;
-        font-weight: 600;
-
-        &:active {
-          background: rgba(255, 255, 255, 0.8);
-          transform: scale(0.98);
-        }
-      }
-    }
-  }
-
-  /* 换电业务 */
-  .battery-swap-section {
-    background: white;
-    margin: 0 32rpx 120rpx;
-    border-radius: 20rpx;
-    padding: 24rpx;
-    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
-
-    .section-title {
-      font-size: 26rpx;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 24rpx;
-      border-left: 5rpx solid #22c55e;
-      padding-left: 12rpx;
-    }
-
-    .swap-functions-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24rpx;
-
-      .swap-function-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        cursor: pointer;
-
-        .swap-icon {
-          width: 80rpx;
-          height: 80rpx;
-          border-radius: 16rpx;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 32rpx;
-          margin-bottom: 12rpx;
-          transition: all 0.3s ease;
-
-          &:active {
-            transform: scale(0.95);
-          }
-
-          &.package-swap-icon {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-          }
-
-          &.deposit-icon {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-          }
-
-          &.record-icon {
-            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-          }
-
-          &.battery-swap-icon {
-            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-          }
-
-          &.auth-icon {
-            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
-          }
-
-          &.service-icon {
-            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
-          }
-        }
-
-        .swap-label {
-          font-size: 22rpx;
-          color: #333;
-          text-align: center;
-        }
+      
+      .package-flap {
+        position: absolute;
+        top: 2px;
+        right: -2px;
+        width: 20px;
+        height: 24px;
+        background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
+        border-radius: 4px 8px 4px 4px;
+        transform: rotate(15deg);
+        z-index: -1;
+        box-shadow: 0 1px 4px rgba(255, 193, 7, 0.4);
       }
     }
   }
 }
 
-/* 响应式适配 */
-@media (max-width: 750px) {
-  .profile-page {
-    .functions-section .functions-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20rpx;
-
-      .function-item .function-icon {
-        width: 70rpx;
-        height: 70rpx;
-        font-size: 28rpx;
-      }
-    }
-
-    .service-section .service-content {
-      padding: 24rpx 20rpx;
-
-      .service-info {
-        gap: 16rpx;
-
-        .service-title {
-          font-size: 22rpx;
-          line-height: 1.2;
-          margin-right: 12rpx;
-        }
-
-        .service-desc {
-          font-size: 20rpx;
-        }
-      }
-
-      .service-button {
-        padding: 14rpx 24rpx;
-        font-size: 22rpx;
-        min-width: 100rpx;
-      }
-    }
-
-    .battery-swap-section .swap-functions-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20rpx;
-
-      .swap-function-item .swap-icon {
-        width: 70rpx;
-        height: 70rpx;
-        font-size: 28rpx;
-      }
-    }
-
-    .membership-section .membership-card {
-      .membership-benefits {
-        flex-direction: column;
-        gap: 16rpx;
-
-        .benefit-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-
-          .benefit-title,
-          .benefit-value {
-            margin-bottom: 0;
-          }
-        }
-      }
-    }
+.function-label {
+  font-size: 12px;
+  color: #333;
+  text-align: center;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  
+  .function-item:hover & {
+    color: #4CAF50;
   }
+}
+
+
+
+
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .header-content {
+    padding: 0 16px;
+  }
+  
+  .stats-section {
+    margin: -20px 16px 16px;
+    padding: 16px;
+  }
+  
+  .service-section,
+  .functions-section,
+  .membership-section {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+  
+  .functions-grid {
+    gap: 16px;
+  }
+  
+  .function-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+  }
+  
+  .function-label {
+    font-size: 11px;
+  }
+}
+
+/* AI客服对话框样式 */
+.ai-bubble {
+  width: 40px;
+  height: 32px;
+  background: #333;
+  border-radius: 16px 16px 16px 4px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 8px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #333;
+  }
+}
+
+.ai-text {
+  color: #4CAF50;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Arial', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+/* 服务按钮内部元素样式 */
+.button-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+}
+
+.button-icon {
+  width: 16px;
+  height: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.arrow-icon {
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* 统一六边形图标样式 */
+.hexagon-container {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hexagon-outline {
+  width: 36px;
+  height: 36px;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #333;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+}
+
+.hexagon-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  background: #4CAF50;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+/* 电池报告图标样式 */
+.battery-container {
+  position: relative;
+  width: 40px;
+  height: 32px;
+}
+
+.battery-outline {
+  width: 36px;
+  height: 20px;
+  border: 2px solid #333;
+  border-radius: 3px;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: 6px;
+    width: 2px;
+    height: 8px;
+    background: #333;
+    border-radius: 0 1px 1px 0;
+  }
+}
+
+.battery-wave {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    #4CAF50 10%, 
+    transparent 20%, 
+    #4CAF50 30%, 
+    transparent 40%, 
+    #4CAF50 50%, 
+    transparent 60%, 
+    #4CAF50 70%, 
+    transparent 80%, 
+    #4CAF50 90%, 
+    transparent 100%
+  );
+  border-radius: 1px;
+  animation: waveMove 2s ease-in-out infinite;
+}
+
+.new-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ff4757;
+  color: white;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: 'Arial', sans-serif;
+  letter-spacing: 0.5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes waveMove {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1.2);
+  }
+}
+
+/* 头像装扮T恤图标样式 */
+.shirt-container {
+  position: relative;
+  width: 40px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shirt-outline {
+  width: 32px;
+  height: 24px;
+  border: 2px solid #333;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 8px;
+    border: 2px solid #333;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    border: 2px solid #333;
+    border-radius: 50%;
+  }
+}
+
+.shirt-pocket {
+  position: absolute;
+  top: 6px;
+  right: 4px;
+  width: 8px;
+  height: 6px;
+  background: #81C784;
+  border-radius: 2px;
+  border: 1px solid #4CAF50;
 }

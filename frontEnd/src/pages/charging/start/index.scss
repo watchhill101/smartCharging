@@ -1,580 +1,706 @@
-// 设计系统变量
-:root {
-  --primary-color: #1890ff;
-  --primary-light: #40a9ff;
-  --primary-dark: #096dd9;
-  --success-color: #52c41a;
-  --warning-color: #faad14;
-  --error-color: #ff4d4f;
-  --info-color: #1890ff;
-  
-  --text-primary: #262626;
-  --text-secondary: #595959;
-  --text-tertiary: #8c8c8c;
-  --text-disabled: #bfbfbf;
-  
-  --bg-primary: #ffffff;
-  --bg-secondary: #fafafa;
-  --bg-tertiary: #f5f5f5;
-  --bg-disabled: #f0f0f0;
-  
-  --border-color: #d9d9d9;
-  --border-light: #f0f0f0;
-  --border-dark: #8c8c8c;
-  
-  --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --shadow-heavy: 0 8px 24px rgba(0, 0, 0, 0.12);
-  
-  --radius-small: 6px;
-  --radius-medium: 12px;
-  --radius-large: 16px;
-  --radius-xl: 24px;
-  
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 12px;
-  --spacing-lg: 16px;
-  --spacing-xl: 20px;
-  --spacing-xxl: 24px;
-  
-  --font-size-xs: 12px;
-  --font-size-sm: 14px;
-  --font-size-md: 16px;
-  --font-size-lg: 18px;
-  --font-size-xl: 20px;
-  --font-size-xxl: 24px;
-}
-
+/* 启动充电页面样式 - 现代化设计 */
 .start-page {
   min-height: 100vh;
-  background: #ffffff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding-bottom: 120px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-
-  // 导航栏样式
-  .nav {
-    position: sticky;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
     top: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--spacing-lg) var(--spacing-xl);
-    background: var(--bg-primary);
-    border-bottom: 1px solid var(--border-light);
-    backdrop-filter: blur(10px);
-    background: rgba(255, 255, 255, 0.95);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+    pointer-events: none;
+  }
+}
 
-    .back {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--bg-tertiary);
+/* 页面标题和说明区域 */
+.page-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  margin: 16px;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  .page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 16px;
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .charging-instructions {
+    font-size: 14px;
+    color: var(--text-color-secondary);
+    line-height: 1.6;
+    text-align: center;
+    padding: 16px;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    
+    .instruction-text {
+      margin-bottom: 8px;
+    }
+    
+    .instruction-link {
+      color: var(--primary-color);
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: 500;
+      
+      &:hover {
+        color: var(--primary-color-dark);
+      }
+    }
+  }
+}
+
+/* 顶部充电站信息卡片 */
+.station-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  margin: 16px;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeIn 0.6s ease-out;
+  
+  .station-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    
+    .station-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      margin-right: 20px;
+      color: white;
+      font-size: 28px;
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    }
+    
+    .station-info {
+      flex: 1;
       
-      &:hover {
-        background: var(--border-color);
-        transform: scale(1.05);
+      .station-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: 12px;
+        line-height: 1.4;
       }
       
-      &:active {
-        transform: scale(0.95);
-      }
-    }
-
-    .back-icon { 
-      font-size: 24px; 
-      color: var(--text-secondary);
-      font-weight: 600;
-    }
-    
-    .title { 
-      font-size: var(--font-size-lg); 
-      font-weight: 600; 
-      color: var(--text-primary);
-      letter-spacing: -0.01em;
-    }
-    
-    .spacer { width: 40px; height: 40px; }
-  }
-
-  // 充电说明区域
-  .instruction-section {
-    margin: var(--spacing-md);
-    padding: var(--spacing-xl);
-    background: var(--bg-primary);
-    border-radius: var(--radius-medium);
-    box-shadow: var(--shadow-light);
-    border: 1px solid var(--border-light);
-
-    .instruction-text {
-      color: var(--text-secondary);
-      font-size: var(--font-size-sm);
-      line-height: 1.6;
-      text-align: center;
-
-      .clickable-link {
-        color: var(--primary-color);
-        cursor: pointer;
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.2s ease;
-        
-        &:hover {
-          color: var(--primary-dark);
-          text-decoration: underline;
-        }
-      }
-    }
-  }
-
-  // 站点信息卡片
-  .station-card {
-    margin: var(--spacing-md) var(--spacing-md) 0;
-    background: var(--bg-primary);
-    border-radius: var(--radius-medium);
-    padding: var(--spacing-xl);
-    box-shadow: var(--shadow-light);
-    border: 1px solid var(--border-light);
-    transition: all 0.2s ease;
-    
-    &:hover {
-      box-shadow: var(--shadow-medium);
-      transform: translateY(-1px);
-    }
-
-    .station-name { 
-      font-size: var(--font-size-lg); 
-      font-weight: 700; 
-      color: var(--text-primary);
-      margin-bottom: var(--spacing-md);
-      line-height: 1.4;
-    }
-    
-    .tags { 
-      display: flex; 
-      gap: var(--spacing-sm); 
-      margin-bottom: var(--spacing-lg);
-      flex-wrap: wrap;
-    }
-    
-    .tag { 
-      background: var(--bg-tertiary); 
-      color: var(--text-secondary); 
-      padding: var(--spacing-xs) var(--spacing-sm); 
-      border-radius: var(--radius-small); 
-      font-size: var(--font-size-xs);
-      font-weight: 500;
-      border: 1px solid var(--border-light);
-      transition: all 0.2s ease;
-      
-      &:hover {
-        background: var(--border-color);
-        transform: translateY(-1px);
-      }
-    }
-    
-    .tag.power { 
-      background: #e6f7ff; 
-      color: var(--primary-dark);
-      border-color: #91d5ff;
-    }
-    
-    .tag.invo { 
-      background: #f6ffed; 
-      color: var(--success-color);
-      border-color: #b7eb8f;
-    }
-
-    .price-row { 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between;
-      margin-bottom: var(--spacing-sm);
-    }
-    
-    .label { 
-      color: var(--text-secondary); 
-      font-size: var(--font-size-sm);
-      font-weight: 500;
-    }
-    
-    .price { 
-      color: var(--error-color);
-      font-weight: 600;
-    }
-    
-    .num { 
-      font-size: var(--font-size-xl); 
-      font-weight: 800; 
-      margin-right: var(--spacing-xs);
-    }
-
-    .period { 
-      background: var(--bg-tertiary); 
-      border-radius: var(--radius-small); 
-      padding: var(--spacing-xs) var(--spacing-sm); 
-      color: var(--text-tertiary); 
-      font-size: var(--font-size-xs);
-      display: inline-block;
-      border: 1px solid var(--border-light);
-    }
-  }
-
-  // 支付方式卡片
-  .pay-card {
-    margin: var(--spacing-md); 
-    background: var(--bg-primary); 
-    border-radius: var(--radius-medium); 
-    padding: var(--spacing-xl); 
-    box-shadow: var(--shadow-light);
-    border: 1px solid var(--border-light);
-    transition: all 0.2s ease;
-    
-    &:hover {
-      box-shadow: var(--shadow-medium);
-    }
-
-    .pay-head { 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      margin-bottom: var(--spacing-lg);
-      padding-bottom: var(--spacing-md);
-      border-bottom: 1px solid var(--border-light);
-    }
-    
-    .pay-title { 
-      font-weight: 700; 
-      color: var(--text-primary);
-      font-size: var(--font-size-md);
-    }
-    
-    .pay-note { 
-      color: var(--primary-color);
-      font-size: var(--font-size-sm);
-      cursor: pointer;
-      transition: color 0.2s ease;
-      
-      &:hover {
-        color: var(--primary-dark);
-      }
-    }
-
-    .deposit { 
-      display: flex; 
-      align-items: center; 
-      gap: var(--spacing-sm); 
-      margin: var(--spacing-lg) 0;
-      padding: var(--spacing-md);
-      background: var(--bg-tertiary);
-      border-radius: var(--radius-small);
-      border: 1px solid var(--border-light);
-    }
-    
-    .check { 
-      width: 20px; 
-      height: 20px; 
-      border-radius: 4px; 
-      border: 2px solid var(--border-color); 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      color: var(--bg-primary); 
-      background: var(--bg-primary); 
-      cursor: pointer;
-      transition: all 0.2s ease;
-      
-      &:hover {
-        border-color: var(--primary-color);
-      }
-    }
-    
-    .check.checked { 
-      background: var(--success-color); 
-      border-color: var(--success-color);
-      transform: scale(1.1);
-    }
-    
-    .deposit-title { 
-      font-weight: 600; 
-      color: var(--text-primary);
-      font-size: var(--font-size-sm);
-    }
-    
-    .deposit-desc { 
-      color: var(--text-tertiary); 
-      font-size: var(--font-size-xs);
-    }
-
-    .amount-grid { 
-      display: grid; 
-      grid-template-columns: repeat(3, 1fr); 
-      gap: var(--spacing-md);
-      margin-bottom: var(--spacing-lg);
-    }
-    
-    .amount-item { 
-      background: var(--bg-tertiary); 
-      border: 2px solid var(--border-light); 
-      height: 60px; 
-      border-radius: var(--radius-medium); 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-weight: 600;
-      
-      &:hover {
-        background: var(--bg-secondary);
-        border-color: var(--primary-color);
-        transform: translateY(-2px);
-      }
-    }
-    
-    .amount-item.selected { 
-      background: var(--primary-color); 
-      border-color: var(--primary-color);
-      color: var(--bg-primary);
-      transform: scale(1.05);
-      box-shadow: var(--shadow-medium);
-    }
-    
-    .amount-text { 
-      font-size: var(--font-size-md); 
-      color: inherit; 
-      font-weight: 700;
-    }
-
-    .pay-methods { 
-      display: grid; 
-      grid-template-columns: 1fr 1fr; 
-      gap: var(--spacing-md);
-    }
-    
-    .method { 
-      background: var(--bg-tertiary); 
-      border: 2px solid var(--border-light); 
-      border-radius: var(--radius-medium); 
-      padding: var(--spacing-lg); 
-      display: flex; 
-      align-items: center; 
-      gap: var(--spacing-md); 
-      cursor: pointer;
-      transition: all 0.2s ease;
-      
-      &:hover {
-        background: var(--bg-secondary);
-        border-color: var(--primary-color);
-        transform: translateY(-1px);
-      }
-    }
-    
-    .method.active { 
-      border-color: var(--success-color); 
-      background: #f6ffed;
-      box-shadow: var(--shadow-light);
-    }
-    
-    .icon { 
-      font-size: 24px;
-      filter: grayscale(0.3);
-    }
-    
-    .text { 
-      font-weight: 600; 
-      color: var(--text-primary);
-      font-size: var(--font-size-sm);
-    }
-  }
-
-  // 营业信息卡片
-  .business-card {
-    margin: var(--spacing-md); 
-    background: var(--bg-primary); 
-    border-radius: var(--radius-medium); 
-    padding: var(--spacing-xl); 
-    box-shadow: var(--shadow-light);
-    border: 1px solid var(--border-light);
-    transition: all 0.2s ease;
-    
-    &:hover {
-      box-shadow: var(--shadow-medium);
-    }
-
-    .business-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: var(--spacing-lg);
-      padding-bottom: var(--spacing-md);
-      border-bottom: 1px solid var(--border-light);
-    }
-
-    .business-title { 
-      font-size: var(--font-size-md); 
-      font-weight: 700; 
-      color: var(--text-primary);
-    }
-
-    .business-tag { 
-      background: #f6ffed; 
-      color: var(--success-color); 
-      padding: var(--spacing-xs) var(--spacing-sm); 
-      border-radius: var(--radius-small); 
-      font-size: var(--font-size-xs); 
-      font-weight: 600;
-      border: 1px solid #b7eb8f;
-    }
-
-    .business-details {
-      .info-line {
+      .station-details {
         display: flex;
         align-items: center;
-        margin-bottom: var(--spacing-md);
-        position: relative;
-        padding: var(--spacing-sm) 0;
-
-        .label {
-          color: var(--text-secondary);
-          font-size: var(--font-size-sm);
-          min-width: 80px;
-          margin-right: var(--spacing-md);
-          font-weight: 500;
-        }
-
-        .value {
-          color: var(--text-primary);
-          font-size: var(--font-size-sm);
-          flex: 1;
-          font-weight: 500;
-        }
-
-        .license-link {
-          color: var(--primary-color);
-          font-size: var(--font-size-sm);
-          cursor: pointer;
-          margin-left: auto;
-          font-weight: 500;
-          transition: color 0.2s ease;
+        gap: 20px;
+        font-size: 13px;
+        color: var(--text-color-secondary);
+        
+        .detail-item {
+          display: flex;
+          align-items: center;
           
-          &:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
+          .detail-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+            opacity: 0.7;
           }
         }
       }
     }
   }
+  
+  .terminal-info {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      
+      .terminal-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-color);
+      }
+      
+      .terminal-status {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        background: linear-gradient(135deg, rgba(0, 212, 170, 0.2) 0%, rgba(0, 212, 170, 0.1) 100%);
+        color: var(--success-color);
+        border: 1px solid rgba(0, 212, 170, 0.3);
+      }
+    }
+    
+    .terminal-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 16px;
+      font-size: 13px;
+      color: var(--text-color-secondary);
+      
+      .detail-item {
+        display: flex;
+        align-items: center;
+        
+        .detail-icon {
+          width: 16px;
+          height: 16px;
+          margin-right: 8px;
+          opacity: 0.7;
+        }
+      }
+    }
+  }
+}
 
-  // 充电操作区域
-  .charging-action-section {
-    position: fixed;
-    left: var(--spacing-md);
-    right: var(--spacing-md);
-    bottom: var(--spacing-md);
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-xl);
-    box-shadow: var(--shadow-heavy);
+/* 支付方式选择 */
+.payment-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  margin: 16px;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeIn 0.6s ease-out 0.1s both;
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+    
+    .section-icon {
+      width: 28px;
+      height: 28px;
+      margin-right: 12px;
+      color: var(--primary-color);
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-color);
+    }
+    
+    .checkmark {
+      margin-left: auto;
+      width: 24px;
+      height: 24px;
+      color: var(--success-color);
+    }
+  }
+  
+  .refund-policy {
+    background: rgba(0, 212, 170, 0.05);
+    border: 1px solid rgba(0, 212, 170, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: var(--text-color-secondary);
+    text-align: center;
+  }
+  
+  .payment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    
+    .payment-option {
+      display: flex;
+      align-items: center;
+      padding: 20px;
+      border: 2px solid var(--border-color-light);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.5);
+      
+      &:hover {
+        border-color: var(--primary-color);
+        background: rgba(102, 126, 234, 0.05);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+      }
+      
+      &.selected {
+        border-color: var(--primary-color);
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
+      }
+      
+      .payment-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 20px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        
+        &.alipay {
+          background: linear-gradient(135deg, #00A0E9 0%, #0078D4 100%);
+          font-size: 18px;
+        }
+        
+        &.wechat {
+          background: linear-gradient(135deg, #07C160 0%, #00AE42 100%);
+          font-size: 16px;
+        }
+      }
+      
+      .payment-info {
+        flex: 1;
+        
+        .payment-name {
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--text-color);
+          margin-bottom: 6px;
+        }
+        
+        .payment-desc {
+          font-size: 13px;
+          color: var(--text-color-muted);
+        }
+      }
+      
+      .radio-button {
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--border-color);
+        border-radius: 50%;
+        position: relative;
+        transition: all 0.3s ease;
+        
+        &.selected {
+          border-color: var(--primary-color);
+          background: var(--primary-color);
+          
+          &::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            animation: fadeInScale 0.3s ease;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 充电金额选择 */
+.amount-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  margin: 16px 16px 16px 26px;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeIn 0.6s ease-out 0.2s both;
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+    
+    .section-icon {
+      width: 28px;
+      height: 28px;
+      margin-right: 12px;
+      color: var(--primary-color);
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-color);
+    }
+  }
+  
+  .amount-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    
+    .amount-option {
+      padding: 20px 16px;
+      border: 2px solid var(--border-color-light);
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 1;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+      }
+      
+      &:hover {
+        border-color: var(--primary-color);
+        background: rgba(102, 126, 234, 0.08);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+        
+        &::before {
+          left: 100%;
+        }
+      }
+      
+      &.selected {
+        border-color: var(--primary-color);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        
+        .amount-value,
+        .amount-unit {
+          color: white;
+        }
+        
+        &::after {
+          content: '✓';
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          font-size: 16px;
+          font-weight: bold;
+          color: white;
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 50%;
+          width: 24px;
+          height: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: fadeInScale 0.3s ease;
+        }
+      }
+      
+      .amount-value {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: 4px;
+        transition: color 0.3s ease;
+      }
+      
+      .amount-unit {
+        font-size: 12px;
+        color: var(--text-color-secondary);
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+    }
+  }
+}
+
+/* 营业信息 */
+.business-info {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  margin: 16px;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeIn 0.6s ease-out 0.3s both;
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    
+    .section-icon {
+      width: 28px;
+      height: 28px;
+      margin-right: 12px;
+      color: var(--primary-color);
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-color);
+    }
+  }
+  
+  .business-details {
+    .detail-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .detail-label {
+        font-size: 14px;
+        color: var(--text-color-secondary);
+      }
+      
+      .detail-value {
+        font-size: 14px;
+        color: var(--text-color);
+        font-weight: 600;
+        
+        &.clickable {
+          color: var(--primary-color);
+          cursor: pointer;
+          text-decoration: underline;
+          
+          &:hover {
+            color: var(--primary-color-dark);
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 底部充电操作区域 */
+.charging-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  padding: 24px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
+  z-index: var(--z-fixed);
+  animation: slideInUp 0.6s ease-out;
+  
+  .action-summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border: 1px solid var(--border-light);
-    backdrop-filter: blur(10px);
-    background: rgba(255, 255, 255, 0.95);
+    margin-bottom: 20px;
     
-    .charging-mode {
-      background: linear-gradient(135deg, #ff6b35, #f7931e);
-      color: var(--bg-primary);
-      padding: var(--spacing-sm) var(--spacing-lg);
-      border-radius: var(--radius-large);
-      font-size: var(--font-size-sm);
-      font-weight: 700;
-      white-space: nowrap;
-      box-shadow: var(--shadow-light);
-      transition: all 0.2s ease;
+    .summary-info {
+      .summary-label {
+        font-size: 14px;
+        color: var(--text-color-secondary);
+        margin-bottom: 6px;
+      }
       
-      &:hover {
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-medium);
+      .summary-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--error-color);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
     }
     
-    .start-btn {
-      background: var(--text-tertiary);
-      color: var(--bg-primary);
-      border-radius: var(--radius-large);
-      height: 52px;
-      flex: 1;
-      margin-left: var(--spacing-lg);
+    .summary-actions {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-weight: 700;
+      gap: 12px;
       
-      &:hover {
-        background: var(--text-secondary);
-        transform: translateY(-1px);
-      }
-      
-      &:active {
-        transform: translateY(0);
+      .action-btn {
+        padding: 10px 18px;
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.8);
+        color: var(--text-color);
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background: var(--border-color-light);
+          transform: translateY(-1px);
+        }
       }
     }
+  }
+  
+  .start-charging-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    padding: 20px 24px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
     
-    .start-text {
-      font-size: var(--font-size-md);
-      font-weight: 700;
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+    }
+    
+    &:active {
+      transform: translateY(-1px);
+    }
+    
+    &:disabled {
+      background: var(--text-color-disabled);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
   }
 }
 
-// 响应式设计
-@media (max-width: 768px) {
-  .start-page {
-    .station-card,
-    .pay-card,
-    .business-card {
-      margin: var(--spacing-sm);
-      padding: var(--spacing-lg);
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .page-header,
+  .station-card,
+  .payment-section,
+  .amount-section,
+  .business-info {
+    margin: 12px;
+    padding: 20px;
+  }
+  
+  .amount-options {
+    gap: 8px;
+    
+    .amount-option {
+      padding: 16px 12px;
+      
+      .amount-value {
+        font-size: 18px;
+      }
+      
+      .amount-unit {
+        font-size: 11px;
+      }
+      
+      &.selected::after {
+        width: 20px;
+        height: 20px;
+        font-size: 14px;
+      }
+    }
+  }
+  
+  .charging-actions {
+    padding: 20px 16px;
+    
+    .action-summary .summary-value {
+      font-size: 20px;
     }
     
-    .amount-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .pay-methods {
-      grid-template-columns: 1fr;
-    }
-    
-    .charging-action-section {
-      left: var(--spacing-sm);
-      right: var(--spacing-sm);
-      bottom: var(--spacing-sm);
-      padding: var(--spacing-lg);
+    .start-charging-btn {
+      padding: 18px 20px;
+      font-size: 18px;
     }
   }
 }
 
-// 深色模式支持
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-primary: #1f1f1f;
-    --bg-secondary: #141414;
-    --bg-tertiary: #262626;
-    --text-primary: #ffffff;
-    --text-secondary: #d9d9d9;
-    --text-tertiary: #8c8c8c;
-    --border-color: #434343;
-    --border-light: #303030;
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* 加载状态 */
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--text-color-secondary);
+  
+  .loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-color-light);
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 12px;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }

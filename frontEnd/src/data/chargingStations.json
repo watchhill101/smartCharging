@@ -18,6 +18,20 @@
         "power": 7,
         "status": "available",
         "pricing": { "electricityFee": 0.65, "serviceFee": 0.05 }
+      },
+      {
+        "chargerId": "ch002",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 0.85, "serviceFee": 0.08 }
+      },
+      {
+        "chargerId": "ch003",
+        "type": "slow",
+        "power": 7,
+        "status": "busy",
+        "pricing": { "electricityFee": 0.65, "serviceFee": 0.05 }
       }
     ],
     "rating": 4.8,
@@ -40,18 +54,25 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch002",
+        "chargerId": "ch004",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 0.95, "serviceFee": 0.05 }
       },
       {
-        "chargerId": "ch003",
+        "chargerId": "ch005",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 0.95, "serviceFee": 0.05 }
+      },
+      {
+        "chargerId": "ch006",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "offline",
+        "pricing": { "electricityFee": 1.25, "serviceFee": 0.10 }
       }
     ],
     "rating": 4.6,
@@ -74,11 +95,18 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch004",
+        "chargerId": "ch007",
         "type": "slow",
         "power": 7,
         "status": "available",
         "pricing": { "electricityFee": 0.75, "serviceFee": 0.05 }
+      },
+      {
+        "chargerId": "ch008",
+        "type": "fast",
+        "power": 60,
+        "status": "busy",
+        "pricing": { "electricityFee": 0.90, "serviceFee": 0.08 }
       }
     ],
     "rating": 4.4,
@@ -101,18 +129,25 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch005",
-        "type": "fast",
+        "chargerId": "ch009",
+        "type": "ultra-fast",
         "power": 120,
         "status": "available",
         "pricing": { "electricityFee": 1.20, "serviceFee": 0.15 }
       },
       {
-        "chargerId": "ch006",
+        "chargerId": "ch010",
         "type": "slow",
         "power": 7,
         "status": "available",
         "pricing": { "electricityFee": 0.85, "serviceFee": 0.10 }
+      },
+      {
+        "chargerId": "ch011",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 1.00, "serviceFee": 0.12 }
       }
     ],
     "rating": 4.7,
@@ -135,25 +170,32 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch007",
+        "chargerId": "ch012",
         "type": "fast",
         "power": 60,
         "status": "busy",
         "pricing": { "electricityFee": 0.90, "serviceFee": 0.08 }
       },
       {
-        "chargerId": "ch008",
+        "chargerId": "ch013",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 0.90, "serviceFee": 0.08 }
       },
       {
-        "chargerId": "ch009",
+        "chargerId": "ch014",
         "type": "slow",
         "power": 7,
         "status": "available",
         "pricing": { "electricityFee": 0.70, "serviceFee": 0.05 }
+      },
+      {
+        "chargerId": "ch015",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "offline",
+        "pricing": { "electricityFee": 1.15, "serviceFee": 0.12 }
       }
     ],
     "rating": 4.5,
@@ -176,18 +218,25 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch010",
+        "chargerId": "ch016",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 1.05, "serviceFee": 0.12 }
       },
       {
-        "chargerId": "ch011",
+        "chargerId": "ch017",
         "type": "slow",
         "power": 7,
         "status": "offline",
         "pricing": { "electricityFee": 0.80, "serviceFee": 0.08 }
+      },
+      {
+        "chargerId": "ch018",
+        "type": "fast",
+        "power": 60,
+        "status": "busy",
+        "pricing": { "electricityFee": 1.05, "serviceFee": 0.12 }
       }
     ],
     "rating": 4.3,
@@ -210,18 +259,25 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch012",
+        "chargerId": "ch019",
         "type": "slow",
         "power": 7,
         "status": "available",
         "pricing": { "electricityFee": 0.75, "serviceFee": 0.05 }
       },
       {
-        "chargerId": "ch013",
+        "chargerId": "ch020",
         "type": "slow",
         "power": 7,
         "status": "available",
         "pricing": { "electricityFee": 0.75, "serviceFee": 0.05 }
+      },
+      {
+        "chargerId": "ch021",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 0.95, "serviceFee": 0.08 }
       }
     ],
     "rating": 4.6,
@@ -244,25 +300,32 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch014",
-        "type": "fast",
+        "chargerId": "ch022",
+        "type": "ultra-fast",
         "power": 120,
         "status": "available",
         "pricing": { "electricityFee": 1.15, "serviceFee": 0.18 }
       },
       {
-        "chargerId": "ch015",
-        "type": "fast",
+        "chargerId": "ch023",
+        "type": "ultra-fast",
         "power": 120,
         "status": "available",
         "pricing": { "electricityFee": 1.15, "serviceFee": 0.18 }
       },
       {
-        "chargerId": "ch016",
+        "chargerId": "ch024",
         "type": "slow",
         "power": 7,
         "status": "available",
         "pricing": { "electricityFee": 0.90, "serviceFee": 0.10 }
+      },
+      {
+        "chargerId": "ch025",
+        "type": "fast",
+        "power": 60,
+        "status": "busy",
+        "pricing": { "electricityFee": 1.00, "serviceFee": 0.12 }
       }
     ],
     "rating": 4.9,
@@ -285,18 +348,25 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch017",
+        "chargerId": "ch026",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 0.95, "serviceFee": 0.10 }
       },
       {
-        "chargerId": "ch018",
+        "chargerId": "ch027",
         "type": "slow",
         "power": 7,
         "status": "available",
         "pricing": { "electricityFee": 0.70, "serviceFee": 0.05 }
+      },
+      {
+        "chargerId": "ch028",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 0.95, "serviceFee": 0.10 }
       }
     ],
     "rating": 4.4,
@@ -319,18 +389,32 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch019",
-        "type": "fast",
+        "chargerId": "ch029",
+        "type": "ultra-fast",
         "power": 120,
         "status": "available",
         "pricing": { "electricityFee": 1.50, "serviceFee": 0.20 }
       },
       {
-        "chargerId": "ch020",
+        "chargerId": "ch030",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 1.20, "serviceFee": 0.15 }
+      },
+      {
+        "chargerId": "ch031",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "busy",
+        "pricing": { "electricityFee": 1.50, "serviceFee": 0.20 }
+      },
+      {
+        "chargerId": "ch032",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.95, "serviceFee": 0.10 }
       }
     ],
     "rating": 4.8,
@@ -353,11 +437,25 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch021",
+        "chargerId": "ch033",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 1.25, "serviceFee": 0.18 }
+      },
+      {
+        "chargerId": "ch034",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "available",
+        "pricing": { "electricityFee": 1.45, "serviceFee": 0.22 }
+      },
+      {
+        "chargerId": "ch035",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.90, "serviceFee": 0.12 }
       }
     ],
     "rating": 4.6,
@@ -380,10 +478,24 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch022",
-        "type": "fast",
+        "chargerId": "ch036",
+        "type": "ultra-fast",
         "power": 120,
         "status": "available",
+        "pricing": { "electricityFee": 1.60, "serviceFee": 0.25 }
+      },
+      {
+        "chargerId": "ch037",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 1.30, "serviceFee": 0.20 }
+      },
+      {
+        "chargerId": "ch038",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "busy",
         "pricing": { "electricityFee": 1.60, "serviceFee": 0.25 }
       }
     ],
@@ -407,18 +519,25 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch023",
+        "chargerId": "ch039",
         "type": "slow",
         "power": 7,
         "status": "available",
         "pricing": { "electricityFee": 0.75, "serviceFee": 0.05 }
       },
       {
-        "chargerId": "ch024",
+        "chargerId": "ch040",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 1.10, "serviceFee": 0.12 }
+      },
+      {
+        "chargerId": "ch041",
+        "type": "slow",
+        "power": 7,
+        "status": "busy",
+        "pricing": { "electricityFee": 0.75, "serviceFee": 0.05 }
       }
     ],
     "rating": 4.5,
@@ -441,11 +560,25 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch025",
+        "chargerId": "ch042",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 1.00, "serviceFee": 0.10 }
+      },
+      {
+        "chargerId": "ch043",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "available",
+        "pricing": { "electricityFee": 1.30, "serviceFee": 0.15 }
+      },
+      {
+        "chargerId": "ch044",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.80, "serviceFee": 0.08 }
       }
     ],
     "rating": 4.3,
@@ -468,11 +601,25 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch026",
+        "chargerId": "ch045",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 1.15, "serviceFee": 0.15 }
+      },
+      {
+        "chargerId": "ch046",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "available",
+        "pricing": { "electricityFee": 1.35, "serviceFee": 0.18 }
+      },
+      {
+        "chargerId": "ch047",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.85, "serviceFee": 0.10 }
       }
     ],
     "rating": 4.6,
@@ -495,18 +642,32 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch027",
-        "type": "fast",
+        "chargerId": "ch048",
+        "type": "ultra-fast",
         "power": 120,
         "status": "available",
         "pricing": { "electricityFee": 1.40, "serviceFee": 0.20 }
       },
       {
-        "chargerId": "ch028",
+        "chargerId": "ch049",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 1.20, "serviceFee": 0.15 }
+      },
+      {
+        "chargerId": "ch050",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "busy",
+        "pricing": { "electricityFee": 1.40, "serviceFee": 0.20 }
+      },
+      {
+        "chargerId": "ch051",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.90, "serviceFee": 0.12 }
       }
     ],
     "rating": 4.8,
@@ -529,10 +690,24 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch029",
+        "chargerId": "ch052",
         "type": "slow",
         "power": 7,
         "status": "available",
+        "pricing": { "electricityFee": 0.80, "serviceFee": 0.08 }
+      },
+      {
+        "chargerId": "ch053",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 1.10, "serviceFee": 0.12 }
+      },
+      {
+        "chargerId": "ch054",
+        "type": "slow",
+        "power": 7,
+        "status": "busy",
         "pricing": { "electricityFee": 0.80, "serviceFee": 0.08 }
       }
     ],
@@ -556,7 +731,21 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch030",
+        "chargerId": "ch055",
+        "type": "fast",
+        "power": 60,
+        "status": "available",
+        "pricing": { "electricityFee": 1.10, "serviceFee": 0.12 }
+      },
+      {
+        "chargerId": "ch056",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.75, "serviceFee": 0.08 }
+      },
+      {
+        "chargerId": "ch057",
         "type": "fast",
         "power": 60,
         "status": "available",
@@ -583,18 +772,32 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch031",
-        "type": "fast",
+        "chargerId": "ch058",
+        "type": "ultra-fast",
         "power": 120,
         "status": "available",
         "pricing": { "electricityFee": 1.35, "serviceFee": 0.18 }
       },
       {
-        "chargerId": "ch032",
+        "chargerId": "ch059",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 1.15, "serviceFee": 0.15 }
+      },
+      {
+        "chargerId": "ch060",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "busy",
+        "pricing": { "electricityFee": 1.35, "serviceFee": 0.18 }
+      },
+      {
+        "chargerId": "ch061",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.85, "serviceFee": 0.10 }
       }
     ],
     "rating": 4.6,
@@ -617,11 +820,25 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch033",
+        "chargerId": "ch062",
         "type": "fast",
         "power": 60,
         "status": "available",
         "pricing": { "electricityFee": 1.20, "serviceFee": 0.16 }
+      },
+      {
+        "chargerId": "ch063",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "available",
+        "pricing": { "electricityFee": 1.40, "serviceFee": 0.20 }
+      },
+      {
+        "chargerId": "ch064",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": { "electricityFee": 0.90, "serviceFee": 0.12 }
       }
     ],
     "rating": 4.5,
@@ -644,18 +861,32 @@
     "photos": [],
     "chargers": [
       {
-        "chargerId": "ch034",
-        "type": "fast",
+        "chargerId": "ch065",
+        "type": "ultra-fast",
         "power": 120,
         "status": "available",
         "pricing": { "electricityFee": 1.45, "serviceFee": 0.22 }
       },
       {
-        "chargerId": "ch035",
+        "chargerId": "ch066",
         "type": "slow",
         "power": 7,
         "status": "available",
         "pricing": { "electricityFee": 0.85, "serviceFee": 0.10 }
+      },
+      {
+        "chargerId": "ch067",
+        "type": "ultra-fast",
+        "power": 120,
+        "status": "available",
+        "pricing": { "electricityFee": 1.45, "serviceFee": 0.22 }
+      },
+      {
+        "chargerId": "ch068",
+        "type": "fast",
+        "power": 60,
+        "status": "busy",
+        "pricing": { "electricityFee": 1.25, "serviceFee": 0.18 }
       }
     ],
     "rating": 4.8,
