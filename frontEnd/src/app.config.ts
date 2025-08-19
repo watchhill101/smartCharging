@@ -10,7 +10,9 @@ export default {
     'pages/scan/index',
     'pages/orders/index',
     'pages/vehicles/index',
-    'pages/wallet/index'
+    'pages/wallet/index',
+    'pages/under-development/index',
+    'pages/test-jump/index'
   ],
   window: {
     backgroundTextStyle: 'light',

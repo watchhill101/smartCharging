@@ -1,11 +1,13 @@
 import { View, Text, Button, Image } from '@tarojs/components';
 import { useState, useEffect } from 'react';
-import Taro, {
+import {
   useLoad,
   getStorageSync as taroGetStorageSync,
-  setStorageSync as taroSetStorageSync
+  setStorageSync as taroSetStorageSync,
+  showToast,
+  navigateTo
 } from '@tarojs/taro';
-import VerificationHistory from '../../components/VerificationHistory';
+
 import request from '../../utils/request';
 import { STORAGE_KEYS } from '../../utils/constants';
 import './index.scss';
@@ -22,25 +24,11 @@ interface UserProfile {
   points?: number;
 }
 
-interface FaceVerificationResult {
-  success: boolean;
-  message: string;
-  data: {
-    verified: boolean;
-    confidence: number;
-    faceDetected: boolean;
-    faceCount: number;
-    token?: string;
-    details?: any;
-  };
-}
+
 
 export default function Profile() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showFaceVerification, setShowFaceVerification] = useState(false);
-  const [showVerificationHistory, setShowVerificationHistory] = useState(false);
-  const [faceVerificationStatus, setFaceVerificationStatus] = useState<'none' | 'pending' | 'success' | 'failed'>('none');
+
 
   useLoad(() => {
     console.log('🏠 个人中心页面加载');
@@ -60,7 +48,6 @@ export default function Profile() {
 
   const loadUserProfile = async () => {
     try {
-      setIsLoading(true);
       console.log('🔄 开始加载用户信息...');
 
       // 首先尝试从存储中获取用户信息
@@ -91,7 +78,6 @@ export default function Profile() {
         };
         console.log('📋 设置用户配置:', profileData);
         setUserProfile(profileData);
-        setIsLoading(false);
         return;
       }
 
@@ -108,7 +94,6 @@ export default function Profile() {
           chargingCount: 0,
           points: 0
         });
-        setIsLoading(false);
         return;
       }
 
@@ -158,118 +143,97 @@ export default function Profile() {
           points: 0
         });
       }
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const handleFaceVerificationSuccess = async (result: FaceVerificationResult) => {
-    console.log('人脸验证成功:', result);
-    setFaceVerificationStatus('success');
-    setShowFaceVerification(false);
 
-    try {
-      if (result.data.token && userProfile) {
-        const response = await request({
-          url: '/users/update-verification',
-          method: 'POST',
-          data: {
-            userId: userProfile.id,
-            verificationToken: result.data.token,
-            verificationType: 'face'
-          }
-        });
 
-        if (response.data.success) {
-          await loadUserProfile();
-          Taro.showToast({
-            title: '人脸验证成功，验证级别已提升',
-            icon: 'success',
-            duration: 3000
-          });
-        }
-      }
-    } catch (error: any) {
-      console.error('更新验证级别失败:', error);
-      Taro.showToast({ title: '验证成功但级别更新失败', icon: 'none' });
-    }
-  };
 
-  const handleFaceVerificationError = (error: string) => {
-    console.error('人脸验证失败:', error);
-    setFaceVerificationStatus('failed');
-    setShowFaceVerification(false);
-    Taro.showToast({ title: error, icon: 'error' });
-  };
-
-  const startFaceVerification = () => {
-    setFaceVerificationStatus('pending');
-    setShowFaceVerification(true);
-  };
 
   const navigateToFunction = (functionName: string) => {
+    console.log('🚀 尝试跳转功能:', functionName);
+    
     if (functionName === '我的订单') {
-      Taro.navigateTo({
-        url: '/pages/orders/index'
+      console.log('📋 跳转到我的订单页面');
+      navigateTo({
+        url: '/pages/orders/index',
+        success: () => console.log('✅ 跳转成功'),
+        fail: (error) => console.error('❌ 跳转失败:', error)
       });
       return;
     }
     
     if (functionName === '我的车辆') {
-      Taro.navigateTo({
-        url: '/pages/vehicles/index'
+      console.log('🛵 跳转到我的车辆页面');
+      navigateTo({
+        url: '/pages/vehicles/index',
+        success: () => console.log('✅ 跳转成功'),
+        fail: (error) => console.error('❌ 跳转失败:', error)
       });
       return;
     }
     
     if (functionName === '钱包' || functionName === '我的钱包') {
-      Taro.navigateTo({
-        url: '/pages/wallet/index'
+      console.log('💰 跳转到钱包页面');
+      navigateTo({
+        url: '/pages/wallet/index',
+        success: () => console.log('✅ 跳转成功'),
+        fail: (error) => console.error('❌ 跳转失败:', error)
       });
       return;
     }
     
     if (functionName === '我的卡券') {
-      Taro.navigateTo({
-        url: '/pages/profile/coupons'
+      console.log('🎫 跳转到我的卡券页面');
+      navigateTo({
+        url: '/pages/profile/coupons',
+        success: () => console.log('✅ 跳转成功'),
+        fail: (error) => console.error('❌ 跳转失败:', error)
       });
       return;
     }
     
-    Taro.showToast({
+    // 其他功能跳转到"功能开发中"页面
+    console.log('🚧 尝试跳转到功能开发中页面:', functionName);
+    
+    // 先显示Toast提示，然后尝试跳转
+    showToast({
       title: `${functionName}功能开发中`,
-      icon: 'none'
+      icon: 'none',
+      duration: 1500
     });
+    
+    // 延迟跳转，让用户看到Toast提示
+    setTimeout(() => {
+      navigateTo({
+        url: `/pages/under-development/index?functionName=${encodeURIComponent(functionName)}`,
+        success: () => {
+          console.log('✅ 跳转到功能开发中页面成功');
+        },
+        fail: (error) => {
+          console.error('❌ 跳转到功能开发中页面失败:', error);
+          console.log('🔄 尝试跳转到测试页面...');
+          
+          // 如果跳转失败，跳转到测试页面
+          navigateTo({
+            url: '/pages/test-jump/index',
+            success: () => {
+              console.log('✅ 跳转到测试页面成功');
+            },
+            fail: (testError) => {
+              console.error('❌ 跳转到测试页面也失败了:', testError);
+            }
+          });
+        }
+      });
+    }, 1500);
   };
 
-  const switchToCharging = () => {
-    Taro.switchTab({
-      url: '/pages/charging/index'
-    });
-  };
 
-  if (showFaceVerification) {
-    return (
-      <FaceVerification
-        mode="verify"
-        userId={userProfile?.id}
-        title="身份验证"
-        description="请进行人脸识别以提升账户安全级别"
-        onSuccess={handleFaceVerificationSuccess}
-        onError={handleFaceVerificationError}
-      />
-    );
-  }
 
-  if (showVerificationHistory) {
-    return (
-      <VerificationHistory
-        userId={userProfile?.id}
-        onClose={() => setShowVerificationHistory(false)}
-        showHeader={true}
-      />
-    );
-  }
+
+
+
 
   return (
     <View className='profile-page'>

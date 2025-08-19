@@ -29,6 +29,41 @@ export interface CouponCounts {
   unused: number
   used: number
   expired: number
+  total: number
+}
+
+// 查询选项接口
+export interface CouponQueryOptions {
+  status?: 'unused' | 'used' | 'expired' | 'all'
+  type?: 'discount' | 'amount' | 'free_charge' | 'points'
+  minValue?: number
+  maxValue?: number
+  validFrom?: Date
+  validUntil?: Date
+  search?: string
+  userId?: string
+  sortBy?: 'createdAt' | 'validUntil' | 'value' | 'title'
+  sortOrder?: 'asc' | 'desc'
+  limit?: number
+  offset?: number
+  includingExpired?: boolean
+  expiringSoon?: boolean // 即将过期的优惠券（3天内）
+}
+
+// 分页结果接口
+export interface PaginatedCoupons {
+  coupons: Coupon[]
+  total: number
+  page: number
+  pageSize: number
+  hasMore: boolean
+}
+
+// 批量操作结果接口
+export interface BatchOperationResult {
+  success: number
+  failed: number
+  results: { id: string; success: boolean; error?: string }[]
 }
 
 // 本地存储键名
@@ -41,7 +76,7 @@ const STORAGE_KEYS = {
 export class CouponService {
   private static instance: CouponService
   private coupons: Coupon[] = []
-  private counts: CouponCounts = { unused: 0, used: 0, expired: 0 }
+  private counts: CouponCounts = { unused: 0, used: 0, expired: 0, total: 0 }
 
   private constructor() {
     this.loadData()
@@ -125,18 +160,21 @@ export class CouponService {
   private updateCounts(): void {
     if (!Array.isArray(this.coupons)) {
       console.error('❌ 无法更新统计，coupons不是数组:', typeof this.coupons)
-      this.counts = { unused: 0, used: 0, expired: 0 }
+      this.counts = { unused: 0, used: 0, expired: 0, total: 0 }
       return
     }
     
     this.counts = {
       unused: this.coupons.filter(c => c.status === 'unused').length,
       used: this.coupons.filter(c => c.status === 'used').length,
-      expired: this.coupons.filter(c => c.status === 'expired').length
+      expired: this.coupons.filter(c => c.status === 'expired').length,
+      total: this.coupons.length
     }
     
     console.log('📊 统计数据已更新:', this.counts)
   }
+
+  // ====== 基础查询方法 ======
 
   // 获取所有优惠券
   public getAllCoupons(): Coupon[] {
@@ -148,15 +186,167 @@ export class CouponService {
     return { ...this.counts }
   }
 
-  // 根据状态获取优惠券
+  // 根据状态获取优惠券（保持兼容性）
   public getCouponsByStatus(status: string): Coupon[] {
     return this.coupons.filter(coupon => coupon.status === status)
   }
 
+  // 根据ID获取优惠券
+  public getCouponById(id: string): Coupon | null {
+    return this.coupons.find(c => c._id === id) || null
+  }
+
+  // ====== 高级查询方法 ======
+
+  // 灵活查询优惠券
+  public queryCoupons(options: CouponQueryOptions = {}): Coupon[] {
+    let result = [...this.coupons]
+
+    // 状态过滤
+    if (options.status && options.status !== 'all') {
+      result = result.filter(c => c.status === options.status)
+    }
+
+    // 类型过滤
+    if (options.type) {
+      result = result.filter(c => c.type === options.type)
+    }
+
+    // 用户ID过滤
+    if (options.userId) {
+      result = result.filter(c => c.userId === options.userId)
+    }
+
+    // 值范围过滤
+    if (options.minValue !== undefined) {
+      result = result.filter(c => c.value >= options.minValue!)
+    }
+    if (options.maxValue !== undefined) {
+      result = result.filter(c => c.value <= options.maxValue!)
+    }
+
+    // 有效期过滤
+    if (options.validFrom) {
+      result = result.filter(c => new Date(c.validFrom) >= options.validFrom!)
+    }
+    if (options.validUntil) {
+      result = result.filter(c => new Date(c.validUntil) <= options.validUntil!)
+    }
+
+    // 即将过期过滤
+    if (options.expiringSoon) {
+      const threeDaysLater = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
+      result = result.filter(c => {
+        const expireDate = new Date(c.validUntil)
+        return c.status === 'unused' && expireDate <= threeDaysLater && expireDate > new Date()
+      })
+    }
+
+    // 搜索过滤
+    if (options.search) {
+      const searchTerm = options.search.toLowerCase()
+      result = result.filter(c => 
+        c.title.toLowerCase().includes(searchTerm) ||
+        c.description.toLowerCase().includes(searchTerm) ||
+        (c.conditions && c.conditions.some(cond => cond.toLowerCase().includes(searchTerm)))
+      )
+    }
+
+    // 排序
+    if (options.sortBy) {
+      result.sort((a, b) => {
+        let aVal: any, bVal: any
+        
+        switch (options.sortBy) {
+          case 'createdAt':
+            aVal = new Date(a.createdAt).getTime()
+            bVal = new Date(b.createdAt).getTime()
+            break
+          case 'validUntil':
+            aVal = new Date(a.validUntil).getTime()
+            bVal = new Date(b.validUntil).getTime()
+            break
+          case 'value':
+            aVal = a.value
+            bVal = b.value
+            break
+          case 'title':
+            aVal = a.title.toLowerCase()
+            bVal = b.title.toLowerCase()
+            break
+          default:
+            return 0
+        }
+
+        if (options.sortOrder === 'desc') {
+          return aVal < bVal ? 1 : aVal > bVal ? -1 : 0
+        } else {
+          return aVal > bVal ? 1 : aVal < bVal ? -1 : 0
+        }
+      })
+    }
+
+    // 分页
+    if (options.offset !== undefined || options.limit !== undefined) {
+      const offset = options.offset || 0
+      const limit = options.limit || result.length
+      result = result.slice(offset, offset + limit)
+    }
+
+    return result
+  }
+
+  // 分页查询优惠券
+  public getCouponsPaginated(page: number = 1, pageSize: number = 10, options: CouponQueryOptions = {}): PaginatedCoupons {
+    const offset = (page - 1) * pageSize
+    const queryOptions = { ...options, offset, limit: pageSize }
+    
+    // 获取总数（不包含分页）
+    const totalOptions = { ...options }
+    delete totalOptions.offset
+    delete totalOptions.limit
+    const total = this.queryCoupons(totalOptions).length
+    
+    // 获取分页数据
+    const coupons = this.queryCoupons(queryOptions)
+    
+    return {
+      coupons,
+      total,
+      page,
+      pageSize,
+      hasMore: offset + pageSize < total
+    }
+  }
+
+  // 获取即将过期的优惠券
+  public getExpiringSoonCoupons(days: number = 3): Coupon[] {
+    return this.queryCoupons({ 
+      status: 'unused',
+      expiringSoon: true
+    })
+  }
+
+  // 按类型分组获取优惠券
+  public getCouponsByType(): Record<string, Coupon[]> {
+    const grouped: Record<string, Coupon[]> = {}
+    
+    this.coupons.forEach(coupon => {
+      if (!grouped[coupon.type]) {
+        grouped[coupon.type] = []
+      }
+      grouped[coupon.type].push(coupon)
+    })
+    
+    return grouped
+  }
+
+  // ====== 数据操作方法 ======
+
   // 添加新优惠券
   public addCoupon(couponData: Partial<Coupon>): Coupon {
     const newCoupon: Coupon = {
-      _id: `mock_${Date.now()}`,
+      _id: `mock_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       userId: 'demo_user_001',
       type: 'discount',
       title: '新优惠券',
