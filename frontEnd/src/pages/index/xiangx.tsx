@@ -2,7 +2,17 @@ import { View, Text } from '@tarojs/components'
 import { useLoad } from '@tarojs/taro'
 import Taro from '@tarojs/taro'
 import { useState } from 'react'
+import stationDetailsData from '../../data/stationDetails.json'
+import commentsData from '../../data/comments.json'
 import './xiangx.scss'
+
+// 声明微信小程序全局对象类型
+declare global {
+  interface Window {
+    wx?: any
+  }
+  const wx: any
+}
 
 // 充电站详情数据接口
 interface ChargingStationDetail {
@@ -33,8 +43,8 @@ interface ChargingStationDetail {
   rating: number
   reviewCount: number
   distance?: number
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string
+  updatedAt: string
 }
 
 export default function XiangX() {
@@ -42,198 +52,373 @@ export default function XiangX() {
   const [activeTab, setActiveTab] = useState<'details' | 'terminals'>('details')
   const [userPhotos, setUserPhotos] = useState<string[]>([])
   const [isTakingPhoto, setIsTakingPhoto] = useState(false)
+  const [showMapSelectorModal, setShowMapSelectorModal] = useState(false)
+  const [mapSelectorData, setMapSelectorData] = useState<{
+    maps: Array<{name: string, url: string}>
+    lat: number
+    lng: number
+    name: string
+    address: string
+  } | null>(null)
+  
+  // 评论区相关状态
+  const [showComments, setShowComments] = useState(false)
+  const [commentText, setCommentText] = useState('')
+  const [userRating, setUserRating] = useState(5)
+  const [comments, setComments] = useState<Array<{
+    id: string
+    user: string
+    avatar: string
+    content: string
+    rating: number
+    time: string
+    likes: number
+  }>>([])
+
+  // 从JSON文件导入充电站详情数据
+  const mockStationData: ChargingStationDetail = stationDetailsData[0] as unknown as ChargingStationDetail
 
   // 处理返回功能
   const handleGoBack = () => {
     try {
       if (typeof Taro.navigateBack === 'function') {
-        Taro.navigateBack()
-      } else if (typeof Taro.switchTab === 'function') {
+        Taro.navigateBack({
+          fail: () => fallbackToSwitchTab()
+        })
+        return
+      }
+      fallbackToSwitchTab()
+    } catch (error) {
+      fallbackToSwitchTab()
+    }
+  }
+
+  // 备选返回方案：使用switchTab
+  const fallbackToSwitchTab = () => {
+    try {
+      if (typeof Taro.switchTab === 'function') {
         Taro.switchTab({ url: '/pages/index/index' })
       } else {
-        // 降级到浏览器导航
-        window.history.back()
+        fallbackToBrowser()
       }
     } catch (error) {
-      console.error('返回失败:', error)
-      // 最后的备选方案
+      fallbackToBrowser()
+    }
+  }
+
+  // 最后的备选方案：浏览器导航
+  const fallbackToBrowser = () => {
+    try {
+      if (window.history && window.history.length > 1) {
+        window.history.back()
+      } else {
+        window.location.hash = '#/pages/index/index'
+      }
+    } catch (error) {
       try {
-        window.history.back()
-      } catch (fallbackError) {
-        console.error('备选返回方案也失败了:', fallbackError)
-        // 如果都失败了，跳转到首页
-        if (typeof Taro.switchTab === 'function') {
-          Taro.switchTab({ url: '/pages/index/index' })
-        } else {
-          window.location.hash = '#/pages/index/index'
+        window.location.href = '/pages/index/index'
+      } catch (finalError) {
+        if (typeof Taro.showToast === 'function') {
+          Taro.showToast({
+            title: '返回失败，请手动返回',
+            icon: 'error',
+            duration: 3000
+          })
         }
       }
     }
   }
 
-  // 处理更多操作
-  const handleMoreOptions = () => {
+  // 选择终端并跳转开始充电
+  const handleSelectTerminal = (charger: ChargingStationDetail['chargers'][number], index: number) => {
     try {
-      if (typeof Taro.showActionSheet === 'function') {
-        Taro.showActionSheet({
-          itemList: ['分享', '收藏', '举报', '联系客服'],
-          success: (res) => {
-            console.log('选择了操作:', res.tapIndex)
-            // 根据选择执行相应操作
-            switch (res.tapIndex) {
-              case 0:
-                handleShare()
-                break
-              case 1:
-                handleFavorite()
-                break
-              case 2:
-                handleReport()
-                break
-              case 3:
-                handleContactService()
-                break
+      const payload = {
+        terminalId: charger.chargerId,
+        stationId: stationInfo?._id,
+        stationName: stationInfo?.name,
+        address: stationInfo?.address,
+        chargerOrder: index + 1,
+        chargerType: charger.type,
+        chargerPower: charger.power,
+        pricePerKwh: (charger.pricing.electricityFee + charger.pricing.serviceFee).toFixed(4),
+        currentPeriod: `${stationInfo?.operatingHours.open}-${stationInfo?.operatingHours.close}`
+      }
+
+      if (typeof Taro.setStorageSync === 'function') {
+        Taro.setStorageSync('selected_terminal', payload)
+      } else {
+        localStorage.setItem('selected_terminal', JSON.stringify(payload))
+      }
+
+      Taro.navigateTo({ url: '/pages/charging/start/index' })
+    } catch (error) {
+      Taro.showToast({ title: '选择终端失败', icon: 'none' })
+    }
+  }
+
+  // 处理导航
+  const handleNavigate = () => {
+    if (stationInfo) {
+      const [lng, lat] = stationInfo.location.coordinates
+      const stationName = stationInfo.name
+      const stationAddress = stationInfo.address
+      
+      try {
+        if (typeof Taro.openLocation === 'function') {
+          Taro.openLocation({
+            latitude: lat,
+            longitude: lng,
+            name: stationName,
+            address: stationAddress,
+            scale: 18,
+            fail: () => {
+              openMapWithUniversalLink(lat, lng, stationName, stationAddress)
             }
+          })
+        } else {
+          openMapWithUniversalLink(lat, lng, stationName, stationAddress)
+        }
+      } catch (error) {
+        openMapWithUniversalLink(lat, lng, stationName, stationAddress)
+      }
+    }
+  }
+
+  // 使用通用地图链接打开地图应用
+  const openMapWithUniversalLink = (lat: number, lng: number, name: string, address: string) => {
+    try {
+      const maps = [
+        {
+          name: '高德地图',
+          url: `amapuri://route/plan/?sid=BGVIS1&slat=&slon=&sname=我的位置&did=BGVIS2&dlat=${lat}&dlon=${lng}&dname=${encodeURIComponent(name)}&dev=0&t=0`
+        },
+        {
+          name: '百度地图',
+          url: `baidumap://map/direction?destination=latlng:${lat},${lng}|name:${encodeURIComponent(name)}&mode=driving&region=${encodeURIComponent(address)}`
+        },
+        {
+          name: '腾讯地图',
+          url: `qqmap://map/routeplan?type=drive&to=${encodeURIComponent(name)}&tocoord=${lat},${lng}&referer=myapp`
+        }
+      ]
+
+      let opened = false
+      
+      if (typeof wx !== 'undefined' && wx.openLocation) {
+        wx.openLocation({
+          latitude: lat,
+          longitude: lng,
+          name: name,
+          address: address,
+          scale: 18,
+          success: () => {
+            opened = true
           }
         })
+      }
+
+      if (!opened) {
+        openMapSelectorModal(maps, lat, lng, name, address)
+      }
+    } catch (error) {
+      showCoordinateInfo(lat, lng, name, address)
+    }
+  }
+
+  // 显示地图选择器模态框
+  const openMapSelectorModal = (maps: Array<{name: string, url: string}>, lat: number, lng: number, name: string, address: string) => {
+    setMapSelectorData({ maps, lat, lng, name, address })
+    setShowMapSelectorModal(true)
+  }
+
+  // 处理地图应用选择
+  const handleMapSelection = (selectedMap: {name: string, url: string}) => {
+    setShowMapSelectorModal(false)
+    try {
+      openMapInBrowser(selectedMap.url, selectedMap.name)
+    } catch (error) {
+      openMapInBrowser(selectedMap.url, selectedMap.name)
+    }
+  }
+
+  // 关闭地图选择器
+  const closeMapSelector = () => {
+    setShowMapSelectorModal(false)
+    setMapSelectorData(null)
+  }
+
+  // 在浏览器中打开地图
+  const openMapInBrowser = (url: string, mapName: string) => {
+    try {
+      const newWindow = window.open(url, '_blank')
+      if (newWindow) {
+        if (typeof Taro.showToast === 'function') {
+          Taro.showToast({
+            title: `已打开${mapName}`,
+            icon: 'success',
+            duration: 2000
+          })
+        }
       } else {
-        // 降级到浏览器显示
-        const action = prompt('选择操作: 1-分享, 2-收藏, 3-举报, 4-联系客服')
-        if (action) {
-          const index = parseInt(action) - 1
-          switch (index) {
-            case 0:
-              handleShare()
-              break
-            case 1:
-              handleFavorite()
-              break
-            case 2:
-              handleReport()
-              break
-            case 3:
-              handleContactService()
-              break
-          }
+        window.location.href = url
+      }
+    } catch (error) {
+      showCoordinateInfo(0, 0, '', '')
+    }
+  }
+
+  // 显示坐标信息
+  const showCoordinateInfo = (lat: number, lng: number, name: string, address: string) => {
+    try {
+      if (typeof Taro.showModal === 'function') {
+        Taro.showModal({
+          title: '导航信息',
+          content: `充电站：${name}\n地址：${address}\n坐标：${lat}, ${lng}\n\n请手动复制坐标到地图应用`,
+          showCancel: false,
+          confirmText: '知道了'
+        })
+      }
+    } catch (error) {
+      // 忽略错误
+    }
+  }
+
+  // 打开评论区
+  const openComments = () => {
+    setShowComments(true)
+  }
+
+  // 关闭评论区
+  const closeComments = () => {
+    setShowComments(false)
+    setCommentText('')
+    setUserRating(5)
+  }
+
+  // 提交评论
+  const submitComment = () => {
+    if (!commentText.trim()) {
+      if (typeof Taro.showToast === 'function') {
+        Taro.showToast({
+          title: '请输入评论内容',
+          icon: 'none'
+        })
+      }
+      return
+    }
+
+    const newComment = {
+      id: Date.now().toString(),
+      user: '当前用户',
+      avatar: '👤',
+      content: commentText.trim(),
+      rating: userRating,
+      time: new Date().toLocaleString('zh-CN'),
+      likes: 0
+    }
+
+    setComments(prev => {
+      const newComments = [newComment, ...prev]
+      saveCommentsToStorage(newComments)
+      return newComments
+    })
+    setCommentText('')
+    setUserRating(5)
+    
+    if (typeof Taro.showToast === 'function') {
+      Taro.showToast({
+        title: '评论发表成功！',
+        icon: 'success'
+      })
+    }
+  }
+
+  // 点赞评论
+  const likeComment = (commentId: string) => {
+    setComments(prev => {
+      const newComments = prev.map(comment => 
+        comment.id === commentId 
+          ? { ...comment, likes: comment.likes + 1 }
+          : comment
+      )
+      saveCommentsToStorage(newComments)
+      return newComments
+    })
+  }
+
+  // 保存评论到本地存储
+  const saveCommentsToStorage = (commentsToSave: typeof comments) => {
+    if (!stationInfo) return
+    
+    try {
+      const storageKey = `comments_${stationInfo._id}`
+      const dataToSave = JSON.stringify(commentsToSave)
+      
+      if (typeof Taro.setStorageSync === 'function') {
+        Taro.setStorageSync(storageKey, dataToSave)
+      } else {
+        localStorage.setItem(storageKey, dataToSave)
+      }
+    } catch (error) {
+      // 忽略错误
+    }
+  }
+
+  // 从本地存储加载评论
+  const loadCommentsFromStorage = () => {
+    if (!stationInfo) return
+    
+    try {
+      const storageKey = `comments_${stationInfo._id}`
+      let storedComments: string | null = null
+      
+      if (typeof Taro.getStorageSync === 'function') {
+        storedComments = Taro.getStorageSync(storageKey)
+      } else {
+        storedComments = localStorage.getItem(storageKey)
+      }
+      
+      if (storedComments) {
+        const parsedComments = JSON.parse(storedComments)
+        if (Array.isArray(parsedComments)) {
+          setComments(parsedComments)
+          return
         }
       }
+      
+      const stationId = stationInfo._id
+      const initialComments = commentsData[stationId as keyof typeof commentsData] || []
+      setComments(initialComments)
+      
     } catch (error) {
-      console.error('显示操作菜单失败:', error)
-    }
-  }
-
-  // 处理分享
-  const handleShare = () => {
-    try {
-      if (typeof Taro.showToast === 'function') {
-        Taro.showToast({
-          title: '分享功能开发中',
-          icon: 'none'
-        })
-      } else {
-        alert('分享功能开发中')
-      }
-    } catch (error) {
-      console.error('分享失败:', error)
-    }
-  }
-
-  // 处理收藏
-  const handleFavorite = () => {
-    try {
-      if (typeof Taro.showToast === 'function') {
-        Taro.showToast({
-          title: '收藏功能开发中',
-          icon: 'none'
-        })
-      } else {
-        alert('收藏功能开发中')
-      }
-    } catch (error) {
-      console.error('收藏失败:', error)
-    }
-  }
-
-  // 处理举报
-  const handleReport = () => {
-    try {
-      if (typeof Taro.showToast === 'function') {
-        Taro.showToast({
-          title: '举报功能开发中',
-          icon: 'none'
-        })
-      } else {
-        alert('举报功能开发中')
-      }
-    } catch (error) {
-      console.error('举报失败:', error)
-    }
-  }
-
-  // 处理联系客服
-  const handleContactService = () => {
-    try {
-      if (typeof Taro.showToast === 'function') {
-        Taro.showToast({
-          title: '客服热线: 0797-966999',
-          icon: 'none',
-          duration: 3000
-        })
-      } else {
-        alert('客服热线: 0797-966999')
-      }
-    } catch (error) {
-      console.error('联系客服失败:', error)
-    }
-  }
-
-  // 处理设置
-  const handleSettings = () => {
-    try {
-      if (typeof Taro.showToast === 'function') {
-        Taro.showToast({
-          title: '设置功能开发中',
-          icon: 'none'
-        })
-      } else {
-        alert('设置功能开发中')
-      }
-    } catch (error) {
-      console.error('设置失败:', error)
+      const stationId = stationInfo._id
+      const initialComments = commentsData[stationId as keyof typeof commentsData] || []
+      setComments(initialComments)
     }
   }
 
   useLoad(() => {
-    console.log('详情页面加载中...')
-    // 从存储获取充电站信息
     let stationData = null
     
     try {
-      // 优先尝试Taro存储
       if (typeof Taro.getStorageSync === 'function') {
         stationData = Taro.getStorageSync('selected_station')
-        console.log('从Taro存储获取到的数据:', stationData)
       }
       
-      // 如果Taro存储没有数据，尝试浏览器localStorage
       if (!stationData) {
         try {
           const browserData = localStorage.getItem('selected_station')
           if (browserData) {
             stationData = JSON.parse(browserData)
-            console.log('从浏览器localStorage获取到的数据:', stationData)
           }
         } catch (browserError) {
-          console.log('浏览器localStorage读取失败:', browserError)
+          // 忽略错误
         }
       }
       
       if (stationData) {
         setStationInfo(stationData)
-        console.log('充电站数据设置成功')
       } else {
-        console.log('未找到充电站数据，使用模拟数据')
-        // 使用模拟数据
         setStationInfo(mockStationData)
       }
 
@@ -242,28 +427,19 @@ export default function XiangX() {
         let savedPhotos: string[] = []
         if (typeof Taro.getStorageSync === 'function') {
           savedPhotos = Taro.getStorageSync('user_photos') || []
-          console.log('从Taro存储加载照片:', savedPhotos.length, '张')
         } else {
           const photosData = localStorage.getItem('user_photos')
           if (photosData) {
             savedPhotos = JSON.parse(photosData)
-            console.log('从localStorage加载照片:', savedPhotos.length, '张')
           }
         }
         
-        // 验证照片数据的有效性
         if (Array.isArray(savedPhotos) && savedPhotos.length > 0) {
-          // 过滤掉无效的照片数据
           const validPhotos = savedPhotos.filter(photo => 
             photo && typeof photo === 'string' && photo.length > 0
           );
           
           if (validPhotos.length !== savedPhotos.length) {
-            console.log('发现无效照片数据，已过滤:', {
-              original: savedPhotos.length,
-              valid: validPhotos.length
-            });
-            // 更新存储中的有效数据
             if (typeof Taro.setStorageSync === 'function') {
               Taro.setStorageSync('user_photos', validPhotos);
             }
@@ -271,270 +447,18 @@ export default function XiangX() {
           }
           
           setUserPhotos(validPhotos)
-          console.log('用户照片加载成功:', validPhotos.length, '张')
         } else {
-          console.log('没有找到用户照片数据')
           setUserPhotos([])
         }
       } catch (photoError) {
-        console.error('加载用户照片失败:', photoError)
         setUserPhotos([])
       }
+
+      loadCommentsFromStorage()
     } catch (error) {
-      console.error('获取充电站数据失败:', error)
-      // 使用模拟数据作为备选
       setStationInfo(mockStationData)
     }
   })
-
-  // 模拟充电站数据
-  const mockStationData: ChargingStationDetail = {
-    _id: 'cs001',
-    name: '天鹅湾充电站',
-    address: '河北省保定市竞秀区丽园路和润家园',
-    location: {
-      type: 'Point',
-      coordinates: [115.4901, 38.8731]
-    },
-    operator: '河北省-保定市-李*丽',
-    operatingHours: { open: '00:00', close: '24:00' },
-    parkingFee: 0,
-    photos: ['https://example.com/station1.jpg'],
-    chargers: [
-      {
-        chargerId: 'ch001',
-        type: 'fast',
-        power: 60,
-        status: 'offline',
-        pricing: { electricityFee: 0.83, serviceFee: 0.12 }
-      },
-      {
-        chargerId: 'ch002',
-        type: 'slow',
-        power: 7,
-        status: 'available',
-        pricing: { electricityFee: 0.75, serviceFee: 0.10 }
-      },
-      {
-        chargerId: 'ch003',
-        type: 'slow',
-        power: 7,
-        status: 'available',
-        pricing: { electricityFee: 0.75, serviceFee: 0.10 }
-      },
-      {
-        chargerId: 'ch004',
-        type: 'slow',
-        power: 7,
-        status: 'available',
-        pricing: { electricityFee: 0.75, serviceFee: 0.10 }
-      }
-    ],
-    rating: 4.5,
-    reviewCount: 28,
-    distance: 1340,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-
-  // 处理拍照功能
-  const handleTakePhoto = async () => {
-    if (isTakingPhoto) return
-    
-    setIsTakingPhoto(true)
-    
-    try {
-      // 尝试使用Taro拍照API
-      if (typeof Taro.chooseImage === 'function') {
-        const result = await Taro.chooseImage({
-          count: 1,
-          sizeType: ['compressed'],
-          sourceType: ['camera']
-        })
-        
-        if (result.tempFilePaths && result.tempFilePaths.length > 0) {
-          const newPhoto = result.tempFilePaths[0]
-          setUserPhotos(prev => [...prev, newPhoto])
-          
-          // 保存到存储
-          try {
-            if (typeof Taro.setStorageSync === 'function') {
-              Taro.setStorageSync('user_photos', [...userPhotos, newPhoto])
-            } else {
-              localStorage.setItem('user_photos', JSON.stringify([...userPhotos, newPhoto]))
-            }
-          } catch (storageError) {
-            console.error('保存照片失败:', storageError)
-          }
-          
-          // 显示成功提示
-          if (typeof Taro.showToast === 'function') {
-            Taro.showToast({
-              title: '拍照成功！',
-              icon: 'success'
-            })
-          } else {
-            alert('拍照成功！')
-          }
-        }
-      } else {
-        // 降级到浏览器拍照（需要用户手动选择文件）
-        const input = document.createElement('input')
-        input.type = 'file'
-        input.accept = 'image/*'
-        input.capture = 'camera'
-        
-        input.onchange = (event) => {
-          const file = (event.target as HTMLInputElement).files?.[0]
-          if (file) {
-            const reader = new FileReader()
-            reader.onload = (e) => {
-              const photoData = e.target?.result as string
-              setUserPhotos(prev => [...prev, photoData])
-              
-              // 保存到存储
-              try {
-                localStorage.setItem('user_photos', JSON.stringify([...userPhotos, photoData]))
-              } catch (storageError) {
-                console.error('保存照片失败:', storageError)
-              }
-            }
-            reader.readAsDataURL(file)
-          }
-        }
-        
-        input.click()
-      }
-    } catch (error) {
-      console.error('拍照失败:', error)
-      
-      // 显示错误提示
-      if (typeof Taro.showToast === 'function') {
-        Taro.showToast({
-          title: '拍照失败，请重试',
-          icon: 'error'
-        })
-      } else {
-        alert('拍照失败，请重试')
-      }
-    } finally {
-      setIsTakingPhoto(false)
-    }
-  }
-
-  // 处理新手操作指引
-  const handleNewUserGuide = () => {
-    try {
-      if (typeof Taro.showToast === 'function') {
-        Taro.showToast({
-          title: '新手操作指引',
-          icon: 'none'
-        })
-      } else {
-        alert('新手操作指引')
-      }
-    } catch (error) {
-      console.error('Toast显示失败:', error)
-      alert('新手操作指引')
-    }
-  }
-
-  // 处理购买充电卡
-  const handleBuyCard = () => {
-    try {
-      if (typeof Taro.showToast === 'function') {
-        Taro.showToast({
-          title: '跳转购买充电卡页面',
-          icon: 'none'
-        })
-      } else {
-        alert('跳转购买充电卡页面')
-      }
-    } catch (error) {
-      console.error('Toast显示失败:', error)
-      alert('跳转购买充电卡页面')
-    }
-  }
-
-  // 处理车辆绑定
-  const handleBindVehicle = () => {
-    try {
-      if (typeof Taro.showToast === 'function') {
-        Taro.showToast({
-          title: '跳转车辆绑定页面',
-          icon: 'none'
-        })
-      } else {
-        alert('跳转车辆绑定页面')
-      }
-    } catch (error) {
-      console.error('Toast显示失败:', error)
-      alert('跳转车辆绑定页面')
-    }
-  }
-
-  // 处理导航
-  const handleNavigate = () => {
-    if (stationInfo) {
-      const [lng, lat] = stationInfo.location.coordinates
-      const mapData = { lng, lat }
-      const stationData = {
-        name: stationInfo.name,
-        address: stationInfo.address,
-        distance: stationInfo.distance,
-        rating: stationInfo.rating
-      }
-      
-      try {
-        // 尝试使用Taro存储
-        if (typeof Taro.setStorageSync === 'function') {
-          Taro.setStorageSync('map_target_coord', mapData)
-          Taro.setStorageSync('map_target_station', stationData)
-          console.log('地图数据已保存到Taro存储')
-        } else {
-          // 降级到浏览器localStorage
-          localStorage.setItem('map_target_coord', JSON.stringify(mapData))
-          localStorage.setItem('map_target_station', JSON.stringify(stationData))
-          console.log('地图数据已保存到浏览器localStorage')
-        }
-        
-        // 尝试导航到地图页面
-        if (typeof Taro.navigateTo === 'function') {
-          Taro.navigateTo({ url: '/pages/map/index' })
-        } else {
-          // 降级到浏览器导航
-          window.location.hash = '#/pages/map/index'
-        }
-      } catch (error) {
-        console.error('导航到地图失败:', error)
-        // 最后的备选方案
-        try {
-          localStorage.setItem('map_target_coord', JSON.stringify(mapData))
-          localStorage.setItem('map_target_station', JSON.stringify(stationData))
-          window.location.hash = '#/pages/map/index'
-        } catch (fallbackError) {
-          console.error('备选方案也失败了:', fallbackError)
-        }
-      }
-    }
-  }
-
-  // 处理扫码充电
-  const handleScanCharge = () => {
-    try {
-      if (typeof Taro.showToast === 'function') {
-        Taro.showToast({
-          title: '扫码充电功能',
-          icon: 'none'
-        })
-      } else {
-        alert('扫码充电功能')
-      }
-    } catch (error) {
-      console.error('Toast显示失败:', error)
-      alert('扫码充电功能')
-    }
-  }
 
   if (!stationInfo) {
     return (
@@ -576,17 +500,17 @@ export default function XiangX() {
           <Text className='navbar-title'>充电站详情</Text>
         </View>
         <View className='navbar-right'>
-          <View className='more-button' onClick={handleMoreOptions}>
+          <View className='more-button'>
             <Text className='more-icon'>⋯</Text>
           </View>
-          <View className='settings-button' onClick={handleSettings}>
+          <View className='settings-button'>
             <Text className='settings-icon'>⚙</Text>
           </View>
         </View>
       </View>
 
       {/* 新手操作指引 */}
-      <View className='new-user-guide' onClick={handleNewUserGuide}>
+      <View className='new-user-guide'>
         新手操作指引 {'>'}
       </View>
 
@@ -599,7 +523,7 @@ export default function XiangX() {
           <View className='banner-text'>
             站点支持购买充电卡,充电更划算
           </View>
-          <View className='banner-button' onClick={handleBuyCard}>
+          <View className='banner-button'>
             去购卡
           </View>
         </View>
@@ -643,7 +567,7 @@ export default function XiangX() {
           </View>
           <View className='bind-vehicle'>
             <Text className='bind-text'>绑定车辆享受更好的充电服务</Text>
-            <Text className='bind-link' onClick={handleBindVehicle}>去绑定 {'>'}</Text>
+            <Text className='bind-link'>去绑定 {'>'}</Text>
           </View>
         </View>
 
@@ -687,102 +611,8 @@ export default function XiangX() {
 
         {activeTab === 'details' && (
           <View className='tab-content details'>
-            {/* 充电站图片展示 */}
-            <View className='station-images'>
-              <View className='main-image' onClick={handleTakePhoto}>
-                {userPhotos.length > 0 ? (
-                  <View className='user-photo-display'>
-                    <img 
-                      src={userPhotos[userPhotos.length - 1]} 
-                      alt="用户拍摄的照片"
-                      className='user-photo'
-                    />
-                    <View className='photo-overlay'>
-                      <Text className='photo-text'>点击重新拍照</Text>
-                    </View>
-                  </View>
-                ) : (
-                  <View className='image-placeholder'>
-                    <Text className='image-icon'>📷</Text>
-                    <Text className='image-text'>点击拍照</Text>
-                    <Text className='photo-hint'>记录充电站实况</Text>
-                  </View>
-                )}
-                {isTakingPhoto && (
-                  <View className='photo-loading'>
-                    <Text className='loading-icon'>⏳</Text>
-                    <Text className='loading-text'>拍照中...</Text>
-                  </View>
-                )}
-              </View>
-              
-              <View className='image-gallery'>
-                {/* 显示用户拍摄的照片 */}
-                {userPhotos.slice(-3).map((photo, index) => (
-                  <View key={`user-${index}`} className='gallery-item'>
-                    <img 
-                      src={photo} 
-                      alt={`用户照片${index + 1}`}
-                      className='user-gallery-photo'
-                    />
-                    <View className='photo-remove' onClick={() => {
-                      // 修复：找到照片在原始数组中的真实索引
-                      const realIndex = userPhotos.indexOf(photo);
-                      
-                      if (realIndex === -1) {
-                        console.error('未找到要删除的照片:', photo.substring(0, 50));
-                        return;
-                      }
-                      
-                      const newPhotos = userPhotos.filter((_, i) => i !== realIndex);
-                      
-                      console.log('删除照片:', {
-                        galleryIndex: index,
-                        realIndex: realIndex,
-                        totalPhotos: userPhotos.length,
-                        newTotal: newPhotos.length,
-                        deletedPhoto: photo.substring(0, 50) + '...'
-                      });
-                      
-                      // 立即更新状态
-                      setUserPhotos(newPhotos);
-                      
-                      // 强制刷新界面
-                      setTimeout(() => {
-                        setUserPhotos(prev => [...prev]);
-                      }, 50);
-                      
-                      // 同步更新存储
-                      try {
-                        if (typeof Taro.setStorageSync === 'function') {
-                          Taro.setStorageSync('user_photos', newPhotos);
-                          console.log('Taro存储已更新:', newPhotos.length, '张照片');
-                        }
-                        localStorage.setItem('user_photos', JSON.stringify(newPhotos));
-                        console.log('localStorage已更新:', newPhotos.length, '张照片');
-                        console.log('照片删除成功，存储已同步');
-                      } catch (error) {
-                        console.error('更新照片存储失败:', error);
-                      }
-                    }}>
-                      <Text className='remove-icon'>❌</Text>
-                    </View>
-                  </View>
-                ))}
-                {/* 如果用户照片不足3张，显示占位符 */}
-                {userPhotos.length < 3 && Array.from({ length: 3 - userPhotos.length }).map((_, index) => (
-                  <View key={`placeholder-${index}`} className='gallery-item'>
-                    <View className='image-placeholder small' onClick={handleTakePhoto}>
-                      <Text className='image-icon'>📷</Text>
-                      <Text className='add-photo-text'>添加</Text>
-                    </View>
-                  </View>
-                ))}
-              </View>
-            </View>
-
             {/* 评分和评论 */}
-            <View className='rating-section'>
+            <View className='rating-section' onClick={openComments}>
               <View className='rating-info'>
                 <View className='rating-score'>
                   <Text className='score'>{stationInfo.rating}</Text>
@@ -800,6 +630,9 @@ export default function XiangX() {
                   </Text>
                 ))}
               </View>
+              <View className='rating-arrow'>
+                <Text className='arrow-icon'>›</Text>
+              </View>
             </View>
 
             {/* 价格信息 */}
@@ -808,11 +641,11 @@ export default function XiangX() {
                 <Text className='pricing-title'>价格信息</Text>
                 <View className='price-tag'>实时价格</View>
               </View>
-              
+               
               <View className='current-period'>
                 当前时段: {stationInfo.operatingHours.open}-{stationInfo.operatingHours.close}
               </View>
-              
+               
               <View className='price-breakdown'>
                 <View className='price-item'>
                   <Text className='price-label'>电费:</Text>
@@ -885,7 +718,7 @@ export default function XiangX() {
           <View className='tab-content terminals'>
             <View className='terminal-list'>
               {stationInfo.chargers.map((charger, index) => (
-                <View key={charger.chargerId} className='terminal-item'>
+                <View key={charger.chargerId} className='terminal-item' onClick={() => handleSelectTerminal(charger, index)}>
                   <View className='terminal-header'>
                     <Text className='terminal-id'>终端{index + 1}</Text>
                     <View className={`status-badge ${charger.status}`}>
@@ -933,10 +766,148 @@ export default function XiangX() {
 
       {/* 扫码充电按钮 */}
       <View className='scan-charge-section'>
-        <View className='scan-charge-btn' onClick={handleScanCharge}>
+        <View className='scan-charge-btn'>
           扫码充电
         </View>
       </View>
+
+      {/* 地图选择器模态框 */}
+      {showMapSelectorModal && mapSelectorData && (
+        <View className='map-selector-modal'>
+          <View className='modal-mask' onClick={closeMapSelector} />
+          <View className='modal-content'>
+            <View className='modal-header'>
+              <Text className='modal-title'>选择地图应用</Text>
+              <View className='modal-close' onClick={closeMapSelector}>
+                <Text className='close-icon'>✕</Text>
+              </View>
+            </View>
+            <View className='modal-body'>
+              {mapSelectorData.maps.map((map) => (
+                <View 
+                  key={map.name}
+                  className='map-option'
+                  onClick={() => handleMapSelection(map)}
+                >
+                  <View className='map-icon'>
+                    {map.name === '高德地图' && <Text className='icon-text'>🗺️</Text>}
+                    {map.name === '百度地图' && <Text className='icon-text'>📍</Text>}
+                    {map.name === '腾讯地图' && <Text className='icon-text'>🌐</Text>}
+                  </View>
+                  <Text className='map-name'>{map.name}</Text>
+                  <View className='map-arrow'>
+                    <Text className='arrow-icon'>›</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+            <View className='modal-footer'>
+              <View className='cancel-btn' onClick={closeMapSelector}>
+                <Text className='cancel-text'>取消</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* 评论区模态框 */}
+      {showComments && (
+        <View className='comments-modal'>
+          <View className='modal-mask' onClick={closeComments} />
+          <View className='modal-content'>
+            <View className='modal-header'>
+              <View className='back-btn' onClick={closeComments}>
+                <Text className='back-icon'>‹</Text>
+              </View>
+              <Text className='modal-title'>用户评价</Text>
+            </View>
+             
+            <View className='modal-body'>
+              {/* 评论输入框 */}
+              <View className='comment-input-section'>
+                {/* 评分选择器 */}
+                <View className='rating-selector'>
+                  <Text className='rating-label'>请选择评分:</Text>
+                  <View className='stars-container'>
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <View
+                        key={star}
+                        className={`star-item ${star <= userRating ? 'selected' : ''}`}
+                        onClick={() => setUserRating(star)}
+                      >
+                        <Text className='star-icon'>
+                          {star <= userRating ? '⭐' : '☆'}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                  <Text className='rating-text'>
+                    {userRating === 1 && '很差'}
+                    {userRating === 2 && '较差'}
+                    {userRating === 3 && '一般'}
+                    {userRating === 4 && '较好'}
+                    {userRating === 5 && '很好'}
+                  </Text>
+                </View>
+                 
+                <View className='input-wrapper'>
+                  <input
+                    className='comment-input'
+                    type='text'
+                    placeholder='写下您的评价...'
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    maxLength={200}
+                  />
+                  <View className='input-counter'>
+                    <Text className='counter-text'>{commentText.length}/200</Text>
+                  </View>
+                </View>
+                <View className='submit-btn' onClick={submitComment}>
+                  <Text className='submit-text'>发表</Text>
+                </View>
+              </View>
+
+              {/* 评论列表 */}
+              <View className='comments-list'>
+                {comments.map((comment) => (
+                  <View key={comment.id} className='comment-item'>
+                    <View className='comment-header'>
+                      <View className='user-info'>
+                        <View className='user-avatar'>
+                          <Text className='avatar-text'>{comment.avatar}</Text>
+                        </View>
+                        <View className='user-details'>
+                          <Text className='user-name'>{comment.user}</Text>
+                          <View className='comment-rating'>
+                            {[1, 2, 3, 4, 5].map(star => (
+                              <Text key={star} className={`star ${star <= comment.rating ? 'filled' : ''}`}>
+                                {star <= comment.rating ? '⭐' : '☆'}
+                              </Text>
+                            ))}
+                          </View>
+                        </View>
+                      </View>
+                      <Text className='comment-time'>{comment.time}</Text>
+                    </View>
+                     
+                    <View className='comment-content'>
+                      <Text className='content-text'>{comment.content}</Text>
+                    </View>
+                     
+                    <View className='comment-actions'>
+                      <View className='like-btn' onClick={() => likeComment(comment.id)}>
+                        <Text className='like-icon'>👍</Text>
+                        <Text className='like-count'>{comment.likes}</Text>
+                      </View>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </View>
+        </View>
+      )}
     </View>
   )
 }

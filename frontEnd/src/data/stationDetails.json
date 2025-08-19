@@ -1,0 +1,65 @@
+[
+  {
+    "_id": "cs001",
+    "name": "天鹅湾充电站",
+    "address": "河北省保定市竞秀区丽园路和润家园",
+    "location": {
+      "type": "Point",
+      "coordinates": [115.4901, 38.8731]
+    },
+    "operator": "河北省-保定市-李*丽",
+    "operatingHours": {
+      "open": "00:00",
+      "close": "24:00"
+    },
+    "parkingFee": 0,
+    "photos": ["https://example.com/station1.jpg"],
+    "chargers": [
+      {
+        "chargerId": "ch001",
+        "type": "fast",
+        "power": 60,
+        "status": "offline",
+        "pricing": {
+          "electricityFee": 0.83,
+          "serviceFee": 0.12
+        }
+      },
+      {
+        "chargerId": "ch002",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": {
+          "electricityFee": 0.75,
+          "serviceFee": 0.10
+        }
+      },
+      {
+        "chargerId": "ch003",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": {
+          "electricityFee": 0.75,
+          "serviceFee": 0.10
+        }
+      },
+      {
+        "chargerId": "ch004",
+        "type": "slow",
+        "power": 7,
+        "status": "available",
+        "pricing": {
+          "electricityFee": 0.75,
+          "serviceFee": 0.10
+        }
+      }
+    ],
+    "rating": 4.5,
+    "reviewCount": 28,
+    "distance": 1340,
+    "createdAt": "2024-01-08T10:00:00.000Z",
+    "updatedAt": "2024-01-08T10:00:00.000Z"
+  }
+]
