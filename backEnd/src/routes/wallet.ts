@@ -42,7 +42,7 @@ router.get('/info', authenticate, async (req: Request, res: Response) => {
       data: {
         balance: wallet.balance,
         frozenAmount: wallet.frozenAmount,
-        availableBalance: wallet.getAvailableBalance(),
+        availableBalance: wallet.balance - wallet.frozenAmount,
         totalRecharge: wallet.totalRecharge,
         totalConsume: wallet.totalConsume,
         paymentMethods: wallet.paymentMethods,
@@ -126,14 +126,26 @@ router.post('/recharge', authenticate, [
       await wallet.save()
     }
 
-    const transaction = wallet.addTransaction({
-      type: 'recharge',
+    if (!wallet) {
+      return res.status(500).json({
+        success: false,
+        message: '钱包创建失败'
+      })
+    }
+
+    // 手动创建交易记录
+    const transaction = {
+      id: new Date().getTime().toString(),
+      type: 'recharge' as const,
       amount: parseFloat(amount),
       description: `${paymentMethod === 'alipay' ? '支付宝' : paymentMethod === 'wechat' ? '微信' : '银行卡'}充值`,
       paymentMethod,
-      status: 'pending'
-    })
+      status: 'pending' as const,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
 
+    wallet.transactions.push(transaction)
     await wallet.save()
 
     res.json({

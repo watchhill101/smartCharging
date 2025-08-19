@@ -1,11 +1,11 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { optionalAuth } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
 
 const router = express.Router();
 
 // 获取附近充电站
-router.get('/nearby', optionalAuth, asyncHandler(async (req, res) => {
+router.get('/nearby', optionalAuth, asyncHandler(async (req: Request, res: Response) => {
   // TODO: 实现获取附近充电站逻辑
   res.json({
     success: true,
@@ -17,7 +17,7 @@ router.get('/nearby', optionalAuth, asyncHandler(async (req, res) => {
 }));
 
 // 搜索充电站
-router.get('/search', optionalAuth, asyncHandler(async (req, res) => {
+router.get('/search', optionalAuth, asyncHandler(async (req: Request, res: Response) => {
   // TODO: 实现搜索充电站逻辑
   res.json({
     success: true,
@@ -29,7 +29,7 @@ router.get('/search', optionalAuth, asyncHandler(async (req, res) => {
 }));
 
 // 获取充电站详情
-router.get('/:stationId', optionalAuth, asyncHandler(async (req, res) => {
+router.get('/:stationId', optionalAuth, asyncHandler(async (req: Request, res: Response) => {
   // TODO: 实现获取充电站详情逻辑
   res.json({
     success: true,
@@ -41,7 +41,7 @@ router.get('/:stationId', optionalAuth, asyncHandler(async (req, res) => {
 }));
 
 // 获取充电桩实时状态
-router.get('/:stationId/chargers', optionalAuth, asyncHandler(async (req, res) => {
+router.get('/:stationId/chargers', optionalAuth, asyncHandler(async (req: Request, res: Response) => {
   // TODO: 实现获取充电桩状态逻辑
   res.json({
     success: true,
@@ -53,7 +53,7 @@ router.get('/:stationId/chargers', optionalAuth, asyncHandler(async (req, res) =
 }));
 
 // 获取充电站评论
-router.get('/:stationId/reviews', optionalAuth, asyncHandler(async (req, res) => {
+router.get('/:stationId/reviews', optionalAuth, asyncHandler(async (req: Request, res: Response) => {
   // TODO: 实现获取评论逻辑
   res.json({
     success: true,
@@ -65,7 +65,7 @@ router.get('/:stationId/reviews', optionalAuth, asyncHandler(async (req, res) =>
 }));
 
 // 添加充电站评论
-router.post('/:stationId/reviews', optionalAuth, asyncHandler(async (req, res) => {
+router.post('/:stationId/reviews', optionalAuth, asyncHandler(async (req: Request, res: Response) => {
   // TODO: 实现添加评论逻辑
   res.json({
     success: true,

@@ -161,7 +161,7 @@ router.post(
         console.error("余额支付事务失败:", error);
         return res.status(400).json({
           success: false,
-          message: error.message || "支付失败，请重试",
+          message: error instanceof Error ? error.message : "支付失败，请重试",
         });
       } finally {
         await session_transaction.endSession();

@@ -68,7 +68,7 @@ router.put('/profile', authenticate, asyncHandler(async (req: any, res: Response
 }));
 
 // 获取用户车辆列表
-router.get('/vehicles', authenticate, asyncHandler(async (req: any, res) => {
+router.get('/vehicles', authenticate, asyncHandler(async (req: any, res: Response) => {
   const user = await User.findById(req.user._id).select('vehicles');
   
   if (!user) {
@@ -88,7 +88,7 @@ router.get('/vehicles', authenticate, asyncHandler(async (req: any, res) => {
 }));
 
 // 添加车辆
-router.post('/vehicles', authenticate, asyncHandler(async (req: any, res) => {
+router.post('/vehicles', authenticate, asyncHandler(async (req: any, res: Response) => {
   const { brand, model, licensePlate, batteryCapacity } = req.body;
   const userId = req.user._id;
 
@@ -152,7 +152,7 @@ router.post('/vehicles', authenticate, asyncHandler(async (req: any, res) => {
 }));
 
 // 删除车辆
-router.delete('/vehicles/:licensePlate', authenticate, asyncHandler(async (req: any, res) => {
+router.delete('/vehicles/:licensePlate', authenticate, asyncHandler(async (req: any, res: Response) => {
   const { licensePlate } = req.params;
   const userId = req.user._id;
 
@@ -184,7 +184,7 @@ router.delete('/vehicles/:licensePlate', authenticate, asyncHandler(async (req: 
 }));
 
 // 获取用户余额
-router.get('/balance', authenticate, asyncHandler(async (req: any, res) => {
+router.get('/balance', authenticate, asyncHandler(async (req: any, res: Response) => {
   const user = await User.findById(req.user._id).select('balance');
   
   if (!user) {

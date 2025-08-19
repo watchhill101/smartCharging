@@ -37,13 +37,16 @@
   },
   "browserslist": {
     "development": [
-      "defaults and fully supports es6-module",
-      "maintained node versions"
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
     ],
     "production": [
       "last 3 versions",
       "Android >= 4.1",
-      "ios >= 8"
+      "ios >= 8",
+      "> 1%",
+      "not dead"
     ]
   },
   "author": "",

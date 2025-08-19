@@ -10,10 +10,7 @@ export const connectRedis = async (): Promise<void> => {
       url: redisURL,
       socket: {
         connectTimeout: 5000,
-        lazyConnect: true,
       },
-      retry_delay_on_failover: 100,
-      retry_delay_on_cluster_down: 300,
     });
 
     // 错误处理

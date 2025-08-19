@@ -9,6 +9,12 @@ export default {
   },
   mini: {},
   h5: {
+    vite: {
+      optimizeDeps: {
+        // 预构建 @amap/amap-jsapi-loader
+        include: ['@amap/amap-jsapi-loader']
+      }
+    },
     devServer: {
       host: '0.0.0.0',  // 允许外部访问
       port: 8000,       // 指定端口
