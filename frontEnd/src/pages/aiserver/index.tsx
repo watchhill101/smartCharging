@@ -1822,9 +1822,51 @@ const AiServer = () => {
             <View className='action-links'>
               <Text 
                 className='clear-button'
-                onClick={clearMessages}
+                onClick={() => {
+                  console.log('点击返回按钮，准备返回首页')
+                  
+                  try {
+                    // 优先使用Taro导航
+                    if (typeof Taro.navigateBack === 'function') {
+                      Taro.navigateBack({
+                        success: () => {
+                          console.log('返回首页成功')
+                        },
+                        fail: (error) => {
+                          console.error('Taro返回失败:', error)
+                          // 如果Taro返回失败，使用浏览器导航
+                          window.location.hash = '#/pages/index/index'
+                        }
+                      })
+                    } else if (typeof Taro.navigateTo === 'function') {
+                      // 如果navigateBack不可用，使用navigateTo
+                      Taro.navigateTo({
+                        url: '/pages/index/index',
+                        success: () => {
+                          console.log('跳转到首页成功')
+                        },
+                        fail: (error) => {
+                          console.error('Taro跳转失败:', error)
+                          // 如果Taro跳转失败，使用浏览器导航
+                          window.location.hash = '#/pages/index/index'
+                        }
+                      })
+                    } else {
+                      // Taro不可用，直接使用浏览器导航
+                      window.location.hash = '#/pages/index/index'
+                    }
+                  } catch (error) {
+                    console.error('返回首页失败:', error)
+                    // 最后的备选方案
+                    try {
+                      window.location.hash = '#/pages/index/index'
+                    } catch (fallbackError) {
+                      console.error('备选方案也失败了:', fallbackError)
+                    }
+                  }
+                }}
               >
-                🗑️ 清空
+                 返回
               </Text>
               <Text className='separator'>|</Text>
               <Text className='disclaimer-text'>
