@@ -248,24 +248,10 @@ WalletSchema.methods.unfreezeAmount = function(amount: number) {
 WalletSchema.statics.createDefaultWallet = function(userId: mongoose.Types.ObjectId) {
   const defaultPaymentMethods: IPaymentMethod[] = [
     {
-      id: 'balance',
-      type: 'balance',
-      name: '余额支付',
-      isDefault: true,
-      isEnabled: true
-    },
-    {
       id: 'alipay',
       type: 'alipay',
       name: '支付宝',
-      isDefault: false,
-      isEnabled: true
-    },
-    {
-      id: 'wechat',
-      type: 'wechat',
-      name: '微信支付',
-      isDefault: false,
+      isDefault: true,
       isEnabled: true
     }
   ]
@@ -283,7 +269,7 @@ WalletSchema.statics.createDefaultWallet = function(userId: mongoose.Types.Objec
     settings: {
       autoInvoice: false,
       invoiceEmail: '',
-      defaultPaymentMethod: 'balance'
+      defaultPaymentMethod: 'alipay'
     }
   })
 }
