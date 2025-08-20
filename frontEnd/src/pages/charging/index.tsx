@@ -397,9 +397,7 @@ ${currentHistory.length >= 2 ?
         // 更新最后预测时间和结果（备用方案也算作一次预测）
         setLastPredictionTime(currentTime)
         
-        // 生成备用方案的结果文本
-        let backupResult = ''
-        
+        // 基于历史数据生成备用预测结果
         if (isCharging) {
           // 基于实际充电速度计算
           if (changeRate > 0) {
@@ -407,33 +405,33 @@ ${currentHistory.length >= 2 ?
             const estimatedMinutes = Math.round(remainingLevel / changeRate)
             
             if (estimatedMinutes < 60) {
-              backupResult = `⚡ ${estimatedMinutes}分钟后充满 (基于实际充电速度)`
+              return `⚡ ${estimatedMinutes}分钟后充满 (基于实际充电速度)`
             } else {
               const hours = Math.floor(estimatedMinutes / 60)
               const minutes = estimatedMinutes % 60
-              backupResult = `⚡ ${hours}小时${minutes}分钟后充满 (基于实际充电速度)`
-      }
-    } else {
+              return `⚡ ${hours}小时${minutes}分钟后充满 (基于实际充电速度)`
+            }
+          } else {
             // 充电速度异常，使用备用方案
-            backupResult = `⚡ 充电速度异常，请检查充电器`
+            return `⚡ 充电速度异常，请检查充电器`
           }
-      } else {
+        } else {
           // 基于实际耗电速度计算
           if (changeRate < 0) {
             const estimatedMinutes = Math.round(currentLevel / Math.abs(changeRate))
             
             if (estimatedMinutes < 60) {
-              backupResult = `🔋 ${estimatedMinutes}分钟后耗尽 (基于实际耗电速度)`
+              return `🔋 ${estimatedMinutes}分钟后耗尽 (基于实际耗电速度)`
             } else if (estimatedMinutes >= 1440) { // 24小时 = 1440分钟
               const days = Math.floor(estimatedMinutes / 1440)
-              backupResult = `🔋 ${days}天后耗尽 (基于实际耗电速度)`
-        } else {
+              return `🔋 ${days}天后耗尽 (基于实际耗电速度)`
+            } else {
               const hours = Math.floor(estimatedMinutes / 60)
-              backupResult = `🔋 ${hours}小时后耗尽 (基于实际耗电速度)`
+              return `🔋 ${hours}小时后耗尽 (基于实际耗电速度)`
             }
           } else {
             // 耗电速度异常，使用备用方案
-            backupResult = `🔋 耗电速度异常，请检查应用使用情况`
+            return `🔋 耗电速度异常，请检查应用使用情况`
           }
         }
       }
@@ -482,7 +480,10 @@ ${currentHistory.length >= 2 ?
         }
       }
     }
-  }, [batteryTheme, batteryStatus, batteryInitialized, batteryChangeHistory])
+    
+    // 如果以上所有条件都不满足，返回默认值
+    return '⏳ 计算中...'
+  }, [batteryTheme, batteryStatus, batteryInitialized, batteryChangeHistory, lastClickTime, lastPredictionTime])
 
   // 更新智能预测
   const updateSmartPrediction = useCallback(async () => {
@@ -708,6 +709,9 @@ ${currentHistory.length >= 2 ?
     }
   }, [])
 
+
+
+  // 主初始化useEffect - 合并重复代码
   useEffect(() => {
     // 初始化移动端优化
     MobileDetect.init()
@@ -724,27 +728,6 @@ ${currentHistory.length >= 2 ?
       console.log('屏幕方向变化:', orientation)
     })
     
-    return () => {
-      clearTimeout(timer)
-    }
-  }, [initBatteryAPI, loadWalletData])
-
-  useEffect(() => {
-    // 初始化移动端优化
-    MobileDetect.init()
-
-    loadWalletData()
-
-    // 延迟初始化电池状态监听，确保页面完全加载
-    const timer = setTimeout(() => {
-      initBatteryAPI()
-    }, 500) // 500ms延迟，确保页面稳定
-
-    // 监听屏幕方向变化
-    MobileDetect.onOrientationChange((orientation) => {
-      console.log('屏幕方向变化:', orientation)
-    })
-
     // 定期检查数据更新（每2秒检查一次）
     const dataCheckInterval = setInterval(() => {
       // 检查 localStorage 中的数据是否有更新
@@ -762,7 +745,7 @@ ${currentHistory.length >= 2 ?
         }
       }
     }, 2000)
-
+    
     return () => {
       clearTimeout(timer)
       clearInterval(dataCheckInterval)
@@ -990,13 +973,49 @@ ${currentHistory.length >= 2 ?
           
           // 模拟支付宝沙箱支付URL（实际项目中应该由后端提供）
           const frontendUrl = 'http://localhost:10086' // 前端地址
-          const mockPayUrl = `https://openapi.alipaydev.com/gateway.do?app_id=2021000000000001&method=alipay.trade.wap.pay&format=JSON&return_url=${encodeURIComponent(frontendUrl + '/#/pages/payment-success/index?orderId=WALLET_' + Date.now() + '&amount=' + actualPaymentAmount + '&type=recharge')}&notify_url=${encodeURIComponent(window.location.origin + '/api/payments/notify')}&version=1.0&sign_type=RSA2&timestamp=${new Date().toISOString()}&biz_content=${encodeURIComponent(JSON.stringify({
+          const mockPayUrl = `https://openapi.alipaydev.com/gateway.do?app_id=2021000000000001&method=alipay.trade.wap.pay&format=JSON&return_url=${encodeURIComponent(frontendUrl + '/#/pages/payment-success/index?orderId=WALLET_' + Date.now() + '&amount=' + originalAmount + '&paymentAmount=' + actualPaymentAmount + '&type=recharge' + (selectedCoupon ? '&couponId=' + selectedCoupon.id : ''))}&notify_url=${encodeURIComponent(window.location.origin + '/api/payments/notify')}&version=1.0&sign_type=RSA2&timestamp=${new Date().toISOString()}&biz_content=${encodeURIComponent(JSON.stringify({
             out_trade_no: 'WALLET_' + Date.now(),
             product_code: 'QUICK_WAP_WAY',
-            total_amount: actualPaymentAmount,
-            subject: '钱包充值',
+            total_amount: actualPaymentAmount, // 使用优惠后的支付金额
+            subject: `钱包充值${selectedCoupon ? ' (优惠券)' : ''}`,
             quit_url: frontendUrl + '/#/pages/charging/index'
           }))}&sign=mock_signature`
+          
+          // 在跳转前标记优惠券为已使用（因为是模拟支付）
+          if (selectedCoupon) {
+            // 更新本地优惠券状态
+            setCoupons(prevCoupons => 
+              prevCoupons.map(coupon => 
+                coupon.id === selectedCoupon.id 
+                  ? { ...coupon, status: 'used' as const, usedDate: new Date().toISOString() }
+                  : coupon
+              )
+            )
+            
+            // 更新本地存储中的优惠券数据
+            try {
+              const currentData = dataManager.getData()
+              const updatedCoupons = currentData.coupons.map(coupon => 
+                coupon.id === selectedCoupon.id 
+                  ? { ...coupon, status: 'used' as const, usedDate: new Date().toISOString() }
+                  : coupon
+              )
+              
+              // 保存到本地存储
+              const updatedData = {
+                ...currentData,
+                coupons: updatedCoupons
+              }
+              localStorage.setItem('walletData', JSON.stringify(updatedData))
+              
+              console.log('✅ 优惠券使用状态已更新到本地存储（模拟支付）')
+            } catch (error) {
+              console.error('❌ 更新本地存储失败:', error)
+            }
+            
+            // 清除选中的优惠券
+            setSelectedCoupon(null)
+          }
           
           // 延迟跳转，让用户看到提示
           setTimeout(() => {
@@ -1042,10 +1061,31 @@ ${currentHistory.length >= 2 ?
         setCoupons(prevCoupons => 
           prevCoupons.map(coupon => 
             coupon.id === selectedCoupon.id 
-              ? { ...coupon, status: 'used', usedDate: new Date().toISOString() }
+              ? { ...coupon, status: 'used' as const, usedDate: new Date().toISOString() }
               : coupon
           )
         )
+        
+        // 更新本地存储中的优惠券数据
+        try {
+          const currentData = dataManager.getData()
+          const updatedCoupons = currentData.coupons.map(coupon => 
+            coupon.id === selectedCoupon.id 
+              ? { ...coupon, status: 'used' as const, usedDate: new Date().toISOString() }
+              : coupon
+          )
+          
+          // 保存到本地存储
+          const updatedData = {
+            ...currentData,
+            coupons: updatedCoupons
+          }
+          localStorage.setItem('walletData', JSON.stringify(updatedData))
+          
+          console.log('✅ 优惠券使用状态已更新到本地存储')
+        } catch (error) {
+          console.error('❌ 更新本地存储失败:', error)
+        }
         
         // 清除选中的优惠券
         setSelectedCoupon(null)

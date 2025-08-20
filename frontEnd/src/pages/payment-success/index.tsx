@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
 import { View, Text, Button } from '@tarojs/components'
 import TaroCompat from '../../utils/taroCompat'
-import { parsePaymentParams } from '../../utils/urlUtils'
-import { createTransactionFromPayment } from '../../utils/localTransactionStorage'
 import dataManager from '../../utils/dataManager'
 import './index.scss'
 
@@ -16,7 +14,9 @@ export default function PaymentSuccess() {
     try {
       // 直接从URL解析支付宝回调参数
       let orderId = ''
-      let amount = ''
+      let amount = '' // 兼容字段（可能是充值金额）
+      let rechargeAmount = '' // 实际充值到钱包余额的金额（原始金额）
+      let paymentAmount = '' // 用户实际支付金额（优惠后）
       let type = 'recharge'
       let tradeNo = ''
       let isAlipayCallback = false
@@ -26,7 +26,10 @@ export default function PaymentSuccess() {
       if (router?.params) {
         console.log('Taro路由参数:', router.params)
         orderId = router.params.orderId || router.params.out_trade_no || ''
-        amount = router.params.amount || router.params.total_amount || ''
+        // 优先使用明确语义的字段
+        rechargeAmount = router.params.rechargeAmount || router.params.amount || router.params.total_amount || ''
+        paymentAmount = router.params.paymentAmount || router.params.total_amount || ''
+        amount = rechargeAmount || router.params.amount || router.params.total_amount || ''
         type = router.params.type || 'recharge'
         tradeNo = router.params.tradeNo || router.params.trade_no || ''
       }
@@ -44,13 +47,27 @@ export default function PaymentSuccess() {
           
           // 提取关键参数
           const urlOrderId = searchParams.get('out_trade_no')
-          const urlAmount = searchParams.get('total_amount')
+          const urlRechargeAmount = searchParams.get('rechargeAmount')
+          const urlPaymentAmount = searchParams.get('paymentAmount')
+          const urlAmount = searchParams.get('amount') || searchParams.get('total_amount')
           const urlTradeNo = searchParams.get('trade_no')
           const urlMethod = searchParams.get('method')
           
-          if (urlAmount) {
+          // 优先采用具有语义的字段
+          if (urlRechargeAmount) {
+            rechargeAmount = urlRechargeAmount
+            amount = urlRechargeAmount
+            console.log('✅ 从URL提取到充值金额:', rechargeAmount)
+          } else if (urlAmount) {
+            // 兼容模式：amount 作为充值金额
             amount = urlAmount
-            console.log('✅ 从URL提取到金额:', amount)
+            rechargeAmount = urlAmount
+            console.log('✅ 从URL提取到金额(兼容为充值金额):', amount)
+          }
+
+          if (urlPaymentAmount) {
+            paymentAmount = urlPaymentAmount
+            console.log('✅ 从URL提取到支付金额:', paymentAmount)
           }
           
           if (urlOrderId) {
@@ -80,26 +97,30 @@ export default function PaymentSuccess() {
         }
       }
 
-      console.log('最终解析结果:', { orderId, amount, type, tradeNo, isAlipayCallback })
+      console.log('最终解析结果:', { orderId, amount, rechargeAmount, paymentAmount, type, tradeNo, isAlipayCallback })
       
       // 设置订单信息
-      if (orderId && amount) {
-        const paymentAmount = parseFloat(amount)
+      if (orderId && (rechargeAmount || amount)) {
+        const actualRechargeAmount = parseFloat(rechargeAmount || amount)
+        const actualPaymentAmount = parseFloat(paymentAmount || amount)
         
-        // 添加到data.json并更新余额（新增逻辑）
+        // 添加到data.json并更新余额（使用充值金额而非支付金额）
         try {
-          const newTransaction = dataManager.addRechargeTransaction(paymentAmount, orderId, 'alipay')
+          const newTransaction = dataManager.addRechargeTransaction(actualRechargeAmount, orderId, 'alipay')
           
           // 扩展订单数据，添加新信息
           const orderData = {
             orderId,
-            amount: paymentAmount,
+            rechargeAmount: actualRechargeAmount, // 充值金额（入账金额）
+            paymentAmount: actualPaymentAmount, // 实付金额
+            amount: actualRechargeAmount, // 兼容：amount 等于充值金额
             type: type || 'recharge',
             tradeNo,
             isAlipayCallback: isAlipayCallback || false,
             // 新增显示信息
             transactionId: newTransaction.id,
-            newBalance: dataManager.getBalance()
+            newBalance: dataManager.getBalance(),
+            savedAmount: Math.max(0, actualRechargeAmount - actualPaymentAmount)
           }
           
           setOrderInfo(orderData)
@@ -115,7 +136,9 @@ export default function PaymentSuccess() {
           // 即使失败也要显示基本信息（保持原有逻辑）
           setOrderInfo({
             orderId,
-            amount: paymentAmount,
+            rechargeAmount: actualRechargeAmount,
+            paymentAmount: actualPaymentAmount,
+            amount: actualRechargeAmount,
             type: type || 'recharge',
             tradeNo,
             isAlipayCallback: isAlipayCallback || false
@@ -154,15 +177,7 @@ export default function PaymentSuccess() {
     })
   }
 
-  const handleViewOrders = () => {
-    // 这里可以跳转到订单列表页面
-    TaroCompat.navigateTo({
-      url: '/pages/orders/index'
-    }).catch(() => {
-      // 如果没有订单页面，回到钱包页面
-      handleBackToWallet()
-    })
-  }
+  // 预留：查看订单入口（当前未使用）
 
   if (loading) {
     return (
@@ -194,9 +209,21 @@ export default function PaymentSuccess() {
               <Text className='info-value'>{orderInfo.orderId}</Text>
             </View>
             <View className='info-item'>
-              <Text className='info-label'>支付金额</Text>
-              <Text className='info-value amount'>¥{orderInfo.amount.toFixed(2)}</Text>
+              <Text className='info-label'>充值金额</Text>
+              <Text className='info-value amount'>¥{(orderInfo.rechargeAmount ?? orderInfo.amount).toFixed(2)}</Text>
             </View>
+            {orderInfo.paymentAmount !== undefined && orderInfo.paymentAmount !== orderInfo.rechargeAmount && (
+              <View className='info-item'>
+                <Text className='info-label'>实际支付</Text>
+                <Text className='info-value amount'>¥{orderInfo.paymentAmount.toFixed(2)}</Text>
+              </View>
+            )}
+            {orderInfo.savedAmount !== undefined && orderInfo.savedAmount > 0 && (
+              <View className='info-item saved-highlight'>
+                <Text className='info-label'>优惠券节省</Text>
+                <Text className='info-value saved-amount'>¥{orderInfo.savedAmount.toFixed(2)}</Text>
+              </View>
+            )}
             <View className='info-item'>
               <Text className='info-label'>支付时间</Text>
               <Text className='info-value'>{new Date().toLocaleString('zh-CN')}</Text>
