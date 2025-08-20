@@ -359,6 +359,8 @@
   cursor: pointer;
   transition: all 0.3s ease;
   z-index: 5;
+  width: 135rpx;
+  height: 40rpx;
 }
 
 .battery-indicator:hover {
@@ -368,8 +370,8 @@
 
 .battery-icon {
   position: relative;
-  width: 24px;
-  height: 12px;
+  width: 58rpx;
+  height: 22rpx;
   border: 2px solid rgba(255, 255, 255, 0.8);
   border-radius: 2px;
   background: rgba(255, 255, 255, 0.1);
@@ -409,7 +411,7 @@
 }
 
 .battery-percentage {
-  font-size: 14px; /* 从12px增加到14px */
+  font-size: 28px; /* 从12px增加到14px */
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
 }
@@ -417,24 +419,25 @@
 /* 电池信息面板 */
 .battery-info-panel {
   position: absolute;
-  top: 55px;
-  right: 16px;
+  top: 69px;
+  right: 14px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   z-index: 10;
-  min-width: 200px;
-  max-width: 250px;
+  min-width: 300px;
+  max-width: 350px;
 }
 
 .battery-info-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
-  padding: 4px 0;
+  margin-bottom: 12px; /* 从8px增加到12px */
+  padding: 8px 0; /* 从4px增加到8px */
+  min-height: 48px; /* 新增最小高度 */
 }
 
 .battery-info-item:last-child {
@@ -442,20 +445,21 @@
 }
 
 .info-label {
-  font-size: 14px; /* 从12px增加到14px */
+  font-size: 16px; /* 从14px增加到16px */
   color: #6b7280;
   font-weight: 500;
+  width: 80rpx;
 }
 
 .info-value {
-  font-size: 14px; /* 从12px增加到14px */
+  font-size: 16px; /* 从14px增加到16px */
   color: #374151;
   font-weight: 600;
 }
 
 /* 电池主题提示 - 优化位置 */
 .battery-theme-hint {
-  font-size: 17px; /* 从15px增加到17px */
+  font-size: 20px;
   color: rgba(255, 255, 255, 0.8);
   margin-top: 8px;
   text-align: left;
@@ -463,6 +467,48 @@
   font-weight: 500;
   letter-spacing: 0.3px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 钱包统计信息样式 */
+.balance-stats {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.balance-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: inherit;
+  margin-bottom: 2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.stat-label {
+  font-size: 18px;
+  opacity: 0.8;
+  color: inherit;
+  font-weight: 500;
+}
+
+.balance-stat-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.3);
+  margin: 0 8px;
 }
 
 @keyframes gentle-pulse {
@@ -820,6 +866,67 @@
   background: #f9fafb;
 }
 
+/* Transaction Cards - 新的卡片式设计 */
+.transaction-card {
+  background: #ffffff;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.transaction-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.transaction-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.transaction-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.transaction-location {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.transaction-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.detail-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 50px;
+}
+
+.detail-btn:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  transform: scale(1.05);
+}
+
 .transaction-left {
   display: flex;
   align-items: center;
@@ -848,6 +955,11 @@
   color: #dc2626;
 }
 
+.icon-blue {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
 .transaction-info {
   flex: 1;
 }
@@ -860,8 +972,30 @@
 }
 
 .transaction-time {
-  font-size: 28px; /* 从16px增加到28px */
+  font-size: 24px; /* 从16px增加到28px */
   color: #6b7280;
+  margin-left: 10rpx;
+  margin-right: 15rpx;
+}
+
+.transaction-extra {
+  font-size: 11px;
+  color: #8b5cf6;
+  margin-top: 2px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.transaction-order-id {
+  color: #6b7280;
+  font-size: 10px;
+  margin-top: 3px;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+  background: #f8fafc;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  border: 1px solid #e2e8f0;
 }
 
 .transaction-right {
@@ -887,6 +1021,21 @@
   color: #6b7280;
 }
 
+.status-completed {
+  color: #059669;
+  font-weight: 500;
+}
+
+.status-pending {
+  color: #d97706;
+  font-weight: 500;
+}
+
+.status-failed {
+  color: #dc2626;
+  font-weight: 500;
+}
+
 .view-all-btn {
   color: #4338ca;
   background: none;
@@ -901,9 +1050,43 @@
   color: #3730a3;
 }
 
+
+
 /* Optimized Coupons Tab */
 .coupons-tab {
   padding: 20px 24px;
+}
+
+/* 优惠券统计样式 */
+.coupons-stats {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 16px 0 24px 0;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.coupon-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.coupon-stat-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e40af;
+  margin-bottom: 4px;
+}
+
+.coupon-stat-label {
+  font-size: 18px;
+  color: #64748b;
+  font-weight: 500;
 }
 
 .coupons-grid {
@@ -1088,6 +1271,13 @@
 .coupon-date {
   color: #6b7280;
   font-size: 18px; /* 从16px增加到18px */
+}
+
+.coupon-min-amount {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-bottom: 8px;
+  font-weight: 500;
 }
 
 .use-coupon-btn {
@@ -1360,6 +1550,7 @@
 }
 
 .modal-title {
+  min-width: 100rpx;
   font-size: 24px;
   font-weight: 600;
   color: #1f2937;
@@ -1520,6 +1711,64 @@
   font-weight: 700;
 }
 
+/* 支付方式显示样式（仅显示支付宝） */
+.payment-method-display {
+  display: flex;
+  justify-content: center;
+}
+
+.payment-method-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 300px;
+  padding: 16px 20px;
+  border: 2px solid #dbeafe;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  box-shadow: 0 2px 8px rgba(3, 105, 161, 0.1);
+}
+
+.payment-method-item .payment-icon {
+  font-size: 24px;
+  margin-right: 12px;
+}
+
+.payment-method-item .payment-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0c4a6e;
+  flex: 1;
+}
+
+.payment-badge {
+  background: #06b6d4;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-left: 8px;
+}
+
+.quick-amounts-section {
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 15; /* 确保在优惠券区域之上 */
+  /* 调试边框 - 临时添加，确认后可以删除 */
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 4px;
+  background: rgba(59, 130, 246, 0.02); /* 轻微蓝色背景 */
+}
+
+.quick-amounts-section:hover {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); /* 悬停时的外发光 */
+}
+
 .quick-amounts {
   display: grid;
   grid-template-columns: repeat(5, 1fr); /* 固定5列，确保完美对齐 */
@@ -1527,6 +1776,8 @@
   max-width: 100%;
   align-items: stretch; /* 确保高度一致 */
   justify-items: stretch; /* 确保宽度一致 */
+  position: relative;
+  z-index: 16; /* 确保按钮在最上层 */
 }
 
 .quick-amount {
@@ -1548,6 +1799,8 @@
   box-shadow: 0 2px 4px rgba(67, 56, 202, 0.1);
   line-height: 1; /* 统一行高 */
   align-self: stretch; /* 确保在grid中垂直拉伸对齐 */
+  position: relative;
+  z-index: 17; /* 确保按钮在最上层 */
 }
 
 /* 专门处理Taro Button组件的默认样式重置 */
@@ -1692,24 +1945,25 @@
   }
   
   .battery-theme-hint {
-    font-size: 14px;
+    font-size: 20px;
     margin-top: 6px;
   }
   
+  /* 字体大小优化：保留最大值，合并重复定义 */
   .section-title {
-    font-size: 38px; /* 从32px增加到38px */
+    font-size: 42px; /* 保留最大值 */
   }
   
   .balance-amount {
-    font-size: 56px; /* 进一步增大到56px */
+    font-size: 62px; /* 保留最大值 */
   }
   
   .currency-symbol {
-    font-size: 36px; /* 进一步增大到36px */
+    font-size: 38px; /* 保留最大值 */
   }
   
   .balance-label {
-    font-size: 17px;
+    font-size: 20px; /* 保留最大值 */
   }
   
   .transaction-item {
@@ -1718,41 +1972,39 @@
   }
   
   .transaction-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
+    width: 44px; /* 保留最大值 */
+    height: 44px; /* 保留最大值 */
+    font-size: 26px; /* 保留最大值 */
     margin-right: 12px;
   }
   
   .coupon-title {
-    font-size: 20px;
+    font-size: 26px; /* 保留最大值 */
   }
   
   .coupon-description {
-    font-size: 17px;
+    font-size: 20px; /* 保留最大值 */
   }
   
   .coupon-footer {
-    font-size: 17px;
+    font-size: 20px; /* 保留最大值 */
   }
   
   .coupon-date {
-    font-size: 15px;
+    font-size: 18px; /* 保留最大值 */
   }
   
   .use-coupon-btn {
     padding: 10px 18px;
-    font-size: 15px;
+    font-size: 18px; /* 保留最大值 */
   }
   
-  /* 删除了add-coupon-btn的响应式样式 */
-  
   .tabs-container {
-    max-height: 850px; /* 进一步增加到850px */
+    max-height: 900px; /* 保留最大值 */
   }
   
   .tab-content {
-    max-height: 810px; /* 进一步增加到810px */
+    max-height: 780px; /* 保留最大值 */
   }
   
   /* Touch Optimization */
@@ -1773,85 +2025,86 @@
   }
 }
   
+  /* 480px媒体查询样式优化：保留最大值 */
   .user-greeting {
-    font-size: 18px;
+    font-size: 22px; /* 保留最大值 */
   }
   
   .user-avatar {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
+    width: 44px; /* 保留最大值 */
+    height: 44px; /* 保留最大值 */
+    font-size: 20px; /* 保留最大值 */
   }
   
   .balance-card {
-    padding: 20px;
-    border-radius: 16px;
+    padding: 20px; /* 保留最大值 */
+    border-radius: 16px; /* 保留最大值 */
   }
   
   .balance-label {
-    font-size: 14px;
-    margin-bottom: 12px;
+    font-size: 20px; /* 保留最大值 */
+    margin-bottom: 12px; /* 保留最大值 */
   }
   
   .currency-symbol {
-    font-size: 28px; /* 增大到28px */
-    margin-right: 4px; /* 增加间距 */
+    font-size: 38px; /* 保留最大值 */
+    margin-right: 6px; /* 保留最大值 */
   }
   
   .balance-amount {
-    font-size: 50px; /* 增大到50px */
+    font-size: 62px; /* 保留最大值 */
   }
   
   .balance-main {
-    margin-bottom: 28px;
-    padding-top: 6px; /* 恢复适当的内边距 */
-    padding-bottom: 10px;
+    margin-bottom: 32px; /* 保留最大值 */
+    padding-top: 8px; /* 保留最大值 */
+    padding-bottom: 12px; /* 保留最大值 */
   }
   
   .recharge-btn-main {
-    font-size: 22px; /* 响应式调整但保持较大字体 */
-    padding: 14px 28px;
-    min-height: 48px;
-    min-width: 120px;
+    font-size: 28px; /* 保留最大值 */
+    padding: 16px 32px; /* 保留最大值 */
+    min-height: 56px; /* 保留最大值 */
+    min-width: 150px; /* 保留最大值 */
   }
 
   .card-tab-navigation {
-    padding: 3px;
+    padding: 6px; /* 保留最大值 */
   }
 
   .card-tab-item {
-    padding: 10px 6px;
+    padding: 10px 8px; /* 保留最大值 */
   }
 
   .card-tab-icon {
-    font-size: 22px; /* 响应式调整但保持较大字体 */
-    margin-bottom: 2px;
+    font-size: 28px; /* 保留最大值 */
+    margin-bottom: 4px; /* 保留最大值 */
   }
 
   .card-tab-text {
-    font-size: 18px; /* 响应式调整但保持较大字体 */
+    font-size: 24px; /* 保留最大值 */
   }
   
   .tab-item {
-    padding: 16px 8px;
+    padding: 16px 16px; /* 保留最大值 */
   }
   
   .tab-icon {
-    font-size: 20px; /* 响应式调整但保持较大字体 */
+    font-size: 26px; /* 保留最大值 */
   }
   
   .tab-text {
-    font-size: 22px; /* 响应式调整但保持较大字体 */
+    font-size: 28px; /* 保留最大值 */
   }
   
   .balance-tab,
   .coupons-tab,
   .invoices-tab {
-    padding: 16px;
+    padding: 24px; /* 保留最大值 */
   }
   
   .section-title {
-    font-size: 20px;
+    font-size: 42px; /* 保留最大值 */
   }
   
   .coupons-grid {
@@ -1859,45 +2112,45 @@
   }
   
   .transaction-item {
-    padding: 16px 12px;
+    padding: 16px 18px; /* 保留最大值 */
   }
   
   .transaction-icon {
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
+    width: 44px; /* 保留最大值 */
+    height: 44px; /* 保留最大值 */
+    font-size: 26px; /* 保留最大值 */
   }
   
   .transaction-desc {
-    font-size: 22px; /* 从18px增加到22px */
+    font-size: 24px; /* 保留最大值 */
   }
   
   .transaction-time {
-    font-size: 22px; /* 响应式调整但保持较大字体 */
+    font-size: 24px; /* 保留最大值 */
   }
   
   .transaction-amount {
-    font-size: 22px; /* 从18px增加到22px */
+    font-size: 24px; /* 保留最大值 */
   }
   
   .transaction-status {
-    font-size: 17px; /* 从15px增加到17px */
+    font-size: 18px; /* 保留最大值 */
   }
   
   .coupon-title {
-    font-size: 24px; /* 从20px增加到24px */
+    font-size: 26px; /* 保留最大值 */
   }
   
   .coupon-description {
-    font-size: 18px; /* 从16px增加到18px */
+    font-size: 20px; /* 保留最大值 */
   }
   
   .coupon-footer {
-    font-size: 18px; /* 从15px增加到18px */
+    font-size: 20px; /* 保留最大值 */
   }
   
   .use-coupon-btn {
-    font-size: 18px; /* 从16px增加到18px */
+    font-size: 18px; /* 保留最大值 */
   }
   
   .invoice-main {
@@ -1907,27 +2160,27 @@
   }
   
   .invoice-number {
-    font-size: 18px;
+    font-size: 20px; /* 保留最大值 */
   }
   
   .invoice-date {
-    font-size: 15px;
+    font-size: 18px; /* 保留最大值 */
   }
   
   .invoice-amount {
-    font-size: 18px;
+    font-size: 20px; /* 保留最大值 */
   }
   
   .invoice-status {
-    font-size: 14px;
+    font-size: 16px; /* 保留最大值 */
   }
   
   .invoice-description {
-    font-size: 16px;
+    font-size: 18px; /* 保留最大值 */
   }
   
   .action-btn {
-    font-size: 16px;
+    font-size: 18px; /* 保留最大值 */
   }
   
   .invoice-amount-status {
@@ -1945,51 +2198,47 @@
     align-self: flex-end;
   }
   
-  .payment-grid {
-    grid-template-columns: 1fr;
-  }
-  
   .quick-amounts {
-    grid-template-columns: repeat(5, 1fr); /* 保持5列布局，确保对齐 */
-    gap: 10px; /* 平板端减小间距 */
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px; /* 保留最大值 */
   }
   
   .quick-amount {
-    font-size: 17px; /* 增大768px屏幕的字体 */
-    height: 48px; /* 固定高度 */
-    padding: 0 !important; /* 强制移除内边距 */
-    margin: 0 !important; /* 强制重置外边距 */
+    font-size: 18px; /* 保留最大值 */
+    height: 52px; /* 保留最大值 */
+    padding: 0 !important;
+    margin: 0 !important;
   }
   
   .modal-title {
-    font-size: 26px; /* 增大模态框标题 */
+    font-size: 24px; /* 保留最大值 */
   }
   
   .input-label {
-    font-size: 20px; /* 增大标签字体 */
+    font-size: 18px; /* 保留最大值 */
   }
   
   .amount-input {
-    font-size: 24px; /* 平板端增大输入框字体 */
-    line-height: 1; /* 优化行高确保垂直居中 */
-    padding: 0 16px 0 8px; /* 调整内边距 */
+    font-size: 22px; /* 保留最大值 */
+    line-height: 1;
+    padding: 0 20px 0 8px; /* 保留最大值 */
   }
   
   .amount-input-wrapper {
-    height: 62px; /* 平板端适当高度 */
+    height: 64px; /* 保留最大值 */
   }
   
   .amount-input-wrapper .currency-symbol {
-    font-size: 28px; /* 平板端增大货币符号 */
-    padding: 0 14px 0 18px;
+    font-size: 26px; /* 保留最大值 */
+    padding: 0 16px 0 20px; /* 保留最大值 */
   }
   
   .payment-name {
-    font-size: 18px; /* 增大支付方式名称字体 */
+    font-size: 16px; /* 保留最大值 */
   }
   
   .recharge-now-btn {
-    font-size: 24px; /* 增大充值按钮字体 */
+    font-size: 20px; /* 保留最大值 */
   }
 
 @media (max-width: 480px) {
@@ -2004,194 +2253,195 @@
   }
   
   .header-title {
-    font-size: 28px;
+    font-size: 42px; /* 保留最大值 */
   }
   
   .user-greeting {
-    font-size: 16px;
+    font-size: 22px; /* 保留最大值 */
   }
   
   .balance-card {
-    padding: 16px;
-    border-radius: 14px;
+    padding: 20px; /* 保留最大值 */
+    border-radius: 16px; /* 保留最大值 */
   }
   
   .balance-label {
-    font-size: 13px;
-    margin-bottom: 10px;
+    font-size: 20px; /* 保留最大值 */
+    margin-bottom: 12px; /* 保留最大值 */
   }
   
   .currency-symbol {
-    font-size: 24px; /* 增大到24px */
-    margin-right: 3px; /* 增加间距 */
+    font-size: 38px; /* 保留最大值 */
+    margin-right: 6px; /* 保留最大值 */
   }
   
   .balance-amount {
-    font-size: 44px; /* 增大到44px */
+    font-size: 62px; /* 保留最大值 */
   }
   
   .balance-main {
-    margin-bottom: 24px;
-    padding-top: 4px; /* 恢复适当的内边距 */
-    padding-bottom: 8px;
+    margin-bottom: 32px; /* 保留最大值 */
+    padding-top: 8px; /* 保留最大值 */
+    padding-bottom: 12px; /* 保留最大值 */
   }
   
   .recharge-btn-main {
-    font-size: 20px; /* 小屏幕调整但保持较大字体 */
-    padding: 12px 24px;
-    min-height: 44px;
-    min-width: 100px;
+    font-size: 28px; /* 保留最大值 */
+    padding: 16px 32px; /* 保留最大值 */
+    min-height: 56px; /* 保留最大值 */
+    min-width: 150px; /* 保留最大值 */
   }
 
   .card-tab-navigation {
-    padding: 2px;
+    padding: 6px; /* 保留最大值 */
   }
 
   .card-tab-item {
-    padding: 8px 4px;
+    padding: 10px 8px; /* 保留最大值 */
   }
 
   .card-tab-icon {
-    font-size: 20px; /* 小屏幕调整但保持较大字体 */
-    margin-bottom: 1px;
+    font-size: 28px; /* 保留最大值 */
+    margin-bottom: 4px; /* 保留最大值 */
   }
 
   .card-tab-text {
-    font-size: 16px; /* 小屏幕调整但保持较大字体 */
+    font-size: 24px; /* 保留最大值 */
   }
   
   .tab-icon {
-    font-size: 20px; /* 小屏幕调整但保持较大字体 */
+    font-size: 26px; /* 保留最大值 */
   }
   
   .tab-text {
-    font-size: 20px; /* 小屏幕调整但保持较大字体 */
+    font-size: 28px; /* 保留最大值 */
   }
   
   .balance-tab,
   .coupons-tab,
   .invoices-tab {
-    padding: 12px;
+    padding: 24px; /* 保留最大值 */
   }
   
   .section-title {
-    font-size: 22px; /* 从18px增加到22px */
+    font-size: 42px; /* 保留最大值 */
   }
   
   .transaction-desc {
-    font-size: 18px; /* 从16px增加到18px */
+    font-size: 24px; /* 保留最大值 */
   }
   
   .transaction-time {
-    font-size: 20px; /* 小屏幕调整但保持较大字体 */
+    font-size: 24px; /* 保留最大值 */
   }
   
   .transaction-amount {
-    font-size: 18px; /* 从16px增加到18px */
+    font-size: 24px; /* 保留最大值 */
   }
   
   .transaction-status {
-    font-size: 16px; /* 从14px增加到16px */
+    font-size: 18px; /* 保留最大值 */
   }
   
   .coupon-card {
-    padding: 16px;
+    padding: 20px; /* 保留最大值 */
   }
   
   .coupon-title {
-    font-size: 20px; /* 从18px增加到20px */
+    font-size: 26px; /* 保留最大值 */
   }
   
   .coupon-description {
-    font-size: 17px; /* 从15px增加到17px */
+    font-size: 20px; /* 保留最大值 */
   }
   
   .coupon-footer {
-    font-size: 16px; /* 从14px增加到16px */
+    font-size: 20px; /* 保留最大值 */
   }
   
   .discount-value {
-    font-size: 22px;
+    font-size: 24px; /* 保留最大值 */
   }
   
   .invoice-number {
-    font-size: 16px;
+    font-size: 20px; /* 保留最大值 */
   }
   
   .invoice-date {
-    font-size: 14px;
+    font-size: 18px; /* 保留最大值 */
   }
   
   .invoice-amount {
-    font-size: 16px;
+    font-size: 20px; /* 保留最大值 */
   }
   
   .invoice-description {
-    font-size: 15px;
+    font-size: 18px; /* 保留最大值 */
   }
   
   .action-btn {
-    font-size: 15px;
+    font-size: 18px; /* 保留最大值 */
   }
   
   .modal-content {
-    padding: 0 16px 16px;
+    padding: 0 24px 24px; /* 保留最大值 */
   }
   
   .modal-title {
-    font-size: 22px; /* 增大模态框标题 */
+    font-size: 24px; /* 保留最大值 */
   }
   
   .input-label {
-    font-size: 18px; /* 增大标签字体 */
+    font-size: 18px; /* 保留最大值 */
   }
   
   .amount-input {
-    font-size: 22px; /* 移动端增大输入框字体 */
-    line-height: 1; /* 优化行高确保垂直居中 */
-    padding: 0 14px 0 6px; /* 调整内边距 */
+    font-size: 22px; /* 保留最大值 */
+    line-height: 1;
+    padding: 0 20px 0 8px; /* 保留最大值 */
   }
   
   .amount-input-wrapper {
-    height: 60px; /* 移动端适当高度 */
+    height: 64px; /* 保留最大值 */
   }
   
   .amount-input-wrapper .currency-symbol {
-    font-size: 26px; /* 移动端增大货币符号 */
-    padding: 0 12px 0 16px;
+    font-size: 26px; /* 保留最大值 */
+    padding: 0 16px 0 20px; /* 保留最大值 */
   }
   
   .payment-name {
-    font-size: 18px; /* 增大支付方式名称字体 */
+    font-size: 16px; /* 保留最大值 */
   }
   
   .quick-amounts {
-    grid-template-columns: repeat(5, 1fr); /* 移动端也保持5列，确保完美对齐 */
-    gap: 8px; /* 移动端进一步减小间距 */
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px; /* 保留最大值 */
   }
   
   .quick-amount {
-    font-size: 15px; /* 移动端稍微减小字体以适应更小的按钮 */
-    height: 44px; /* 移动端适当减小高度 */
-    padding: 0 !important; /* 强制移除内边距 */
-    margin: 0 !important; /* 强制重置外边距 */
+    font-size: 18px; /* 保留最大值 */
+    height: 52px; /* 保留最大值 */
+    padding: 0 !important;
+    margin: 0 !important;
     min-width: 0; /* 确保不会溢出 */
   }
   
   .recharge-now-btn {
-    font-size: 20px; /* 增大充值按钮字体 */
+    font-size: 20px; /* 保留最大值 */
   }
 }
 
 /* 智能预测时间样式增强 */
 .battery-info-item.smart-prediction {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 197, 253, 0.1) 100%);
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin: 8px -4px;
-  border-left: 3px solid #3b82f6;
+  border-radius: 12px; /* 从8px增加到12px */
+  padding: 12px 16px; /* 从8px 12px增加到12px 16px */
+  margin: 12px -4px; /* 从8px增加到12px */
+  border-left: 4px solid #3b82f6; /* 从3px增加到4px */
   position: relative;
   animation: smart-glow 3s ease-in-out infinite;
+  min-height: 56px; /* 新增最小高度 */
 }
 
 .smart-prediction-value {
@@ -2212,38 +2462,756 @@
   }
 }
 
-/* 智能预测项的特殊图标动画 */
-.smart-prediction .info-value::before {
-  content: '🧠';
-  margin-right: 4px;
-  animation: brain-pulse 2s ease-in-out infinite;
-}
-
-@keyframes brain-pulse {
-  0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.1); opacity: 1; }
-}
+/* 智能预测项的特殊图标动画 - 已移除，使用新的状态管理 */
 
 /* 智能预测的响应式调整 */
 @media (max-width: 768px) {
   .battery-info-item.smart-prediction {
-    margin: 6px -2px;
-    padding: 6px 10px;
+    margin: 8px -2px; /* 从6px增加到8px */
+    padding: 10px 14px; /* 从6px 10px增加到10px 14px */
+    min-height: 52px; /* 新增最小高度 */
   }
   
   .smart-prediction-value {
-    font-size: 14px;
+    font-size: 15px; /* 从14px增加到15px */
   }
+}
+
+/* 智能预测刷新按钮和状态样式 */
+.refresh-prediction-btn {
+  background: none;
+  border: none;
+  font-size: 18px; /* 从16px增加到18px */
+  cursor: pointer;
+  padding: 6px; /* 从4px增加到6px */
+  border-radius: 6px; /* 从4px增加到6px */
+  transition: all 0.3s ease;
+  margin-left: 12px; /* 从8px增加到12px */
+  
+  &:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+    transform: scale(1.1);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.prediction-loading {
+  color: #fbbf24 !important;
+  animation: pulse 1.5s ease-in-out infinite;
+  font-size: 16px; /* 新增字体大小 */
+  font-weight: 600; /* 新增字体粗细 */
+}
+
+.prediction-text {
+  color: #22c55e !important;
+  font-weight: 600; /* 从500增加到600 */
+  font-size: 16px; /* 新增字体大小 */
+}
+
+.info-value-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 @media (max-width: 480px) {
   .battery-info-item.smart-prediction {
-    margin: 4px 0;
-    padding: 4px 8px;
+    margin: 6px 0; /* 从4px增加到6px */
+    padding: 10px 14px; /* 从4px 8px增加到10px 14px */
+    min-height: 48px; /* 新增最小高度 */
   }
   
-  .smart-prediction .info-value::before {
-    content: '🧠 ';
-    margin-right: 2px;
+  .refresh-prediction-btn {
+    font-size: 16px; /* 从14px增加到16px */
+    padding: 5px; /* 从3px增加到5px */
   }
 }
+
+/* 交易详情弹窗样式 */
+.transaction-detail-modal {
+  background: white;
+  border-radius: 16px;
+  max-width: 480px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.detail-content {
+  padding: 0 24px 24px 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.detail-section {
+  margin-bottom: 24px;
+}
+
+.detail-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid #f9fafb;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 500;
+  text-align: right;
+  flex: 1;
+}
+
+.detail-order-id {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+  background: #f3f4f6;
+    padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.detail-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: center;
+}
+
+.detail-close-btn {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.detail-close-btn:hover {
+  background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+  transform: translateY(-1px);
+}
+
+.refresh-prediction-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.prediction-loading {
+  color: #fbbf24;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.prediction-text {
+  color: #22c55e;
+  font-weight: 500;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* 优惠券选择器弹窗样式 */
+.coupon-selector-modal {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%);
+  border-radius: 24px;
+  box-shadow: 
+    0 35px 90px rgba(0, 0, 0, 0.35),
+    0 20px 50px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(25px);
+  animation: modal-slide-up 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  width: calc(100% - 32px);
+  max-width: 600px;
+  max-height: 80vh;
+  overflow: hidden;
+  position: relative;
+  margin: 0 16px;
+  z-index: 1001; /* 确保在充值模态框之上 */
+}
+
+.coupon-selector-modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+  border-radius: 24px 24px 0 0;
+}
+
+.coupon-selector-modal .modal-header {
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-radius: 24px 24px 0 0;
+}
+
+.coupon-selector-modal .modal-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #15803d;
+  text-align: center;
+  flex: 1;
+}
+
+.coupon-selector-modal .close-btn {
+  background: rgba(34, 197, 94, 0.1);
+  color: #15803d;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  margin-left: 0;
+}
+
+.coupon-selector-modal .close-btn:hover {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.4);
+  transform: scale(1.1);
+}
+
+.coupon-selector-modal .modal-content {
+  padding: 0;
+  max-height: calc(80vh - 80px);
+}
+
+.coupon-list {
+  padding: 16px 18px 16px 14px;
+  max-height: calc(80vh - 120px);
+}
+
+/* 优惠券选择项样式 */
+.coupon-selector-item {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  margin-right: 8px;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.coupon-selector-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+  transition: all 0.3s ease;
+}
+
+.coupon-selector-item:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: #3b82f6;
+  box-shadow: 
+    0 12px 24px rgba(59, 130, 246, 0.15),
+    0 6px 12px rgba(59, 130, 246, 0.1);
+}
+
+.coupon-selector-item:hover::before {
+  background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+}
+
+.coupon-selector-item.selected {
+  border-color: #22c55e;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  box-shadow: 
+    0 8px 16px rgba(34, 197, 94, 0.2),
+    0 4px 8px rgba(34, 197, 94, 0.1);
+}
+
+.coupon-selector-item.selected::before {
+  background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+}
+
+.coupon-selector-left {
+  flex: 1;
+  margin-right: 16px;
+  min-width: 0;
+}
+
+.coupon-selector-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.coupon-selector-discount {
+  font-size: 22px;
+  font-weight: 800;
+  color: #22c55e;
+  margin-bottom: 8px;
+  line-height: 1.2;
+  text-shadow: 0 1px 2px rgba(34, 197, 94, 0.2);
+}
+
+.coupon-selector-description {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.coupon-selector-min-amount {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 500;
+  background: #f8fafc;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  border: 1px solid #e2e8f0;
+  word-break: break-word;
+}
+
+.coupon-selector-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  min-width: 120px;
+  padding-right: 4px;
+}
+
+.coupon-selector-expiry {
+  font-size: 12px;
+  color: #6b7280;
+  text-align: right;
+  line-height: 1.3;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.coupon-selector-use-btn {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 16px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+  min-width: 70px;
+  white-space: nowrap;
+}
+
+.coupon-selector-use-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+}
+
+.coupon-selector-item.selected .coupon-selector-use-btn {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.4);
+}
+
+/* 优惠券选择区域样式 */
+.coupon-section {
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 10; /* 降低z-index，确保在快速充值区域之下 */
+  /* 调试边框 - 临时添加，确认后可以删除 */
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 4px;
+  background: rgba(14, 165, 233, 0.02); /* 轻微背景色 */
+}
+
+.coupon-section:hover {
+  border-color: #0ea5e9;
+  background: rgba(14, 165, 233, 0.05);
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1); /* 悬停时的外发光 */
+}
+
+.coupon-selector-wrapper {
+  margin-top: 8px;
+  position: relative;
+  z-index: 11;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.select-coupon-btn {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  color: #0c4a6e;
+  border: 2px dashed #0ea5e9;
+  border-radius: 12px;
+  padding: 20px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.1);
+  z-index: 12;
+}
+
+.select-coupon-btn::before {
+  content: '🎫';
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+.select-coupon-btn:hover {
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  border-color: #0284c7;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+}
+
+.select-coupon-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2);
+}
+
+/* 已选优惠券样式 */
+.selected-coupon {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 2px solid #22c55e;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  min-height: 80px;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.1);
+  z-index: 12;
+}
+
+.selected-coupon-info {
+  flex: 1;
+  margin-right: 16px;
+  min-width: 0;
+}
+
+.selected-coupon-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #15803d;
+  margin-bottom: 6px;
+  word-break: break-word;
+}
+
+.selected-coupon-discount {
+  font-size: 20px;
+  font-weight: 800;
+  color: #22c55e;
+  margin-bottom: 6px;
+  word-break: break-word;
+}
+
+.selected-coupon-savings {
+  font-size: 14px;
+  color: #16a34a;
+  font-weight: 500;
+  margin-bottom: 6px;
+  word-break: break-word;
+}
+
+.coupon-debug-info {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 400;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background: #f8fafc;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.remove-coupon-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.remove-coupon-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+  transform: scale(1.1);
+}
+
+/* 支付信息样式 */
+.payment-info {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  border: 1px solid #e2e8f0;
+  position: relative;
+  z-index: 8; /* 确保在优惠券区域之下 */
+}
+.payment-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.payment-info-item:last-child {
+  border-bottom: none;
+}
+
+.payment-info-label {
+  font-size: 16px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.payment-info-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.payment-discounted {
+  color: #22c55e;
+}
+
+.payment-saved {
+  color: #f59e0b;
+}
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .coupon-selector-modal {
+    max-width: calc(95% - 32px);
+    border-radius: 20px;
+    margin: 0 16px;
+  }
+  
+  .coupon-selector-modal .modal-title {
+    font-size: 24px;
+  }
+  
+  .coupon-selector-item {
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .coupon-selector-title {
+    font-size: 18px;
+  }
+  
+  .coupon-selector-discount {
+    font-size: 22px;
+  }
+  
+  .coupon-selector-right {
+    min-width: 100px;
+  }
+  
+  .coupon-selector-use-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    min-width: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .coupon-selector-modal {
+    max-width: calc(98% - 32px);
+    border-radius: 16px;
+    margin: 0 16px;
+  }
+  
+  .coupon-selector-modal .modal-header {
+    padding: 20px 20px 12px;
+  }
+  
+  .coupon-selector-modal .modal-title {
+    font-size: 22px;
+  }
+  
+  .coupon-list {
+    padding: 16px;
+  }
+  
+  .coupon-selector-item {
+    padding: 12px;
+    margin-bottom: 10px;
+    margin-right: 4px;
+  }
+  
+  .coupon-selector-title {
+    font-size: 16px;
+  }
+  
+  .coupon-selector-discount {
+    font-size: 20px;
+  }
+  
+  .coupon-selector-description {
+    font-size: 14px;
+  }
+  
+  .coupon-selector-right {
+    min-width: 90px;
+  }
+  
+  .coupon-selector-use-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+    min-width: 60px;
+  }
+}
+
+/* 无优惠券时的样式 */
+.no-coupons-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
+  border: 2px dashed #cbd5e1;
+  margin: 20px;
+}
+
+.no-coupons-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.no-coupons-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.no-coupons-hint {
+  font-size: 16px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+
+
+.remove-coupon-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+.remove-coupon-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+  transform: scale(1.1);
+}
+
+/* 优惠券选择器覆盖层 - 更高的z-index */
+.modal-overlay:has(.coupon-selector-modal) {
+  z-index: 1001;
+}
+
+

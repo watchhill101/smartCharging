@@ -46,7 +46,7 @@ router.post(
         subject: `智能充电-钱包充值`,
         product_code: "FAST_INSTANT_TRADE_PAY",
         notify_url: `${process.env.API_BASE_URL}/api/payments/alipay/notify`,
-        return_url: `${process.env.FRONTEND_URL}/payment/success`,
+         return_url: `${process.env.FRONTEND_URL || 'http://localhost:10086'}/#/pages/payment-success/index`,
       },
     };
 
@@ -190,7 +190,7 @@ router.post(
           subject: `智能充电-${session.energyDelivered}kWh`,
           product_code: "FAST_INSTANT_TRADE_PAY",
           notify_url: `${process.env.API_BASE_URL}/api/payments/alipay/notify`,
-          return_url: `${process.env.FRONTEND_URL}/payment/success`,
+          return_url: `${process.env.FRONTEND_URL || 'http://localhost:10086'}/#/pages/payment-success/index`,
         },
       };
 

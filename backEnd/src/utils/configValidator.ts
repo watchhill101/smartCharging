@@ -9,8 +9,7 @@ const requiredEnvVars = [
   'JWT_SECRET',
   'MONGODB_URI',
   'REDIS_URL',
-  'API_BASE_URL',
-  'FRONTEND_URL'
+  'API_BASE_URL'
 ];
 
 // 可选的环境变量及其默认值
@@ -18,6 +17,7 @@ const optionalEnvVars = {
   NODE_ENV: 'development',
   PORT: '8080',
   JWT_EXPIRES_IN: '7d',
+  FRONTEND_URL: 'http://localhost:10086', // 前端默认端口
   ALIPAY_APP_ID: '',
   ALIPAY_PRIVATE_KEY: '',
   ALIPAY_PUBLIC_KEY: ''
@@ -108,5 +108,9 @@ export const printConfigSummary = (): void => {
   console.log(`   前端地址: ${config.FRONTEND_URL || '未配置'}`);
   console.log(`   JWT有效期: ${config.JWT_EXPIRES_IN}`);
   console.log(`   支付宝配置: ${config.ALIPAY_APP_ID ? '已配置' : '未配置'}`);
+  
+  // 打印支付回调URL用于调试
+  const returnUrl = `${config.FRONTEND_URL || 'http://localhost:10086'}/#/pages/payment-success/index`;
+  console.log(`   支付回调URL: ${returnUrl}`);
   console.log('');
 };

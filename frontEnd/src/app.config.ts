@@ -4,7 +4,9 @@ export default defineAppConfig({
     'pages/map/index',
     'pages/charging/index',
     'pages/profile/index',
-    'pages/aiserver/index'  // 新增 Ai客服 页面
+    'pages/aiserver/index',  // 新增 Ai客服 页面
+    'pages/payment-success/index',  // 支付成功页面
+    'pages/payment-failure/index'   // 支付失败页面
   ],
   window: {
     backgroundTextStyle: 'light',

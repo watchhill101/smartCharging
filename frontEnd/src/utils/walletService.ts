@@ -1,4 +1,5 @@
 import TaroCompat from './taroCompat'
+import { API_CONFIG } from './constants'
 
 // 钱包信息接口
 export interface WalletInfo {
@@ -86,7 +87,8 @@ interface ApiResponse<T> {
 }
 
 class WalletService {
-  private baseUrl = 'http://localhost:3000/api/wallet' // 根据实际后端地址调整
+  private baseUrl = `${API_CONFIG.BASE_URL}/wallet` // 使用统一的API配置
+  private apiUrl = API_CONFIG.BASE_URL // 使用统一的API配置
 
   // 发起请求的通用方法
   private async request<T>(
@@ -134,7 +136,7 @@ class WalletService {
     return this.request<WalletInfo>('/info')
   }
 
-  // 获取交易记录
+  // 获取钱包交易记录（从钱包API）
   async getTransactions(params: {
     page?: number
     limit?: number
@@ -144,6 +146,133 @@ class WalletService {
     return this.request<{ transactions: Transaction[], pagination: Pagination }>(
       `/transactions${queryString ? `?${queryString}` : ''}`
     )
+  }
+
+  // 获取所有支付交易记录（从支付API）
+  async getPaymentTransactions(params: {
+    page?: number
+    limit?: number
+    type?: string
+    status?: string
+  } = {}): Promise<{ orders: any[], pagination: Pagination }> {
+    const queryString = new URLSearchParams(params as any).toString()
+    const url = `${this.apiUrl}/payments/transactions${queryString ? `?${queryString}` : ''}`
+    
+    try {
+      const token = TaroCompat.getStorageSync('token')
+      const response = await TaroCompat.request({
+        url,
+        method: 'GET',
+        header: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      })
+
+      const result = response.data as ApiResponse<{ orders: any[], pagination: Pagination }>
+      
+      if (!result.success) {
+        throw new Error(result.message || '请求失败')
+      }
+
+      return result.data as { orders: any[], pagination: Pagination }
+    } catch (error) {
+      console.error('API请求失败:', error)
+      throw error
+    }
+  }
+
+  // 获取充电历史记录
+  async getChargingHistory(params: {
+    page?: number
+    limit?: number
+    status?: string
+  } = {}): Promise<{ sessions: any[], pagination: Pagination }> {
+    const queryString = new URLSearchParams(params as any).toString()
+    const url = `${this.apiUrl}/charging/history${queryString ? `?${queryString}` : ''}`
+    
+    try {
+      const token = TaroCompat.getStorageSync('token')
+      const response = await TaroCompat.request({
+        url,
+        method: 'GET',
+        header: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      })
+
+      const result = response.data as ApiResponse<{ sessions: any[], pagination: Pagination }>
+      
+      if (!result.success) {
+        throw new Error(result.message || '请求失败')
+      }
+
+      return result.data as { sessions: any[], pagination: Pagination }
+    } catch (error) {
+      console.error('获取充电历史失败:', error)
+      throw error
+    }
+  }
+
+  // 获取合并的交易记录（钱包交易 + 充电记录）
+  async getCombinedTransactions(params: {
+    page?: number
+    limit?: number
+  } = {}): Promise<{ transactions: any[], pagination: Pagination }> {
+    try {
+      // 并行获取钱包交易和充电历史
+      const [walletTransactions, chargingHistory] = await Promise.all([
+        this.getTransactions({ ...params, limit: params.limit || 50 }).catch(() => ({ transactions: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } })),
+        this.getChargingHistory({ ...params, limit: params.limit || 50 }).catch(() => ({ sessions: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } }))
+      ])
+
+      // 将充电记录转换为交易记录格式
+      const chargingTransactions = chargingHistory.sessions.map(session => ({
+        id: session.sessionId,
+        type: 'consume' as const,
+        amount: session.totalCost || 0,
+        description: `充电扣费 - ${session.energyDelivered || 0}kWh`,
+        orderId: session.sessionId,
+        paymentMethod: 'balance',
+        status: session.paymentStatus === 'paid' ? 'completed' as const : 'pending' as const,
+        createdAt: session.endTime || session.startTime,
+        updatedAt: session.updatedAt || session.createdAt,
+        // 额外的充电信息
+        chargingInfo: {
+          stationName: session.stationId?.name,
+          duration: session.duration,
+          energyDelivered: session.energyDelivered,
+          startTime: session.startTime,
+          endTime: session.endTime
+        }
+      }))
+
+      // 合并并按时间排序
+      const allTransactions = [
+        ...walletTransactions.transactions,
+        ...chargingTransactions
+      ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
+      // 分页处理
+      const page = params.page || 1
+      const limit = params.limit || 20
+      const startIndex = (page - 1) * limit
+      const paginatedTransactions = allTransactions.slice(startIndex, startIndex + limit)
+
+      return {
+        transactions: paginatedTransactions,
+        pagination: {
+          page,
+          limit,
+          total: allTransactions.length,
+          totalPages: Math.ceil(allTransactions.length / limit)
+        }
+      }
+    } catch (error) {
+      console.error('获取合并交易记录失败:', error)
+      throw error
+    }
   }
 
   // 创建充值订单

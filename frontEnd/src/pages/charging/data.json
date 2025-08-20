@@ -1,6 +1,6 @@
 {
   "walletBalance": {
-    "amount": 1245.50,
+    "amount": 303.30,
     "currency": "￥",
     "lastUpdated": "2024-01-15T15:30:00.000Z"
   },
@@ -9,51 +9,157 @@
       "id": "1",
       "type": "recharge",
       "amount": 200,
-      "description": "账户充值",
-      "paymentMethod": "visa",
+      "description": "支付宝充值 ¥200",
+      "paymentMethod": "alipay",
       "status": "completed",
       "createdAt": "2024-01-15T10:30:00.000Z",
       "updatedAt": "2024-01-15T10:30:00.000Z"
     },
     {
-      "id": "2",
+      "id": "2", 
       "type": "consume",
-      "amount": 59.99,
-      "description": "充电桩使用费用",
-      "paymentMethod": "visa",
+      "amount": 42.80,
+      "description": "充电自动扣费 - 24.5kWh",
+      "orderId": "SESSION_202401141420",
+      "paymentMethod": "balance",
       "status": "completed",
       "createdAt": "2024-01-14T14:20:00.000Z",
-      "updatedAt": "2024-01-14T14:20:00.000Z"
+      "updatedAt": "2024-01-14T14:20:00.000Z",
+      "chargingInfo": {
+        "stationName": "万达广场充电站",
+        "duration": 5400,
+        "energyDelivered": 24.5,
+        "startTime": "2024-01-14T13:30:00.000Z",
+        "endTime": "2024-01-14T15:00:00.000Z"
+      }
     },
     {
       "id": "3",
+      "type": "consume", 
+      "amount": 28.60,
+      "description": "充电自动扣费 - 16.8kWh",
+      "orderId": "SESSION_202401131135",
+      "paymentMethod": "balance",
+      "status": "completed",
+      "createdAt": "2024-01-13T11:35:00.000Z",
+      "updatedAt": "2024-01-13T11:35:00.000Z",
+      "chargingInfo": {
+        "stationName": "中石油加油站充电点",
+        "duration": 3600,
+        "energyDelivered": 16.8,
+        "startTime": "2024-01-13T10:35:00.000Z",
+        "endTime": "2024-01-13T11:35:00.000Z"
+      }
+    },
+    {
+      "id": "4",
       "type": "recharge",
       "amount": 100,
-      "description": "钱包充值",
-      "paymentMethod": "paypal",
+      "description": "支付宝充值 ¥100",
+      "paymentMethod": "alipay",
       "status": "completed",
       "createdAt": "2024-01-12T16:45:00.000Z",
       "updatedAt": "2024-01-12T16:45:00.000Z"
     },
     {
-      "id": "4",
-      "type": "consume",
-      "amount": 25.50,
-      "description": "快充服务费",
-      "paymentMethod": "visa",
-      "status": "completed",
-      "createdAt": "2024-01-11T09:15:00.000Z",
-      "updatedAt": "2024-01-11T09:15:00.000Z"
-    },
-    {
       "id": "5",
       "type": "consume",
-      "amount": 18.75,
-      "description": "慢充充电费用",
-      "paymentMethod": "mastercard",
+      "amount": 35.20,
+      "description": "充电自动扣费 - 19.6kWh",
+      "orderId": "SESSION_202401120915", 
+      "paymentMethod": "balance",
       "status": "completed",
-      "createdAt": "2024-01-10T18:30:00.000Z",
-      "updatedAt": "2024-01-10T18:30:00.000Z"
+      "createdAt": "2024-01-12T09:15:00.000Z",
+      "updatedAt": "2024-01-12T09:15:00.000Z",
+      "chargingInfo": {
+        "stationName": "星巴克商场充电站",
+        "duration": 4320,
+        "energyDelivered": 19.6,
+        "startTime": "2024-01-12T08:03:00.000Z",
+        "endTime": "2024-01-12T09:15:00.000Z"
+      }
+    },
+    {
+      "id": "6",
+      "type": "consume",
+      "amount": 52.40,
+      "description": "充电自动扣费 - 32.8kWh",
+      "orderId": "SESSION_202401111830",
+      "paymentMethod": "balance", 
+      "status": "completed",
+      "createdAt": "2024-01-11T18:30:00.000Z",
+      "updatedAt": "2024-01-11T18:30:00.000Z",
+      "chargingInfo": {
+        "stationName": "特来电超充站",
+        "duration": 7200,
+        "energyDelivered": 32.8,
+        "startTime": "2024-01-11T16:30:00.000Z",
+        "endTime": "2024-01-11T18:30:00.000Z"
+      }
+    },
+    {
+      "id": "7",
+      "type": "recharge",
+      "amount": 300,
+      "description": "支付宝充值 ¥300",
+      "paymentMethod": "alipay",
+      "status": "completed",
+      "createdAt": "2024-01-10T21:15:00.000Z",
+      "updatedAt": "2024-01-10T21:15:00.000Z"
+    },
+    {
+      "id": "8",
+      "type": "consume",
+      "amount": 18.90,
+      "description": "充电自动扣费 - 10.5kWh",
+      "orderId": "SESSION_202401101420",
+      "paymentMethod": "balance",
+      "status": "completed", 
+      "createdAt": "2024-01-10T14:20:00.000Z",
+      "updatedAt": "2024-01-10T14:20:00.000Z",
+      "chargingInfo": {
+        "stationName": "国家电网充电桩",
+        "duration": 2700,
+        "energyDelivered": 10.5,
+        "startTime": "2024-01-10T13:35:00.000Z",
+        "endTime": "2024-01-10T14:20:00.000Z"
+      }
+    },
+    {
+      "id": "9",
+      "type": "consume",
+      "amount": 67.20,
+      "description": "充电自动扣费 - 38.4kWh",
+      "orderId": "SESSION_202401090800",
+      "paymentMethod": "balance",
+      "status": "completed",
+      "createdAt": "2024-01-09T08:00:00.000Z", 
+      "updatedAt": "2024-01-09T08:00:00.000Z",
+      "chargingInfo": {
+        "stationName": "蔚来换电站旁快充",
+        "duration": 8100,
+        "energyDelivered": 38.4,
+        "startTime": "2024-01-09T05:45:00.000Z",
+        "endTime": "2024-01-09T08:00:00.000Z"
+      }
+    },
+    {
+      "id": "10",
+      "type": "consume",
+      "amount": 24.60,
+      "description": "充电自动扣费 - 14.1kWh",
+      "orderId": "SESSION_202401081630",
+      "paymentMethod": "balance",
+      "status": "completed",
+      "createdAt": "2024-01-08T16:30:00.000Z",
+      "updatedAt": "2024-01-08T16:30:00.000Z",
+      "chargingInfo": {
+        "stationName": "小鹏超充站",
+        "duration": 3480,
+        "energyDelivered": 14.1,
+        "startTime": "2024-01-08T15:32:00.000Z",
+        "endTime": "2024-01-08T16:30:00.000Z"
+      }
     }
   ],
   "coupons": [
