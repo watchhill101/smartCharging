@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Order, { IOrder } from '../models/Order';
 import ChargingSession, { IChargingSession } from '../models/ChargingSession';
 import { RedisService } from './RedisService';
+import { logger } from '../utils/logger';
 
 export interface OrderHistoryItem {
   id: string;
@@ -286,8 +287,8 @@ export class OrderHistoryService {
   static async searchOrders(
     userId: string, 
     keyword: string, 
-    page: number = 1, 
-    limit: number = 20
+    page = 1, 
+    limit = 20
   ): Promise<{
     orders: OrderHistoryItem[];
     pagination: {
@@ -656,7 +657,8 @@ export class OrderHistoryService {
   private static async generateCSV(orders: any[], fileName: string): Promise<string> {
     // 这里应该实现CSV生成逻辑
     // 为了演示，返回一个模拟的URL
-    return `/api/exports/${fileName}`;
+    const baseUrl = process.env.EXPORT_BASE_URL || '/api/exports';
+    return `${baseUrl}/${fileName}`;
   }
 
   /**
@@ -665,7 +667,8 @@ export class OrderHistoryService {
   private static async generateExcel(orders: any[], fileName: string): Promise<string> {
     // 这里应该实现Excel生成逻辑
     // 为了演示，返回一个模拟的URL
-    return `/api/exports/${fileName}`;
+    const baseUrl = process.env.EXPORT_BASE_URL || '/api/exports';
+    return `${baseUrl}/${fileName}`;
   }
 
   /**
@@ -674,7 +677,8 @@ export class OrderHistoryService {
   private static async generatePDF(orders: any[], fileName: string): Promise<string> {
     // 这里应该实现PDF生成逻辑
     // 为了演示，返回一个模拟的URL
-    return `/api/exports/${fileName}`;
+    const baseUrl = process.env.EXPORT_BASE_URL || '/api/exports';
+    return `${baseUrl}/${fileName}`;
   }
 
   /**
@@ -690,7 +694,7 @@ export class OrderHistoryService {
         }
       }
     } catch (error) {
-      console.error('清除订单缓存失败:', error);
+      logger.error('清除订单缓存失败', { error: error instanceof Error ? error.message : error }, error instanceof Error ? error.stack : undefined);
     }
   }
 }

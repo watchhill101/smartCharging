@@ -1,10 +1,13 @@
 import { View, Text } from '@tarojs/components'
 import { useLoad } from '@tarojs/taro'
 import Taro from '@tarojs/taro'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import CitySelector from './CitySelector'
 import './index.scss'
+import { DISTANCE_CONSTANTS } from '../../utils/constants'
 import { TaroSafe } from '../../utils/taroSafe'
+import { get } from '../../utils/request'
+import { Toast } from '@nutui/nutui-react-taro'
 
 // 充电站数据接口
 interface ChargingStation {
@@ -46,6 +49,9 @@ export default function Index() {
 
 	const [currentCity, setCurrentCity] = useState('保定市')
 	const [showCitySelector, setShowCitySelector] = useState(false)
+	const [stations, setStations] = useState<ChargingStation[]>([])
+	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState<string | null>(null)
 	const quickActions = [
 		{ text: '券包中心', icon: '💰', color: '#ff6b6b' },
 		{ text: '充电订单', icon: '📋', color: '#ff9800' },
@@ -68,8 +74,38 @@ export default function Index() {
 		)
 	}
 
-	// 模拟充电站数据
-	const allStations: ChargingStation[] = useMemo(() => [
+	// 加载充电站数据
+	const loadStations = async (city?: string) => {
+		setLoading(true)
+		setError(null)
+		try {
+			const response = await get('/stations', {
+				city: city || currentCity,
+				limit: 20,
+				offset: 0
+			})
+			
+			if (response.success && response.data) {
+				setStations(response.data.stations || [])
+			} else {
+				throw new Error(response.message || '获取充电站数据失败')
+			}
+		} catch (error: any) {
+			console.error('加载充电站失败:', error)
+			setError(error.message || '网络错误')
+			
+			// 显示错误提示
+			Toast.show(`加载充电站失败: ${error.message}`)
+			
+			// 发生错误时使用备用数据
+			setStations(getFallbackStations())
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	// 备用数据（API失败时使用）
+	const getFallbackStations = (): ChargingStation[] => [
 		{
 			_id: 'cs001',
 			name: '保定市志广好滋味快餐饮食连锁有限公司保定市东兴东路店',
@@ -158,14 +194,25 @@ export default function Index() {
 			createdAt: '2024-01-01T00:00:00Z',
 			updatedAt: '2024-01-01T00:00:00Z'
 		}
-	], [])
+	]
+
+	// 初始化时加载数据
+	useEffect(() => {
+		loadStations()
+	}, [currentCity])
+
+	// 城市变化时重新加载数据
+	const handleCityChange = (city: string) => {
+		setCurrentCity(city)
+		loadStations(city)
+	}
 
 	// 筛选后的充电站
 	const filteredStations = useMemo(() => {
 		const km = selectedDistance === '不限' ? Infinity : parseFloat(selectedDistance)
-		const distanceLimitM = km === Infinity ? Infinity : km * 1000
+		const distanceLimitM = km === Infinity ? Infinity : km * DISTANCE_CONSTANTS.ONE_KM
 
-		return allStations.filter((station) => {
+		return stations.filter((station) => {
 			// 距离筛选
 			if (typeof station.distance === 'number' && station.distance > distanceLimitM) return false
 			
@@ -186,7 +233,7 @@ export default function Index() {
 			
 			return true
 		})
-	}, [allStations, selectedDistance, selectedFilters])
+	}, [stations, selectedDistance, selectedFilters])
 
 	// 获取显示价格
 	const getDisplayPrice = (station: ChargingStation) => {
@@ -199,7 +246,7 @@ export default function Index() {
 	// 获取显示距离
 	const getDisplayDistance = (station: ChargingStation) => {
 		if (typeof station.distance !== 'number') return '--'
-		return (station.distance / 1000).toFixed(2) + 'km'
+		return (station.distance / DISTANCE_CONSTANTS.ONE_KM).toFixed(2) + 'km'
 	}
 
 	// 获取可用充电桩数量
@@ -468,9 +515,16 @@ export default function Index() {
 			{showCitySelector && (
 				<CitySelector
 					currentCity={currentCity}
-					onCityChange={setCurrentCity}
+					onCityChange={handleCityChange}
 					onClose={() => setShowCitySelector(false)}
 				/>
+			)}
+
+			{/* 加载状态 */}
+			{loading && (
+				<View className='loading-state'>
+					<Text className='loading-text'>正在加载充电站数据...</Text>
+				</View>
 			)}
 
 			{/* AI客服浮动按钮 */}

@@ -286,7 +286,6 @@ router.get('/stats', authMiddleware, [
     }
 
     const notificationService = req.app.locals.notificationService;
-    const testUtil = new NotificationTestUtil(notificationService);
     
     const stats = await notificationService.getNotificationStats(userId, timeRange);
 

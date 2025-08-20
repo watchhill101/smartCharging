@@ -262,8 +262,9 @@ export class SmsService {
 
       const signature = this.generateAliyunSignature(params);
       
+      const endpoint = this.config.endpoint || process.env.ALIYUN_SMS_ENDPOINT || 'https://dysmsapi.aliyuncs.com';
       const response = await axios.post(
-        this.config.endpoint || 'https://dysmsapi.aliyuncs.com',
+        endpoint,
         params,
         {
           headers: {
@@ -434,7 +435,7 @@ export class SmsService {
   /**
    * 获取消息历史
    */
-  getMessageHistory(limit: number = 100): SmsMessage[] {
+  getMessageHistory(limit = 100): SmsMessage[] {
     return this.messageHistory
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice(0, limit);
@@ -494,7 +495,7 @@ export class SmsService {
   /**
    * 清理过期消息历史
    */
-  cleanupHistory(daysToKeep: number = 30): number {
+  cleanupHistory(daysToKeep = 30): number {
     const cutoffDate = new Date(Date.now() - daysToKeep * 24 * 60 * 60 * 1000);
     const initialCount = this.messageHistory.length;
     

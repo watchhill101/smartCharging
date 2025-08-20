@@ -1,0 +1,563 @@
+/* 优化的人脸登录组件样式 */
+.face-login-optimized {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+
+  /* 背景遮罩 */
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+      rgba(24, 144, 255, 0.95) 0%, 
+      rgba(16, 142, 233, 0.95) 50%,
+      rgba(13, 110, 253, 0.95) 100%
+    );
+    backdrop-filter: blur(20px);
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  /* 主容器 */
+  .container {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 32px 24px;
+    box-shadow: 
+      0 25px 80px rgba(0, 0, 0, 0.15),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #1890ff, #52c41a, #faad14);
+      animation: shimmer 2s ease-in-out infinite;
+    }
+  }
+
+  /* 头部 */
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+
+    .title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #262626;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #8c8c8c;
+      line-height: 1.5;
+      margin-bottom: 16px;
+      display: block;
+    }
+  }
+
+  /* 状态指示器 */
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #f8f9fa;
+    border-radius: 20px;
+    margin: 0 auto;
+    width: fit-content;
+
+    .status-icon {
+      font-size: 16px;
+    }
+
+    .status-text {
+      font-size: 12px;
+      font-weight: 500;
+    }
+  }
+
+  /* 摄像头区域 */
+  .camera-section {
+    position: relative;
+    margin-bottom: 24px;
+
+    .camera-preview-container {
+      position: relative;
+      width: 100%;
+      height: 280px;
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    /* 摄像头占位符 */
+    .camera-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-align: center;
+
+      .placeholder-icon,
+      .error-icon {
+        font-size: 48px;
+        margin-bottom: 12px;
+        display: block;
+      }
+
+      .placeholder-text,
+      .error-text {
+        font-size: 14px;
+        opacity: 0.8;
+        line-height: 1.4;
+      }
+
+      &.error {
+        color: #ff7875;
+
+        .error-icon {
+          animation: shake 0.5s ease-in-out;
+        }
+      }
+    }
+
+    /* 人脸框架 */
+    .face-frame {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      pointer-events: none;
+
+      .frame-corner {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        border: 3px solid #1890ff;
+        border-radius: 4px;
+
+        &.top-left {
+          top: 0;
+          left: 0;
+          border-right: none;
+          border-bottom: none;
+        }
+
+        &.top-right {
+          top: 0;
+          right: 0;
+          border-left: none;
+          border-bottom: none;
+        }
+
+        &.bottom-left {
+          bottom: 0;
+          left: 0;
+          border-right: none;
+          border-top: none;
+        }
+
+        &.bottom-right {
+          bottom: 0;
+          right: 0;
+          border-left: none;
+          border-top: none;
+        }
+      }
+
+      /* 扫描动画 */
+      .scan-animation {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #1890ff, transparent);
+        animation: scan 2s ease-in-out infinite;
+      }
+    }
+
+    /* 倒计时覆盖层 */
+    .countdown-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+
+      .countdown-circle {
+        width: 80px;
+        height: 80px;
+        border: 4px solid #1890ff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        animation: pulse 1s ease-in-out infinite;
+
+        .countdown-number {
+          font-size: 32px;
+          font-weight: 600;
+          color: #fff;
+        }
+      }
+
+      .countdown-text {
+        color: #fff;
+        font-size: 14px;
+        text-align: center;
+      }
+    }
+  }
+
+  /* 进度条区域 */
+  .progress-section {
+    margin-bottom: 20px;
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #f0f0f0;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 8px;
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #1890ff, #52c41a);
+        border-radius: 3px;
+        transition: width 0.3s ease;
+        animation: shimmer 2s ease-in-out infinite;
+      }
+    }
+
+    .progress-text {
+      text-align: center;
+      font-size: 12px;
+      color: #8c8c8c;
+      font-weight: 500;
+    }
+  }
+
+  /* 状态信息区域 */
+  .status-section {
+    text-align: center;
+    margin-bottom: 24px;
+
+    .status-message {
+      font-size: 16px;
+      color: #262626;
+      margin-bottom: 12px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .detection-status {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+
+      .face-indicator {
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+
+        &.detected {
+          background: #f6ffed;
+          color: #52c41a;
+          border: 1px solid #b7eb8f;
+        }
+
+        &.searching {
+          background: #fff7e6;
+          color: #faad14;
+          border: 1px solid #ffd591;
+          animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .indicator-text {
+          font-size: inherit;
+          color: inherit;
+        }
+      }
+
+      .quality-info {
+        font-size: 11px;
+        color: #8c8c8c;
+      }
+    }
+
+    .retry-info {
+      font-size: 12px;
+      color: #faad14;
+      margin-top: 8px;
+    }
+  }
+
+  /* 操作按钮区域 */
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+
+    .success-message {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px;
+      background: #f6ffed;
+      border-radius: 12px;
+      border: 1px solid #b7eb8f;
+
+      .success-icon {
+        font-size: 24px;
+        animation: bounce 0.6s ease-in-out;
+      }
+
+      .success-text {
+        color: #52c41a;
+        font-size: 14px;
+        font-weight: 500;
+      }
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-cancel {
+      width: 100%;
+      height: 48px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:active {
+        transform: translateY(1px);
+      }
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1890ff, #40a9ff);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+
+      &:hover {
+        box-shadow: 0 6px 16px rgba(24, 144, 255, 0.4);
+        transform: translateY(-1px);
+      }
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: #1890ff;
+      border: 2px solid #1890ff;
+
+      &:hover {
+        background: #f0f8ff;
+      }
+    }
+
+    .btn-cancel {
+      background: #fff;
+      color: #8c8c8c;
+      border: 1px solid #d9d9d9;
+
+      &:hover {
+        color: #595959;
+        border-color: #b7b7b7;
+      }
+    }
+  }
+
+  /* 帮助提示 */
+  .help-tips {
+    background: #fafafa;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #f0f0f0;
+
+    .tips-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #262626;
+      margin-bottom: 8px;
+    }
+
+    .tips-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .tip-item {
+        font-size: 12px;
+        color: #8c8c8c;
+        line-height: 1.4;
+      }
+    }
+  }
+}
+
+/* 动画定义 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(60px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0%, 100% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
+}
+
+@keyframes scan {
+  0%, 100% { transform: translateY(0); opacity: 0; }
+  50% { transform: translateY(200px); opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+  40%, 43% { transform: translateY(-10px); }
+  70% { transform: translateY(-5px); }
+  90% { transform: translateY(-2px); }
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .face-login-optimized {
+    padding: 16px;
+
+    .container {
+      padding: 24px 20px;
+      border-radius: 20px;
+    }
+
+    .header .title {
+      font-size: 22px;
+    }
+
+    .camera-section .camera-preview-container {
+      height: 240px;
+    }
+
+    .face-frame {
+      width: 160px;
+      height: 160px;
+
+      .frame-corner {
+        width: 25px;
+        height: 25px;
+      }
+    }
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .face-login-optimized {
+    .container {
+      background: #1f1f1f;
+      color: #fff;
+
+      .header .title {
+        color: #fff;
+      }
+
+      .header .subtitle {
+        color: #a6a6a6;
+      }
+
+      .status-indicator {
+        background: #2a2a2a;
+      }
+
+      .status-section .status-message {
+        color: #fff;
+      }
+
+      .help-tips {
+        background: #2a2a2a;
+        border-color: #3a3a3a;
+
+        .tips-title {
+          color: #fff;
+        }
+
+        .tip-item {
+          color: #a6a6a6;
+        }
+      }
+    }
+  }
+}

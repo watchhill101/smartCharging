@@ -55,7 +55,7 @@ export class WebSocketService {
    */
   async connect(): Promise<void> {
     try {
-      console.log('🔌 连接WebSocket:', this.config.url);
+      // 连接WebSocket
 
       this.socketTask = Taro.connectSocket({
         url: this.config.url,
@@ -95,7 +95,7 @@ export class WebSocketService {
 
     // 连接打开
     this.socketTask.onOpen(() => {
-      console.log('✅ WebSocket连接已建立');
+      // WebSocket连接已建立
       this.isConnected = true;
       this.reconnectAttempts = 0;
       
@@ -112,7 +112,7 @@ export class WebSocketService {
     this.socketTask.onMessage((event) => {
       try {
         const message: WebSocketMessage = JSON.parse(event.data as string);
-        console.log('📨 收到WebSocket消息:', message);
+        // 收到WebSocket消息
         
         // 处理心跳响应
         if (message.type === 'pong') {
@@ -138,7 +138,7 @@ export class WebSocketService {
 
     // 连接关闭
     this.socketTask.onClose((event) => {
-      console.log('🔌 WebSocket连接已关闭:', event.code, event.reason);
+      // WebSocket连接已关闭
       this.isConnected = false;
       this.stopHeartbeat();
       
@@ -162,7 +162,7 @@ export class WebSocketService {
         this.socketTask.send({
           data: messageStr
         });
-        console.log('📤 发送WebSocket消息:', message);
+        // 发送WebSocket消息
       } catch (error) {
         console.error('❌ 发送WebSocket消息失败:', error);
         // 添加到队列等待重连后发送
@@ -171,7 +171,7 @@ export class WebSocketService {
     } else {
       // 连接未建立，添加到队列
       this.messageQueue.push(messageStr);
-      console.log('📋 消息已加入队列，等待连接建立');
+      // 消息已加入队列，等待连接建立
     }
   }
 
@@ -185,7 +185,7 @@ export class WebSocketService {
     
     this.subscriptions.get(messageType)!.add(handler);
     
-    console.log(`📡 订阅消息类型: ${messageType}`);
+    // 订阅消息类型
     
     // 返回取消订阅函数
     return () => {
@@ -205,7 +205,7 @@ export class WebSocketService {
       }
     }
     
-    console.log(`📡 取消订阅消息类型: ${messageType}`);
+    // 取消订阅消息类型
   }
 
   /**
@@ -233,7 +233,7 @@ export class WebSocketService {
       if (message && this.socketTask) {
         try {
           this.socketTask.send({ data: message });
-          console.log('📤 发送队列消息:', message);
+          // 发送队列消息
         } catch (error) {
           console.error('❌ 发送队列消息失败:', error);
           // 重新加入队列
@@ -281,7 +281,7 @@ export class WebSocketService {
     this.reconnectAttempts++;
     const delay = this.config.reconnectInterval! * Math.pow(1.5, this.reconnectAttempts - 1);
     
-    console.log(`🔄 ${delay}ms后尝试第${this.reconnectAttempts}次重连...`);
+    // 准备重连
     
     this.reconnectTimer = setTimeout(async () => {
       try {
@@ -297,7 +297,7 @@ export class WebSocketService {
    * 断开连接
    */
   disconnect(): void {
-    console.log('🔌 主动断开WebSocket连接');
+    // 主动断开WebSocket连接
     
     // 清理定时器
     if (this.reconnectTimer) {

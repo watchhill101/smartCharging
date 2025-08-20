@@ -3,7 +3,6 @@ import { authenticate } from '../middleware/auth';
 import { body, query, param, validationResult } from 'express-validator';
 import { asyncHandler } from '../middleware/errorHandler';
 import { InvoiceService } from '../services/InvoiceService';
-import { WalletService } from '../services/WalletService';
 import fs from 'fs';
 import path from 'path';
 

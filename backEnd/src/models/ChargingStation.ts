@@ -474,7 +474,7 @@ ChargingStationSchema.methods.updateRating = async function(newRating: number): 
 ChargingStationSchema.statics.findNearby = async function(
   latitude: number,
   longitude: number,
-  radius: number = 5000,
+  radius = 5000,
   filters: any = {}
 ): Promise<IChargingStation[]> {
   const query: any = {
@@ -504,7 +504,7 @@ ChargingStationSchema.statics.findByOperator = async function(operatorName: stri
 ChargingStationSchema.statics.searchByKeyword = async function(
   keyword: string,
   location?: { latitude: number; longitude: number },
-  radius: number = 10000
+  radius = 10000
 ): Promise<IChargingStation[]> {
   const searchQuery: any = {
     $or: [

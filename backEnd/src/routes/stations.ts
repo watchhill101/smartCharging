@@ -20,7 +20,7 @@ router.get('/nearby',
   logApiAccess,
   userRateLimit(30, 60000), // 每分钟最多30次请求
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('🔍 收到搜索附近充电站请求');
+    // 收到搜索附近充电站请求
 
     const { 
       latitude, 
@@ -38,6 +38,44 @@ router.get('/nearby',
       return res.status(400).json({
         success: false,
         message: '缺少位置参数 latitude 和 longitude'
+      });
+    }
+
+    // 验证坐标格式
+    const lat = parseFloat(latitude as string);
+    const lng = parseFloat(longitude as string);
+    
+    if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      return res.status(400).json({
+        success: false,
+        message: '坐标格式不正确'
+      });
+    }
+
+    // 验证半径范围
+    const radiusNum = parseInt(radius as string);
+    if (isNaN(radiusNum) || radiusNum < 100 || radiusNum > 50000) {
+      return res.status(400).json({
+        success: false,
+        message: '搜索半径必须在100-50000米之间'
+      });
+    }
+
+    // 验证分页参数
+    const pageNum = parseInt(page as string);
+    const limitNum = parseInt(limit as string);
+    
+    if (isNaN(pageNum) || pageNum < 1) {
+      return res.status(400).json({
+        success: false,
+        message: '页码必须为正整数'
+      });
+    }
+    
+    if (isNaN(limitNum) || limitNum < 1 || limitNum > 50) {
+      return res.status(400).json({
+        success: false,
+        message: '每页数量必须在1-50之间'
       });
     }
 
@@ -65,16 +103,16 @@ router.get('/nearby',
       };
 
       const searchOptions: StationSearchOptions = {
-        page: parseInt(page as string),
-        limit: Math.min(parseInt(limit as string), 50), // 最大50条
+        page: pageNum,
+        limit: limitNum,
         sortBy: sortBy as any,
         sortOrder: sortOrder as any
       };
 
       const result = await stationService.findNearbyStations(
-        parseFloat(latitude as string),
-        parseFloat(longitude as string),
-        parseInt(radius as string),
+        lat,
+        lng,
+        radiusNum,
         searchFilters,
         searchOptions
       );
@@ -101,7 +139,7 @@ router.get('/search',
   logApiAccess,
   userRateLimit(20, 60000), // 每分钟最多20次搜索
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('🔍 收到关键词搜索请求');
+    // 收到关键词搜索请求
 
     const { 
       keyword,
@@ -179,7 +217,7 @@ router.get('/:stationId',
   logApiAccess,
   userRateLimit(60, 60000), // 每分钟最多60次详情请求
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('📋 收到获取充电站详情请求');
+    // 收到获取充电站详情请求
 
     const { stationId } = req.params;
 
@@ -215,7 +253,7 @@ router.get('/operator/:operatorName',
   logApiAccess,
   userRateLimit(20, 60000),
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('🏢 收到获取运营商充电站请求');
+    // 收到获取运营商充电站请求
 
     const { operatorName } = req.params;
     const { 
@@ -260,7 +298,7 @@ router.get('/stats/overview',
   logApiAccess,
   userRateLimit(10, 60000), // 每分钟最多10次统计请求
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('📊 收到获取统计信息请求');
+    // 收到获取统计信息请求
 
     const { city, district, operator } = req.query;
 
@@ -296,7 +334,7 @@ router.post('/',
   logApiAccess,
   userRateLimit(5, 60000), // 每分钟最多5次创建
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('📝 收到创建充电站请求');
+    // 收到创建充电站请求
 
     const stationData = req.body;
 
@@ -337,7 +375,7 @@ router.put('/:stationId',
   logApiAccess,
   userRateLimit(10, 60000),
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('📝 收到更新充电站请求');
+    // 收到更新充电站请求
 
     const { stationId } = req.params;
     const updateData = req.body;
@@ -368,7 +406,7 @@ router.delete('/:stationId',
   logApiAccess,
   userRateLimit(5, 60000),
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('🗑️ 收到删除充电站请求');
+    // 收到删除充电站请求
 
     const { stationId } = req.params;
 
@@ -396,7 +434,7 @@ router.patch('/:stationId/piles/:pileId/status',
   logApiAccess,
   userRateLimit(30, 60000), // 每分钟最多30次状态更新
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('🔄 收到更新充电桩状态请求');
+    // 收到更新充电桩状态请求
 
     const { stationId, pileId } = req.params;
     const { status } = req.body;
@@ -441,7 +479,7 @@ router.patch('/piles/batch-status',
   logApiAccess,
   userRateLimit(5, 60000),
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('🔄 收到批量更新充电桩状态请求');
+    // 收到批量更新充电桩状态请求
 
     const { updates } = req.body;
 
@@ -490,7 +528,7 @@ router.post('/sync/external',
   logApiAccess,
   userRateLimit(2, 60000), // 每分钟最多2次同步
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('🔄 收到外部数据同步请求');
+    // 收到外部数据同步请求
 
     const { apiData } = req.body;
 
@@ -522,9 +560,11 @@ router.post('/sync/external',
 
 // 获取服务配置
 router.get('/config/service',
+  authenticateToken,
+  requireVerificationLevel('premium'),
   logApiAccess,
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('⚙️ 收到获取服务配置请求');
+    // 收到获取服务配置请求
 
     try {
       const config = stationService.getConfig();

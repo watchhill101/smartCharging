@@ -20,7 +20,7 @@ jest.mock('../services/RedisService', () => ({
 
 import { VehicleManagementService } from '../services/VehicleManagementService';
 
-const MockedUser = require('../models/User');
+import MockedUser from '../models/User';
 
 describe('VehicleManagementService', () => {
   beforeEach(() => {

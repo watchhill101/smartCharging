@@ -15,6 +15,9 @@ import {
 } from '@nutui/nutui-react-taro';
 import { LocationInfo } from '../../services/AmapService';
 import { SearchResult, StationSearchFilters, StationSearchOptions } from '../StationSearch';
+import { LazyImage, LazyList } from '../LazyLoad';
+import { usePerformanceMonitor } from '../../utils/performanceMonitor';
+import { useResourcePreloader } from '../../utils/resourcePreloader';
 import './index.scss';
 
 export interface StationListProps {
@@ -86,6 +89,13 @@ const StationList: React.FC<StationListProps> = ({
   });
 
   const loadingRef = useRef(false);
+  const listRef = useRef<HTMLDivElement>(null);
+  
+  // 性能监控
+  const { startMeasure, endMeasure } = usePerformanceMonitor();
+  
+  // 资源预加载
+  const { preload } = useResourcePreloader();
 
   // 服务选项映射
   const serviceLabels: { [key: string]: string } = {
@@ -102,6 +112,7 @@ const StationList: React.FC<StationListProps> = ({
   // 加载收藏列表
   useEffect(() => {
     const loadFavorites = async () => {
+      startMeasure('load-favorites');
       try {
         const favorites = await TaroSafe.getStorageSync('favorite_stations');
         if (favorites && Array.isArray(favorites)) {
@@ -112,11 +123,31 @@ const StationList: React.FC<StationListProps> = ({
         }
       } catch (error) {
         console.warn('⚠️ 加载收藏列表失败:', error);
+      } finally {
+        endMeasure('load-favorites');
       }
     };
 
     loadFavorites();
-  }, []);
+  }, [startMeasure, endMeasure]);
+
+  // 预加载图片资源
+  useEffect(() => {
+    if (stations.length > 0 && showImages) {
+      const imageUrls = stations
+        .slice(0, 5) // 只预加载前5个图片
+        .filter(station => station.images && station.images.length > 0)
+        .map(station => station.images![0]);
+      
+      if (imageUrls.length > 0) {
+        preload(imageUrls.map(url => ({
+          url,
+          type: 'image' as const,
+          priority: 'medium' as const
+        })));
+      }
+    }
+  }, [stations, showImages, preload]);
 
   // 保存收藏列表
   const saveFavorites = useCallback(async (favorites: Set<string>) => {
@@ -261,14 +292,23 @@ const StationList: React.FC<StationListProps> = ({
         className={`station-item ${itemClassName}`}
         onClick={() => handleStationSelect(station)}
       >
-        {/* 充电站图片 */}
+        {/* 充电站图片 - 使用懒加载 */}
         {showImages && station.images && station.images.length > 0 && !hasImageError && (
           <View className="station-image">
-            <Image
+            <LazyImage
               src={station.images[0]}
-              mode="aspectFill"
+              alt={`${station.name}充电站`}
               className="image"
+              responsive={true}
+              webpSupport={true}
+              width={120}
+              height={80}
               onError={() => handleImageError(station.stationId)}
+              placeholder={
+                <View className="image-placeholder">
+                  <View className="placeholder-icon">🏢</View>
+                </View>
+              }
             />
           </View>
         )}
@@ -418,34 +458,32 @@ const StationList: React.FC<StationListProps> = ({
         </View>
       )}
 
-      {/* 充电站列表 */}
+      {/* 充电站列表 - 使用虚拟滚动优化 */}
       <PullToRefresh
         onRefresh={handleRefresh}
         loading={refreshing}
         className="pull-refresh"
       >
-        <ScrollView
-          className="station-scroll"
-          scrollY
-          enhanced
-          showScrollbar={false}
-        >
+        <View ref={listRef} className="station-scroll-container">
           {loading && stations.length === 0 ? (
             // 加载骨架屏
             renderSkeleton()
           ) : stations.length > 0 ? (
-            // 充电站列表
+            // 充电站列表 - 使用虚拟滚动
             <>
-              {stations.map(renderStationItem)}
+              <LazyList
+                items={stations}
+                renderItem={(station, index) => renderStationItem(station)}
+                className="station-virtual-list"
+                itemHeight={200} // 预估每项高度
+                bufferSize={3} // 缓冲区大小
+                onEndReached={handleLoadMore}
+                onEndReachedThreshold={0.8}
+              />
               
-              {/* 无限加载 */}
-              <InfiniteLoading
-                hasMore={hasMore}
-                loading={loading}
-                onLoadMore={handleLoadMore}
-                className="infinite-loading"
-              >
-                <View className="loading-content">
+              {/* 无限加载指示器 */}
+              {(loading || hasMore) && (
+                <View className="loading-footer">
                   {loading ? (
                     <>
                       <Loading type="spinner" size="small" />
@@ -457,7 +495,7 @@ const StationList: React.FC<StationListProps> = ({
                     <Text className="no-more-text">没有更多数据了</Text>
                   )}
                 </View>
-              </InfiniteLoading>
+              )}
             </>
           ) : (
             // 空状态
@@ -476,7 +514,7 @@ const StationList: React.FC<StationListProps> = ({
               </NutButton>
             </Empty>
           )}
-        </ScrollView>
+        </View>
       </PullToRefresh>
     </View>
   );

@@ -177,7 +177,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
 
       if (!result) return;
 
-      console.log("📱 扫描成功:", { result, type, charSet, path });
+      // 扫描成功
 
       // 验证扫描结果
       if (validateScanResult(result)) {

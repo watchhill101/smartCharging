@@ -34,12 +34,12 @@ export interface SliderChallenge {
 export class SliderVerifyService {
   private redis: RedisService;
   private thirdPartyService?: ThirdPartySliderService;
-  private readonly CHALLENGE_EXPIRE_TIME = 5 * 60; // 5分钟
-  private readonly MAX_ATTEMPTS = 3;
-  private readonly ACCURACY_THRESHOLD = 15; // 像素误差阈值
-  private readonly MIN_DURATION = 300; // 最小拖拽时间(ms)
-  private readonly MAX_DURATION = 15000; // 最大拖拽时间(ms)
-  private readonly MIN_TRACK_POINTS = 5; // 最小轨迹点数
+  private readonly CHALLENGE_EXPIRE_TIME = parseInt(process.env.SLIDER_CHALLENGE_EXPIRE_TIME || '300'); // 默认5分钟
+  private readonly MAX_ATTEMPTS = parseInt(process.env.SLIDER_MAX_ATTEMPTS || '3');
+  private readonly ACCURACY_THRESHOLD = parseInt(process.env.SLIDER_ACCURACY_THRESHOLD || '15'); // 像素误差阈值
+  private readonly MIN_DURATION = parseInt(process.env.SLIDER_MIN_DURATION || '300'); // 最小拖拽时间(ms)
+  private readonly MAX_DURATION = parseInt(process.env.SLIDER_MAX_DURATION || '15000'); // 最大拖拽时间(ms)
+  private readonly MIN_TRACK_POINTS = parseInt(process.env.SLIDER_MIN_TRACK_POINTS || '5'); // 最小轨迹点数
   private readonly USE_THIRD_PARTY = process.env.SLIDER_USE_THIRD_PARTY === 'true';
 
   constructor() {
@@ -77,8 +77,8 @@ export class SliderVerifyService {
           this.thirdPartyService = ThirdPartySliderServiceFactory.createCustomService({
             apiUrl,
             apiKey,
-            timeout: 5000,
-            retries: 2
+            timeout: parseInt(process.env.SLIDER_THIRD_PARTY_TIMEOUT || '5000'),
+            retries: parseInt(process.env.SLIDER_THIRD_PARTY_RETRIES || '2')
           });
       }
       console.log(`🔗 已初始化第三方滑块验证服务: ${provider}`);
@@ -91,7 +91,7 @@ export class SliderVerifyService {
   /**
    * 生成滑块验证挑战
    */
-  async generateChallenge(width: number = 248): Promise<SliderChallenge> {
+  async generateChallenge(width = 248): Promise<SliderChallenge> {
     const sessionId = this.generateSessionId();
     const effectiveWidth = width - 40; // 减去滑块宽度
     const minOffset = effectiveWidth * 0.3; // 30%位置开始
@@ -347,8 +347,10 @@ export class SliderVerifyService {
       const curr = trackData[i];
       
       // 检查移动是否合理（不能瞬移）
+// 单次移动不超过配置的最大像素
       const distance = Math.abs(curr.currentX - prev.currentX);
-      if (distance <= 50) { // 单次移动不超过50像素
+      const maxSingleMove = parseInt(process.env.SLIDER_MAX_SINGLE_MOVE || '50');
+      if (distance <= maxSingleMove) {
         validPoints++;
       }
     }
@@ -367,9 +369,14 @@ export class SliderVerifyService {
     let score = 0;
 
     // 时间得分 (0-0.3)
-    if (duration >= 500 && duration <= 8000) {
+    const minReasonableDuration = parseInt(process.env.SLIDER_MIN_REASONABLE_DURATION || '500');
+    const maxReasonableDuration = parseInt(process.env.SLIDER_MAX_REASONABLE_DURATION || '8000');
+    const minAcceptableDuration = parseInt(process.env.SLIDER_MIN_ACCEPTABLE_DURATION || '300');
+    const maxAcceptableDuration = parseInt(process.env.SLIDER_MAX_ACCEPTABLE_DURATION || '12000');
+    
+    if (duration >= minReasonableDuration && duration <= maxReasonableDuration) {
       score += 0.3;
-    } else if (duration >= 300 && duration <= 12000) {
+    } else if (duration >= minAcceptableDuration && duration <= maxAcceptableDuration) {
       score += 0.2;
     } else {
       score += 0.1;
@@ -413,9 +420,12 @@ export class SliderVerifyService {
       const acceleration = Math.abs(v2 - v1);
 
       // 平滑的移动加速度变化应该较小
-      if (acceleration <= 20) {
+      const smoothAcceleration = parseInt(process.env.SLIDER_SMOOTH_ACCELERATION || '20');
+      const acceptableAcceleration = parseInt(process.env.SLIDER_ACCEPTABLE_ACCELERATION || '40');
+      
+      if (acceleration <= smoothAcceleration) {
         smoothnessScore += 1;
-      } else if (acceleration <= 40) {
+      } else if (acceleration <= acceptableAcceleration) {
         smoothnessScore += 0.5;
       }
       validTransitions++;
@@ -461,8 +471,9 @@ export class SliderVerifyService {
    */
   private async recordVerificationSuccess(sessionId: string | undefined, token: string): Promise<void> {
     try {
-      // 存储验证令牌（30分钟有效期）
-      await this.redis.setex(`verify_token:${token}`, 30 * 60, JSON.stringify({
+      // 存储验证令牌
+      const tokenExpireTime = parseInt(process.env.SLIDER_TOKEN_EXPIRE_TIME || '1800'); // 默认30分钟
+      await this.redis.setex(`verify_token:${token}`, tokenExpireTime, JSON.stringify({
         sessionId,
         timestamp: Date.now(),
         type: 'slider_verify'

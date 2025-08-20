@@ -27,7 +27,7 @@ describe('UserProfileService', () => {
 
   describe('validateProfileCompleteness', () => {
     it('should validate profile completeness correctly', async () => {
-      const User = require('../models/User');
+      import User from '../models/User';
       const mockUser = {
         nickName: '测试用户',
         phone: '13800138000',
@@ -46,7 +46,7 @@ describe('UserProfileService', () => {
     });
 
     it('should return complete profile', async () => {
-      const User = require('../models/User');
+      import User from '../models/User';
       const mockUser = {
         nickName: '测试用户',
         phone: '13800138000',
@@ -67,7 +67,7 @@ describe('UserProfileService', () => {
 
   describe('updatePreferences', () => {
     it('should update user preferences successfully', async () => {
-      const User = require('../models/User');
+      import User from '../models/User';
       const mockUser = {
         _id: 'user123',
         preferences: {

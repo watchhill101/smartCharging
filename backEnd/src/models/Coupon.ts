@@ -99,9 +99,13 @@ const CouponSchema = new Schema<ICoupon>({
 });
 
 // 创建索引
+CouponSchema.index({ couponId: 1 });
 CouponSchema.index({ validFrom: 1, validTo: 1 });
 CouponSchema.index({ isActive: 1, validTo: 1 });
+CouponSchema.index({ isActive: 1, remainingQuantity: 1 });
 CouponSchema.index({ type: 1, applicableScenarios: 1 });
+CouponSchema.index({ createdBy: 1, createdAt: -1 });
+CouponSchema.index({ createdAt: -1 }); // 用于管理和统计
 
 // 虚拟字段：是否已过期
 CouponSchema.virtual('isExpired').get(function() {

@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { RedisService } from './RedisService';
 import User, { IUser } from '../models/User';
-import { AppError } from '../middleware/errorHandler';
+import { logger } from '../utils/logger';
 
 export interface LoginCredentials {
   phone?: string;
@@ -49,14 +49,27 @@ export class AuthService {
 
   constructor() {
     this.redis = new RedisService();
-    this.JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key';
-    this.JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key';
+    
+    // 强制要求JWT密钥配置
+    this.JWT_SECRET = process.env.JWT_SECRET;
+    this.JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+    
+    if (!this.JWT_SECRET || !this.JWT_REFRESH_SECRET) {
+      // 在开发环境下生成临时密钥，生产环境必须配置
+      if (process.env.NODE_ENV === 'development') {
+        this.JWT_SECRET = this.JWT_SECRET || this.generateSecureKey();
+        this.JWT_REFRESH_SECRET = this.JWT_REFRESH_SECRET || this.generateSecureKey();
+        console.warn('🔑 开发环境：使用临时生成的JWT密钥');
+        console.warn('⚠️  生产环境必须设置 JWT_SECRET 和 JWT_REFRESH_SECRET 环境变量');
+      } else {
+        throw new Error('🚨 生产环境必须配置 JWT_SECRET 和 JWT_REFRESH_SECRET 环境变量！');
+      }
+    }
+    
     this.JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
     this.JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
 
-    if (this.JWT_SECRET === 'your-jwt-secret-key' || this.JWT_REFRESH_SECRET === 'your-refresh-secret-key') {
-      console.warn('⚠️ 使用默认JWT密钥，生产环境请设置环境变量');
-    }
+    console.log('✅ JWT服务初始化成功');
   }
 
   /**
@@ -132,7 +145,7 @@ export class AuthService {
       };
 
     } catch (error) {
-      console.error('❌ 用户注册失败:', error);
+      logger.error('User registration failed', { phone, error: error.message }, error.stack);
       return {
         success: false,
         message: '注册失败，请稍后重试'
@@ -189,7 +202,7 @@ export class AuthService {
       };
 
     } catch (error) {
-      console.error('❌ 用户登录失败:', error);
+      logger.error('User login failed', { phone, error: error.message }, error.stack);
       return {
         success: false,
         message: '登录失败，请稍后重试'
@@ -324,7 +337,7 @@ export class AuthService {
       };
 
     } catch (error) {
-      console.error('❌ 刷新令牌失败:', error);
+      logger.error('Token refresh failed', { refreshToken, error: error.message }, error.stack);
       return {
         success: false,
         message: '刷新令牌无效或已过期'
@@ -354,7 +367,7 @@ export class AuthService {
       };
 
     } catch (error) {
-      console.error('❌ 用户登出失败:', error);
+      logger.error('User logout failed', { token, error: error.message }, error.stack);
       return {
         success: false,
         message: '登出失败'
@@ -430,7 +443,7 @@ export class AuthService {
       const storedCode = await this.redis.get(`verify_code:${phone}`);
       return storedCode === code;
     } catch (error) {
-      console.error('验证码验证失败:', error);
+      logger.error('Verification code validation failed', { phone, error: error.message }, error.stack);
       return false;
     }
   }
@@ -442,7 +455,7 @@ export class AuthService {
     try {
       await this.redis.del(`verify_code:${phone}`);
     } catch (error) {
-      console.error('清除验证码失败:', error);
+      logger.error('Clear verification code failed', { phone, error: error.message }, error.stack);
     }
   }
 
@@ -454,7 +467,7 @@ export class AuthService {
       const tokenData = await this.redis.get(`verify_token:${token}`);
       return tokenData !== null;
     } catch (error) {
-      console.error('滑块令牌验证失败:', error);
+      logger.error('Slider token validation failed', { token, error: error.message }, error.stack);
       return false;
     }
   }
@@ -473,7 +486,7 @@ export class AuthService {
         console.warn(`🔒 账户已锁定: ${phone} (${attempts}次失败尝试)`);
       }
     } catch (error) {
-      console.error('记录失败尝试失败:', error);
+      logger.error('Record failed attempt failed', { phone, error: error.message }, error.stack);
     }
   }
 
@@ -485,7 +498,7 @@ export class AuthService {
       await this.redis.del(`login_attempts:${phone}`);
       await this.redis.del(`account_locked:${phone}`);
     } catch (error) {
-      console.error('清除失败尝试记录失败:', error);
+      logger.error('Clear failed attempts failed', { phone, error: error.message }, error.stack);
     }
   }
 
@@ -497,7 +510,7 @@ export class AuthService {
       const locked = await this.redis.exists(`account_locked:${phone}`);
       return locked === 1;
     } catch (error) {
-      console.error('检查账户锁定状态失败:', error);
+      logger.error('Check account lock status failed', { phone, error: error.message }, error.stack);
       return false;
     }
   }
@@ -512,7 +525,7 @@ export class AuthService {
         await this.redis.setex(`blacklist:token:${tokenId}`, ttl, '1');
       }
     } catch (error) {
-      console.error('令牌黑名单添加失败:', error);
+      logger.error('Token blacklist add failed', { tokenId, error: error.message }, error.stack);
     }
   }
 
@@ -524,7 +537,7 @@ export class AuthService {
       const ttl = 7 * 24 * 60 * 60; // 7天
       await this.redis.setex(`blacklist:refresh:${tokenId}`, ttl, '1');
     } catch (error) {
-      console.error('刷新令牌黑名单添加失败:', error);
+      logger.error('Refresh token blacklist add failed', { tokenId, error: error.message }, error.stack);
     }
   }
 
@@ -563,9 +576,16 @@ export class AuthService {
   }
 
   /**
+   * 生成安全密钥
+   */
+  private generateSecureKey(): string {
+    return crypto.randomBytes(64).toString('hex');
+  }
+
+  /**
    * 获取用户登录统计
    */
-  async getLoginStats(userId: string, days: number = 7): Promise<{
+  async getLoginStats(userId: string): Promise<{
     totalLogins: number;
     lastLoginAt?: Date;
     loginDevices: string[];
@@ -587,7 +607,7 @@ export class AuthService {
       };
 
     } catch (error) {
-      console.error('获取登录统计失败:', error);
+      logger.error('Get login stats failed', { userId, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -632,7 +652,7 @@ export class AuthService {
       };
 
     } catch (error) {
-      console.error('❌ 密码修改失败:', error);
+      logger.error('Password change failed', { userId, error: error.message }, error.stack);
       return {
         success: false,
         message: '密码修改失败，请稍后重试'

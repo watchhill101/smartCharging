@@ -2,10 +2,11 @@ import { View, Text, Textarea, Button, Picker, Image } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import { TaroSafe } from '../../utils/taroSafe'
-import { showToast } from '../../utils/toast'
-import request from '../../utils/request'
+import { TaroHelper } from '../../utils/taroHelpers'
+// import { showToast } from '../../utils/toast'
 import { STORAGE_KEYS } from '../../utils/constants'
 import './index.scss'
+import { TIME_CONSTANTS } from '../../utils/constants'
 
 interface FeedbackForm {
   type: string
@@ -115,7 +116,7 @@ const FeedbackCenter = () => {
       setTicketHistory(mockTickets)
     } catch (error) {
       console.error('加载工单历史失败:', error)
-      showToast({ title: '加载失败，请重试', icon: 'error' })
+      TaroHelper.showToast({ title: '加载失败，请重试', icon: 'error' })
     } finally {
       setIsLoading(false)
     }
@@ -123,11 +124,11 @@ const FeedbackCenter = () => {
 
   const handleImageUpload = () => {
     if (feedbackForm.images.length >= 3) {
-      showToast({ title: '最多上传3张图片', icon: 'none' })
+      TaroHelper.showToast({ title: '最多上传3张图片', icon: 'none' })
       return
     }
 
-    Taro.chooseImage({
+    TaroHelper.chooseImage({
       count: 3 - feedbackForm.images.length,
       sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
@@ -139,7 +140,7 @@ const FeedbackCenter = () => {
       },
       fail: (error) => {
         console.error('选择图片失败:', error)
-        showToast({ title: '选择图片失败', icon: 'error' })
+        TaroHelper.showToast({ title: '选择图片失败', icon: 'error' })
       }
     })
   }
@@ -153,17 +154,17 @@ const FeedbackCenter = () => {
 
   const validateForm = (): boolean => {
     if (!feedbackForm.title.trim()) {
-      showToast({ title: '请输入问题标题', icon: 'none' })
+      TaroHelper.showToast({ title: '请输入问题标题', icon: 'none' })
       return false
     }
 
     if (!feedbackForm.description.trim()) {
-      showToast({ title: '请描述具体问题', icon: 'none' })
+      TaroHelper.showToast({ title: '请描述具体问题', icon: 'none' })
       return false
     }
 
     if (!feedbackForm.contact.trim()) {
-      showToast({ title: '请提供联系方式', icon: 'none' })
+      TaroHelper.showToast({ title: '请提供联系方式', icon: 'none' })
       return false
     }
 
@@ -177,7 +178,7 @@ const FeedbackCenter = () => {
       setIsSubmitting(true)
 
       // 模拟提交API调用
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      await new Promise(resolve => setTimeout(resolve, TIME_CONSTANTS.TWO_SECONDS))
 
       // 实际应该调用后端API
       // const response = await request({
@@ -186,7 +187,7 @@ const FeedbackCenter = () => {
       //   data: feedbackForm
       // })
 
-      showToast({ title: '提交成功', icon: 'success' })
+      TaroHelper.showToast({ title: '提交成功', icon: 'success' })
 
       // 重置表单
       setFeedbackForm({
@@ -203,7 +204,7 @@ const FeedbackCenter = () => {
 
     } catch (error) {
       console.error('提交反馈失败:', error)
-      showToast({ title: '提交失败，请重试', icon: 'error' })
+      TaroHelper.showToast({ title: '提交失败，请重试', icon: 'error' })
     } finally {
       setIsSubmitting(false)
     }

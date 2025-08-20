@@ -103,11 +103,13 @@ const ChargingSessionSchema = new Schema<IChargingSession>({
 // 索引
 ChargingSessionSchema.index({ sessionId: 1 });
 ChargingSessionSchema.index({ userId: 1, createdAt: -1 });
-ChargingSessionSchema.index({ stationId: 1 });
-ChargingSessionSchema.index({ chargerId: 1 });
-ChargingSessionSchema.index({ status: 1 });
-ChargingSessionSchema.index({ paymentStatus: 1 });
+ChargingSessionSchema.index({ userId: 1, status: 1 });
+ChargingSessionSchema.index({ stationId: 1, status: 1 });
+ChargingSessionSchema.index({ chargerId: 1, status: 1 });
+ChargingSessionSchema.index({ status: 1, startTime: -1 });
+ChargingSessionSchema.index({ paymentStatus: 1, createdAt: -1 });
 ChargingSessionSchema.index({ startTime: -1 });
+ChargingSessionSchema.index({ createdAt: -1 }); // 用于统计和清理
 
 // 实例方法
 ChargingSessionSchema.methods.calculateDuration = function() {

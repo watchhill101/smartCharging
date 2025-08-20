@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { logger } from '../utils/logger';
 
 export const connectDB = async (): Promise<void> => {
   try {
@@ -14,8 +15,8 @@ export const connectDB = async (): Promise<void> => {
     
     // 监听连接事件
     mongoose.connection.on('error', (error) => {
-      console.error('MongoDB connection error:', error);
-    });
+    logger.error('MongoDB connection error', { error: error.message }, error.stack);
+  });
 
     mongoose.connection.on('disconnected', () => {
       console.warn('MongoDB disconnected');
@@ -26,7 +27,8 @@ export const connectDB = async (): Promise<void> => {
     });
 
   } catch (error) {
-    console.error('MongoDB connection failed:', error);
+    const err = error as Error;
+    logger.error('MongoDB connection failed', { error: err.message }, err.stack);
     throw error;
   }
 };
@@ -36,7 +38,8 @@ export const disconnectDB = async (): Promise<void> => {
     await mongoose.disconnect();
     console.log('MongoDB disconnected successfully');
   } catch (error) {
-    console.error('Error disconnecting from MongoDB:', error);
+    const err = error as Error;
+    logger.error('Error disconnecting from MongoDB', { error: err.message }, err.stack);
     throw error;
   }
 };

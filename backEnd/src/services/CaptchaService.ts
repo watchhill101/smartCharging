@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { Canvas, createCanvas, loadImage } from 'canvas';
+import { createCanvas, loadImage } from 'canvas';
 import { RedisService } from './RedisService';
 
 export interface CaptchaConfig {
@@ -265,10 +265,10 @@ export class CaptchaService {
       ctx.drawImage(backgroundImg, 0, 0, width, height);
 
       // 创建拼图路径
-      const puzzlePath = this.createPuzzlePath(puzzleX, puzzleY, puzzleSize);
+      
 
       // 保存原始图片数据
-      const originalImageData = ctx.getImageData(0, 0, width, height);
+      
 
       // 创建拼图块画布
       const puzzleCanvas = createCanvas(puzzleSize, puzzleSize);

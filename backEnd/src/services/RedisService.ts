@@ -1,25 +1,29 @@
 import Redis from 'ioredis';
+import { logger } from '../utils/logger';
 
 export class RedisService {
   private client: Redis;
   private static instance: RedisService;
 
   constructor() {
-    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+    const redisUrl = process.env.REDIS_URL;
+    if (!redisUrl) {
+      throw new Error('REDIS_URL environment variable is required');
+    }
     
     this.client = new Redis(redisUrl, {
-      retryDelayOnFailover: 100,
-      enableReadyCheck: false,
-      maxRetriesPerRequest: null,
-      lazyConnect: true,
-      connectTimeout: 10000,
-      commandTimeout: 5000,
+      retryDelayOnFailover: parseInt(process.env.REDIS_RETRY_DELAY_ON_FAILOVER || '100'),
+      enableReadyCheck: process.env.REDIS_ENABLE_READY_CHECK !== 'false',
+      maxRetriesPerRequest: process.env.REDIS_MAX_RETRIES_PER_REQUEST ? parseInt(process.env.REDIS_MAX_RETRIES_PER_REQUEST) : null,
+      lazyConnect: process.env.REDIS_LAZY_CONNECT !== 'false',
+      connectTimeout: parseInt(process.env.REDIS_CONNECT_TIMEOUT || '10000'),
+      commandTimeout: parseInt(process.env.REDIS_COMMAND_TIMEOUT || '5000'),
       // 连接池配置
-      family: 4,
-      keepAlive: true,
+      family: parseInt(process.env.REDIS_FAMILY || '4'),
+      keepAlive: process.env.REDIS_KEEP_ALIVE !== 'false',
       // 重连配置
-      retryDelayOnClusterDown: 300,
-      enableOfflineQueue: false
+      retryDelayOnClusterDown: parseInt(process.env.REDIS_RETRY_DELAY_ON_CLUSTER_DOWN || '300'),
+      enableOfflineQueue: process.env.REDIS_ENABLE_OFFLINE_QUEUE === 'true'
     });
 
     // 连接事件监听
@@ -32,7 +36,7 @@ export class RedisService {
     });
 
     this.client.on('error', (error) => {
-      console.error('❌ Redis连接错误:', error);
+      logger.error('Redis connection error', { error: error.message }, error.stack);
     });
 
     this.client.on('close', () => {
@@ -61,7 +65,7 @@ export class RedisService {
     try {
       return await this.client.set(key, value);
     } catch (error) {
-      console.error(`Redis SET 操作失败 [${key}]:`, error);
+      logger.error('Redis SET operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -73,7 +77,7 @@ export class RedisService {
     try {
       return await this.client.setex(key, seconds, value);
     } catch (error) {
-      console.error(`Redis SETEX 操作失败 [${key}]:`, error);
+      logger.error('Redis SETEX operation failed', { key, seconds, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -85,7 +89,7 @@ export class RedisService {
     try {
       return await this.client.get(key);
     } catch (error) {
-      console.error(`Redis GET 操作失败 [${key}]:`, error);
+      logger.error('Redis GET operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -97,7 +101,7 @@ export class RedisService {
     try {
       return await this.client.del(key);
     } catch (error) {
-      console.error(`Redis DEL 操作失败 [${key}]:`, error);
+      logger.error('Redis DEL operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -109,7 +113,7 @@ export class RedisService {
     try {
       return await this.client.exists(key);
     } catch (error) {
-      console.error(`Redis EXISTS 操作失败 [${key}]:`, error);
+      logger.error('Redis EXISTS operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -121,7 +125,7 @@ export class RedisService {
     try {
       return await this.client.expire(key, seconds);
     } catch (error) {
-      console.error(`Redis EXPIRE 操作失败 [${key}]:`, error);
+      logger.error('Redis EXPIRE operation failed', { key, seconds, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -133,7 +137,7 @@ export class RedisService {
     try {
       return await this.client.ttl(key);
     } catch (error) {
-      console.error(`Redis TTL 操作失败 [${key}]:`, error);
+      logger.error('Redis TTL operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -145,7 +149,7 @@ export class RedisService {
     try {
       return await this.client.incr(key);
     } catch (error) {
-      console.error(`Redis INCR 操作失败 [${key}]:`, error);
+      logger.error('Redis INCR operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -157,7 +161,7 @@ export class RedisService {
     try {
       return await this.client.decr(key);
     } catch (error) {
-      console.error(`Redis DECR 操作失败 [${key}]:`, error);
+      logger.error('Redis DECR operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -169,7 +173,7 @@ export class RedisService {
     try {
       return await this.client.hset(key, field, value);
     } catch (error) {
-      console.error(`Redis HSET 操作失败 [${key}.${field}]:`, error);
+      logger.error('Redis HSET operation failed', { key, field, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -181,7 +185,7 @@ export class RedisService {
     try {
       return await this.client.hget(key, field);
     } catch (error) {
-      console.error(`Redis HGET 操作失败 [${key}.${field}]:`, error);
+      logger.error('Redis HGET operation failed', { key, field, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -193,7 +197,7 @@ export class RedisService {
     try {
       return await this.client.hgetall(key);
     } catch (error) {
-      console.error(`Redis HGETALL 操作失败 [${key}]:`, error);
+      logger.error('Redis HGETALL operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -205,7 +209,7 @@ export class RedisService {
     try {
       return await this.client.hdel(key, field);
     } catch (error) {
-      console.error(`Redis HDEL 操作失败 [${key}.${field}]:`, error);
+      logger.error('Redis HDEL operation failed', { key, field, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -217,7 +221,7 @@ export class RedisService {
     try {
       return await this.client.lpush(key, value);
     } catch (error) {
-      console.error(`Redis LPUSH 操作失败 [${key}]:`, error);
+      logger.error('Redis LPUSH operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -229,7 +233,7 @@ export class RedisService {
     try {
       return await this.client.rpush(key, value);
     } catch (error) {
-      console.error(`Redis RPUSH 操作失败 [${key}]:`, error);
+      logger.error('Redis RPUSH operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -241,7 +245,7 @@ export class RedisService {
     try {
       return await this.client.lpop(key);
     } catch (error) {
-      console.error(`Redis LPOP 操作失败 [${key}]:`, error);
+      logger.error('Redis LPOP operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -253,7 +257,7 @@ export class RedisService {
     try {
       return await this.client.rpop(key);
     } catch (error) {
-      console.error(`Redis RPOP 操作失败 [${key}]:`, error);
+      logger.error('Redis RPOP operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -265,7 +269,7 @@ export class RedisService {
     try {
       return await this.client.llen(key);
     } catch (error) {
-      console.error(`Redis LLEN 操作失败 [${key}]:`, error);
+      logger.error('Redis LLEN operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -277,7 +281,7 @@ export class RedisService {
     try {
       return await this.client.sadd(key, member);
     } catch (error) {
-      console.error(`Redis SADD 操作失败 [${key}]:`, error);
+      logger.error('Redis SADD operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -289,7 +293,7 @@ export class RedisService {
     try {
       return await this.client.srem(key, member);
     } catch (error) {
-      console.error(`Redis SREM 操作失败 [${key}]:`, error);
+      logger.error('Redis SREM operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -301,7 +305,7 @@ export class RedisService {
     try {
       return await this.client.sismember(key, member);
     } catch (error) {
-      console.error(`Redis SISMEMBER 操作失败 [${key}]:`, error);
+      logger.error('Redis SISMEMBER operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -313,7 +317,7 @@ export class RedisService {
     try {
       return await this.client.smembers(key);
     } catch (error) {
-      console.error(`Redis SMEMBERS 操作失败 [${key}]:`, error);
+      logger.error('Redis SMEMBERS operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -325,7 +329,7 @@ export class RedisService {
     try {
       return await this.client.zadd(key, score, member);
     } catch (error) {
-      console.error(`Redis ZADD 操作失败 [${key}]:`, error);
+      logger.error('Redis ZADD operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -337,7 +341,7 @@ export class RedisService {
     try {
       return await this.client.zrange(key, start, stop);
     } catch (error) {
-      console.error(`Redis ZRANGE 操作失败 [${key}]:`, error);
+      logger.error('Redis ZRANGE operation failed', { key, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -349,7 +353,7 @@ export class RedisService {
     try {
       return await this.client.keys(pattern);
     } catch (error) {
-      console.error(`Redis KEYS 操作失败 [${pattern}]:`, error);
+      logger.error('Redis KEYS operation failed', { pattern, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -361,7 +365,7 @@ export class RedisService {
     try {
       return await this.client.flushdb();
     } catch (error) {
-      console.error('Redis FLUSHDB 操作失败:', error);
+      logger.error('Redis FLUSHDB operation failed', { error: error.message }, error.stack);
       throw error;
     }
   }
@@ -373,7 +377,7 @@ export class RedisService {
     try {
       return await this.client.info(section);
     } catch (error) {
-      console.error('Redis INFO 操作失败:', error);
+      logger.error('Redis INFO operation failed', { section, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -385,7 +389,7 @@ export class RedisService {
     try {
       return await this.client.ping();
     } catch (error) {
-      console.error('Redis PING 操作失败:', error);
+      logger.error('Redis PING operation failed', { error: error.message }, error.stack);
       throw error;
     }
   }
@@ -398,7 +402,7 @@ export class RedisService {
       await this.client.disconnect();
       console.log('🔌 Redis连接已关闭');
     } catch (error) {
-      console.error('Redis断开连接失败:', error);
+      logger.error('Redis disconnect failed', { error: error.message }, error.stack);
       throw error;
     }
   }

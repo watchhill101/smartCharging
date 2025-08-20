@@ -5,7 +5,7 @@ const isH5 = process.env.TARO_ENV === 'h5'
 const isBrowser = typeof window !== 'undefined'
 
 if (isH5 || isBrowser) {
-  console.log('🔧 正在为H5环境添加Taro API Polyfill...')
+  // 为H5环境添加Taro API Polyfill
   
   // 存储API Polyfill
   if (!Taro.getStorageSync) {
@@ -43,7 +43,7 @@ if (isH5 || isBrowser) {
   if (!Taro.showToast) {
     Taro.showToast = (options: any) => {
       const title = typeof options === 'string' ? options : options?.title
-      console.log(`Toast: ${title}`)
+      // Toast显示
     }
   }
   
@@ -57,7 +57,7 @@ if (isH5 || isBrowser) {
   if (!Taro.showLoading) {
     Taro.showLoading = (options: any) => {
       const title = typeof options === 'string' ? options : options?.title || '加载中...'
-      console.log(`Loading: ${title}`)
+      // Loading显示
     }
   }
   
@@ -168,7 +168,7 @@ if (isH5 || isBrowser) {
     }
   }
   
-  console.log('✅ Taro API Polyfill 加载完成')
+  // Taro API Polyfill 加载完成
 }
 
 export default Taro

@@ -1,0 +1,2 @@
+{"timestamp": "2025-08-20T20:55:09.180460", "level": "CRITICAL", "level_no": 50, "message": "这是一条CRITICAL日志", "logger_name": "test_logger", "module": "test_enhanced_logging", "line_no": 77}
+{"timestamp": "2025-08-20T20:55:28.114701", "level": "CRITICAL", "level_no": 50, "message": "这是一条CRITICAL日志", "logger_name": "test_logger", "module": "test_enhanced_logging", "line_no": 77}

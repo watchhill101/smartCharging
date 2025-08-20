@@ -1,5 +1,6 @@
 import { Feedback, IFeedback } from '../models/Feedback';
 import { RedisService } from './RedisService';
+import { logger } from '../utils/logger';
 
 export interface CreateFeedbackData {
   userId: string;
@@ -294,7 +295,8 @@ export class FeedbackService {
   private async sendFeedbackNotification(feedback: IFeedback): Promise<void> {
     try {
       // 这里可以集成短信、邮件或推送通知服务
-      console.log(`发送反馈通知给用户 ${feedback.userId}:`, {
+      logger.info('发送反馈通知给用户', {
+        userId: feedback.userId,
         ticketId: feedback.ticketId,
         title: feedback.title,
         response: feedback.response
@@ -313,12 +315,13 @@ export class FeedbackService {
         createdAt: new Date()
       };
 
+      const queueName = process.env.NOTIFICATION_QUEUE_NAME || 'notification:queue';
       await this.redisService.lpush(
-        'notification:queue',
+        queueName,
         JSON.stringify(notification)
       );
     } catch (error) {
-      console.error('发送通知失败:', error);
+      logger.error('发送通知失败', { error: error instanceof Error ? error.message : error }, error instanceof Error ? error.stack : undefined);
     }
   }
 
@@ -334,7 +337,7 @@ export class FeedbackService {
 
       return result.modifiedCount > 0;
     } catch (error) {
-      console.error('删除反馈失败:', error);
+      logger.error('删除反馈失败', { error: error instanceof Error ? error.message : error }, error instanceof Error ? error.stack : undefined);
       throw new Error('删除反馈失败');
     }
   }

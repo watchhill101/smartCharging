@@ -5,46 +5,17 @@ import './index.scss'
 // 引入自定义图标字体
 import '../../assets/icons/ChangeIt/iconfont.css'
 import { AIService } from '../../utils/aiService'
-import { showToast } from '../utils/toast'
-
-// 安全的 Taro API 调用
-const showToast = (options: any) => {
-  try {
-    if (Taro.showToast && typeof Taro.showToast === 'function') {
-      showToast(options)
-    } else {
-      console.log('Toast:', options.title)
-    }
-  } catch (error) {
-    console.log('Toast:', options.title)
-  }
-}
-
-const hideToast = () => {
-  try {
-    if (Taro.hideToast && typeof Taro.hideToast === 'function') {
-      Taro.hideToast();
-    } else {
-      console.log('隐藏Toast');
-    }
-  } catch (error) {
-    console.log('隐藏Toast失败');
-  }
-};
-
-const showModal = (options: any) => {
-  try {
-    if (Taro.showModal && typeof Taro.showModal === 'function') {
-      Taro.showModal(options)
-    } else {
-      const result = window.confirm(`${options.title}\n${options.content}`)
-      options.success?.({ confirm: result, cancel: !result })
-    }
-  } catch (error) {
-    const result = window.confirm(`${options.title}\n${options.content}`)
-    options.success?.({ confirm: result, cancel: !result })
-  }
-}
+// import { showToast } from '../../utils/toast' // 已替换为 TaroHelper.showToast
+import { 
+  TaroHelper, 
+  ErrorHandler, 
+  TimeFormatter, 
+  Validator,
+  CONSTANTS,
+  ERROR_MESSAGES,
+  generateId 
+} from '../../utils/taroHelpers'
+import { TIME_CONSTANTS, AI_MODEL_CONSTANTS, FILE_SIZE_CONSTANTS, API_CONFIG } from '../../utils/constants'
 
 interface Message {
   id: string
@@ -71,34 +42,40 @@ interface ApiResponse {
 // AI 模型配置 - 支持多个模型备用
 const AI_MODELS = [
   {
-    name: 'GPT-3.5-Turbo',
-    apiKey: "sk-jcqcc71pkFwLcp2r0e2aBc6174834417B7F32d148c786773",
-    baseURL: "https://free.v36.cm/v1",
-    model: "gpt-3.5-turbo",
-    maxTokens: 800,
-    temperature: 0.7,
-    timeout: 30000,
-    priority: 1 // 优先级，数字越小优先级越高
+    name: process.env.TARO_APP_AI_MODEL_1_NAME || 'GPT-3.5-Turbo',
+    apiKey: process.env.TARO_APP_AI_MODEL_1_API_KEY || (() => {
+      throw new Error('AI模型1的API密钥未配置，请设置环境变量 TARO_APP_AI_MODEL_1_API_KEY');
+    })(),
+    baseURL: process.env.TARO_APP_AI_MODEL_1_BASE_URL || 'https://free.v36.cm/v1',
+    model: process.env.TARO_APP_AI_MODEL_1_MODEL || 'gpt-3.5-turbo',
+    maxTokens: parseInt(process.env.TARO_APP_AI_MODEL_1_MAX_TOKENS || AI_MODEL_CONSTANTS.DEFAULT_MAX_TOKENS.toString()),
+    temperature: parseFloat(process.env.TARO_APP_AI_MODEL_1_TEMPERATURE || AI_MODEL_CONSTANTS.DEFAULT_TEMPERATURE.toString()),
+    timeout: parseInt(process.env.TARO_APP_AI_MODEL_1_TIMEOUT || AI_MODEL_CONSTANTS.DEFAULT_TIMEOUT.toString()),
+    priority: parseInt(process.env.TARO_APP_AI_MODEL_1_PRIORITY || '1') // 优先级，数字越小优先级越高
   },
   {
-    name: 'GPT-4o-Mini',
-    apiKey: "sk-jcqcc71pkFwLcp2r0e2aBc6174834417B7F32d148c786773",
-    baseURL: "https://free.v36.cm/v1",
-    model: "gpt-4o-mini",
-    maxTokens: 600,
-    temperature: 0.7,
-    timeout: 25000,
-    priority: 2
+    name: process.env.TARO_APP_AI_MODEL_2_NAME || 'GPT-4o-Mini',
+    apiKey: process.env.TARO_APP_AI_MODEL_2_API_KEY || (() => {
+      throw new Error('AI模型2的API密钥未配置，请设置环境变量 TARO_APP_AI_MODEL_2_API_KEY');
+    })(),
+    baseURL: process.env.TARO_APP_AI_MODEL_2_BASE_URL || 'https://free.v36.cm/v1',
+    model: process.env.TARO_APP_AI_MODEL_2_MODEL || 'gpt-4o-mini',
+    maxTokens: parseInt(process.env.TARO_APP_AI_MODEL_2_MAX_TOKENS || AI_MODEL_CONSTANTS.BACKUP_MAX_TOKENS.toString()),
+    temperature: parseFloat(process.env.TARO_APP_AI_MODEL_2_TEMPERATURE || AI_MODEL_CONSTANTS.DEFAULT_TEMPERATURE.toString()),
+    timeout: parseInt(process.env.TARO_APP_AI_MODEL_2_TIMEOUT || AI_MODEL_CONSTANTS.BACKUP_TIMEOUT.toString()),
+    priority: parseInt(process.env.TARO_APP_AI_MODEL_2_PRIORITY || '2')
   },
   {
-    name: 'GPT-3.5-备用',
-    apiKey: "sk-jcqcc71pkFwLcp2r0e2aBc6174834417B7F32d148c786773",
-    baseURL: "https://api.openai.com/v1", // 官方接口作为备用
-    model: "gpt-3.5-turbo-1106",
-    maxTokens: 500,
-    temperature: 0.8,
-    timeout: 20000,
-    priority: 3
+    name: process.env.TARO_APP_AI_MODEL_3_NAME || 'GPT-3.5-备用',
+    apiKey: process.env.TARO_APP_AI_MODEL_3_API_KEY || (() => {
+      throw new Error('AI模型3的API密钥未配置，请设置环境变量 TARO_APP_AI_MODEL_3_API_KEY');
+    })(),
+    baseURL: process.env.TARO_APP_AI_MODEL_3_BASE_URL || 'https://api.openai.com/v1', // 官方接口作为备用
+    model: process.env.TARO_APP_AI_MODEL_3_MODEL || 'gpt-3.5-turbo-1106',
+    maxTokens: parseInt(process.env.TARO_APP_AI_MODEL_3_MAX_TOKENS || AI_MODEL_CONSTANTS.FALLBACK_MAX_TOKENS.toString()),
+    temperature: parseFloat(process.env.TARO_APP_AI_MODEL_3_TEMPERATURE || '0.8'),
+    timeout: parseInt(process.env.TARO_APP_AI_MODEL_3_TIMEOUT || AI_MODEL_CONSTANTS.FALLBACK_TIMEOUT.toString()),
+    priority: parseInt(process.env.TARO_APP_AI_MODEL_3_PRIORITY || '3')
   }
 ]
 
@@ -143,15 +120,7 @@ const shouldSwitchModel = (error: any) => {
 }
 
 // 错误类型映射
-const ERROR_MESSAGES = {
-  NETWORK_ERROR: '网络连接异常，请检查网络后重试 🌐',
-  API_ERROR: 'AI服务暂时不可用，请稍后再试 🤖',
-  TIMEOUT_ERROR: '请求超时，请重新发送消息 ⏰',
-  UNKNOWN_ERROR: '发生未知错误，如需帮助请联系人工客服 📞'
-}
-
-// 生成唯一ID
-const generateId = () => `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+// 常量已移至 taroHelpers.ts
 
 // 获取系统提示
 const getSystemPrompt = () => ({
@@ -230,16 +199,7 @@ const AiServer = () => {
 
   // 获取错误信息
   const getErrorMessage = useCallback((error: any) => {
-    if (error.name === 'TypeError' || error.message?.includes('fetch')) {
-      return ERROR_MESSAGES.NETWORK_ERROR
-    }
-    if (error.message?.includes('timeout')) {
-      return ERROR_MESSAGES.TIMEOUT_ERROR
-    }
-    if (error.message?.includes('401') || error.message?.includes('403')) {
-      return ERROR_MESSAGES.API_ERROR
-    }
-    return ERROR_MESSAGES.UNKNOWN_ERROR + '\n\n📞 人工客服：400-123-4567'
+    return ErrorHandler.getErrorMessage(error)
   }, [])
 
   // 修改 handleCameraClick 方法
@@ -263,8 +223,8 @@ const AiServer = () => {
     try {
       setIsProcessingImage(true)
       
-      // 使用 Taro.showActionSheet 显示原生选择框
-      Taro.showActionSheet({
+      // 使用 TaroHelper.showActionSheet 显示原生选择框
+      TaroHelper.showActionSheet({
         itemList: ['拍照', '从相册选择'],
         success: async (res) => {
           try {
@@ -277,10 +237,10 @@ const AiServer = () => {
             }
           } catch (error) {
             console.error('图片处理失败:', error)
-            showToast({
+            TaroHelper.showToast({
               title: '操作失败，请重试',
               icon: 'error',
-              duration: 2000
+              duration: TIME_CONSTANTS.TWO_SECONDS
             })
           } finally {
             setIsProcessingImage(false)
@@ -307,7 +267,7 @@ const AiServer = () => {
       handleH5Camera()
     } catch (error) {
       console.error('拍照失败:', error)
-      showToast({
+      TaroHelper.showToast({
         title: '拍照失败，请重试',
         icon: 'error',
         duration: 2000
@@ -327,7 +287,7 @@ const AiServer = () => {
       handleH5Album()
     } catch (error) {
       console.error('选择图片失败:', error)
-      showToast({
+      TaroHelper.showToast({
         title: '选择图片失败，请重试',
         icon: 'error',
         duration: 2000
@@ -388,7 +348,7 @@ const AiServer = () => {
     try {
       // 文件大小检查（限制为10MB）
       if (file.size > 10 * 1024 * 1024) {
-        showToast({
+        TaroHelper.showToast({
           title: '图片太大，请选择小于10MB的图片',
           icon: 'error',
           duration: 2000
@@ -399,7 +359,7 @@ const AiServer = () => {
       
       // 文件类型检查
       if (!file.type.startsWith('image/')) {
-        showToast({
+        TaroHelper.showToast({
           title: '请选择图片文件',
           icon: 'error',
           duration: 2000
@@ -409,10 +369,10 @@ const AiServer = () => {
       }
       
       // 显示处理提示
-      showToast({
+      TaroHelper.showToast({
         title: '正在处理图片...',
         icon: 'loading',
-        duration: 3000
+        duration: TIME_CONSTANTS.THREE_SECONDS
       })
       
       const reader = new FileReader()
@@ -421,7 +381,7 @@ const AiServer = () => {
         await processAndSendImage(imageSrc)
       }
       reader.onerror = () => {
-        showToast({
+        TaroHelper.showToast({
           title: '图片读取失败',
           icon: 'error',
           duration: 2000
@@ -432,7 +392,7 @@ const AiServer = () => {
     } catch (error) {
       console.error('处理图片失败:', error)
       setIsProcessingImage(false)
-      showToast({
+      TaroHelper.showToast({
         title: '图片处理失败',
         icon: 'error'
       })
@@ -461,8 +421,8 @@ const AiServer = () => {
       }
       
       // 备用旧API
-      if (Taro.chooseImage) {
-        res = await Taro.chooseImage({
+      if (TaroHelper.chooseImage) {
+        res = await TaroHelper.chooseImage({
           count: 1,
           sizeType: ['compressed'],
           sourceType: ['camera']
@@ -505,8 +465,8 @@ const AiServer = () => {
       }
       
       // 备用旧API
-      if (Taro.chooseImage) {
-        res = await Taro.chooseImage({
+      if (TaroHelper.chooseImage) {
+        res = await TaroHelper.chooseImage({
           count: 1,
           sizeType: ['compressed'],
           sourceType: ['album']
@@ -679,7 +639,7 @@ const AiServer = () => {
         }];
       });
       
-      showToast({
+      TaroHelper.showToast({
         title: '图片分析失败',
         icon: 'error',
         duration: 2000
@@ -756,7 +716,7 @@ const AiServer = () => {
       setMessages(prev => [...prev, errorMessage]);
       scrollToBottom();
       
-      showToast({
+      TaroHelper.showToast({
         title: '发送失败，请重试',
         icon: 'error',
         duration: 2000
@@ -768,7 +728,7 @@ const AiServer = () => {
   
   // 清空对话 - 优化用户体验
   const clearMessages = useCallback(() => {
-    showModal({
+    TaroHelper.showModal({
       title: '清空对话',
       content: '确定要清空所有对话记录吗？此操作无法撤销。',
       confirmText: '清空',
@@ -787,7 +747,7 @@ const AiServer = () => {
             }
           ]);
           setRetryCount(0);
-          showToast({
+          TaroHelper.showToast({
             title: '对话已清空',
             icon: 'success'
           });
@@ -803,7 +763,7 @@ const AiServer = () => {
       .reverse()
       .find(msg => msg.role === 'user');
     
-    if (lastUserMessage && retryCount < 3) {
+    if (lastUserMessage && Validator.canRetry(retryCount)) {
       setRetryCount(prev => prev + 1);
       if (lastUserMessage.contentType === 'text') {
         sendMessage(lastUserMessage.content);
@@ -811,8 +771,8 @@ const AiServer = () => {
         processAndSendImage(lastUserMessage.imageData);
       }
     } else {
-      showToast({
-        title: '重试次数过多，请稍后再试',
+      TaroHelper.showToast({
+        title: ERROR_MESSAGES.RETRY_LIMIT_EXCEEDED,
         icon: 'error'
       });
     }
@@ -820,28 +780,13 @@ const AiServer = () => {
 
   // 格式化时间 - 优化显示
   const formatTime = useCallback((timestamp: number) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diff = now.getTime() - timestamp;
-    
-    // 如果是今天
-    if (diff < 24 * 60 * 60 * 1000) {
-      return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-    }
-    
-    // 如果是昨天
-    if (diff < 48 * 60 * 60 * 1000) {
-      return `昨天 ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-    }
-    
-    // 更早的日期
-    return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    return TimeFormatter.formatTime(timestamp);
   }, []);
 
   // 输入框快捷操作
   const handleKeyPress = useCallback((e: any) => {
-    if (e.detail.value.length > 500) {
-      console.log('消息过长，请精简后发送');
+    if (Validator.isMessageTooLong(e.detail.value)) {
+      console.log(ERROR_MESSAGES.MESSAGE_TOO_LONG);
       return;
     }
   }, []);
@@ -887,9 +832,8 @@ const AiServer = () => {
   // 获取当前分类的问题
   const getCurrentQuestions = useCallback(() => {
     const categoryQuestions = quickQuestionsData[activeCategory] || [];
-    const questionsPerPage = 5;
-    const startIndex = currentQuestionIndex * questionsPerPage;
-    return categoryQuestions.slice(startIndex, startIndex + questionsPerPage);
+    const startIndex = currentQuestionIndex * CONSTANTS.QUESTIONS_PER_PAGE;
+    return categoryQuestions.slice(startIndex, startIndex + CONSTANTS.QUESTIONS_PER_PAGE);
   }, [activeCategory, currentQuestionIndex]);
 
   // 处理分类切换
@@ -932,45 +876,8 @@ const AiServer = () => {
   }, [sendMessage]);
 
   // 添加一个安全的电话拨号函数
-  const safePhoneCall = (phoneNumber: string) => {
-    try {
-      // 检查是否在 H5 环境
-      if (process.env.TARO_ENV === 'h5') {
-        // H5 环境使用 window.location.href
-        window.location.href = `tel:${phoneNumber}`;
-        return;
-      }
-      
-      // 小程序环境
-      if (Taro.makePhoneCall && typeof Taro.makePhoneCall === 'function') {
-        Taro.makePhoneCall({
-          phoneNumber,
-          fail: (err) => {
-            console.error('拨号失败:', err);
-            showToast({
-              title: `拨号失败，请手动拨打${phoneNumber}`,
-              icon: 'none',
-              duration: 2000
-            });
-          }
-        });
-      } else {
-        // Taro.makePhoneCall 不可用时的备用方案
-        console.warn('Taro.makePhoneCall 不可用');
-        showToast({
-          title: `请手动拨打客服电话：${phoneNumber}`,
-          icon: 'none',
-          duration: 2000
-        });
-      }
-    } catch (error) {
-      console.error('拨号功能错误:', error);
-      showToast({
-        title: `请手动拨打客服电话：${phoneNumber}`,
-        icon: 'none',
-        duration: 3000
-      });
-    }
+  const safePhoneCall = (phoneNumber: string = CONSTANTS.CUSTOMER_SERVICE_PHONE) => {
+    TaroHelper.makePhoneCall(phoneNumber);
   };
 
   // 修改录音初始化逻辑
@@ -1009,7 +916,7 @@ const AiServer = () => {
         if (duration >= 60) {
           stopRecording();
         }
-      }, 1000);
+      }, TIME_CONSTANTS.ONE_SECOND);
     });
     
     // 监听录音停止事件
@@ -1028,10 +935,10 @@ const AiServer = () => {
       setRecordDuration(0);
       
       // 判断录音是否有效 - 使用文件大小和时长的组合判断
-      const isValidRecording = res.fileSize > 5000 || duration >= 1;
+      const isValidRecording = res.fileSize > FILE_SIZE_CONSTANTS.MIN_AUDIO_SIZE || duration >= 1;
       
       if (!isValidRecording) {
-        showToast({
+        TaroHelper.showToast({
           title: '录音时间太短，请重试',
           icon: 'none',
           duration: 2000
@@ -1040,10 +947,10 @@ const AiServer = () => {
       }
       
       // 显示识别中提示
-      showToast({
+      TaroHelper.showToast({
         title: '正在识别语音...',
         icon: 'loading',
-        duration: 10000
+        duration: TIME_CONSTANTS.TEN_SECONDS
       });
       
       // 处理录音文件并识别
@@ -1063,7 +970,7 @@ const AiServer = () => {
         console.error('语音识别失败:', error);
         hideToast();
         
-        showToast({
+        TaroHelper.showToast({
           title: '语音识别失败，请重试',
           icon: 'error',
           duration: 2000
@@ -1082,7 +989,7 @@ const AiServer = () => {
         recordingTimerRef.current = null;
       }
       
-      showToast({
+      TaroHelper.showToast({
         title: '录音失败，请重试',
         icon: 'error',
         duration: 2000
@@ -1109,7 +1016,7 @@ const AiServer = () => {
   // 开始录音 - 区分环境
   const startRecording = () => {
     if (!recorderManagerRef.current) {
-      showToast({
+      TaroHelper.showToast({
         title: '您的设备不支持录音功能',
         icon: 'none',
         duration: 2000
@@ -1129,7 +1036,7 @@ const AiServer = () => {
         });
       } catch (error) {
         console.error('H5环境录音失败:', error);
-        showToast({
+        TaroHelper.showToast({
           title: '启动录音失败，请检查浏览器权限',
           icon: 'none',
           duration: 2000
@@ -1153,7 +1060,7 @@ const AiServer = () => {
         });
       },
       fail: () => {
-        showToast({
+        TaroHelper.showToast({
           title: '需要录音权限',
           icon: 'none',
           duration: 2000
@@ -1223,7 +1130,7 @@ const AiServer = () => {
       
       while (attempts < maxAttempts) {
         attempts++;
-        await new Promise(resolve => setTimeout(resolve, 1000)); // 等待1秒
+        await new Promise(resolve => setTimeout(resolve, TIME_CONSTANTS.ONE_SECOND)); // 等待1秒
         
         const resultResponse = await fetch(`https://api.assemblyai.com/v2/transcript/${transcriptId}`, {
           method: 'GET',
@@ -1262,7 +1169,7 @@ const AiServer = () => {
       setRecognitionStatus('');
       
       // 显示成功提示
-      showToast({
+      TaroHelper.showToast({
         title: '语音识别成功',
         icon: 'success',
         duration: 1500
@@ -1275,7 +1182,7 @@ const AiServer = () => {
       // 清除识别状态
       setRecognitionStatus('');
       
-      showToast({
+      TaroHelper.showToast({
         title: '语音识别失败',
         icon: 'error',
         duration: 2000
@@ -1303,7 +1210,7 @@ const AiServer = () => {
       formData.append('audio', audioBlob, 'recording.mp3');
       
       // 设置超时和重试机制
-      const fetchWithTimeout = async (url, options, timeout = 10000) => {
+      const fetchWithTimeout = async (url, options, timeout = API_CONFIG.FETCH_TIMEOUT) => {
         const controller = new AbortController();
         const id = setTimeout(() => controller.abort(), timeout);
         
@@ -1337,7 +1244,7 @@ const AiServer = () => {
               },
               body: audioBlob
             },
-            15000
+            TIME_CONSTANTS.FIFTEEN_SECONDS
           );
           
           if (uploadResponse.ok) {
@@ -1347,7 +1254,7 @@ const AiServer = () => {
           retries++;
           if (retries <= maxRetries) {
             // 等待一段时间再重试
-            await new Promise(resolve => setTimeout(resolve, 1000 * retries));
+            await new Promise(resolve => setTimeout(resolve, TIME_CONSTANTS.ONE_SECOND * retries));
           }
         } catch (error) {
           console.error(`上传尝试 ${retries + 1} 失败:`, error);
@@ -1358,7 +1265,7 @@ const AiServer = () => {
           }
           
           // 等待一段时间再重试
-          await new Promise(resolve => setTimeout(resolve, 1000 * retries));
+          await new Promise(resolve => setTimeout(resolve, TIME_CONSTANTS.ONE_SECOND * retries));
         }
       }
       
@@ -1385,7 +1292,7 @@ const AiServer = () => {
             language_code: 'zh', // 中文识别
           })
         },
-        15000
+        TIME_CONSTANTS.FIFTEEN_SECONDS
       );
       
       if (!transcriptResponse.ok) {
@@ -1402,12 +1309,12 @@ const AiServer = () => {
       const maxAttempts = 20; // 增加到20次
       
       // 智能等待策略
-      const waitTimes = [1000, 1000, 1500, 1500, 2000, 2000, 2500, 2500]; // 不同阶段的等待时间
+      const waitTimes = [TIME_CONSTANTS.ONE_SECOND, TIME_CONSTANTS.ONE_SECOND, 1500, 1500, TIME_CONSTANTS.TWO_SECONDS, TIME_CONSTANTS.TWO_SECONDS, 2500, 2500]; // 不同阶段的等待时间
       const getWaitTime = (attempt) => {
         if (attempt < waitTimes.length) {
           return waitTimes[attempt];
         }
-        return 3000; // 后期固定等待3秒
+        return TIME_CONSTANTS.THREE_SECONDS; // 后期固定等待3秒
       };
       
       // 在 processVoiceToTextH5 函数的轮询部分添加更多反馈
@@ -1416,7 +1323,7 @@ const AiServer = () => {
         const waitTime = getWaitTime(attempts - 1);
         // 更新识别状态
         setRecognitionStatus(`识别中 (${attempts}/${maxAttempts})...`);
-        console.log(`检查转录结果 (${attempts}/${maxAttempts})...等待${waitTime/1000}秒`);
+        console.log(`检查转录结果 (${attempts}/${maxAttempts})...等待${waitTime/TIME_CONSTANTS.ONE_SECOND}秒`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
         
         try {
@@ -1428,7 +1335,7 @@ const AiServer = () => {
                 'Authorization': 'a76ace010da546c88458d3ae26801fed',
               }
             },
-            10000
+            TIME_CONSTANTS.TEN_SECONDS
           );
           
           if (!resultResponse.ok) {
@@ -1449,7 +1356,7 @@ const AiServer = () => {
             // 更新加载提示，让用户知道还在处理中
             if (attempts % 4 === 0) { // 每4次更新一次提示
               hideToast();
-              showToast({
+              TaroHelper.showToast({
                 title: `语音识别中(${attempts}/${maxAttempts})...`,
                 icon: 'loading',
                 duration: 10000
@@ -1468,7 +1375,7 @@ const AiServer = () => {
       if (!transcriptResult) {
         // 增加备用方案，当识别超时时，提示用户手动输入
         setInputValue(''); // 清空输入框
-        showToast({
+        TaroHelper.showToast({
           title: '语音识别超时，请手动输入',
           icon: 'none',
           duration: 2000
@@ -1483,7 +1390,7 @@ const AiServer = () => {
       setRecognitionStatus('');
       
       // 显示成功提示
-      showToast({
+      TaroHelper.showToast({
         title: '语音识别成功',
         icon: 'success',
         duration: 1500
@@ -1496,7 +1403,7 @@ const AiServer = () => {
       // 错误时也要重置状态
       setRecognitionStatus(''); // 确保清除识别状态
     
-      showToast({
+      TaroHelper.showToast({
         title: '语音识别失败，请重试',
         icon: 'error',
         duration: 2000
@@ -1588,7 +1495,7 @@ const AiServer = () => {
           };
           
           // 开始录音
-          mediaRecorder.start(1000); // 每秒收集一次数据
+          mediaRecorder.start(TIME_CONSTANTS.ONE_SECOND); // 每秒收集一次数据
           
           // 确保开始回调被触发
           setTimeout(() => {

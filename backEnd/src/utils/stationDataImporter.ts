@@ -282,7 +282,7 @@ export class StationDataImporter {
   /**
    * 生成示例数据文件
    */
-  async generateSampleData(outputPath: string, count: number = 10): Promise<void> {
+  async generateSampleData(outputPath: string, count = 10): Promise<void> {
     console.log('📝 生成示例数据文件:', outputPath);
 
     const sampleStations: StationImportData[] = [];

@@ -1,5 +1,5 @@
 import { RedisService } from './RedisService';
-import { WebSocketService, ChargingStatusUpdate } from './WebSocketService';
+import { WebSocketService } from './WebSocketService';
 
 export interface StartChargingRequest {
   userId: string;
@@ -106,7 +106,6 @@ export class ChargingService {
     const {
       userId,
       pileId,
-      pileCode,
       targetSoc = 80,
       maxEnergy,
       maxCost,
@@ -184,7 +183,7 @@ export class ChargingService {
    * 停止充电会话
    */
   public async stopChargingSession(request: StopChargingRequest) {
-    const { sessionId, userId, reason = 'user_request' } = request;
+    const { sessionId, userId } = request;
 
     // 获取会话信息
     const session = await this.getSession(sessionId);
@@ -362,7 +361,7 @@ export class ChargingService {
 
     // 这里应该从数据库查询，现在用Redis模拟
     const sessionKeys = await this.redis.keys(`session:${userId}:*`);
-    let sessions: ChargingSession[] = [];
+    const sessions: ChargingSession[] = [];
 
     for (const key of sessionKeys) {
       const sessionData = await this.redis.get(key);
@@ -411,7 +410,7 @@ export class ChargingService {
     userId: string;
     period: string;
   }): Promise<ChargingStats> {
-    const { userId, period } = params;
+    const { userId } = params;
 
     // 获取用户所有充电记录
     const history = await this.getChargingHistory({

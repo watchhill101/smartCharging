@@ -1,4 +1,5 @@
 import { createClient, RedisClientType } from 'redis';
+import { logger } from '../utils/logger';
 
 let redisClient: RedisClientType;
 
@@ -15,25 +16,26 @@ export const connectRedis = async (): Promise<void> => {
 
     // 错误处理
     redisClient.on('error', (error) => {
-      console.error('Redis connection error:', error);
+      logger.error('Redis connection error', { error: error.message }, error.stack);
     });
 
     redisClient.on('connect', () => {
-      console.log('Redis connected successfully');
+      // Redis连接成功
     });
 
     redisClient.on('reconnecting', () => {
-      console.log('Redis reconnecting...');
+      // Redis重连中
     });
 
     redisClient.on('ready', () => {
-      console.log('Redis ready for commands');
+      // Redis准备就绪
     });
 
     await redisClient.connect();
     
   } catch (error) {
-    console.error('Redis connection failed:', error);
+    const err = error as Error;
+    logger.error('Redis connection failed', { error: err.message }, err.stack);
     throw error;
   }
 };
@@ -49,10 +51,11 @@ export const disconnectRedis = async (): Promise<void> => {
   try {
     if (redisClient) {
       await redisClient.quit();
-      console.log('Redis disconnected successfully');
+      // Redis断开连接成功
     }
   } catch (error) {
-    console.error('Error disconnecting from Redis:', error);
+    const err = error as Error;
+    logger.error('Error disconnecting from Redis', { error: err.message }, err.stack);
     throw error;
   }
 };
@@ -81,7 +84,8 @@ export const cacheUtils = {
     try {
       return JSON.parse(value) as T;
     } catch (error) {
-      console.error('Error parsing cached value:', error);
+      const err = error as Error;
+      logger.error('Error parsing cached value', { key, error: err.message }, err.stack);
       return null;
     }
   },

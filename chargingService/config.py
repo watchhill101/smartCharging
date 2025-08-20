@@ -4,7 +4,7 @@ OCPP充电服务配置
 
 import os
 from typing import List
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     """应用配置"""

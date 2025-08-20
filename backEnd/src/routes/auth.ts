@@ -5,13 +5,15 @@ import { asyncHandler } from '../middleware/errorHandler';
 import User from '../models/User';
 import SliderVerifyService from '../services/SliderVerifyService';
 import UserAuthService from '../services/UserAuthService';
+import VerificationCodeService from '../services/VerificationCodeService';
 import {
   sliderVerifyRateLimit,
   sliderVerifyLogger,
   sliderVerifyValidator,
   sliderVerifySecurityCheck
 } from '../middleware/sliderVerifyMiddleware';
-import { authenticate as authenticateToken, userRateLimit, requireOwnership, logApiAccess } from '../middleware/auth';
+import { authenticate as authenticateToken, requireOwnership, logApiAccess } from '../middleware/auth';
+import { loginRateLimit, verifyCodeRateLimit, apiRateLimit } from '../middleware/rateLimiter';
 
 const router = express.Router();
 
@@ -24,6 +26,7 @@ const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
 // 服务实例
 const sliderVerifyService = new SliderVerifyService();
 const userAuthService = new UserAuthService();
+const verificationCodeService = new VerificationCodeService();
 
 // 配置multer用于处理文件上传（人脸图片）
 const upload = multer({
@@ -51,11 +54,66 @@ const generateRefreshToken = (userId: string) => {
   return jwt.sign({ userId }, JWT_REFRESH_SECRET, { expiresIn: JWT_REFRESH_EXPIRES_IN } as jwt.SignOptions);
 };
 
-// 验证码存储（生产环境应该使用Redis或数据库）
-const verificationCodes = new Map();
+// Token刷新
+router.post('/refresh-token',
+  logApiAccess,
+  asyncHandler(async (req: Request, res: Response) => {
+  const { refreshToken } = req.body;
+  
+  if (!refreshToken) {
+    return res.status(400).json({
+      success: false,
+      message: '刷新Token不能为空'
+    });
+  }
+
+  try {
+    // 验证刷新Token
+    const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as { userId: string };
+    
+    // 查找用户
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: '用户不存在'
+      });
+    }
+
+    // 生成新的Token对
+    const newToken = generateToken(user._id.toString());
+    const newRefreshToken = generateRefreshToken(user._id.toString());
+
+    res.json({
+      success: true,
+      message: 'Token刷新成功',
+      data: {
+        token: newToken,
+        refreshToken: newRefreshToken,
+        user: {
+          id: user._id,
+          phone: user.phone,
+          nickName: user.nickName,
+          balance: user.balance,
+          verificationLevel: user.verificationLevel
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Token刷新失败:', error);
+    res.status(401).json({
+      success: false,
+      message: 'Token刷新失败，请重新登录'
+    });
+  }
+}));
 
 // 发送验证码
-router.post('/send-verify-code', asyncHandler(async (req: Request, res: Response) => {
+router.post('/send-verify-code', 
+  logApiAccess,
+  verifyCodeRateLimit, // 每分钟最多1次验证码请求
+  asyncHandler(async (req: Request, res: Response) => {
   console.log('📱 收到发送验证码请求:', req.body);
   const { phone } = req.body;
 
@@ -75,34 +133,39 @@ router.post('/send-verify-code', asyncHandler(async (req: Request, res: Response
     });
   }
 
-  // 生成6位数验证码
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
-
-  // 存储验证码（5分钟过期）
-  verificationCodes.set(phone, {
-    code,
-    expires: Date.now() + 5 * 60 * 1000,
-    attempts: 0
-  });
-
-  console.log(`📨 为手机号 ${phone} 生成验证码: ${code}`);
-
-  // 这里应该调用短信服务发送验证码
-  // 开发环境下直接返回验证码
-  res.json({
-    success: true,
-    message: '验证码发送成功',
-    data: {
-      code: code // 生产环境中不应该返回验证码
+  // 使用新的验证码服务
+  const result = await verificationCodeService.sendVerificationCode(phone);
+  
+  if (result.success) {
+    // 开发环境在控制台输出验证码
+    if (process.env.NODE_ENV === 'development' && result.code) {
+      console.log(`🔢 开发环境验证码: ${result.code}`);
     }
-  });
+    
+    res.json({
+      success: true,
+      message: result.message,
+      data: {
+        remaining: result.remaining,
+        ...(process.env.NODE_ENV === 'development' && result.code && { 
+          code: result.code,
+          hint: `开发环境提示：验证码 ${result.code}` 
+        })
+      }
+    });
+  } else {
+    res.status(400).json({
+      success: false,
+      message: result.message
+    });
+  }
 }));
 
 // 用户登录（支持密码、滑块验证、人脸识别）
 router.post('/login', 
   upload.single('faceImage'),
   logApiAccess,
-  userRateLimit(10, 60000), // 每分钟最多10次登录尝试
+  loginRateLimit, // 每15分钟最多5次登录尝试
   asyncHandler(async (req: Request, res: Response) => {
   console.log('🔐 收到登录请求:', { 
     phone: req.body.phone, 
@@ -111,7 +174,7 @@ router.post('/login',
     hasFaceImage: !!req.file
   });
   
-  const { phone, password, verifyToken, userInfo } = req.body;
+  const { phone, password, verifyToken } = req.body;
   const faceImage = req.file?.buffer;
   
   // 获取设备信息
@@ -156,7 +219,7 @@ router.post('/login',
 router.post('/register', 
   upload.single('faceImage'),
   logApiAccess,
-  userRateLimit(5, 60000), // 每分钟最多5次注册尝试
+  apiRateLimit, // API通用限制
   asyncHandler(async (req: Request, res: Response) => {
   console.log('📝 收到注册请求:', { 
     phone: req.body.phone,
@@ -209,7 +272,10 @@ router.post('/register',
 }));
 
 // 验证码登录（兼容旧版本）
-router.post('/login-with-code', asyncHandler(async (req: Request, res: Response) => {
+router.post('/login-with-code', 
+  logApiAccess,
+  loginRateLimit, // 每15分钟最多5次登录尝试
+  asyncHandler(async (req: Request, res: Response) => {
   console.log('🔐 收到验证码登录请求:', { ...req.body, verifyCode: '***' });
   const { phone, verifyCode, verifyToken } = req.body;
 
@@ -220,99 +286,109 @@ router.post('/login-with-code', asyncHandler(async (req: Request, res: Response)
     });
   }
 
-  // 验证滑块验证token
-  if (!verifyToken) {
+  // 验证手机号格式
+  const phoneRegex = /^1[3-9]\d{9}$/;
+  if (!phoneRegex.test(phone)) {
+    return res.status(400).json({
+      success: false,
+      message: '手机号格式不正确'
+    });
+  }
+
+  // 验证验证码格式（6位数字）
+  const codeRegex = /^\d{6}$/;
+  if (!codeRegex.test(verifyCode)) {
+    return res.status(400).json({
+      success: false,
+      message: '验证码格式不正确'
+    });
+  }
+
+  // 验证滑块验证token（开发环境可跳过）
+  if (!verifyToken && process.env.NODE_ENV !== 'development') {
     return res.status(400).json({
       success: false,
       message: '请先完成安全验证'
     });
   }
 
-  // 使用滑块验证服务验证token
-  try {
-    const isTokenValid = await sliderVerifyService.validateToken(verifyToken);
-    if (!isTokenValid) {
-      console.log('❌ 验证token无效或已过期:', verifyToken);
-      return res.status(400).json({
+  // 开发环境跳过滑块验证
+  if (process.env.NODE_ENV === 'development' && !verifyToken) {
+    console.log('🔓 开发环境：跳过滑块验证');
+  } else {
+    // 使用滑块验证服务验证token
+    try {
+      const isTokenValid = await sliderVerifyService.validateToken(verifyToken);
+      if (!isTokenValid) {
+        console.log('❌ 验证token无效或已过期:', verifyToken);
+        return res.status(400).json({
+          success: false,
+          message: '验证令牌无效或已过期，请重新验证'
+        });
+      }
+      console.log('✅ 验证token有效:', verifyToken);
+    } catch (error) {
+      console.error('❌ 验证token检查失败:', error);
+      return res.status(500).json({
         success: false,
-        message: '验证令牌无效或已过期，请重新验证'
+        message: '验证令牌检查失败，请重试'
       });
     }
-    console.log('✅ 验证token有效:', verifyToken);
-  } catch (error) {
-    console.error('❌ 验证token检查失败:', error);
-    return res.status(500).json({
-      success: false,
-      message: '验证令牌检查失败，请重试'
-    });
   }
 
   // 检查验证码
-  const storedVerification = verificationCodes.get(phone);
-  if (!storedVerification) {
+  // 使用新的验证码服务验证
+  const codeVerifyResult = await verificationCodeService.verifyCode(phone, verifyCode);
+  if (!codeVerifyResult.success) {
     return res.status(400).json({
       success: false,
-      message: '验证码不存在或已过期'
+      message: codeVerifyResult.message
     });
   }
 
-  if (Date.now() > storedVerification.expires) {
-    verificationCodes.delete(phone);
-    return res.status(400).json({
-      success: false,
-      message: '验证码已过期'
-    });
-  }
-
-  if (storedVerification.code !== verifyCode) {
-    storedVerification.attempts++;
-    if (storedVerification.attempts >= 3) {
-      verificationCodes.delete(phone);
-      return res.status(400).json({
-        success: false,
-        message: '验证码错误次数过多，请重新获取'
-      });
-    }
-    return res.status(400).json({
-      success: false,
-      message: `验证码错误，还可以尝试 ${3 - storedVerification.attempts} 次`
-    });
-  }
-
-  // 验证码正确，删除已使用的验证码
-  verificationCodes.delete(phone);
+  console.log('✅ 验证码验证通过');
 
   try {
+    console.log('🔍 查找用户:', phone);
     // 查找或创建用户
     let user = await User.findOne({ phone });
     let isNewUser = false;
 
     if (!user) {
-      // 创建新用户
+      console.log('👤 用户不存在，创建新用户');
+      // 自动注册新用户
       user = new User({
         phone,
         nickName: `用户${phone.slice(-4)}`,
         balance: 0,
+        verificationLevel: 'basic', // 默认验证等级
+        faceEnabled: false, // 默认关闭人脸认证
+        status: 'active', // 账户状态
+        loginAttempts: 0, // 登录尝试次数
         createdAt: new Date(),
         updatedAt: new Date()
       });
       await user.save();
       isNewUser = true;
-      console.log('👤 创建新用户:', user.phone);
+      console.log('✅ 自动注册新用户成功:', user.phone, 'ID:', user._id);
     } else {
-      // 更新最后登录时间
+      console.log('👤 找到已存在用户:', user.phone, 'ID:', user._id);
+      // 更新最后登录时间和重置登录尝试次数
       user.updatedAt = new Date();
+      user.loginAttempts = 0;
       await user.save();
-      console.log('👤 用户登录:', user.phone);
+      console.log('✅ 用户信息已更新');
     }
 
+    console.log('🔑 开始生成tokens...');
     // 生成tokens
     const token = generateToken(user._id.toString());
     const refreshToken = generateRefreshToken(user._id.toString());
 
+    console.log('✅ Tokens生成成功');
     console.log('✅ 登录成功，用户ID:', user._id);
 
-    res.json({
+    const responseData = {
       success: true,
       message: isNewUser ? '注册并登录成功' : '登录成功',
       data: {
@@ -322,15 +398,21 @@ router.post('/login-with-code', asyncHandler(async (req: Request, res: Response)
           id: user._id,
           phone: user.phone,
           nickName: user.nickName,
-          balance: user.balance
+          balance: user.balance,
+          verificationLevel: user.verificationLevel,
+          faceEnabled: user.faceEnabled
         },
         isNewUser
       }
-    });
+    };
+
+    console.log('📤 发送登录响应:', JSON.stringify(responseData, null, 2));
+    res.json(responseData);
 
   } catch (error) {
-  const err: any = error;
-  console.error('❌ 登录过程出错:', err, err && (err.stack || err.message));
+    const err: any = error;
+    console.error('❌ 登录过程出错:', err);
+    console.error('❌ 错误堆栈:', err.stack);
     res.status(500).json({
       success: false,
       message: '登录失败，请稍后重试'
@@ -530,7 +612,7 @@ router.post('/logout',
 // 刷新token
 router.post('/refresh-token', 
   logApiAccess,
-  userRateLimit(20, 60000), // 每分钟最多20次刷新
+  apiRateLimit, // API通用限制
   asyncHandler(async (req: Request, res: Response) => {
   const { refreshToken } = req.body;
 
@@ -570,7 +652,7 @@ router.post('/refresh-token',
 router.post('/update-password', 
   authenticateToken,
   logApiAccess,
-  userRateLimit(5, 60000), // 每分钟最多5次密码更新
+  apiRateLimit, // API通用限制
   asyncHandler(async (req: Request, res: Response) => {
   const { oldPassword, newPassword } = req.body;
   const userId = req.user!._id.toString();
@@ -602,7 +684,7 @@ router.post('/update-password',
 // 重置密码
 router.post('/reset-password', 
   logApiAccess,
-  userRateLimit(3, 60000), // 每分钟最多3次密码重置
+  apiRateLimit, // API通用限制
   asyncHandler(async (req: Request, res: Response) => {
   const { phone, newPassword, verifyToken } = req.body;
 

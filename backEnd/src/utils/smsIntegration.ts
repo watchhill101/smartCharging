@@ -329,7 +329,7 @@ export class SmsIntegrationUtil {
   /**
    * 清理过期数据
    */
-  cleanup(daysToKeep: number = 30): {
+  cleanup(daysToKeep = 30): {
     smsHistoryDeleted: number;
   } {
     const smsHistoryDeleted = this.smsNotificationService.cleanupHistory(daysToKeep);

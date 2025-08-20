@@ -594,7 +594,7 @@ export class InvoiceService {
   /**
    * 清理过期的待处理发票
    */
-  static async cleanupExpiredInvoices(expireDays: number = 30): Promise<{
+  static async cleanupExpiredInvoices(expireDays = 30): Promise<{
     success: boolean;
     message?: string;
     cleanedCount?: number;

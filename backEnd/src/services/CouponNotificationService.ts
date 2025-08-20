@@ -1,5 +1,4 @@
 import { UserCoupon } from '../models/UserCoupon';
-import { Coupon } from '../models/Coupon';
 import { RedisService } from './RedisService';
 
 export interface CouponNotification {
@@ -25,7 +24,6 @@ export class CouponNotificationService {
     try {
       const now = new Date();
       const threeDaysLater = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
-      const oneDayLater = new Date(now.getTime() + 1 * 24 * 60 * 60 * 1000);
 
       // 查找即将过期的优惠券（1-3天内过期）
       const expiringCoupons = await UserCoupon.aggregate([
@@ -228,7 +226,7 @@ export class CouponNotificationService {
   /**
    * 获取用户的优惠券通知
    */
-  async getUserCouponNotifications(userId: string, limit: number = 20): Promise<any[]> {
+  async getUserCouponNotifications(userId: string, limit = 20): Promise<any[]> {
     try {
       const notifications = await this.redisService.lrange(
         `user:${userId}:notifications`,

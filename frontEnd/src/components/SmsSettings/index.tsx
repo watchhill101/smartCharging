@@ -1,2 +1,327 @@
-import { View, Text, Switch, Button, Input } from '@tarojs/components'\nimport { useState, useEffect } from 'react'\nimport Taro from '@tarojs/taro'\nimport request from '../../utils/request'\nimport './index.scss'\n\ninterface SmsConfig {\n  enabled: boolean\n  chargingNotifications: boolean\n  paymentNotifications: boolean\n  couponNotifications: boolean\n  systemNotifications: boolean\n  verificationCodes: boolean\n}\n\ninterface SmsPreferences {\n  userId: string\n  phoneNumber?: string\n  config: SmsConfig\n  createdAt: string\n  updatedAt: string\n}\n\ninterface SmsSettingsProps {\n  visible: boolean\n  onClose: () => void\n}\n\nconst SmsSettings: React.FC<SmsSettingsProps> = ({ visible, onClose }) => {\n  const [preferences, setPreferences] = useState<SmsPreferences | null>(null)\n  const [phoneNumber, setPhoneNumber] = useState('')\n  const [isLoading, setIsLoading] = useState(false)\n  const [isSaving, setIsSaving] = useState(false)\n\n  useEffect(() => {\n    if (visible) {\n      loadPreferences()\n    }\n  }, [visible])\n\n  const loadPreferences = async () => {\n    try {\n      setIsLoading(true)\n      \n      const response = await request({\n        url: '/sms/preferences',\n        method: 'GET'\n      })\n\n      if (response.data.success) {\n        const prefs = response.data.data\n        setPreferences(prefs)\n        setPhoneNumber(prefs.phoneNumber || '')\n      } else {\n        throw new Error(response.data.message || '获取设置失败')\n      }\n    } catch (error: any) {\n      console.error('获取短信设置失败:', error)\n      \n      // 使用默认设置\n      const defaultPrefs: SmsPreferences = {\n        userId: 'current_user',\n        config: {\n          enabled: true,\n          chargingNotifications: true,\n          paymentNotifications: true,\n          couponNotifications: false,\n          systemNotifications: true,\n          verificationCodes: true\n        },\n        createdAt: new Date().toISOString(),\n        updatedAt: new Date().toISOString()\n      }\n      \n      setPreferences(defaultPrefs)\n      \n      showToast({\n        title: '加载失败，使用默认设置',\n        icon: 'none'\n      })\n    } finally {\n      setIsLoading(false)\n    }\n  }\n\n  const updateConfig = (key: keyof SmsConfig, value: boolean) => {\n    if (!preferences) return\n    \n    setPreferences({\n      ...preferences,\n      config: {\n        ...preferences.config,\n        [key]: value\n      }\n    })\n  }\n\n  const handleSave = async () => {\n    if (!preferences) return\n    \n    try {\n      setIsSaving(true)\n      \n      // 验证手机号格式\n      if (phoneNumber && !/^1[3-9]\\d{9}$/.test(phoneNumber)) {\n        showToast({\n          title: '手机号格式不正确',\n          icon: 'error'\n        })\n        return\n      }\n      \n      const response = await request({\n        url: '/sms/preferences',\n        method: 'PUT',\n        data: {\n          config: preferences.config,\n          phoneNumber: phoneNumber || undefined\n        }\n      })\n\n      if (response.data.success) {\n        setPreferences(response.data.data)\n        \n        showToast({\n          title: '设置保存成功',\n          icon: 'success'\n        })\n        \n        setTimeout(() => {\n          onClose()\n        }, 1500)\n      } else {\n        throw new Error(response.data.message || '保存失败')\n      }\n    } catch (error: any) {\n      console.error('保存短信设置失败:', error)\n      \n      showToast({\n        title: error.message || '保存失败',\n        icon: 'error'\n      })\n    } finally {\n      setIsSaving(false)\n    }\n  }\n\n  const handlePhoneNumberChange = (e: any) => {\n    const value = e.detail.value.replace(/\\D/g, '') // 只保留数字\n    if (value.length <= 11) {\n      setPhoneNumber(value)\n    }\n  }\n\n  if (!visible) return null\n\n  return (\n    <View className='sms-settings'>\n      <View className='sms-settings-mask' onClick={onClose} />\n      \n      <View className='sms-settings-panel'>\n        {/* 头部 */}\n        <View className='settings-header'>\n          <Text className='header-title'>短信通知设置</Text>\n          <Button className='close-btn' onClick={onClose}>✕</Button>\n        </View>\n\n        {isLoading ? (\n          <View className='loading-state'>\n            <Text className='loading-text'>加载中...</Text>\n          </View>\n        ) : preferences ? (\n          <View className='settings-content'>\n            {/* 手机号设置 */}\n            <View className='setting-section'>\n              <Text className='section-title'>手机号码</Text>\n              <View className='phone-input-wrapper'>\n                <Input\n                  className='phone-input'\n                  type='number'\n                  placeholder='请输入手机号码'\n                  value={phoneNumber}\n                  onInput={handlePhoneNumberChange}\n                  maxlength={11}\n                />\n                <Text className='input-hint'>\n                  {phoneNumber ? '已设置' : '未设置手机号将无法接收短信通知'}\n                </Text>\n              </View>\n            </View>\n\n            {/* 总开关 */}\n            <View className='setting-section'>\n              <View className='setting-item main-switch'>\n                <View className='setting-info'>\n                  <Text className='setting-title'>短信通知</Text>\n                  <Text className='setting-desc'>开启后可接收各类短信通知</Text>\n                </View>\n                <Switch\n                  checked={preferences.config.enabled}\n                  onChange={(e) => updateConfig('enabled', e.detail.value)}\n                  color='#1890ff'\n                />\n              </View>\n            </View>\n\n            {/* 详细设置 */}\n            {preferences.config.enabled && (\n              <View className='setting-section'>\n                <Text className='section-title'>通知类型</Text>\n                \n                <View className='setting-item'>\n                  <View className='setting-info'>\n                    <Text className='setting-title'>充电通知</Text>\n                    <Text className='setting-desc'>充电开始、完成、异常等通知</Text>\n                  </View>\n                  <Switch\n                    checked={preferences.config.chargingNotifications}\n                    onChange={(e) => updateConfig('chargingNotifications', e.detail.value)}\n                    color='#1890ff'\n                  />\n                </View>\n\n                <View className='setting-item'>\n                  <View className='setting-info'>\n                    <Text className='setting-title'>支付通知</Text>\n                    <Text className='setting-desc'>支付成功、失败、余额不足等通知</Text>\n                  </View>\n                  <Switch\n                    checked={preferences.config.paymentNotifications}\n                    onChange={(e) => updateConfig('paymentNotifications', e.detail.value)}\n                    color='#1890ff'\n                  />\n                </View>\n\n                <View className='setting-item'>\n                  <View className='setting-info'>\n                    <Text className='setting-title'>优惠券通知</Text>\n                    <Text className='setting-desc'>优惠券到账、过期提醒等通知</Text>\n                  </View>\n                  <Switch\n                    checked={preferences.config.couponNotifications}\n                    onChange={(e) => updateConfig('couponNotifications', e.detail.value)}\n                    color='#1890ff'\n                  />\n                </View>\n\n                <View className='setting-item'>\n                  <View className='setting-info'>\n                    <Text className='setting-title'>系统通知</Text>\n                    <Text className='setting-desc'>系统维护、重要公告等通知</Text>\n                  </View>\n                  <Switch\n                    checked={preferences.config.systemNotifications}\n                    onChange={(e) => updateConfig('systemNotifications', e.detail.value)}\n                    color='#1890ff'\n                  />\n                </View>\n\n                <View className='setting-item'>\n                  <View className='setting-info'>\n                    <Text className='setting-title'>验证码短信</Text>\n                    <Text className='setting-desc'>登录、注册等验证码短信</Text>\n                  </View>\n                  <Switch\n                    checked={preferences.config.verificationCodes}\n                    onChange={(e) => updateConfig('verificationCodes', e.detail.value)}\n                    color='#1890ff'\n                  />\n                </View>\n              </View>\n            )}\n\n            {/* 说明信息 */}\n            <View className='setting-section'>\n              <View className='setting-notice'>\n                <Text className='notice-title'>温馨提示</Text>\n                <Text className='notice-text'>\n                  • 短信通知可能产生运营商费用{\"\\n\"}\n                  • 验证码短信建议保持开启{\"\\n\"}\n                  • 关闭通知不影响应用内消息推送{\"\\n\"}\n                  • 设置修改后立即生效\n                </Text>\n              </View>\n            </View>\n          </View>\n        ) : (\n          <View className='error-state'>\n            <Text className='error-text'>加载失败</Text>\n            <Button className='retry-btn' onClick={loadPreferences}>\n              重试\n            </Button>\n          </View>\n        )}\n\n        {/* 底部按钮 */}\n        {preferences && (\n          <View className='settings-footer'>\n            <Button \n              className='cancel-btn'\n              onClick={onClose}\n              disabled={isSaving}\n            >\n              取消\n            </Button>\n            <Button \n              className='save-btn'\n              onClick={handleSave}\n              disabled={isSaving || !phoneNumber}\n            >\n              {isSaving ? '保存中...' : '保存设置'}\n            </Button>\n          </View>\n        )}\n      </View>\n    </View>\n  )\n}\n\nexport default SmsSettings"
-import { showToast } from '../utils/toast'
+import { View, Text, Switch, Button, Input } from '@tarojs/components'
+import { useState, useEffect } from 'react'
+import Taro from '@tarojs/taro'
+import request from '../../utils/request'
+import './index.scss'
+
+interface SmsConfig {
+  enabled: boolean
+  chargingNotifications: boolean
+  paymentNotifications: boolean
+  couponNotifications: boolean
+  systemNotifications: boolean
+  verificationCodes: boolean
+}
+
+interface SmsPreferences {
+  userId: string
+  phoneNumber?: string
+  config: SmsConfig
+  createdAt: string
+  updatedAt: string
+}
+
+interface SmsSettingsProps {
+  visible: boolean
+  onClose: () => void
+}
+
+const showToast = (options: { title: string; icon?: string }) => {
+  Taro.showToast({
+    title: options.title,
+    icon: options.icon === 'error' ? 'error' : options.icon === 'success' ? 'success' : 'none'
+  })
+}
+
+const SmsSettings: React.FC<SmsSettingsProps> = ({ visible, onClose }) => {
+  const [preferences, setPreferences] = useState<SmsPreferences | null>(null)
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+
+  useEffect(() => {
+    if (visible) {
+      loadPreferences()
+    }
+  }, [visible])
+
+  const loadPreferences = async () => {
+    try {
+      setIsLoading(true)
+      
+      const response = await request({
+        url: '/sms/preferences',
+        method: 'GET'
+      })
+
+      if (response.data.success) {
+        const prefs = response.data.data
+        setPreferences(prefs)
+        setPhoneNumber(prefs.phoneNumber || '')
+      } else {
+        throw new Error(response.data.message || '获取设置失败')
+      }
+    } catch (error: any) {
+      console.error('获取短信设置失败:', error)
+      
+      // 使用默认设置
+      const defaultPrefs: SmsPreferences = {
+        userId: 'current_user',
+        config: {
+          enabled: true,
+          chargingNotifications: true,
+          paymentNotifications: true,
+          couponNotifications: false,
+          systemNotifications: true,
+          verificationCodes: true
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+      
+      setPreferences(defaultPrefs)
+      
+      showToast({
+        title: '加载失败，使用默认设置',
+        icon: 'none'
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const updateConfig = (key: keyof SmsConfig, value: boolean) => {
+    if (!preferences) return
+    
+    setPreferences({
+      ...preferences,
+      config: {
+        ...preferences.config,
+        [key]: value
+      }
+    })
+  }
+
+  const handleSave = async () => {
+    if (!preferences) return
+    
+    try {
+      setIsSaving(true)
+      
+      // 验证手机号格式
+      if (phoneNumber && !/^1[3-9]\d{9}$/.test(phoneNumber)) {
+        showToast({
+          title: '手机号格式不正确',
+          icon: 'error'
+        })
+        return
+      }
+      
+      const response = await request({
+        url: '/sms/preferences',
+        method: 'PUT',
+        data: {
+          config: preferences.config,
+          phoneNumber: phoneNumber || undefined
+        }
+      })
+
+      if (response.data.success) {
+        setPreferences(response.data.data)
+        
+        showToast({
+          title: '设置保存成功',
+          icon: 'success'
+        })
+        
+        setTimeout(() => {
+          onClose()
+        }, 1500)
+      } else {
+        throw new Error(response.data.message || '保存失败')
+      }
+    } catch (error: any) {
+      console.error('保存短信设置失败:', error)
+      
+      showToast({
+        title: error.message || '保存失败',
+        icon: 'error'
+      })
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handlePhoneNumberChange = (e: any) => {
+    const value = e.detail.value.replace(/\D/g, '') // 只保留数字
+    if (value.length <= 11) {
+      setPhoneNumber(value)
+    }
+  }
+
+  if (!visible) return null
+
+  return (
+    <View className='sms-settings'>
+      <View className='sms-settings-mask' onClick={onClose} />
+      
+      <View className='sms-settings-panel'>
+        {/* 头部 */}
+        <View className='settings-header'>
+          <Text className='header-title'>短信通知设置</Text>
+          <Button className='close-btn' onClick={onClose}>✕</Button>
+        </View>
+
+        {isLoading ? (
+          <View className='loading-state'>
+            <Text className='loading-text'>加载中...</Text>
+          </View>
+        ) : preferences ? (
+          <View className='settings-content'>
+            {/* 手机号设置 */}
+            <View className='setting-section'>
+              <Text className='section-title'>手机号码</Text>
+              <View className='phone-input-wrapper'>
+                <Input
+                  className='phone-input'
+                  type='number'
+                  placeholder='请输入手机号码'
+                  value={phoneNumber}
+                  onInput={handlePhoneNumberChange}
+                  maxlength={11}
+                />
+                <Text className='input-hint'>
+                  {phoneNumber ? '已设置' : '未设置手机号将无法接收短信通知'}
+                </Text>
+              </View>
+            </View>
+
+            {/* 总开关 */}
+            <View className='setting-section'>
+              <View className='setting-item main-switch'>
+                <View className='setting-info'>
+                  <Text className='setting-title'>短信通知</Text>
+                  <Text className='setting-desc'>开启后可接收各类短信通知</Text>
+                </View>
+                <Switch
+                  checked={preferences.config.enabled}
+                  onChange={(e) => updateConfig('enabled', e.detail.value)}
+                  color='#1890ff'
+                />
+              </View>
+            </View>
+
+            {/* 详细设置 */}
+            {preferences.config.enabled && (
+              <View className='setting-section'>
+                <Text className='section-title'>通知类型</Text>
+                
+                <View className='setting-item'>
+                  <View className='setting-info'>
+                    <Text className='setting-title'>充电通知</Text>
+                    <Text className='setting-desc'>充电开始、完成、异常等通知</Text>
+                  </View>
+                  <Switch
+                    checked={preferences.config.chargingNotifications}
+                    onChange={(e) => updateConfig('chargingNotifications', e.detail.value)}
+                    color='#1890ff'
+                  />
+                </View>
+
+                <View className='setting-item'>
+                  <View className='setting-info'>
+                    <Text className='setting-title'>支付通知</Text>
+                    <Text className='setting-desc'>支付成功、失败、余额不足等通知</Text>
+                  </View>
+                  <Switch
+                    checked={preferences.config.paymentNotifications}
+                    onChange={(e) => updateConfig('paymentNotifications', e.detail.value)}
+                    color='#1890ff'
+                  />
+                </View>
+
+                <View className='setting-item'>
+                  <View className='setting-info'>
+                    <Text className='setting-title'>优惠券通知</Text>
+                    <Text className='setting-desc'>优惠券到账、过期提醒等通知</Text>
+                  </View>
+                  <Switch
+                    checked={preferences.config.couponNotifications}
+                    onChange={(e) => updateConfig('couponNotifications', e.detail.value)}
+                    color='#1890ff'
+                  />
+                </View>
+
+                <View className='setting-item'>
+                  <View className='setting-info'>
+                    <Text className='setting-title'>系统通知</Text>
+                    <Text className='setting-desc'>系统维护、重要公告等通知</Text>
+                  </View>
+                  <Switch
+                    checked={preferences.config.systemNotifications}
+                    onChange={(e) => updateConfig('systemNotifications', e.detail.value)}
+                    color='#1890ff'
+                  />
+                </View>
+
+                <View className='setting-item'>
+                  <View className='setting-info'>
+                    <Text className='setting-title'>验证码短信</Text>
+                    <Text className='setting-desc'>登录、注册等验证码短信</Text>
+                  </View>
+                  <Switch
+                    checked={preferences.config.verificationCodes}
+                    onChange={(e) => updateConfig('verificationCodes', e.detail.value)}
+                    color='#1890ff'
+                  />
+                </View>
+              </View>
+            )}
+
+            {/* 说明信息 */}
+            <View className='setting-section'>
+              <View className='setting-notice'>
+                <Text className='notice-title'>温馨提示</Text>
+                <Text className='notice-text'>
+                  • 短信通知可能产生运营商费用{"\n"}
+                  • 验证码短信建议保持开启{"\n"}
+                  • 关闭通知不影响应用内消息推送{"\n"}
+                  • 设置修改后立即生效
+                </Text>
+              </View>
+            </View>
+          </View>
+        ) : (
+          <View className='error-state'>
+            <Text className='error-text'>加载失败</Text>
+            <Button className='retry-btn' onClick={loadPreferences}>
+              重试
+            </Button>
+          </View>
+        )}
+
+        {/* 底部按钮 */}
+        {preferences && (
+          <View className='settings-footer'>
+            <Button 
+              className='cancel-btn'
+              onClick={onClose}
+              disabled={isSaving}
+            >
+              取消
+            </Button>
+            <Button 
+              className='save-btn'
+              onClick={handleSave}
+              disabled={isSaving || !phoneNumber}
+            >
+              {isSaving ? '保存中...' : '保存设置'}
+            </Button>
+          </View>
+        )}
+      </View>
+    </View>
+  )
+}
+
+export default SmsSettings

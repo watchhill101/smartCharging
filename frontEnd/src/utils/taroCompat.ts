@@ -1,5 +1,6 @@
 // Taro 浏览器环境兼容层
 import Taro from '@tarojs/taro'
+import { TIME_CONSTANTS, Z_INDEX_CONSTANTS } from './constants'
 // 移除循环导入
 
 // 检测当前运行环境
@@ -8,7 +9,7 @@ const isWeapp = typeof wx !== 'undefined' && wx.getSystemInfoSync
 const isAlipay = typeof my !== 'undefined' && my.getSystemInfoSync
 const isH5 = process.env.TARO_ENV === 'h5'
 
-console.log('🌐 运行环境检测:', { isBrowser, isWeapp, isAlipay, isH5 })
+// 运行环境检测
 
 // Storage 兼容实现
 export const storage = {
@@ -120,7 +121,7 @@ export const toast = {
     duration?: number
     mask?: boolean
   }): void => {
-    const { title, icon = 'none', duration = 2000 } = options
+    const { title, icon = 'none', duration = TIME_CONSTANTS.TWO_SECONDS } = options
 
     try {
       if (isBrowser || isH5) {
@@ -139,8 +140,7 @@ export const toast = {
       }
     } catch (error) {
       console.warn('显示Toast失败:', error)
-      // 降级到console.log
-      console.log(`🍞 Toast: ${title}`)
+      // Toast降级处理
     }
   },
 
@@ -197,7 +197,7 @@ const showBrowserToast = (title: string, icon: string, duration: number): void =
     padding: '16px 24px',
     borderRadius: '12px',
     fontSize: '14px',
-    zIndex: '10000',
+    zIndex: Z_INDEX_CONSTANTS.TOAST,
     maxWidth: '300px',
     textAlign: 'center',
     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',

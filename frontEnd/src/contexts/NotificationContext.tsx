@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react'
 import { useNotificationWebSocket, NotificationMessage } from '../hooks/useWebSocket'
+import { TIME_CONSTANTS } from '../utils/constants'
 
 interface NotificationState {
   notifications: NotificationMessage[]
@@ -161,7 +162,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     webSocket.requestNotifications()
     setTimeout(() => {
       dispatch({ type: 'SET_LOADING', payload: false })
-    }, 1000)
+    }, TIME_CONSTANTS.ONE_SECOND)
   }
 
   const contextValue: NotificationContextType = {

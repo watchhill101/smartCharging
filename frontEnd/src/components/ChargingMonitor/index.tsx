@@ -1,16 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, Progress } from '@tarojs/components';
-import Taro from '@tarojs/taro';
 import {
   Button as NutButton,
   Toast,
-  Dialog,
   Card,
-  Divider,
   Tag,
   Loading,
-  Icon,
-  CountDown
+  Icon
 } from '@nutui/nutui-react-taro';
 import ChargingControl from '../ChargingControl';
 import './index.scss';
@@ -118,14 +114,11 @@ const ChargingMonitor: React.FC<ChargingMonitorProps> = ({
       // 模拟WebSocket连接
       wsRef.current = {
         onOpen: () => {
-          console.log('📡 WebSocket连接已建立');
+          // WebSocket连接已建立
           setState(prev => ({ ...prev, isConnected: true, error: null }));
           
           // 订阅充电状态更新
-          const subscribeMessage = {
-            type: 'subscribe_session',
-            sessionId: sessionId
-          };
+          // TODO: 发送订阅消息到WebSocket服务器
         },
         
         onMessage: (event: any) => {
@@ -174,7 +167,7 @@ const ChargingMonitor: React.FC<ChargingMonitorProps> = ({
         },
         
         onClose: () => {
-          console.log('📡 WebSocket连接已关闭');
+          // WebSocket连接已关闭
           setState(prev => ({ ...prev, isConnected: false }));
           
           // 如果不是主动关闭，则重连
@@ -204,7 +197,7 @@ const ChargingMonitor: React.FC<ChargingMonitorProps> = ({
     }
     
     reconnectTimeoutRef.current = setTimeout(() => {
-      console.log('🔄 尝试重连WebSocket...');
+      // 尝试重连WebSocket
       initWebSocket();
     }, 3000);
   }, [initWebSocket]);
@@ -296,7 +289,7 @@ const ChargingMonitor: React.FC<ChargingMonitorProps> = ({
     // 重新初始化连接
     setTimeout(() => {
       initWebSocket();
-    }, 1000);
+    }, parseInt(process.env.TARO_APP_WEBSOCKET_RECONNECT_DELAY || '1000'));
   }, [onRefresh, initWebSocket]);
 
   // 格式化时间
@@ -319,7 +312,7 @@ const ChargingMonitor: React.FC<ChargingMonitorProps> = ({
     if (!state.chargingStatus) return [];
     
     const warnings = [];
-    const { temperature, voltage, current, currentPower, maxPower } = state.chargingStatus;
+    const { temperature, voltage, currentPower, maxPower } = state.chargingStatus;
     
     if (temperature > 60) {
       warnings.push({

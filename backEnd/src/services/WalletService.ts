@@ -351,7 +351,7 @@ export class WalletService {
   /**
    * 检查余额并发送提醒
    */
-  static async checkBalanceAndAlert(userId: string, threshold: number = 10): Promise<BalanceAlert | null> {
+  static async checkBalanceAndAlert(userId: string, threshold = 10): Promise<BalanceAlert | null> {
     const wallet = await Wallet.findOne({ userId });
     if (!wallet) {
       return null;
@@ -543,7 +543,7 @@ export class WalletService {
   /**
    * 获取发票列表
    */
-  static async getInvoiceList(userId: string, page: number = 1, limit: number = 20) {
+  static async getInvoiceList(userId: string, page = 1, limit = 20) {
     const wallet = await Wallet.findOne({ userId });
     if (!wallet) {
       return {
@@ -577,8 +577,8 @@ export class WalletService {
   static async setAutoRecharge(
     userId: string, 
     enabled: boolean, 
-    threshold: number = 10, 
-    amount: number = 50
+    threshold = 10, 
+    amount = 50
   ): Promise<{ success: boolean; message?: string }> {
     try {
       const wallet = await Wallet.findOne({ userId });

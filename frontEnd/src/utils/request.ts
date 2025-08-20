@@ -1,5 +1,6 @@
 import Taro from "@tarojs/taro";
-import { API_CONFIG, STORAGE_KEYS, ERROR_CODES } from "./constants";
+import { API_CONFIG, STORAGE_KEYS, ERROR_CODES, TIME_CONSTANTS } from "./constants";
+import { tokenManager } from "./tokenManager";
 
 // 环境检测
 const isH5 = process.env.TARO_ENV === 'h5';
@@ -68,28 +69,62 @@ export interface ApiResponse<T = any> {
   requestId?: string;
 }
 // 请求拦截器
-const requestInterceptor = (options: RequestOptions) => {
+const requestInterceptor = async (options: RequestOptions) => {
+  console.log('🚀 请求拦截器 - 开始处理:', options.url);
+  
   // 添加基础URL
   if (!options.url.startsWith("http")) {
     options.url = `${API_CONFIG.BASE_URL}${options.url}`;
   }
 
   // 设置默认请求头
-  const defaultHeaders = {
-    "Content-Type": "application/json",
+  const defaultHeaders: any = {
     "X-Requested-With": "XMLHttpRequest",
   };
 
-  // 添加认证token
-  const token = getStorageSync(STORAGE_KEYS.USER_TOKEN);
-  if (token) {
-    defaultHeaders["Authorization"] = `Bearer ${token}`;
+  // 只有在没有指定Content-Type且不是FormData时才设置JSON Content-Type
+  if (!options.header?.['Content-Type'] && 
+      !(options.data instanceof FormData)) {
+    defaultHeaders["Content-Type"] = "application/json";
   }
 
+  // 添加认证token（避免登录接口的循环刷新）
+  const isAuthEndpoint = options.url.includes('/auth/login') || 
+                         options.url.includes('/auth/register') || 
+                         options.url.includes('/auth/send-verify-code') ||
+                         options.url.includes('/auth/slider-challenge') ||
+                         options.url.includes('/auth/slider-verify') ||
+                         options.url.includes('/auth/refresh-token') ||
+                         options.url.includes('/face/login'); // 添加人脸登录接口
+                         
+  if (!isAuthEndpoint) {
+    console.log('🔑 非认证接口，尝试添加Token');
+    try {
+      const token = await tokenManager.getValidAccessToken();
+      if (token) {
+        defaultHeaders["Authorization"] = `Bearer ${token}`;
+        console.log('✅ Token已添加');
+      } else {
+        console.log('⚠️ 无有效Token');
+      }
+    } catch (error) {
+      console.error('❌ 获取Token失败:', error);
+    }
+  } else {
+    console.log('🔓 认证接口，跳过Token验证');
+  }
+
+  // 合并请求头，但不覆盖已设置的Content-Type
   options.header = {
     ...defaultHeaders,
     ...options.header,
   };
+
+  // 如果是FormData，删除Content-Type让浏览器自动设置
+  if (options.data instanceof FormData && options.header['Content-Type'] === 'multipart/form-data') {
+    delete options.header['Content-Type'];
+    console.log('📎 检测到FormData，移除Content-Type让浏览器自动设置');
+  }
 
   // 设置超时时间
   options.timeout = options.timeout || API_CONFIG.TIMEOUT;
@@ -152,20 +187,8 @@ const handleBusinessError = (data: ApiResponse, options: RequestOptions) => {
   switch (errorCode) {
     case ERROR_CODES.INVALID_TOKEN:
     case ERROR_CODES.TOKEN_EXPIRED:
-      // 清除token并跳转到登录页
-      removeStorageSync(STORAGE_KEYS.USER_TOKEN);
-      removeStorageSync(STORAGE_KEYS.USER_INFO);
-      try {
-        if (typeof Taro.reLaunch === 'function') {
-          Taro.reLaunch({
-            url: "/pages/login/login",
-          });
-        } else if (isH5 && window.location) {
-          window.location.hash = '/pages/login/login';
-        }
-      } catch (error) {
-        console.log("页面跳转不可用:", error);
-      }
+      // 使用Token管理器处理过期
+      tokenManager.clearTokens();
       break;
     case ERROR_CODES.PERMISSION_DENIED:
       if (options.showError !== false) {
@@ -237,7 +260,7 @@ const retryRequest = async (
   retryCount = 0
 ): Promise<any> => {
   try {
-    const processedOptions = requestInterceptor(options);
+    const processedOptions = await requestInterceptor(options);
     
     // 安全的请求调用
     let response;
@@ -271,7 +294,7 @@ const retryRequest = async (
         options.url
       );
       await new Promise((resolve) =>
-        setTimeout(resolve, 1000 * (retryCount + 1))
+        setTimeout(resolve, TIME_CONSTANTS.ONE_SECOND * (retryCount + 1))
       );
       return retryRequest(options, retryCount + 1);
     }

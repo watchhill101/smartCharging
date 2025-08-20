@@ -1,8 +1,7 @@
 import express from "express";
-import mongoose from "mongoose";
+import { body, query, param, validationResult } from "express-validator";
 import { authenticate } from "../middleware/auth";
 import { asyncHandler } from "../middleware/errorHandler";
-import { alipaySdk, generateOrderNo } from "../config/alipay";
 import { PaymentService } from "../services/PaymentService";
 import Order from "../models/Order";
 import User from "../models/User";
@@ -10,10 +9,28 @@ import ChargingSession from "../models/ChargingSession";
 
 const router = express.Router();
 
+// 中间件：验证请求参数
+const handleValidationErrors = (req: any, res: any, next: any) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: '请求参数错误',
+      errors: errors.array()
+    });
+  }
+  next();
+};
+
 //1. 钱包充值 - 创建支付订单
 router.post(
   "/wallet/recharge",
   authenticate,
+  [
+    body('amount').isFloat({ min: 0.01, max: 10000 }).withMessage('充值金额必须在0.01-10000元之间'),
+    body('paymentMethod').optional().isIn(['alipay', 'wechat', 'bank_card']).withMessage('支付方式无效')
+  ],
+  handleValidationErrors,
   asyncHandler(async (req: any, res: any) => {
     const { amount, paymentMethod = "alipay" } = req.body;
     const userId = req.user.id;
@@ -69,6 +86,11 @@ router.post(
 router.post(
   "/charging/pay",
   authenticate,
+  [
+    body('sessionId').notEmpty().withMessage('充电会话ID不能为空'),
+    body('paymentMethod').optional().isIn(['balance', 'alipay', 'wechat']).withMessage('支付方式无效')
+  ],
+  handleValidationErrors,
   asyncHandler(async (req: any, res: any) => {
     const { sessionId, paymentMethod = "balance" } = req.body;
     const userId = req.user.id;
@@ -180,6 +202,10 @@ router.post(
 router.get(
   "/orders/:orderId",
   authenticate,
+  [
+    param('orderId').notEmpty().withMessage('订单ID不能为空')
+  ],
+  handleValidationErrors,
   asyncHandler(async (req: any, res: any) => {
     const { orderId } = req.params;
     const userId = req.user.id;
@@ -206,6 +232,13 @@ router.get(
 router.get(
   "/transactions",
   authenticate,
+  [
+    query('type').optional().isIn(['recharge', 'charging', 'refund']).withMessage('交易类型无效'),
+    query('status').optional().isIn(['pending', 'completed', 'failed', 'cancelled']).withMessage('交易状态无效'),
+    query('page').optional().isInt({ min: 1 }).withMessage('页码必须大于0'),
+    query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('每页数量必须在1-100之间')
+  ],
+  handleValidationErrors,
   asyncHandler(async (req: any, res: any) => {
     const userId = req.user.id;
     const { type, status, page = 1, limit = 20 } = req.query;
@@ -245,6 +278,11 @@ router.get(
 router.get(
   "/stats",
   authenticate,
+  [
+    query('startDate').optional().isISO8601().withMessage('开始日期格式无效'),
+    query('endDate').optional().isISO8601().withMessage('结束日期格式无效')
+  ],
+  handleValidationErrors,
   asyncHandler(async (req: any, res: any) => {
     const userId = req.user.id;
     const { startDate, endDate } = req.query;
@@ -276,6 +314,10 @@ router.get(
 router.get(
   "/alipay/query/:orderId",
   authenticate,
+  [
+    param('orderId').notEmpty().withMessage('订单ID不能为空')
+  ],
+  handleValidationErrors,
   asyncHandler(async (req: any, res: any) => {
     const { orderId } = req.params;
     const userId = req.user.id;
@@ -314,6 +356,11 @@ router.get(
 router.post(
   "/orders/:orderId/cancel",
   authenticate,
+  [
+    param('orderId').notEmpty().withMessage('订单ID不能为空'),
+    body('reason').optional().isString().isLength({ max: 200 }).withMessage('取消原因不能超过200字符')
+  ],
+  handleValidationErrors,
   asyncHandler(async (req: any, res: any) => {
     const { orderId } = req.params;
     const { reason } = req.body;

@@ -8,6 +8,7 @@ import logging
 import os
 from datetime import datetime
 from typing import Dict, List, Optional
+import json
 
 import uvicorn
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
@@ -19,8 +20,35 @@ from charging_session import ChargingSessionManager
 from pile_manager import ChargingPileManager
 from models import ChargingPile, ChargingSession, OCPPMessage
 from config import settings
+from ocpp_monitoring import router as monitoring_router, monitoring_service
+from ocpp_error_handler import error_handler
+from enhanced_connection_manager import enhanced_manager, start_connection_manager, stop_connection_manager
+from websocket_optimizer import MessagePriority
 
-# 配置日志
+# 导入增强日志系统
+from enhanced_logging import (
+    get_logger, configure_logging, LogContext, LogLevel,
+    log_manager, info, error, warning, debug, context, timer
+)
+
+# 配置增强日志系统
+configure_logging(
+    level=LogLevel.INFO,
+    enable_console=True,
+    enable_file=True,
+    enable_structured=True,
+    enable_performance_tracking=True,
+    log_dir='logs',
+    max_file_size=20 * 1024 * 1024,  # 20MB
+    backup_count=15,
+    enable_error_tracking=True,
+    enable_metrics=True
+)
+
+# 获取增强日志器
+logger = get_logger('charging_service_main')
+
+# 保持向后兼容的日志记录
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -29,8 +57,6 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
-
-logger = logging.getLogger(__name__)
 
 # 创建FastAPI应用
 app = FastAPI(
@@ -48,38 +74,62 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 注册监控路由
+app.include_router(monitoring_router)
+
 # 全局服务实例
 ocpp_service = OCPPService()
 session_manager = ChargingSessionManager()
 pile_manager = ChargingPileManager()
 
-# WebSocket连接管理
+# WebSocket连接管理 - 使用增强连接管理器
 class ConnectionManager:
+    """WebSocket连接管理器 - 兼容性包装器"""
+    
     def __init__(self):
-        self.active_connections: Dict[str, WebSocket] = {}
-        self.pile_connections: Dict[str, WebSocket] = {}
+        self.manager = enhanced_manager
+        logger.info("使用增强连接管理器")
     
     async def connect(self, websocket: WebSocket, pile_id: str):
+        """接受WebSocket连接 - 兼容性方法"""
         await websocket.accept()
-        self.active_connections[pile_id] = websocket
-        self.pile_connections[pile_id] = websocket
-        logger.info(f"充电桩 {pile_id} 已连接")
+        await self.manager.optimizer.add_connection(websocket, pile_id)
+        logger.info(f"充电桩 {pile_id} 连接成功")
     
     def disconnect(self, pile_id: str):
-        if pile_id in self.active_connections:
-            del self.active_connections[pile_id]
-        if pile_id in self.pile_connections:
-            del self.pile_connections[pile_id]
-        logger.info(f"充电桩 {pile_id} 已断开连接")
+        """断开连接 - 兼容性方法"""
+        # 注意：这是同步方法，实际断开会在WebSocket关闭时自动处理
+        logger.info(f"充电桩 {pile_id} 连接断开")
     
     async def send_message(self, pile_id: str, message: dict):
-        if pile_id in self.active_connections:
-            websocket = self.active_connections[pile_id]
-            await websocket.send_json(message)
+        """发送消息到指定充电桩 - 兼容性方法"""
+        success = await self.manager.send_message_to_pile(pile_id, message, MessagePriority.NORMAL)
+        if not success:
+            connection_error = Exception(f"充电桩 {pile_id} 未连接")
+            await error_handler.handle_connection_error(pile_id, connection_error)
+            raise connection_error
     
     async def broadcast(self, message: dict):
-        for connection in self.active_connections.values():
-            await connection.send_json(message)
+        """广播消息到所有连接的充电桩 - 兼容性方法"""
+        failed_connections = []
+        stats = await self.manager.get_connection_stats()
+        
+        for pile_id in stats.pile_connections.keys():
+            try:
+                success = await self.manager.broadcast_to_pile(pile_id, message, MessagePriority.NORMAL)
+                if success == 0:
+                    failed_connections.append(pile_id)
+            except Exception as e:
+                logger.error(f"广播消息到充电桩 {pile_id} 失败: {e}")
+                failed_connections.append(pile_id)
+                
+                # 记录广播失败统计
+                monitoring_service.record_message("broadcast", False)
+                
+                # 处理连接错误
+                await error_handler.handle_connection_error(pile_id, e)
+        
+        logger.info(f"广播消息完成，失败连接数: {len(failed_connections)}")
 
 manager = ConnectionManager()
 
@@ -107,35 +157,125 @@ class ChargingStatusResponse(BaseModel):
 # WebSocket端点 - 充电桩连接
 @app.websocket("/ws/pile/{pile_id}")
 async def websocket_endpoint(websocket: WebSocket, pile_id: str):
-    """充电桩WebSocket连接端点"""
-    try:
-        await manager.connect(websocket, pile_id)
-        
-        # 注册充电桩
-        await pile_manager.register_pile(pile_id, websocket)
-        
-        # 发送BootNotification
-        boot_notification = await ocpp_service.handle_boot_notification(pile_id)
-        await websocket.send_json(boot_notification)
-        
-        while True:
-            # 接收充电桩消息
-            data = await websocket.receive_json()
-            logger.info(f"收到充电桩 {pile_id} 消息: {data}")
+    """充电桩WebSocket连接端点 - 使用增强连接管理器"""
+    connection_context = LogContext(
+        pile_id=pile_id,
+        operation="websocket_connection",
+        component="websocket"
+    )
+    
+    with context(**connection_context.to_dict()):
+        async with enhanced_manager.connect_pile(websocket, pile_id) as connection_id:
+            connection_start_time = datetime.now()
+            message_count = 0
             
-            # 处理OCPP消息
-            response = await ocpp_service.handle_message(pile_id, data)
-            if response:
-                await websocket.send_json(response)
+            try:
+                info("充电桩连接建立", metadata={
+                    "pile_id": pile_id,
+                    "connection_id": connection_id,
+                    "client_host": websocket.client.host if websocket.client else "unknown"
+                })
                 
-    except WebSocketDisconnect:
-        manager.disconnect(pile_id)
-        await pile_manager.unregister_pile(pile_id)
-        logger.info(f"充电桩 {pile_id} 断开连接")
-    except Exception as e:
-        logger.error(f"WebSocket连接错误: {e}")
-        manager.disconnect(pile_id)
-        await pile_manager.unregister_pile(pile_id)
+                # 注册充电桩
+                with timer("register_pile", "充电桩注册完成"):
+                    await pile_manager.register_pile(pile_id, websocket)
+                
+                # 发送BootNotification
+                with timer("boot_notification", "BootNotification发送完成"):
+                    boot_notification = await ocpp_service.handle_boot_notification(pile_id)
+                    await enhanced_manager.send_message_to_pile(pile_id, boot_notification, MessagePriority.HIGH)
+                
+                while True:
+                    # 接收充电桩消息
+                    with timer("receive_message"):
+                        data = await enhanced_manager.receive_message(websocket, pile_id)
+                    
+                    if data is None:  # 连接断开或接收失败
+                        break
+                    
+                    message_count += 1
+                    message_context = LogContext(
+                        pile_id=pile_id,
+                        operation="handle_message",
+                        component="websocket"
+                    )
+                    
+                    with context(**message_context.to_dict()):
+                        debug("收到充电桩消息", metadata={
+                            "message_length": len(str(data)),
+                            "message_preview": str(data)[:100] + "..." if len(str(data)) > 100 else str(data),
+                            "message_count": message_count
+                        })
+                        
+                        start_time = datetime.now()
+                        
+                        try:
+                            # 处理OCPP消息
+                            with timer("process_ocpp_message", "OCPP消息处理完成"):
+                                response = await ocpp_service.handle_message(pile_id, data)
+                            
+                            # 记录处理成功统计
+                            response_time = (datetime.now() - start_time).total_seconds()
+                            
+                            # 获取操作类型
+                            action = data.get('action', 'unknown') if isinstance(data, dict) else 'unknown'
+                            monitoring_service.record_message(action, True, response_time)
+                            
+                            if response:
+                                with timer("send_response"):
+                                    await enhanced_manager.send_message_to_pile(pile_id, response, MessagePriority.NORMAL)
+                                
+                                debug("发送响应", metadata={
+                                    "response_length": len(str(response)),
+                                    "response_preview": str(response)[:100] + "..." if len(str(response)) > 100 else str(response)
+                                })
+                                
+                        except Exception as e:
+                            # 记录处理失败统计
+                            response_time = (datetime.now() - start_time).total_seconds()
+                            action = data.get('action', 'unknown') if isinstance(data, dict) else 'unknown'
+                            monitoring_service.record_message(action, False, response_time)
+                            
+                            error("处理充电桩消息失败", error=e, metadata={
+                                "message_count": message_count,
+                                "error_type": type(e).__name__,
+                                "action": action
+                            })
+                            
+                            # 使用错误处理器处理错误
+                            error_response = await error_handler.handle_ocpp_error(pile_id, data, e)
+                            if error_response:
+                                await enhanced_manager.send_message_to_pile(pile_id, error_response, MessagePriority.HIGH)
+                                
+            except WebSocketDisconnect:
+                connection_duration = (datetime.now() - connection_start_time).total_seconds()
+                info("充电桩连接正常断开", metadata={
+                    "connection_duration": connection_duration,
+                    "total_messages": message_count,
+                    "avg_messages_per_second": message_count / connection_duration if connection_duration > 0 else 0
+                })
+            except Exception as e:
+                connection_duration = (datetime.now() - connection_start_time).total_seconds()
+                error("WebSocket连接错误", error=e, metadata={
+                    "connection_duration": connection_duration,
+                    "total_messages": message_count,
+                    "error_type": type(e).__name__
+                })
+            finally:
+                try:
+                    with timer("unregister_pile", "充电桩注销完成"):
+                        await pile_manager.unregister_pile(pile_id)
+                    
+                    final_duration = (datetime.now() - connection_start_time).total_seconds()
+                    info("充电桩连接处理结束", metadata={
+                        "total_connection_duration": final_duration,
+                        "total_messages_processed": message_count,
+                        "cleanup_successful": True
+                    })
+                except Exception as cleanup_error:
+                    error("连接清理失败", error=cleanup_error, metadata={
+                        "cleanup_error_type": type(cleanup_error).__name__
+                    })
 
 # WebSocket端点 - 客户端连接
 @app.websocket("/ws/client/{client_id}")
@@ -147,11 +287,33 @@ async def client_websocket_endpoint(websocket: WebSocket, client_id: str):
             data = await websocket.receive_json()
             logger.info(f"收到客户端 {client_id} 消息: {data}")
             
-            # 处理客户端消息
-            if data.get("type") == "subscribe_pile":
-                pile_id = data.get("pile_id")
-                # 订阅充电桩状态更新
-                await session_manager.subscribe_pile_status(client_id, pile_id, websocket)
+            start_time = datetime.now()
+            
+            try:
+                # 处理客户端消息
+                if data.get("type") == "subscribe_pile":
+                    pile_id = data.get("pile_id")
+                    # 订阅充电桩状态更新
+                    await session_manager.subscribe_pile_status(client_id, pile_id, websocket)
+                    
+                    # 记录成功统计
+                    response_time = (datetime.now() - start_time).total_seconds()
+                    monitoring_service.record_message("client_subscribe", True, response_time)
+                    
+            except Exception as e:
+                # 记录失败统计
+                response_time = (datetime.now() - start_time).total_seconds()
+                monitoring_service.record_message("client_message", False, response_time)
+                
+                logger.error(f"处理客户端 {client_id} 消息失败: {e}")
+                
+                # 发送错误响应给客户端
+                error_response = {
+                    "type": "error",
+                    "message": f"处理消息失败: {str(e)}",
+                    "timestamp": datetime.now().isoformat()
+                }
+                await websocket.send_json(error_response)
                 
     except WebSocketDisconnect:
         logger.info(f"客户端 {client_id} 断开连接")
@@ -385,11 +547,223 @@ async def get_statistics():
         "data": stats
     }
 
+@app.get("/api/stats")
+async def get_stats():
+    """获取服务统计信息"""
+    request_context = LogContext(
+        operation="get_stats",
+        component="api"
+    )
+    
+    with context(**request_context.to_dict()):
+        with timer("get_stats_operation", "获取统计信息完成"):
+            try:
+                info("开始获取服务统计信息")
+                
+                # 获取监控统计
+                monitoring_stats = await monitoring_service.get_stats()
+                
+                # 获取错误处理统计
+                error_stats = await error_handler.get_stats()
+                
+                # 获取增强连接管理器统计
+                connection_stats = await enhanced_manager.get_connection_stats()
+                
+                # 获取日志系统指标
+                log_metrics = log_manager.get_all_metrics()
+                
+                result = {
+                    "status": "success",
+                    "timestamp": datetime.now().isoformat(),
+                    "monitoring": monitoring_stats,
+                    "error_handling": error_stats,
+                    "connections": connection_stats.dict(),
+                    "logging": log_metrics
+                }
+                
+                info("统计信息获取成功", metadata={
+                    "stats_count": len(result),
+                    "active_connections": connection_stats.total_connections
+                })
+                
+                return result
+                
+            except Exception as e:
+                error("获取统计信息失败", error=e, metadata={
+                    "error_type": type(e).__name__
+                })
+                raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/health")
+async def health_check():
+    """系统健康检查"""
+    request_context = LogContext(
+        operation="health_check",
+        component="api"
+    )
+    
+    with context(**request_context.to_dict()):
+        with timer("health_check_operation", "健康检查完成"):
+            try:
+                debug("开始系统健康检查")
+                
+                # 获取增强连接管理器健康状态
+                health_info = await enhanced_manager.health_check()
+                
+                # 获取日志系统健康状态
+                log_health = log_manager.health_check()
+                
+                # 集成日志系统健康状态
+                health_info["components"]["logging_system"] = log_health["status"]
+                health_info["details"] = health_info.get("details", {})
+                health_info["details"]["logging"] = log_health
+                
+                # 检查日志系统状态
+                if log_health["status"] != "healthy":
+                    if health_info["status"] == "healthy":
+                        health_info["status"] = "degraded"
+                    warning("日志系统状态降级", metadata={
+                        "issues": log_health["issues"]
+                    })
+                
+                # 根据健康状态设置HTTP状态码
+                status_code = 200
+                if health_info["status"] == "unhealthy":
+                    status_code = 503
+                elif health_info["status"] == "degraded":
+                    status_code = 206
+                
+                info("健康检查完成", metadata={
+                    "overall_status": health_info["status"],
+                    "component_count": len(health_info.get("components", {})),
+                    "status_code": status_code,
+                    "health_score": health_info.get("health_score", 0)
+                })
+                
+                return health_info
+            except Exception as e:
+                error("健康检查失败", error=e, metadata={
+                    "error_type": type(e).__name__
+                })
+                return {
+                    "status": "unhealthy",
+                    "health_score": 0,
+                    "timestamp": datetime.now().isoformat(),
+                    "error": str(e)
+                }
+
+@app.get("/api/connections")
+async def get_connections():
+    """获取连接详情"""
+    try:
+        stats = await enhanced_manager.get_connection_stats()
+        global_metrics = await enhanced_manager.optimizer.get_global_metrics()
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "summary": stats.dict(),
+            "global_metrics": global_metrics
+        }
+    except Exception as e:
+        logger.error(f"获取连接信息失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/pile/{pile_id}/stats")
+async def get_pile_stats(pile_id: str):
+    """获取特定充电桩的统计信息"""
+    try:
+        pile_stats = await enhanced_manager.get_pile_stats(pile_id)
+        
+        if pile_stats is None:
+            raise HTTPException(status_code=404, detail=f"充电桩 {pile_id} 未找到")
+        
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "pile_id": pile_id,
+            "stats": pile_stats
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取充电桩 {pile_id} 统计信息失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/pile/{pile_id}/reset")
+async def reset_pile_connection(pile_id: str):
+    """重置充电桩连接"""
+    try:
+        success = await enhanced_manager.reset_pile_connection(pile_id)
+        
+        if success:
+            return {
+                "status": "success",
+                "message": f"充电桩 {pile_id} 重置命令已发送",
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=f"重置充电桩 {pile_id} 失败")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"重置充电桩 {pile_id} 连接失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/connections/cleanup")
+async def cleanup_idle_connections():
+    """清理空闲连接"""
+    try:
+        cleaned_count = await enhanced_manager.cleanup_idle_connections()
+        
+        return {
+            "status": "success",
+            "message": f"已清理 {cleaned_count} 个空闲连接",
+            "cleaned_count": cleaned_count,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"清理空闲连接失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/pile/{pile_id}/message")
+async def send_message_to_pile(pile_id: str, message: dict):
+    """向充电桩发送自定义消息"""
+    try:
+        # 验证消息格式
+        if not isinstance(message, dict) or not message:
+            raise HTTPException(status_code=400, detail="消息格式无效")
+        
+        # 添加时间戳
+        message["timestamp"] = datetime.now().isoformat()
+        
+        # 发送消息
+        success = await enhanced_manager.send_message_to_pile(
+            pile_id, message, MessagePriority.NORMAL
+        )
+        
+        if success:
+            return {
+                "status": "success",
+                "message": f"消息已发送到充电桩 {pile_id}",
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=f"发送消息到充电桩 {pile_id} 失败")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"发送消息到充电桩 {pile_id} 失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # 启动事件
 @app.on_event("startup")
 async def startup_event():
     """服务启动事件"""
     logger.info("OCPP充电服务启动中...")
+    
+    # 启动增强连接管理器
+    await start_connection_manager()
     
     # 初始化服务
     await ocpp_service.initialize()
@@ -403,6 +777,9 @@ async def startup_event():
 async def shutdown_event():
     """服务关闭事件"""
     logger.info("OCPP充电服务关闭中...")
+    
+    # 停止增强连接管理器
+    await stop_connection_manager()
     
     # 清理资源
     await ocpp_service.cleanup()

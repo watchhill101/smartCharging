@@ -1,6 +1,6 @@
 import Taro from '@tarojs/taro'
 import { TaroSafe } from '../utils/taroSafe'
-import { STORAGE_KEYS } from '../utils/constants'
+import { STORAGE_KEYS, WEBSOCKET_CONSTANTS, TIME_CONSTANTS } from '../utils/constants'
 
 export interface WebSocketMessage {
   type: string
@@ -36,8 +36,8 @@ export class WebSocketClient {
   private socket: Taro.SocketTask | null = null
   private isConnected: boolean = false
   private reconnectAttempts: number = 0
-  private maxReconnectAttempts: number = 5
-  private reconnectInterval: number = 3000
+  private maxReconnectAttempts: number = WEBSOCKET_CONSTANTS.MAX_RECONNECT_ATTEMPTS
+  private reconnectInterval: number = WEBSOCKET_CONSTANTS.RECONNECT_INTERVAL
   private heartbeatInterval: NodeJS.Timeout | null = null
   private messageHandlers: Map<string, Function[]> = new Map()
   private connectionPromise: Promise<void> | null = null
@@ -132,8 +132,8 @@ export class WebSocketClient {
    */
   private getWebSocketUrl(): string {
     const baseUrl = process.env.NODE_ENV === 'production' 
-      ? 'wss://api.smartcharging.com'
-      : 'ws://localhost:8080'
+      ? (process.env.TARO_APP_WEBSOCKET_URL || 'wss://api.smartcharging.com')
+      : (process.env.TARO_APP_WEBSOCKET_URL_DEV || 'ws://localhost:8080')
     
     return baseUrl
   }
@@ -160,7 +160,7 @@ export class WebSocketClient {
   disconnect(): void {
     if (this.socket) {
       this.socket.close({
-        code: 1000,
+        code: WEBSOCKET_CONSTANTS.CLOSE_CODE_NORMAL,
         reason: '主动断开连接'
       })
       this.socket = null
@@ -304,7 +304,7 @@ export class WebSocketClient {
       TaroSafe.showToast({
         title: message.title,
         icon: 'none',
-        duration: 3000
+        duration: TIME_CONSTANTS.THREE_SECONDS
       })
     }
   }
@@ -361,7 +361,7 @@ export class WebSocketClient {
           this.isConnected = false
         })
       }
-    }, 30000) // 30秒心跳
+    }, WEBSOCKET_CONSTANTS.HEARTBEAT_INTERVAL) // 30秒心跳
   }
 
   /**

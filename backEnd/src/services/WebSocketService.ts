@@ -48,13 +48,13 @@ export class WebSocketService {
     // 初始化Socket.IO服务器
     this.io = new SocketIOServer(server, {
       cors: {
-        origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
-        methods: ['GET', 'POST'],
-        credentials: true
+        origin: process.env.ALLOWED_ORIGINS?.split(',') || [process.env.FRONTEND_URL || 'http://localhost:3000'],
+        methods: (process.env.CORS_METHODS || 'GET,POST').split(','),
+        credentials: process.env.CORS_CREDENTIALS === 'true'
       },
       transports: ['websocket', 'polling'],
-      pingTimeout: 60000,
-      pingInterval: 25000
+      pingTimeout: parseInt(process.env.WEBSOCKET_PING_TIMEOUT || '60000'),
+      pingInterval: parseInt(process.env.WEBSOCKET_PING_INTERVAL || '25000')
     });
 
     this.setupMiddleware();
@@ -78,7 +78,11 @@ export class WebSocketService {
         }
 
         // 验证JWT token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default-secret') as any;
+        const jwtSecret = process.env.JWT_SECRET;
+        if (!jwtSecret) {
+          return next(new Error('JWT secret not configured'));
+        }
+        const decoded = jwt.verify(token, jwtSecret) as any;
         
         // 将用户信息附加到socket
         socket.data.userId = decoded.userId;
@@ -470,7 +474,7 @@ export class WebSocketService {
           socket.disconnect(true);
         }
       });
-    }, 30000); // 每30秒检查一次
+    }, parseInt(process.env.WEBSOCKET_HEARTBEAT_INTERVAL || '30000')); // 心跳间隔
   }
 
   /**

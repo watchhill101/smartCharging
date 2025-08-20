@@ -32,18 +32,30 @@ services:
       - smartcharging-network
 
   # 主服务 (Node.js)
-  main-service:
+  backend:
     build:
       context: ../backEnd
       dockerfile: Dockerfile
-    container_name: smartcharging-main-service
+    container_name: smartcharging-backend
     restart: unless-stopped
     environment:
       NODE_ENV: production
       PORT: 8080
+      API_BASE_URL: http://localhost:8080/api
+      FRONTEND_URL: http://localhost:3000
       MONGODB_URI: mongodb://admin:password123@mongodb:27017/smart_charging?authSource=admin
       REDIS_URL: redis://:redis123@redis:6379
       JWT_SECRET: your-super-secret-jwt-key-change-this-in-production
+      JWT_REFRESH_SECRET: your-super-secret-refresh-jwt-key-change-this-in-production
+      JWT_EXPIRES_IN: 24h
+      JWT_REFRESH_EXPIRES_IN: 7d
+      # Alipay Configuration
+      ALIPAY_APP_ID: 9021000122671080
+      ALIPAY_PRIVATE_KEY: your-alipay-private-key
+      ALIPAY_PUBLIC_KEY: your-alipay-public-key
+      ALIPAY_GATEWAY_URL: https://openapi-sandbox.dl.alipaydev.com/gateway.do
+      # Amap API Key
+      AMAP_API_KEY: a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
       # Face Verification API Configuration
       CLOUDMERSIVE_API_KEY: 5932bafd-7ce9-4169-812e-900a78b5d21a
       FACE_VERIFICATION_ENABLED: "true"
@@ -51,8 +63,20 @@ services:
       FACE_VERIFICATION_MAX_ATTEMPTS: "3"
       # File Upload Configuration
       MAX_FILE_SIZE: 10MB
+      UPLOAD_DIR: ./uploads
+      AVATAR_BASE_URL: http://localhost:8080/uploads
+      AVATAR_MAX_SIZE: 5242880
+      AVATAR_ALLOWED_TYPES: image/jpeg,image/png,image/gif
       # CORS Configuration
-      CORS_ORIGIN: "http://localhost:3000,http://localhost:8080"
+      CORS_ORIGINS: http://localhost:3000,http://localhost:8080,https://api.smartcharging.com
+      CORS_METHODS: GET,POST,PUT,DELETE,OPTIONS
+      CORS_CREDENTIALS: true
+      # WebSocket Configuration
+      WEBSOCKET_ORIGINS: http://localhost:3000,http://localhost:8080,https://api.smartcharging.com
+      WEBSOCKET_PING_TIMEOUT: 60000
+      WEBSOCKET_PING_INTERVAL: 25000
+      # Logging
+      LOG_LEVEL: info
     ports:
       - "8080:8080"
     depends_on:
@@ -61,23 +85,26 @@ services:
     volumes:
       - ../backEnd:/app
       - /app/node_modules
+      - backend_uploads:/app/uploads
     networks:
       - smartcharging-network
 
   # 充电服务 (Python)
   charging-service:
     build:
-      context: ../backEnd/charging-service
+      context: ../chargingService
       dockerfile: Dockerfile
     container_name: smartcharging-charging-service
     restart: unless-stopped
     environment:
-      NODE_ENV: production
-      CHARGING_SERVICE_PORT: 8081
+      CHARGING_SERVICE_PORT: 8000
       MONGODB_URI: mongodb://admin:password123@mongodb:27017/smart_charging?authSource=admin
       REDIS_URL: redis://:redis123@redis:6379
+      OCPP_VERSION: 1.6
+      HEARTBEAT_INTERVAL: 300
+      METER_VALUES_INTERVAL: 60
     ports:
-      - "8081:8081"
+      - "8000:8000"
     depends_on:
       - mongodb
       - redis
@@ -99,7 +126,7 @@ services:
       - ./ssl:/etc/ssl
       - nginx_logs:/var/log/nginx
     depends_on:
-      - main-service
+      - backend
       - charging-service
     networks:
       - smartcharging-network
@@ -138,6 +165,7 @@ volumes:
   prometheus_data:
   grafana_data:
   nginx_logs:
+  backend_uploads:
 
 networks:
   smartcharging-network:

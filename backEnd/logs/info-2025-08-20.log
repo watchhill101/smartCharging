@@ -1,0 +1,1631 @@
+{"timestamp":"2025-08-20T08:51:46.784Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T08:54:52.170Z","level":"INFO","message":"Received SIGINT. Starting graceful shutdown..."}
+{"timestamp":"2025-08-20T08:54:52.171Z","level":"INFO","message":"HTTP server closed."}
+{"timestamp":"2025-08-20T08:54:52.190Z","level":"INFO","message":"Database disconnected."}
+{"timestamp":"2025-08-20T08:54:52.192Z","level":"INFO","message":"Redis disconnected."}
+{"timestamp":"2025-08-20T08:54:52.193Z","level":"INFO","message":"Graceful shutdown completed."}
+{"timestamp":"2025-08-20T08:57:38.861Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T09:15:49.025Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T09:18:23.160Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T09:18:43.322Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T09:25:08.550Z","level":"INFO","message":"Received SIGINT. Starting graceful shutdown..."}
+{"timestamp":"2025-08-20T09:25:08.552Z","level":"INFO","message":"HTTP server closed."}
+{"timestamp":"2025-08-20T09:25:08.570Z","level":"INFO","message":"Database disconnected."}
+{"timestamp":"2025-08-20T09:25:08.572Z","level":"INFO","message":"Redis disconnected."}
+{"timestamp":"2025-08-20T09:25:08.573Z","level":"INFO","message":"Graceful shutdown completed."}
+{"timestamp":"2025-08-20T09:25:16.194Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T10:46:09.243Z","level":"INFO","message":"Received SIGINT. Starting graceful shutdown..."}
+{"timestamp":"2025-08-20T10:46:09.246Z","level":"INFO","message":"HTTP server closed."}
+{"timestamp":"2025-08-20T10:46:09.270Z","level":"INFO","message":"Database disconnected."}
+{"timestamp":"2025-08-20T10:46:09.274Z","level":"INFO","message":"Redis disconnected."}
+{"timestamp":"2025-08-20T10:46:09.275Z","level":"INFO","message":"Graceful shutdown completed."}
+{"timestamp":"2025-08-20T10:46:14.940Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:12:43.121Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:13:51.177Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:14:24.746Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:14:38.782Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:14:52.396Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:15:05.041Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:15:22.008Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:15:27.973Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:16:37.286Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:16:45.817Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:17:04.605Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:17:41.580Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:18:11.628Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:18:27.043Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:19:06.490Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:19:27.734Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:19:37.940Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:19:46.509Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:20:01.769Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:20:18.509Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:20:36.559Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:20:45.229Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:20:52.931Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:21:09.430Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:21:27.590Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:21:44.431Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:23:23.161Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:23:33.233Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:23:50.232Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:27:01.818Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:27:17.414Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:27:35.368Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:27:52.721Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:28:20.687Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:28:29.918Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:28:40.943Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:29:00.345Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:29:21.661Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:29:39.098Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:29:50.607Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:30:08.523Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:30:17.926Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:30:29.263Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:30:42.489Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:30:55.062Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:31:17.206Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:31:35.588Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:31:46.569Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:31:59.044Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:32:25.332Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:32:48.517Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:33:50.146Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T11:37:32.994Z","level":"INFO","message":"Received SIGINT. Starting graceful shutdown..."}
+{"timestamp":"2025-08-20T11:37:33.006Z","level":"INFO","message":"HTTP server closed."}
+{"timestamp":"2025-08-20T11:37:33.036Z","level":"INFO","message":"Database disconnected."}
+{"timestamp":"2025-08-20T11:37:33.040Z","level":"INFO","message":"Redis disconnected."}
+{"timestamp":"2025-08-20T11:37:33.042Z","level":"INFO","message":"Graceful shutdown completed."}
+{"timestamp":"2025-08-20T13:43:54.537Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T13:43:54.538Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T13:43:54.898Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T13:43:54.898Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T13:43:54.905Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T13:43:54.906Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T13:43:54.906Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T13:43:54.907Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T13:43:54.908Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T13:54:37.098Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T13:54:37.099Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T13:54:37.284Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T13:54:37.285Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T13:54:37.287Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T13:54:37.288Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T13:54:37.288Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T13:54:37.289Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T13:54:37.289Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T13:55:02.638Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T13:55:02.639Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T13:55:02.890Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T13:55:02.891Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T13:55:02.894Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T13:55:02.894Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T13:55:02.895Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T13:55:02.895Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T13:55:02.896Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T13:55:02.897Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T13:55:02.897Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T13:55:02.911Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T13:55:20.052Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T13:55:20.053Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T13:55:20.336Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T13:55:20.337Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T13:55:20.340Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T13:55:20.341Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T13:55:20.341Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T13:55:20.342Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T13:55:20.342Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T13:55:20.342Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T13:55:20.343Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T13:55:20.356Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T14:22:40.527Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T14:22:40.528Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T14:22:40.693Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T14:22:40.693Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T14:22:40.696Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T14:22:40.697Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T14:22:40.697Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T14:22:40.698Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T14:22:40.698Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T14:22:40.699Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T14:22:40.699Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T14:22:40.709Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T14:28:03.682Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T14:28:03.683Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T14:28:03.906Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T14:28:03.907Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T14:28:03.910Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T14:28:03.911Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T14:28:03.911Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T14:28:03.912Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T14:28:03.912Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T14:28:03.912Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T14:28:03.913Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T14:28:03.921Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T14:28:44.357Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T14:28:44.359Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T14:28:44.521Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T14:28:44.522Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T14:28:44.524Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T14:28:44.525Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T14:28:44.525Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T14:28:44.526Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T14:28:44.526Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T14:28:44.527Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T14:28:44.527Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T14:28:44.537Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T14:29:15.394Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T14:29:15.395Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T14:29:15.601Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T14:29:15.602Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T14:29:15.606Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T14:29:15.606Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T14:29:15.607Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T14:29:15.607Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T14:29:15.608Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T14:29:15.609Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T14:29:15.609Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T14:29:15.624Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T14:30:24.614Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T14:30:24.615Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T14:30:24.785Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T14:30:24.786Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T14:30:24.789Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T14:30:24.790Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T14:30:24.791Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T14:30:24.791Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T14:30:24.791Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T14:30:24.792Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T14:30:24.792Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T14:30:24.804Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T14:35:12.061Z","level":"INFO","message":"Received SIGINT. Starting graceful shutdown..."}
+{"timestamp":"2025-08-20T14:35:12.063Z","level":"INFO","message":"HTTP server closed."}
+{"timestamp":"2025-08-20T14:35:12.064Z","level":"INFO","message":"🧹 Database optimization cleaned up"}
+{"timestamp":"2025-08-20T14:35:12.065Z","level":"INFO","message":"Database optimization cleaned up."}
+{"timestamp":"2025-08-20T14:35:12.086Z","level":"INFO","message":"Database disconnected."}
+{"timestamp":"2025-08-20T14:35:12.089Z","level":"INFO","message":"Redis disconnected."}
+{"timestamp":"2025-08-20T14:35:12.090Z","level":"INFO","message":"Graceful shutdown completed."}
+{"timestamp":"2025-08-20T14:35:46.407Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T14:35:46.408Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T14:35:46.555Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T14:35:46.556Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T14:35:46.560Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T14:35:46.561Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T14:35:46.561Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T14:35:46.562Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T14:35:46.562Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T14:35:46.563Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T14:35:46.563Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T14:35:46.572Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T14:37:46.648Z","level":"INFO","message":"Received SIGINT. Starting graceful shutdown..."}
+{"timestamp":"2025-08-20T14:37:46.649Z","level":"INFO","message":"HTTP server closed."}
+{"timestamp":"2025-08-20T14:37:46.650Z","level":"INFO","message":"🧹 Database optimization cleaned up"}
+{"timestamp":"2025-08-20T14:37:46.650Z","level":"INFO","message":"Database optimization cleaned up."}
+{"timestamp":"2025-08-20T14:37:46.660Z","level":"INFO","message":"Database disconnected."}
+{"timestamp":"2025-08-20T14:37:46.662Z","level":"INFO","message":"Redis disconnected."}
+{"timestamp":"2025-08-20T14:37:46.662Z","level":"INFO","message":"Graceful shutdown completed."}
+{"timestamp":"2025-08-20T14:37:53.260Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T14:37:53.261Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T14:37:53.426Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T14:37:53.427Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T14:37:53.430Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T14:37:53.431Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T14:37:53.431Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T14:37:53.432Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T14:37:53.432Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T14:37:53.433Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T14:37:53.433Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T14:37:53.444Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T14:38:06.262Z","level":"INFO","message":"Received SIGINT. Starting graceful shutdown..."}
+{"timestamp":"2025-08-20T14:38:06.265Z","level":"INFO","message":"HTTP server closed."}
+{"timestamp":"2025-08-20T14:38:06.265Z","level":"INFO","message":"🧹 Database optimization cleaned up"}
+{"timestamp":"2025-08-20T14:38:06.266Z","level":"INFO","message":"Database optimization cleaned up."}
+{"timestamp":"2025-08-20T14:38:06.275Z","level":"INFO","message":"Database disconnected."}
+{"timestamp":"2025-08-20T14:38:06.277Z","level":"INFO","message":"Redis disconnected."}
+{"timestamp":"2025-08-20T14:38:06.277Z","level":"INFO","message":"Graceful shutdown completed."}
+{"timestamp":"2025-08-20T14:38:11.553Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T14:38:11.554Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T14:38:11.756Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T14:38:11.757Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T14:38:11.761Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T14:38:11.761Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T14:38:11.762Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T14:38:11.763Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T14:38:11.763Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T14:38:11.764Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T14:38:11.765Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T14:38:11.778Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T14:40:17.612Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T14:40:17.613Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T14:40:17.781Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T14:40:17.782Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T14:40:17.784Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T14:40:17.785Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T14:40:17.786Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T14:40:17.786Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T14:40:17.787Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T14:40:17.788Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T14:40:17.788Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T14:40:17.798Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T14:43:49.904Z","level":"INFO","message":"Received SIGINT. Starting graceful shutdown..."}
+{"timestamp":"2025-08-20T14:43:49.906Z","level":"INFO","message":"HTTP server closed."}
+{"timestamp":"2025-08-20T14:43:49.907Z","level":"INFO","message":"🧹 Database optimization cleaned up"}
+{"timestamp":"2025-08-20T14:43:49.907Z","level":"INFO","message":"Database optimization cleaned up."}
+{"timestamp":"2025-08-20T14:43:49.914Z","level":"INFO","message":"Database disconnected."}
+{"timestamp":"2025-08-20T14:43:49.916Z","level":"INFO","message":"Redis disconnected."}
+{"timestamp":"2025-08-20T14:43:49.917Z","level":"INFO","message":"Graceful shutdown completed."}
+{"timestamp":"2025-08-20T14:43:54.912Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T14:43:54.913Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T14:43:55.243Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T14:43:55.244Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T14:43:55.251Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T14:43:55.252Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T14:43:55.253Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T14:43:55.253Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T14:43:55.254Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T14:43:55.255Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T14:43:55.255Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T14:43:55.267Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T14:45:18.350Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T14:45:18.351Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T14:45:18.569Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T14:45:18.569Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T14:45:18.576Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T14:45:18.577Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T14:45:18.577Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T14:45:18.578Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T14:45:18.578Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T14:45:18.579Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T14:45:18.580Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T14:45:18.592Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T14:45:44.368Z","level":"INFO","message":"Received SIGINT. Starting graceful shutdown..."}
+{"timestamp":"2025-08-20T14:45:44.370Z","level":"INFO","message":"HTTP server closed."}
+{"timestamp":"2025-08-20T14:45:44.370Z","level":"INFO","message":"🧹 Database optimization cleaned up"}
+{"timestamp":"2025-08-20T14:45:44.371Z","level":"INFO","message":"Database optimization cleaned up."}
+{"timestamp":"2025-08-20T14:45:44.388Z","level":"INFO","message":"Database disconnected."}
+{"timestamp":"2025-08-20T14:45:44.390Z","level":"INFO","message":"Redis disconnected."}
+{"timestamp":"2025-08-20T14:45:44.390Z","level":"INFO","message":"Graceful shutdown completed."}
+{"timestamp":"2025-08-20T16:00:48.220Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:00:48.221Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:00:48.414Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:00:48.415Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:00:48.420Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:00:48.421Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:00:48.422Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:00:48.422Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:00:48.423Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:00:48.423Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:00:48.424Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:00:48.435Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:15:59.828Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:15:59.829Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:16:00.070Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:16:00.071Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:16:00.080Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:16:00.081Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:16:00.081Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:16:00.082Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:16:00.083Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:16:00.083Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:16:00.084Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:16:00.098Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:16:16.636Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:16:16.637Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:16:16.811Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:16:16.812Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:16:16.818Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:16:16.818Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:16:16.819Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:16:16.820Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:16:16.820Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:16:16.821Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:16:16.821Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:16:16.833Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:16:27.720Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:16:27.721Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:16:27.916Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:16:27.917Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:16:27.922Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:16:27.923Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:16:27.924Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:16:27.924Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:16:27.924Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:16:27.925Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:16:27.925Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:16:27.936Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:16:43.254Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:16:43.256Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:16:43.429Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:16:43.430Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:16:43.435Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:16:43.436Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:16:43.437Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:16:43.437Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:16:43.438Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:16:43.439Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:16:43.440Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:16:43.450Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:17:02.528Z","level":"INFO","message":"Received SIGINT. Starting graceful shutdown..."}
+{"timestamp":"2025-08-20T16:17:02.530Z","level":"INFO","message":"HTTP server closed."}
+{"timestamp":"2025-08-20T16:17:02.531Z","level":"INFO","message":"🧹 Database optimization cleaned up"}
+{"timestamp":"2025-08-20T16:17:02.531Z","level":"INFO","message":"Database optimization cleaned up."}
+{"timestamp":"2025-08-20T16:17:02.541Z","level":"INFO","message":"Database disconnected."}
+{"timestamp":"2025-08-20T16:17:02.542Z","level":"INFO","message":"Redis disconnected."}
+{"timestamp":"2025-08-20T16:17:02.543Z","level":"INFO","message":"Graceful shutdown completed."}
+{"timestamp":"2025-08-20T16:17:16.230Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:17:16.231Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:17:16.401Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:17:16.401Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:17:16.407Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:17:16.407Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:17:16.408Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:17:16.408Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:17:16.408Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:17:16.408Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:17:16.409Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:17:16.418Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:17:37.898Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:17:37.899Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:17:38.049Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:17:38.050Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:17:38.055Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:17:38.055Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:17:38.056Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:17:38.056Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:17:38.057Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:17:38.057Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:17:38.058Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:17:38.068Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:18:02.233Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:18:02.234Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:18:02.409Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:18:02.409Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:18:02.416Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:18:02.416Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:18:02.417Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:18:02.417Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:18:02.418Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:18:02.419Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:18:02.419Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:18:02.429Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:18:12.930Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:18:12.931Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:18:13.110Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:18:13.110Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:18:13.116Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:18:13.117Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:18:13.118Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:18:13.118Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:18:13.119Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:18:13.119Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:18:13.120Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:18:13.137Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:18:24.356Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:18:24.357Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:18:24.528Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:18:24.529Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:18:24.535Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:18:24.536Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:18:24.536Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:18:24.536Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:18:24.537Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:18:24.537Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:18:24.537Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:18:24.548Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:18:41.550Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:18:41.551Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:18:41.738Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:18:41.738Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:18:41.743Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:18:41.744Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:18:41.745Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:18:41.745Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:18:41.746Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:18:41.746Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:18:41.747Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:18:41.761Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:19:09.406Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:19:09.407Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:19:09.575Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:19:09.575Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:19:09.582Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:19:09.582Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:19:09.583Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:19:09.583Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:19:09.583Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:19:09.584Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:19:09.584Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:19:09.594Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:19:18.203Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:19:18.204Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:19:18.401Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:19:18.402Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:19:18.408Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:19:18.408Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:19:18.409Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:19:18.409Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:19:18.410Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:19:18.410Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:19:18.411Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:19:18.422Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:19:27.971Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:19:27.972Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:19:28.150Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:19:28.150Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:19:28.157Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:19:28.157Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:19:28.158Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:19:28.158Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:19:28.159Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:19:28.160Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:19:28.160Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:19:28.172Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:19:40.699Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:19:40.700Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:19:40.870Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:19:40.870Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:19:40.876Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:19:40.877Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:19:40.878Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:19:40.879Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:19:40.879Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:19:40.880Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:19:40.881Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:19:40.892Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:20:09.323Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:20:09.324Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:20:09.504Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:20:09.505Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:20:09.511Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:20:09.512Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:20:09.512Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:20:09.512Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:20:09.513Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:20:09.513Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:20:09.513Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:20:09.524Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:20:14.092Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:20:14.093Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:20:14.263Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:20:14.264Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:20:14.270Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:20:14.270Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:20:14.271Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:20:14.271Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:20:14.272Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:20:14.272Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:20:14.272Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:20:14.282Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:20:19.732Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:20:19.733Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:20:19.933Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:20:19.934Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:20:19.940Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:20:19.941Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:20:19.941Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:20:19.942Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:20:19.942Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:20:19.943Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:20:19.943Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:20:19.954Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:20:25.523Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:20:25.524Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:20:25.713Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:20:25.714Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:20:25.720Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:20:25.720Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:20:25.721Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:20:25.721Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:20:25.722Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:20:25.722Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:20:25.722Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:20:25.732Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:20:39.001Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:20:39.003Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:20:39.224Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:20:39.225Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:20:39.232Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:20:39.232Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:20:39.233Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:20:39.234Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:20:39.235Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:20:39.236Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:20:39.236Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:20:39.247Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:20:45.210Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:20:45.211Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:20:45.392Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:20:45.392Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:20:45.397Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:20:45.398Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:20:45.399Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:20:45.400Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:20:45.401Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:20:45.402Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:20:45.402Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:20:45.413Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:20:56.522Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:20:56.523Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:20:56.707Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:20:56.708Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:20:56.713Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:20:56.714Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:20:56.714Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:20:56.715Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:20:56.715Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:20:56.716Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:20:56.717Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:20:56.730Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:21:01.061Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:21:01.062Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:21:01.215Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:21:01.216Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:21:01.222Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:21:01.223Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:21:01.223Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:21:01.224Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:21:01.224Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:21:01.224Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:21:01.225Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:21:01.233Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:21:07.439Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:21:07.440Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:21:07.745Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:21:07.746Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:21:07.754Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:21:07.755Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:21:07.755Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:21:07.756Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:21:07.756Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:21:07.757Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:21:07.757Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:21:07.771Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:21:12.547Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:21:12.548Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:21:12.728Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:21:12.728Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:21:12.733Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:21:12.734Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:21:12.736Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:21:12.736Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:21:12.737Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:21:12.737Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:21:12.738Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:21:12.749Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:21:17.287Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:21:17.288Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:21:17.472Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:21:17.472Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:21:17.478Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:21:17.478Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:21:17.479Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:21:17.479Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:21:17.479Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:21:17.480Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:21:17.481Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:21:17.494Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:21:22.328Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:21:22.329Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:21:22.509Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:21:22.510Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:21:22.515Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:21:22.516Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:21:22.516Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:21:22.517Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:21:22.518Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:21:22.518Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:21:22.519Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:21:22.530Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:21:36.441Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:21:36.442Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:21:36.628Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:21:36.629Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:21:36.635Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:21:36.636Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:21:36.636Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:21:36.637Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:21:36.637Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:21:36.638Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:21:36.639Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:21:36.650Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:24:10.498Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:24:10.499Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:24:10.644Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:24:10.644Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:24:10.649Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:24:10.649Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:24:10.650Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:24:10.650Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:24:10.651Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:24:10.651Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:24:10.652Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:24:10.662Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:33:26.250Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:33:26.251Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:33:26.413Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:33:26.414Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:33:26.419Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:33:26.420Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:33:26.421Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:33:26.421Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:33:26.421Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:33:26.422Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:33:26.422Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:33:26.433Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:33:31.239Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:33:31.240Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:33:31.424Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:33:31.425Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:33:31.431Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:33:31.432Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:33:31.433Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:33:31.433Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:33:31.433Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:33:31.434Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:33:31.435Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:33:31.446Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:33:44.633Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:33:44.634Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:33:44.807Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:33:44.808Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:33:44.813Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:33:44.814Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:33:44.815Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:33:44.816Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:33:44.816Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:33:44.817Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:33:44.817Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:33:44.829Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:33:49.374Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:33:49.375Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:33:49.547Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:33:49.548Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:33:49.553Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:33:49.553Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:33:49.554Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:33:49.555Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:33:49.556Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:33:49.556Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:33:49.557Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:33:49.569Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:33:54.723Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:33:54.724Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:33:54.908Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:33:54.908Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:33:54.913Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:33:54.914Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:33:54.915Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:33:54.915Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:33:54.916Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:33:54.916Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:33:54.917Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:33:54.927Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:33:59.590Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:33:59.591Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:33:59.784Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:33:59.784Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:33:59.790Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:33:59.790Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:33:59.791Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:33:59.792Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:33:59.793Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:33:59.793Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:33:59.794Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:33:59.806Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:34:04.992Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:34:04.993Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:34:05.167Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:34:05.167Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:34:05.174Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:34:05.174Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:34:05.175Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:34:05.175Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:34:05.175Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:34:05.176Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:34:05.176Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:34:05.186Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:34:10.642Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:34:10.643Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:34:10.782Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:34:10.782Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:34:10.787Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:34:10.787Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:34:10.788Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:34:10.788Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:34:10.789Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:34:10.790Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:34:10.790Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:34:10.802Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:34:19.507Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:34:19.508Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:34:19.746Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:34:19.747Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:34:19.755Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:34:19.755Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:34:19.756Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:34:19.757Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:34:19.757Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:34:19.758Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:34:19.758Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:34:19.770Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:34:24.230Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:34:24.231Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:34:24.397Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:34:24.398Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:34:24.403Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:34:24.404Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:34:24.405Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:34:24.406Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:34:24.406Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:34:24.407Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:34:24.407Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:34:24.419Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:34:42.388Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:34:42.390Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:34:42.565Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:34:42.565Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:34:42.572Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:34:42.573Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:34:42.573Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:34:42.574Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:34:42.575Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:34:42.575Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:34:42.576Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:34:42.590Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:34:47.127Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:34:47.128Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:34:47.274Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:34:47.274Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:34:47.279Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:34:47.279Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:34:47.280Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:34:47.281Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:34:47.281Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:34:47.282Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:34:47.282Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:34:47.291Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:34:53.690Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:34:53.691Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:34:53.919Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:34:53.920Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:34:53.927Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:34:53.928Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:34:53.929Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:34:53.929Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:34:53.930Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:34:53.930Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:34:53.931Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:34:53.944Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:34:58.466Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:34:58.467Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:34:58.629Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:34:58.630Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:34:58.635Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:34:58.635Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:34:58.636Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:34:58.636Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:34:58.637Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:34:58.637Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:34:58.637Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:34:58.649Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:40:18.407Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:40:18.408Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:40:18.582Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:40:18.583Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:40:18.588Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:40:18.589Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:40:18.590Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:40:18.591Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:40:18.591Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:40:18.592Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:40:18.593Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:40:18.605Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T16:42:38.290Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T16:42:38.291Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T16:42:38.474Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T16:42:38.474Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T16:42:38.481Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T16:42:38.482Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T16:42:38.482Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T16:42:38.483Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T16:42:38.483Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T16:42:38.484Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T16:42:38.484Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T16:42:38.497Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:07:16.907Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:07:16.910Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:07:17.152Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:07:17.153Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:07:17.160Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:07:17.160Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:07:17.161Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:07:17.161Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:07:17.162Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:07:17.162Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:07:17.162Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:07:17.172Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:07:24.312Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:07:24.313Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:07:24.471Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:07:24.471Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:07:24.477Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:07:24.478Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:07:24.479Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:07:24.479Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:07:24.479Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:07:24.480Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:07:24.481Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:07:24.492Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:07:35.190Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:07:35.191Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:07:35.370Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:07:35.371Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:07:35.377Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:07:35.378Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:07:35.379Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:07:35.379Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:07:35.380Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:07:35.380Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:07:35.380Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:07:35.392Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:07:39.501Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:07:39.502Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:07:39.686Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:07:39.686Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:07:39.692Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:07:39.693Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:07:39.693Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:07:39.694Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:07:39.694Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:07:39.695Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:07:39.695Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:07:39.710Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:07:54.281Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:07:54.282Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:07:54.444Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:07:54.444Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:07:54.449Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:07:54.450Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:07:54.450Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:07:54.451Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:07:54.451Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:07:54.451Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:07:54.452Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:07:54.463Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:08:04.790Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:08:04.791Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:08:05.022Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:08:05.023Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:08:05.032Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:08:05.033Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:08:05.034Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:08:05.034Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:08:05.035Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:08:05.036Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:08:05.037Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:08:05.049Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:08:15.326Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:08:15.327Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:08:15.508Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:08:15.508Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:08:15.514Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:08:15.515Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:08:15.515Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:08:15.516Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:08:15.516Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:08:15.517Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:08:15.517Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:08:15.530Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:08:21.335Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:08:21.336Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:08:21.512Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:08:21.512Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:08:21.517Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:08:21.518Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:08:21.519Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:08:21.519Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:08:21.520Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:08:21.520Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:08:21.521Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:08:21.533Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:08:26.301Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:08:26.302Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:08:26.475Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:08:26.476Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:08:26.482Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:08:26.483Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:08:26.484Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:08:26.485Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:08:26.486Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:08:26.486Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:08:26.487Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:08:26.499Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:08:39.331Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:08:39.332Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:08:39.495Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:08:39.496Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:08:39.500Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:08:39.501Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:08:39.501Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:08:39.502Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:08:39.503Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:08:39.503Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:08:39.503Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:08:39.515Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:08:51.030Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:08:51.031Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:08:51.192Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:08:51.193Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:08:51.198Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:08:51.199Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:08:51.199Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:08:51.200Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:08:51.200Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:08:51.200Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:08:51.201Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:08:51.211Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:09:27.784Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:09:27.785Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:09:27.925Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:09:27.925Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:09:27.929Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:09:27.930Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:09:27.931Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:09:27.931Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:09:27.932Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:09:27.932Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:09:27.932Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:09:27.943Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:10:24.499Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:10:24.500Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:10:24.687Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:10:24.688Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:10:24.694Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:10:24.695Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:10:24.695Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:10:24.696Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:10:24.696Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:10:24.697Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:10:24.697Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:10:24.709Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:10:31.255Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:10:31.257Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:10:31.459Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:10:31.460Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:10:31.465Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:10:31.466Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:10:31.467Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:10:31.467Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:10:31.468Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:10:31.468Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:10:31.469Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:10:31.479Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:11:33.322Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:11:33.322Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:11:33.512Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:11:33.513Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:11:33.519Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:11:33.520Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:11:33.520Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:11:33.521Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:11:33.521Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:11:33.522Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:11:33.522Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:11:33.535Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:11:47.902Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:11:47.904Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:11:48.066Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:11:48.067Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:11:48.072Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:11:48.073Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:11:48.074Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:11:48.074Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:11:48.075Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:11:48.076Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:11:48.076Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:11:48.087Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:11:55.415Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:11:55.416Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:11:55.602Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:11:55.602Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:11:55.608Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:11:55.608Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:11:55.609Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:11:55.609Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:11:55.610Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:11:55.610Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:11:55.610Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:11:55.620Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:12:05.114Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:12:05.115Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:12:05.299Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:12:05.300Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:12:05.307Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:12:05.308Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:12:05.308Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:12:05.309Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:12:05.309Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:12:05.310Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:12:05.310Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:12:05.321Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:12:22.094Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:12:22.095Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:12:22.276Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:12:22.276Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:12:22.282Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:12:22.283Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:12:22.284Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:12:22.285Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:12:22.286Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:12:22.287Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:12:22.287Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:12:22.297Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:14:07.486Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:14:07.487Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:14:07.691Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:14:07.692Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:14:07.699Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:14:07.700Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:14:07.701Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:14:07.702Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:14:07.703Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:14:07.704Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:14:07.704Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:14:07.717Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:14:15.291Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:14:15.292Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:14:15.454Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:14:15.454Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:14:15.459Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:14:15.460Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:14:15.460Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:14:15.461Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:14:15.461Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:14:15.461Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:14:15.462Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:14:15.477Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:15:21.863Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:15:21.864Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:15:22.003Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:15:22.004Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:15:22.008Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:15:22.009Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:15:22.009Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:15:22.010Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:15:22.010Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:15:22.010Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:15:22.011Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:15:22.021Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:16:05.681Z","level":"INFO","message":"验证码发送成功","meta":{"phone":"17631591114","remaining":4}}
+{"timestamp":"2025-08-20T17:19:14.561Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:19:14.562Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:19:14.711Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:19:14.712Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:19:14.718Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:19:14.719Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:19:14.720Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:19:14.720Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:19:14.721Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:19:14.721Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:19:14.722Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:19:14.737Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:26:06.789Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:26:06.790Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:26:06.978Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:26:06.979Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:26:06.984Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:26:06.985Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:26:06.985Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:26:06.986Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:26:06.987Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:26:06.987Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:26:06.988Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:26:07.001Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:27:01.254Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:27:01.255Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:27:01.439Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:27:01.440Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:27:01.446Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:27:01.447Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:27:01.448Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:27:01.448Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:27:01.449Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:27:01.449Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:27:01.449Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:27:01.461Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:29:59.585Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:29:59.585Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:29:59.748Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:29:59.749Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:29:59.754Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:29:59.755Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:29:59.756Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:29:59.757Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:29:59.758Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:29:59.758Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:29:59.759Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:29:59.768Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:30:16.862Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:30:16.863Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:30:17.009Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:30:17.010Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:30:17.015Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:30:17.015Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:30:17.016Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:30:17.016Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:30:17.017Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:30:17.017Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:30:17.018Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:30:17.028Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:30:23.229Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:30:23.230Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:30:23.409Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:30:23.409Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:30:23.415Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:30:23.415Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:30:23.416Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:30:23.417Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:30:23.417Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:30:23.418Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:30:23.418Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:30:23.429Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:30:28.716Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:30:28.717Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:30:28.891Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:30:28.892Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:30:28.896Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:30:28.897Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:30:28.898Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:30:28.898Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:30:28.899Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:30:28.899Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:30:28.900Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:30:28.912Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:30:38.924Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:30:38.926Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:30:39.096Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:30:39.096Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:30:39.101Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:30:39.102Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:30:39.102Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:30:39.103Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:30:39.103Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:30:39.104Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:30:39.104Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:30:39.116Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:30:44.984Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:30:44.985Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:30:45.164Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:30:45.165Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:30:45.170Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:30:45.171Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:30:45.172Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:30:45.173Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:30:45.173Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:30:45.174Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:30:45.174Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:30:45.185Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:30:58.381Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:30:58.382Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:30:58.534Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:30:58.534Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:30:58.539Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:30:58.540Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:30:58.540Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:30:58.540Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:30:58.541Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:30:58.541Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:30:58.542Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:30:58.552Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:31:10.802Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:31:10.803Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:31:10.976Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:31:10.977Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:31:10.982Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:31:10.983Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:31:10.983Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:31:10.984Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:31:10.985Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:31:10.985Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:31:10.985Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:31:10.997Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:31:43.578Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:31:43.579Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:31:43.720Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:31:43.720Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:31:43.725Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:31:43.726Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:31:43.726Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:31:43.727Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:31:43.727Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:31:43.727Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:31:43.728Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:31:43.737Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:32:55.001Z","level":"INFO","message":"Received SIGINT. Starting graceful shutdown..."}
+{"timestamp":"2025-08-20T17:32:55.002Z","level":"INFO","message":"HTTP server closed."}
+{"timestamp":"2025-08-20T17:32:55.003Z","level":"INFO","message":"🧹 Database optimization cleaned up"}
+{"timestamp":"2025-08-20T17:32:55.003Z","level":"INFO","message":"Database optimization cleaned up."}
+{"timestamp":"2025-08-20T17:32:55.023Z","level":"INFO","message":"Database disconnected."}
+{"timestamp":"2025-08-20T17:32:55.025Z","level":"INFO","message":"Redis disconnected."}
+{"timestamp":"2025-08-20T17:32:55.025Z","level":"INFO","message":"Graceful shutdown completed."}
+{"timestamp":"2025-08-20T17:33:03.612Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:33:03.613Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:33:03.788Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:33:03.788Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:33:03.794Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:33:03.794Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:33:03.795Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:33:03.795Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:33:03.796Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:33:03.796Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:33:03.797Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:33:03.808Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:33:13.523Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:33:13.524Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:33:13.693Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:33:13.693Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:33:13.699Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:33:13.700Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:33:13.700Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:33:13.701Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:33:13.701Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:33:13.702Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:33:13.702Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:33:13.714Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:34:48.391Z","level":"INFO","message":"验证码发送成功","meta":{"phone":"17631591114","remaining":3}}
+{"timestamp":"2025-08-20T17:44:05.902Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:44:05.903Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:44:06.076Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:44:06.076Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:44:06.083Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:44:06.083Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:44:06.084Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:44:06.084Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:44:06.085Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:44:06.085Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:44:06.086Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:44:06.097Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:44:14.331Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:44:14.332Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:44:14.507Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:44:14.508Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:44:14.515Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:44:14.516Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:44:14.517Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:44:14.517Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:44:14.517Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:44:14.518Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:44:14.518Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:44:14.529Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:44:23.658Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:44:23.659Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:44:23.848Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:44:23.848Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:44:23.854Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:44:23.854Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:44:23.855Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:44:23.855Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:44:23.856Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:44:23.856Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:44:23.856Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:44:23.868Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:44:54.521Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:44:54.522Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:44:54.696Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:44:54.697Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:44:54.703Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:44:54.704Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:44:54.704Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:44:54.705Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:44:54.706Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:44:54.707Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:44:54.707Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:44:54.719Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:46:58.091Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:46:58.092Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:46:58.261Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:46:58.262Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:46:58.267Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:46:58.268Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:46:58.268Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:46:58.269Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:46:58.270Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:46:58.271Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:46:58.272Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:46:58.283Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:47:04.132Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:47:04.133Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:47:04.312Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:47:04.312Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:47:04.318Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:47:04.319Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:47:04.319Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:47:04.320Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:47:04.320Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:47:04.320Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:47:04.321Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:47:04.332Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:47:10.750Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:47:10.751Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:47:10.928Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:47:10.928Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:47:10.934Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:47:10.934Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:47:10.935Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:47:10.935Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:47:10.936Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:47:10.936Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:47:10.937Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:47:10.948Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:47:22.965Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:47:22.966Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:47:23.196Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:47:23.197Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:47:23.201Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:47:23.202Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:47:23.203Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:47:23.203Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:47:23.204Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:47:23.204Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:47:23.204Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:47:23.214Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:47:29.620Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:47:29.622Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:47:29.798Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:47:29.799Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:47:29.804Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:47:29.805Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:47:29.805Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:47:29.806Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:47:29.806Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:47:29.807Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:47:29.808Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:47:29.819Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:50:50.095Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:50:50.096Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:50:50.281Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:50:50.281Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:50:50.287Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:50:50.288Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:50:50.290Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:50:50.290Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:50:50.291Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:50:50.291Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:50:50.292Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:50:50.302Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:50:55.076Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:50:55.077Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:50:55.261Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:50:55.261Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:50:55.270Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:50:55.271Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:50:55.272Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:50:55.273Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:50:55.273Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:50:55.274Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:50:55.274Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:50:55.288Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:51:00.709Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:51:00.710Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:51:00.890Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:51:00.890Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:51:00.896Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:51:00.896Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:51:00.897Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:51:00.897Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:51:00.898Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:51:00.899Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:51:00.900Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:51:00.910Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:51:05.793Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:51:05.794Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:51:05.974Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:51:05.975Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:51:05.980Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:51:05.981Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:51:05.982Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:51:05.982Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:51:05.983Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:51:05.984Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:51:05.984Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:51:05.995Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:51:10.511Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:51:10.512Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:51:10.691Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:51:10.692Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:51:10.697Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:51:10.698Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:51:10.699Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:51:10.700Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:51:10.701Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:51:10.702Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:51:10.703Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:51:10.715Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:51:18.608Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:51:18.609Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:51:18.794Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:51:18.795Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:51:18.801Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:51:18.801Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:51:18.802Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:51:18.803Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:51:18.803Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:51:18.804Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:51:18.805Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:51:18.815Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:51:24.349Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:51:24.350Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:51:24.518Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:51:24.519Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:51:24.524Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:51:24.525Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:51:24.526Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:51:24.526Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:51:24.527Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:51:24.527Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:51:24.527Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:51:24.539Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:51:29.226Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:51:29.228Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:51:29.409Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:51:29.410Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:51:29.417Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:51:29.418Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:51:29.418Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:51:29.419Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:51:29.420Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:51:29.420Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:51:29.421Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:51:29.431Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:51:34.902Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:51:34.903Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:51:35.096Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:51:35.097Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:51:35.104Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:51:35.105Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:51:35.106Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:51:35.106Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:51:35.107Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:51:35.108Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:51:35.109Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:51:35.120Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:51:50.550Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:51:50.551Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:51:50.732Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:51:50.733Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:51:50.739Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:51:50.740Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:51:50.740Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:51:50.741Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:51:50.741Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:51:50.742Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:51:50.743Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:51:50.754Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:52:20.276Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:52:20.277Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:52:20.457Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:52:20.457Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:52:20.462Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:52:20.463Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:52:20.463Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:52:20.464Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:52:20.464Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:52:20.465Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:52:20.465Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:52:20.479Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T17:53:13.867Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T17:53:13.868Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T17:53:14.099Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T17:53:14.099Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T17:53:14.107Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T17:53:14.108Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T17:53:14.109Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T17:53:14.110Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T17:53:14.111Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T17:53:14.112Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T17:53:14.113Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T17:53:14.129Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T18:08:17.322Z","level":"INFO","message":"验证码发送成功","meta":{"phone":"13800138000","remaining":4}}
+{"timestamp":"2025-08-20T18:08:31.229Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T18:08:31.230Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T18:08:31.374Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T18:08:31.374Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T18:08:31.379Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T18:08:31.380Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T18:08:31.380Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T18:08:31.381Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T18:08:31.381Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T18:08:31.382Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T18:08:31.382Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T18:08:31.393Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T18:08:38.644Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T18:08:38.645Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T18:08:38.817Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T18:08:38.817Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T18:08:38.822Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T18:08:38.823Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T18:08:38.823Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T18:08:38.824Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T18:08:38.824Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T18:08:38.824Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T18:08:38.825Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T18:08:38.836Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T18:08:54.775Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T18:08:54.776Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T18:08:54.943Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T18:08:54.943Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T18:08:54.948Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T18:08:54.949Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T18:08:54.949Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T18:08:54.950Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T18:08:54.950Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T18:08:54.951Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T18:08:54.952Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T18:08:54.963Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T18:09:19.128Z","level":"INFO","message":"验证码发送成功","meta":{"phone":"13800138001","remaining":4}}
+{"timestamp":"2025-08-20T18:09:51.273Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T18:09:51.274Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T18:09:51.428Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T18:09:51.429Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T18:09:51.434Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T18:09:51.435Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T18:09:51.436Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T18:09:51.436Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T18:09:51.437Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T18:09:51.437Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T18:09:51.437Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T18:09:51.446Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T18:10:05.532Z","level":"INFO","message":"验证码发送成功","meta":{"phone":"13800138002","remaining":4}}
+{"timestamp":"2025-08-20T18:10:06.550Z","level":"INFO","message":"验证码验证成功","meta":{"phone":"13800138002"}}
+{"timestamp":"2025-08-20T18:10:57.527Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T18:10:57.528Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T18:10:57.690Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T18:10:57.691Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T18:10:57.696Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T18:10:57.696Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T18:10:57.696Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T18:10:57.697Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T18:10:57.697Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T18:10:57.698Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T18:10:57.698Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T18:10:57.709Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T18:11:09.998Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T18:11:09.999Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T18:11:10.147Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T18:11:10.147Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T18:11:10.151Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T18:11:10.152Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T18:11:10.153Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T18:11:10.153Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T18:11:10.154Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T18:11:10.154Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T18:11:10.154Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T18:11:10.166Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T18:11:21.252Z","level":"INFO","message":"验证码发送成功","meta":{"phone":"13800138002","remaining":3}}
+{"timestamp":"2025-08-20T18:11:22.282Z","level":"INFO","message":"验证码验证成功","meta":{"phone":"13800138002"}}
+{"timestamp":"2025-08-20T18:12:28.556Z","level":"INFO","message":"验证码发送成功","meta":{"phone":"17631591114","remaining":2}}
+{"timestamp":"2025-08-20T18:12:41.043Z","level":"INFO","message":"🔧 Initializing database optimization..."}
+{"timestamp":"2025-08-20T18:12:41.044Z","level":"INFO","message":"📊 Creating optimized indexes..."}
+{"timestamp":"2025-08-20T18:12:41.240Z","level":"INFO","message":"✅ Optimized indexes created"}
+{"timestamp":"2025-08-20T18:12:41.241Z","level":"INFO","message":"🐌 Setting up slow query monitoring..."}
+{"timestamp":"2025-08-20T18:12:41.248Z","level":"INFO","message":"📈 Enabling performance monitoring..."}
+{"timestamp":"2025-08-20T18:12:41.248Z","level":"INFO","message":"✅ Performance monitoring enabled"}
+{"timestamp":"2025-08-20T18:12:41.249Z","level":"INFO","message":"🏊 Configuring connection pool..."}
+{"timestamp":"2025-08-20T18:12:41.250Z","level":"INFO","message":"✅ Connection pool configured"}
+{"timestamp":"2025-08-20T18:12:41.250Z","level":"INFO","message":"⚡ Setting up query optimization..."}
+{"timestamp":"2025-08-20T18:12:41.251Z","level":"INFO","message":"✅ Query optimization configured"}
+{"timestamp":"2025-08-20T18:12:41.251Z","level":"INFO","message":"✅ Database optimization initialized successfully"}
+{"timestamp":"2025-08-20T18:12:41.265Z","level":"INFO","message":"All services initialized successfully"}
+{"timestamp":"2025-08-20T18:12:43.959Z","level":"INFO","message":"验证码验证成功","meta":{"phone":"17631591114"}}
+{"timestamp":"2025-08-20T18:14:01.770Z","level":"INFO","message":"验证码发送成功","meta":{"phone":"17631591114","remaining":1}}
+{"timestamp":"2025-08-20T18:14:26.588Z","level":"INFO","message":"验证码验证成功","meta":{"phone":"17631591114"}}
+{"timestamp":"2025-08-20T18:20:54.101Z","level":"INFO","message":"验证码发送成功","meta":{"phone":"17631591114","remaining":0}}
+{"timestamp":"2025-08-20T18:21:04.383Z","level":"INFO","message":"验证码验证成功","meta":{"phone":"17631591114"}}
+{"timestamp":"2025-08-20T18:21:46.372Z","level":"INFO","message":"Received SIGINT. Starting graceful shutdown..."}
+{"timestamp":"2025-08-20T18:21:46.373Z","level":"INFO","message":"HTTP server closed."}
+{"timestamp":"2025-08-20T18:21:46.374Z","level":"INFO","message":"🧹 Database optimization cleaned up"}
+{"timestamp":"2025-08-20T18:21:46.374Z","level":"INFO","message":"Database optimization cleaned up."}
+{"timestamp":"2025-08-20T18:21:46.393Z","level":"INFO","message":"Database disconnected."}
+{"timestamp":"2025-08-20T18:21:46.395Z","level":"INFO","message":"Redis disconnected."}
+{"timestamp":"2025-08-20T18:21:46.396Z","level":"INFO","message":"Graceful shutdown completed."}

@@ -1,4 +1,5 @@
 import TaroCompat from './taroCompat'
+import { STORAGE_KEYS, TIME_CONSTANTS } from './constants'
 
 // 钱包信息接口
 export interface WalletInfo {
@@ -86,7 +87,7 @@ interface ApiResponse<T> {
 }
 
 class WalletService {
-  private baseUrl = 'http://localhost:3000/api/wallet' // 根据实际后端地址调整
+  private baseUrl = `http://localhost:${TIME_CONSTANTS.THREE_SECONDS}/api/wallet` // 根据实际后端地址调整
 
   // 发起请求的通用方法
   private async request<T>(
@@ -250,7 +251,7 @@ class WalletService {
     const date = new Date(dateString)
     const now = new Date()
     const diffMs = now.getTime() - date.getTime()
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    const diffDays = Math.floor(diffMs / TIME_CONSTANTS.ONE_DAY)
 
     if (diffDays === 0) {
       return `今天 ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`

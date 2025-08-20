@@ -41,8 +41,8 @@ export interface AuthResult {
       phone: string;
       nickName: string;
       balance: number;
-      verificationLevel: number;
-      faceAuthEnabled: boolean;
+      verificationLevel: string;
+      faceEnabled: boolean;
       avatarUrl?: string;
       hasPassword: boolean;
     };
@@ -64,11 +64,12 @@ export interface LoginHistory {
 export default class UserAuthService {
   private faceRecognitionService: FaceRecognitionService;
   private sliderVerifyService: SliderVerifyService;
-  private refreshTokens: Map<string, string> = new Map(); // 在生产环境中应该使用Redis
+  private redis: import('./RedisService').RedisService;
 
   constructor() {
     this.faceRecognitionService = new FaceRecognitionService();
     this.sliderVerifyService = new SliderVerifyService();
+    this.redis = new (require('./RedisService').RedisService)();
   }
 
   /**
@@ -89,13 +90,26 @@ export default class UserAuthService {
         }
       }
 
-      // 查找用户
-      const user = await User.findOne({ phone });
+      // 查找或创建用户（首次登录自动注册）
+      let user = await User.findOne({ phone });
+      let isNewUser = false;
+      
       if (!user) {
-        return {
-          success: false,
-          message: '用户不存在'
-        };
+        // 首次登录自动注册新用户
+        user = new User({
+          phone,
+          nickName: `用户${phone.slice(-4)}`,
+          balance: 0,
+          verificationLevel: 'basic',
+          faceEnabled: false,
+          status: 'active',
+          loginAttempts: 0,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+        await user.save();
+        isNewUser = true;
+        console.log('👤 首次登录，自动注册新用户:', user.phone);
       }
 
       let loginMethod: 'password' | 'verification' | 'face' = 'verification';
@@ -112,7 +126,7 @@ export default class UserAuthService {
           };
         }
         loginMethod = 'password';
-      } else if (faceImage && user.faceAuthEnabled) {
+      } else if (faceImage && user.faceEnabled) {
         // 人脸识别登录
         const faceVerificationResult = await this.faceRecognitionService.verifyFace(
           user._id.toString(),
@@ -137,8 +151,8 @@ export default class UserAuthService {
       const token = this.generateToken(user._id.toString());
       const refreshToken = this.generateRefreshToken(user._id.toString());
 
-      // 存储refresh token
-      this.refreshTokens.set(user._id.toString(), refreshToken);
+      // 存储refresh token到Redis
+      await this.redis.setex(`refresh_token:${user._id.toString()}`, 7 * 24 * 60 * 60, refreshToken);
 
       // 更新最后登录时间
       user.updatedAt = new Date();
@@ -149,7 +163,7 @@ export default class UserAuthService {
 
       return {
         success: true,
-        message: '登录成功',
+        message: isNewUser ? '欢迎新用户，注册并登录成功' : '登录成功',
         data: {
           token,
           refreshToken,
@@ -158,11 +172,12 @@ export default class UserAuthService {
             phone: user.phone,
             nickName: user.nickName || `用户${user.phone.slice(-4)}`,
             balance: user.balance || 0,
-            verificationLevel: user.verificationLevel || 1,
-            faceAuthEnabled: user.faceAuthEnabled || false,
+            verificationLevel: user.verificationLevel || 'basic',
+            faceEnabled: user.faceEnabled || false,
             avatarUrl: user.avatarUrl,
             hasPassword: !!user.password
-          }
+          },
+          isNewUser
         }
       };
     } catch (error) {
@@ -207,8 +222,8 @@ export default class UserAuthService {
         nickName: nickName || `用户${phone.slice(-4)}`,
         avatarUrl,
         balance: 0,
-        verificationLevel: 1,
-        faceAuthEnabled: false,
+        verificationLevel: 'basic',
+        faceEnabled: false,
         createdAt: new Date(),
         updatedAt: new Date()
       };
@@ -228,8 +243,8 @@ export default class UserAuthService {
           faceImage
         );
         if (faceRegistrationResult.success) {
-          user.faceAuthEnabled = true;
-          user.verificationLevel = 2;
+          user.faceEnabled = true;
+          user.verificationLevel = 'face_verified';
           await user.save();
         }
       }
@@ -238,8 +253,8 @@ export default class UserAuthService {
       const token = this.generateToken(user._id.toString());
       const refreshToken = this.generateRefreshToken(user._id.toString());
 
-      // 存储refresh token
-      this.refreshTokens.set(user._id.toString(), refreshToken);
+      // 存储refresh token到Redis
+      await this.redis.setex(`refresh_token:${user._id.toString()}`, 7 * 24 * 60 * 60, refreshToken);
 
       // 记录登录历史
       await this.recordLoginHistory(user._id.toString(), deviceInfo, 'verification', true);
@@ -277,8 +292,8 @@ export default class UserAuthService {
    */
   async logout(userId: string, refreshToken?: string): Promise<{ success: boolean; message: string }> {
     try {
-      // 移除refresh token
-      this.refreshTokens.delete(userId);
+      // 从Redis移除refresh token
+      await this.redis.del(`refresh_token:${userId}`);
 
       return {
         success: true,
@@ -299,11 +314,15 @@ export default class UserAuthService {
   async refreshToken(refreshToken: string): Promise<AuthResult> {
     try {
       // 验证refresh token
-      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key') as any;
+      const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
+    if (!jwtRefreshSecret) {
+      throw new Error('JWT refresh secret not configured');
+    }
+    const decoded = jwt.verify(refreshToken, jwtRefreshSecret) as any;
       const userId = decoded.userId;
 
       // 检查refresh token是否存在
-      const storedRefreshToken = this.refreshTokens.get(userId);
+      const storedRefreshToken = await this.redis.get(`refresh_token:${userId}`);
       if (!storedRefreshToken || storedRefreshToken !== refreshToken) {
         return {
           success: false,
@@ -324,8 +343,8 @@ export default class UserAuthService {
       const newToken = this.generateToken(userId);
       const newRefreshToken = this.generateRefreshToken(userId);
 
-      // 更新refresh token
-      this.refreshTokens.set(userId, newRefreshToken);
+      // 更新refresh token到Redis
+      await this.redis.setex(`refresh_token:${userId}`, 7 * 24 * 60 * 60, newRefreshToken);
 
       return {
         success: true,
@@ -338,8 +357,8 @@ export default class UserAuthService {
             phone: user.phone,
             nickName: user.nickName,
             balance: user.balance,
-            verificationLevel: user.verificationLevel || 1,
-            faceAuthEnabled: user.faceAuthEnabled || false,
+            verificationLevel: user.verificationLevel || 'basic',
+            faceEnabled: user.faceEnabled || false,
             avatarUrl: user.avatarUrl,
             hasPassword: !!user.password
           }
@@ -426,7 +445,7 @@ export default class UserAuthService {
       await user.save();
 
       // 清除该用户的refresh token
-      this.refreshTokens.delete(user._id.toString());
+      await this.redis.del(`refresh_token:${user._id.toString()}`);
 
       return {
         success: true,
@@ -444,7 +463,7 @@ export default class UserAuthService {
   /**
    * 获取登录历史
    */
-  async getLoginHistory(userId: string, limit: number = 10): Promise<LoginHistory[]> {
+  async getLoginHistory(userId: string, limit = 10): Promise<LoginHistory[]> {
     try {
       // 这里应该从数据库获取登录历史
       // 目前返回空数组，实际应该实现数据库存储
@@ -459,9 +478,13 @@ export default class UserAuthService {
    * 生成JWT token
    */
   private generateToken(userId: string): string {
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error('JWT secret not configured');
+    }
     return jwt.sign(
       { userId },
-      process.env.JWT_SECRET || 'your-secret-key',
+      jwtSecret,
       { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
   }
@@ -470,9 +493,13 @@ export default class UserAuthService {
    * 生成refresh token
    */
   private generateRefreshToken(userId: string): string {
+    const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
+    if (!jwtRefreshSecret) {
+      throw new Error('JWT refresh secret not configured');
+    }
     return jwt.sign(
       { userId },
-      process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key',
+      jwtRefreshSecret,
       { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d' }
     );
   }

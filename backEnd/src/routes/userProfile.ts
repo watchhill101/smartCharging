@@ -329,8 +329,8 @@ router.post('/cache/clear', authenticate, asyncHandler(async (req: any, res: Res
   });
 }));
 
-// 头像文件访问接口
-router.get('/uploads/avatars/:fileName', asyncHandler(async (req: Request, res: Response) => {
+// 获取头像文件
+router.get('/uploads/avatars/:fileName', authenticate, asyncHandler(async (req: Request, res: Response) => {
   const { fileName } = req.params;
   
   // 验证文件名格式

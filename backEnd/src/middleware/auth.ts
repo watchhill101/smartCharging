@@ -1,16 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { AppError } from './errorHandler';
-import User, { IUser } from '../models/User';
+import User from '../models/User';
+import { RedisService } from '../services/RedisService';
 
 // 扩展Request接口
-declare global {
-  namespace Express {
-    interface Request {
-      user?: IUser;
-    }
-  }
-}
+
+
+// Redis实例
+const redis = new RedisService();
 
 // JWT认证中间件
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
@@ -26,11 +24,29 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
       throw new AppError('JWT secret not configured', 500, 'JWT_SECRET_MISSING');
     }
 
-    const decoded = jwt.verify(token, jwtSecret) as { userId: string };
-    const user = await User.findById(decoded.userId);
+    // 验证JWT
+    const decoded = jwt.verify(token, jwtSecret) as { userId: string; iat?: number };
+    
+    // 检查token是否在黑名单中
+    const tokenId = generateTokenId(decoded);
+    const isBlacklisted = await redis.exists(`blacklist:token:${tokenId}`);
+    if (isBlacklisted) {
+      throw new AppError('Token has been revoked', 401, 'TOKEN_REVOKED');
+    }
 
+    // 查找用户
+    const user = await User.findById(decoded.userId);
     if (!user) {
       throw new AppError('User not found', 401, 'USER_NOT_FOUND');
+    }
+
+    // 检查用户状态
+    if (user.isDeleted) {
+      throw new AppError('User account has been deleted', 401, 'USER_DELETED');
+    }
+
+    if (user.isLocked) {
+      throw new AppError('User account is locked', 401, 'USER_LOCKED');
     }
 
     req.user = user;
@@ -171,6 +187,16 @@ export const logApiAccess = (req: Request, res: Response, next: NextFunction) =>
   });
   
   next();
+};
+
+// 生成Token ID用于黑名单
+const generateTokenId = (payload: { userId: string; iat?: number }): string => {
+  const crypto = require('crypto');
+  return crypto
+    .createHash('sha256')
+    .update(`${payload.userId}:${payload.iat}`)
+    .digest('hex')
+    .substring(0, 16);
 };
 
 // 别名导出，保持向后兼容

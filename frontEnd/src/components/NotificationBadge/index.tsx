@@ -38,4 +38,31 @@ const NotificationBadge: React.FC<NotificationBadgeProps> = ({
   const statusClass = isConnected ? 'connected' : 'disconnected'
 
   return (
-    <>\n      <View \n        className={`notification-badge ${sizeClass} ${statusClass} ${className}`}\n        onClick={handleClick}\n      >\n        <View className='notification-icon'>\n          <Text className='icon-text'>🔔</Text>\n          {!isConnected && (\n            <View className='connection-indicator offline' />\n          )}\n        </View>\n        \n        {unreadCount > 0 && (\n          <View className='notification-count'>\n            <Text className='count-text'>{getDisplayCount()}</Text>\n          </View>\n        )}\n      </View>\n\n      <NotificationCenter \n        visible={showCenter}\n        onClose={handleClose}\n      />\n    </>\n  )\n}\n\nexport default NotificationBadge"
+    <>
+      <View 
+        className={`notification-badge ${sizeClass} ${statusClass} ${className}`}
+        onClick={handleClick}
+      >
+        <View className='notification-icon'>
+          <Text className='icon-text'>🔔</Text>
+          {!isConnected && (
+            <View className='connection-indicator offline' />
+          )}
+        </View>
+        
+        {unreadCount > 0 && (
+          <View className='notification-count'>
+            <Text className='count-text'>{getDisplayCount()}</Text>
+          </View>
+        )}
+      </View>
+
+      <NotificationCenter 
+        visible={showCenter}
+        onClose={handleClose}
+      />
+    </>
+  )
+}
+
+export default NotificationBadge

@@ -4,8 +4,9 @@ import Taro from '@tarojs/taro'
 import request from '../../utils/request'
 import { STORAGE_KEYS } from '../../utils/constants'
 import './index.scss'
-import { showToast } from '../utils/toast'
-import { TaroSafe } from '../utils/taroSafe'
+import { TaroHelper } from '../../utils/taroHelpers'
+// import { showToast } from '../../utils/toast'
+import { TaroSafe } from '../../utils/taroSafe'
 
 interface CouponInfo {
   _id: string
@@ -191,7 +192,7 @@ const CouponCenter = () => {
   const handleUseCoupon = (coupon: UserCoupon) => {
     if (coupon.status !== 'available') return
 
-    Taro.showModal({
+    TaroHelper.showModal({
       title: '使用优惠券',
       content: `确定要在充电时使用"${coupon.couponInfo.name}"吗？`,
       success: (res) => {

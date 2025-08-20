@@ -158,7 +158,7 @@ FaceProfileSchema.statics.findByFaceId = async function(faceId: string): Promise
   return this.findOne({ faceId, isActive: true });
 };
 
-FaceProfileSchema.statics.cleanupInactiveProfiles = async function(daysInactive: number = 90): Promise<number> {
+FaceProfileSchema.statics.cleanupInactiveProfiles = async function(daysInactive = 90): Promise<number> {
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - daysInactive);
   

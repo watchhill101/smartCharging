@@ -3,7 +3,7 @@
  * 演示钱包管理的各项功能
  */
 
-import { WalletService } from '../services/WalletService';
+
 
 // 模拟环境变量
 process.env.API_BASE_URL = 'http://localhost:8080';
@@ -64,7 +64,7 @@ console.log('');
 
 // 7. API接口列表
 console.log('7. 可用的API接口:');
-const apiEndpoints = [
+const walletApiEndpoints = [
   'GET  /api/wallet/info - 获取钱包信息',
   'GET  /api/wallet/transactions - 获取交易记录',
   'POST /api/wallet/recharge - 创建充值订单',
@@ -80,7 +80,7 @@ const apiEndpoints = [
   'POST /api/wallet/auto-recharge - 设置自动充值'
 ];
 
-apiEndpoints.forEach(endpoint => {
+walletApiEndpoints.forEach(endpoint => {
   console.log(endpoint);
 });
 console.log('');
@@ -138,7 +138,7 @@ console.log('└── 类型: recharge, consume, refund, withdraw');
 
 // 10. 错误处理演示
 console.log('\n10. 错误处理机制:');
-const errorScenarios = [
+const walletErrorScenarios = [
   '余额不足 - 返回具体余额信息和充值建议',
   '金额无效 - 验证金额范围和格式',
   '钱包不存在 - 自动创建默认钱包',
@@ -147,7 +147,7 @@ const errorScenarios = [
   '网络异常 - 重试机制和降级处理'
 ];
 
-errorScenarios.forEach((scenario, index) => {
+walletErrorScenarios.forEach((scenario, index) => {
   console.log(`${index + 1}. ${scenario}`);
 });
 

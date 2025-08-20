@@ -82,7 +82,7 @@ export class NotificationWebSocketService {
     });
   }
 
-  private async authenticateSocket(socket: Socket, next: Function): Promise<void> {
+  private async authenticateSocket(socket: Socket, next: (err?: Error) => void): Promise<void> {
     try {
       const token = socket.handshake.auth.token || socket.handshake.query.token;
       
@@ -90,7 +90,11 @@ export class NotificationWebSocketService {
         return next(new Error('Authentication token required'));
       }
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default-secret') as any;
+      const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error('JWT secret not configured');
+    }
+    const decoded = jwt.verify(token, jwtSecret) as any;
       (socket as any).userId = decoded.id;
       
       next();

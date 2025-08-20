@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
-import { Button as NutButton, Toast, Loading } from '@nutui/nutui-react-taro';
+import { Button as NutButton, Toast } from '@nutui/nutui-react-taro';
 import ChargingStatus, { ChargingStatusData } from '../../components/ChargingStatus';
-import { WebSocketService, initWebSocketService, getWebSocketService } from '../../services/WebSocketService';
-import './index.scss';
+import { initWebSocketService, getWebSocketService } from '../../services/WebSocketService';
+import { get, post } from '../../utils/request';
+import './index.scss'
+import { TIME_CONSTANTS, WEBSOCKET_CONSTANTS } from '../../utils/constants';
 
 interface ChargingPageState {
   loading: boolean;
@@ -15,7 +17,7 @@ interface ChargingPageState {
 
 const ChargingPage: React.FC = () => {
   const router = useRouter();
-  const { pileId, sessionId, pileCode, source } = router.params;
+  const { pileId, sessionId, pileCode } = router.params;
   
   const [state, setState] = useState<ChargingPageState>({
     loading: true,
@@ -29,15 +31,15 @@ const ChargingPage: React.FC = () => {
     const initWebSocket = async () => {
       try {
         const wsUrl = process.env.NODE_ENV === 'development' 
-          ? 'ws://localhost:8001/ws/client/charging_monitor'
-          : 'wss://your-domain.com/ws/client/charging_monitor';
+          ? 'ws://localhost:8080/ws/charging'
+          : 'wss://api.smartcharging.com/ws/charging';
 
         const wsService = initWebSocketService(
           {
             url: wsUrl,
-            reconnectInterval: 3000,
-            maxReconnectAttempts: 5,
-            heartbeatInterval: 30000
+            reconnectInterval: WEBSOCKET_CONSTANTS.RECONNECT_INTERVAL,
+    maxReconnectAttempts: WEBSOCKET_CONSTANTS.MAX_RECONNECT_ATTEMPTS,
+    heartbeatInterval: WEBSOCKET_CONSTANTS.HEARTBEAT_INTERVAL
           },
           {
             onOpen: () => {
@@ -59,11 +61,7 @@ const ChargingPage: React.FC = () => {
             },
             onReconnect: (attempt) => {
               console.log(`🔄 WebSocket重连尝试 ${attempt}`);
-              Toast.show({
-                content: `正在重连... (${attempt})`,
-                type: 'loading',
-                duration: 2000
-              });
+              Toast.show(`正在重连... (${attempt})`);
             }
           }
         );
@@ -113,7 +111,20 @@ const ChargingPage: React.FC = () => {
           return;
         }
 
-        // 模拟API调用 - 实际应该调用真实API
+        // 调用真实API获取充电数据
+        const response = await get(`/charging/sessions/${sessionId}`)
+        
+        if (response.success && response.data) {
+          setState(prev => ({ 
+            ...prev, 
+            chargingData: response.data,
+            loading: false 
+          }));
+          return;
+        }
+        
+        // 如果API失败，使用模拟数据作为备用
+        console.warn('获取真实充电数据失败，使用模拟数据')
         const mockChargingData: ChargingStatusData = {
           sessionId: sessionId!,
           pileId: pileId || 'pile_001',
@@ -161,18 +172,29 @@ const ChargingPage: React.FC = () => {
   // 启动充电会话
   const startChargingSession = async () => {
     try {
-      // 模拟启动充电API调用
-      const mockSessionId = `session_${Date.now()}`;
+      // 调用真实API启动充电
+      const response = await post('/charging/start', {
+        pileId: pileId || pileCode,
+        pileCode: pileCode
+      });
       
-      // 更新URL参数
-      const newUrl = `/pages/charging/index?sessionId=${mockSessionId}&pileId=${pileId}`;
-      Taro.redirectTo({ url: newUrl });
+      if (response.success && response.data?.sessionId) {
+        // 更新URL参数
+        const newUrl = `/pages/charging/index?sessionId=${response.data.sessionId}&pileId=${pileId}`;
+        Taro.redirectTo({ url: newUrl });
+      } else {
+        throw new Error(response.message || '启动充电失败');
+      }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ 启动充电失败:', error);
+      
+      // 显示错误信息
+      Toast.show(error.message || '启动充电失败');
+      
       setState(prev => ({ 
         ...prev, 
-        error: '启动充电失败',
+        error: error.message || '启动充电失败',
         loading: false 
       }));
     }
@@ -226,62 +248,38 @@ const ChargingPage: React.FC = () => {
   const handleStopCharging = useCallback(async (sessionId: string) => {
     try {
       // 模拟停止充电API调用
-      Toast.show({
-        content: '充电已停止',
-        type: 'success',
-        duration: 2000
-      });
+      Toast.show('充电已停止');
 
       // 延迟跳转到结算页面
       setTimeout(() => {
         Taro.redirectTo({
           url: `/pages/chargingResult/index?sessionId=${sessionId}`
         });
-      }, 2000);
+      }, TIME_CONSTANTS.TWO_SECONDS);
 
     } catch (error) {
       console.error('❌ 停止充电失败:', error);
-      Toast.show({
-        content: '停止充电失败，请重试',
-        type: 'error',
-        duration: 2000
-      });
+      Toast.show('停止充电失败，请重试');
     }
   }, []);
 
   // 暂停充电
   const handlePauseCharging = useCallback(async (sessionId: string) => {
     try {
-      Toast.show({
-        content: '充电已暂停',
-        type: 'success',
-        duration: 2000
-      });
+      Toast.show('充电已暂停');
     } catch (error) {
       console.error('❌ 暂停充电失败:', error);
-      Toast.show({
-        content: '暂停充电失败',
-        type: 'error',
-        duration: 2000
-      });
+      Toast.show('暂停充电失败');
     }
   }, []);
 
   // 恢复充电
   const handleResumeCharging = useCallback(async (sessionId: string) => {
     try {
-      Toast.show({
-        content: '充电已恢复',
-        type: 'success',
-        duration: 2000
-      });
+      Toast.show('充电已恢复');
     } catch (error) {
       console.error('❌ 恢复充电失败:', error);
-      Toast.show({
-        content: '恢复充电失败',
-        type: 'error',
-        duration: 2000
-      });
+      Toast.show('恢复充电失败');
     }
   }, []);
 
@@ -309,7 +307,7 @@ const ChargingPage: React.FC = () => {
             }
           };
         });
-      }, 1000);
+      }, TIME_CONSTANTS.ONE_SECOND);
     }
   }, [sessionId]);
 
@@ -364,7 +362,7 @@ const ChargingPage: React.FC = () => {
         showDetails={true}
         showChart={true}
         autoRefresh={true}
-        refreshInterval={5000}
+        refreshInterval={TIME_CONSTANTS.FIVE_SECONDS}
       />
 
       {/* 底部安全提示 */}

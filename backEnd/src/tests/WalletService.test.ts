@@ -201,7 +201,7 @@ describe('WalletService', () => {
         save: jest.fn().mockResolvedValue(true)
       };
 
-      mockSession.withTransaction.mockImplementation(async (callback: Function) => {
+      mockSession.withTransaction.mockImplementation(async (callback: () => Promise<any>) => {
         MockedWallet.findOne = jest.fn().mockResolvedValue(mockWallet);
         return await callback();
       });
@@ -223,7 +223,7 @@ describe('WalletService', () => {
         getAvailableBalance: jest.fn().mockReturnValue(30)
       };
 
-      mockSession.withTransaction.mockImplementation(async (callback: Function) => {
+      mockSession.withTransaction.mockImplementation(async (callback: () => Promise<any>) => {
         MockedWallet.findOne = jest.fn().mockResolvedValue(mockWallet);
         return await callback();
       });
@@ -239,7 +239,7 @@ describe('WalletService', () => {
     });
 
     it('should fail if wallet not found', async () => {
-      mockSession.withTransaction.mockImplementation(async (callback: Function) => {
+      mockSession.withTransaction.mockImplementation(async (callback: () => Promise<any>) => {
         MockedWallet.findOne = jest.fn().mockResolvedValue(null);
         return await callback();
       });
@@ -282,7 +282,7 @@ describe('WalletService', () => {
         save: jest.fn().mockResolvedValue(true)
       };
 
-      mockSession.withTransaction.mockImplementation(async (callback: Function) => {
+      mockSession.withTransaction.mockImplementation(async (callback: () => Promise<any>) => {
         MockedWallet.findOne = jest.fn().mockResolvedValue(mockWallet);
         MockedUser.findByIdAndUpdate = jest.fn().mockResolvedValue(true);
         return await callback();
@@ -310,7 +310,7 @@ describe('WalletService', () => {
         save: jest.fn().mockResolvedValue(true)
       };
 
-      mockSession.withTransaction.mockImplementation(async (callback: Function) => {
+      mockSession.withTransaction.mockImplementation(async (callback: () => Promise<any>) => {
         MockedWallet.findOne = jest.fn().mockResolvedValue(mockWallet);
         MockedUser.findByIdAndUpdate = jest.fn().mockResolvedValue(true);
         return await callback();

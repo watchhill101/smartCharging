@@ -1,7 +1,7 @@
 import { View, Text, Input, Button } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import { useLoad } from '@tarojs/taro'
-import Taro, {
+import {
   getStorageSync as taroGetStorageSync,
   setStorageSync as taroSetStorageSync,
   navigateTo as taroNavigateTo,
@@ -10,10 +10,12 @@ import Taro, {
 } from '@tarojs/taro'
 import { post } from '../../utils/request'
 import { STORAGE_KEYS } from '../../utils/constants'
+import { tokenManager } from '../../utils/tokenManager'
 import { env } from '../../utils/platform'
 import SliderVerify from '../../components/SliderVerify'
-import FaceLogin from '../../components/FaceLogin'
+import FaceLoginOptimized from '../../components/FaceLogin/FaceLoginOptimized'
 import './login.scss'
+import { TIME_CONSTANTS, Z_INDEX_CONSTANTS } from '../../utils/constants'
 import React from 'react'
 
 interface LoginForm {
@@ -34,6 +36,7 @@ export default function Login() {
   const [receivedCode, setReceivedCode] = useState<string | null>(null)
   const [loginMode, setLoginMode] = useState<'code' | 'face'>('code')
   const [showFaceLogin, setShowFaceLogin] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [faceLoginSuccess, setFaceLoginSuccess] = useState(false)
   const [isH5Environment, setIsH5Environment] = useState(false)
   const [supportsFaceLogin, setSupportsFaceLogin] = useState(false)
@@ -120,7 +123,7 @@ export default function Login() {
     setCodeLoading(true)
     try {
       console.log('🔄 正在发送验证码请求...')
-        const response = await post('/v1_0/auth/api/auth/send-verify-code', {
+        const response = await post('/auth/send-verify-code', {
         phone: form.username
       })
 
@@ -129,20 +132,22 @@ export default function Login() {
         // 开始倒计时
         startCountdown()
 
-        // 获取后端返回的验证码（开发环境下）
+        // 处理验证码发送成功
         if (response.data && response.data.code) {
+          // 开发环境显示验证码
           setReceivedCode(response.data.code)
-          console.log('🎯 收到后端验证码:', response.data.code)
+          console.log('💡 开发环境验证码:', response.data.code)
           console.log('💡 提示：点击顶部验证码可自动填入')
-
+          
           // 10秒后自动隐藏验证码显示
           setTimeout(() => {
             setReceivedCode(null)
           }, 10000)
-        } else {
-          // 如果后端没有返回验证码（生产环境），显示提示
-          console.log('📱 验证码已发送到您的手机，请查收短信')
+        } else if (response.data && response.data.hint) {
+          // 仅显示提示信息
+          console.log('💡 开发环境提示:', response.data.hint)
         }
+        console.log('📱 验证码已发送到您的手机，请查收短信')
       } else {
         console.log('❌ 验证码发送失败:', response.message)
       }
@@ -154,7 +159,7 @@ export default function Login() {
       taroShowToast({
         title: '验证码发送失败，请稍后重试',
         icon: 'error',
-        duration: 2000
+        duration: TIME_CONSTANTS.TWO_SECONDS
       })
     } finally {
       setCodeLoading(false)
@@ -169,12 +174,44 @@ export default function Login() {
   }, [countdownTimer])
 
   const handleInputChange = (field: keyof LoginForm, value: string) => {
-    setForm(prev => ({ ...prev, [field]: value }))
+    if (field === 'username') {
+      handlePhoneInput(value)
+    } else {
+      setForm(prev => ({ ...prev, [field]: value }))
+    }
   }
 
   const validatePhone = (phone: string) => {
+    // 移除所有非数字字符
+    const cleanPhone = phone.replace(/\D/g, '')
+    
+    // 检查长度
+    if (cleanPhone.length !== 11) {
+      return false
+    }
+    
+    // 检查格式：1开头，第二位是3-9
     const phoneRegex = /^1[3-9]\d{9}$/
-    return phoneRegex.test(phone)
+    return phoneRegex.test(cleanPhone)
+  }
+
+  // 处理手机号输入，添加实时格式化
+  const handlePhoneInput = (value: string) => {
+    // 只保留数字
+    const cleanValue = value.replace(/\D/g, '')
+    // 限制长度为11位
+    const limitedValue = cleanValue.slice(0, 11)
+    
+    setForm(prev => ({ ...prev, username: limitedValue }))
+    
+    // 实时校验提示
+    if (limitedValue.length > 0 && limitedValue.length < 11) {
+      console.log('手机号长度不足，请输入11位手机号')
+    } else if (limitedValue.length === 11 && !limitedValue.startsWith('1')) {
+      console.log('手机号必须以1开头')
+    } else if (limitedValue.length === 11 && !/^1[3-9]/.test(limitedValue)) {
+      console.log('手机号第二位必须是3-9')
+    }
   }
 
   const validateForm = () => {
@@ -219,29 +256,40 @@ export default function Login() {
   const handleLogin = async () => {
     console.log('=== 开始登录流程 ===')
 
+    // 防止重复提交
+    if (loading) {
+      console.log('⚠️ 登录请求进行中，忽略重复点击')
+      return
+    }
+
     if (!validateForm()) {
       console.log('❌ 表单验证失败')
       return
     }
 
-    // 检查是否已通过滑块验证
-    if (!verifyToken) {
+    // 检查是否已通过滑块验证（开发环境可跳过）
+    if (!verifyToken && process.env.NODE_ENV !== 'development') {
       console.log('❌ 未通过滑块验证')
       console.log('请先完成安全验证')
       return
+    }
+    
+    if (process.env.NODE_ENV === 'development' && !verifyToken) {
+      console.log('🔓 开发环境：跳过滑块验证')
     }
 
     console.log('✅ 准备发送登录请求:', {
       username: form.username,
       verifyCode: '***',
-      verifyToken: verifyToken ? '已获取' : '未获取'
+      verifyToken: verifyToken ? '已获取' : '未获取',
+      timestamp: new Date().toISOString()
     })
 
     setLoading(true)
 
     try {
-      console.log('📡 发送登录请求...')
-        const response = await post('/v1_0/auth/api/auth/login-with-code', {
+      console.log('📡 发送登录请求...', new Date().toISOString())
+      const response = await post('/auth/login-with-code', {
         phone: form.username,
         verifyCode: form.verifyCode,
         verifyToken
@@ -254,15 +302,22 @@ export default function Login() {
 
         // 保存登录信息
         try {
-          taroSetStorageSync(STORAGE_KEYS.USER_TOKEN, response.data.token)
-          taroSetStorageSync(STORAGE_KEYS.USER_INFO, response.data.user)
-
-          // 保存刷新令牌
-          if (response.data.refreshToken) {
-            taroSetStorageSync('refresh_token', response.data.refreshToken)
+          // 使用Token管理器保存Token信息
+          if (response.data.token) {
+            tokenManager.saveTokens({
+              token: response.data.token,
+              refreshToken: response.data.refreshToken || '',
+              expiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24小时后过期
+            });
+            console.log('✅ Token已保存');
+          }
+          
+          if (response.data.user) {
+            taroSetStorageSync(STORAGE_KEYS.USER_INFO, response.data.user)
+            console.log('✅ 用户信息已保存')
           }
 
-          // 保存用户名以便下次使用
+          // 记住用户名
           taroSetStorageSync(STORAGE_KEYS.REMEMBERED_USERNAME, form.username)
 
           console.log('👤 用户信息已保存:', response.data.user)
@@ -276,7 +331,7 @@ export default function Login() {
         setTimeout(() => {
           console.log('🏠 跳转到首页')
           taroNavigateTo({ url: '/pages/index/index' })
-        }, 1000)
+        }, TIME_CONSTANTS.ONE_SECOND)
 
       } else {
         console.log('❌ 登录失败:', response.message || '未知错误')
@@ -330,7 +385,7 @@ export default function Login() {
         taroShowToast({
           title: '当前环境不支持摄像头功能',
           icon: 'none',
-          duration: 3000
+          duration: TIME_CONSTANTS.THREE_SECONDS
         });
       } else {
         taroShowToast({
@@ -342,11 +397,33 @@ export default function Login() {
       return;
     }
 
+    // 验证手机号
+    if (!form.username || !form.username.trim()) {
+      taroShowToast({
+        title: '请先输入手机号',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+
+    const phoneRegex = /^1[3-9]\d{9}$/;
+    if (!phoneRegex.test(form.username.trim())) {
+      taroShowToast({
+        title: '请输入正确的手机号格式',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+
+    console.log('🎭 启动人脸登录，手机号:', form.username);
     setLoginMode('face');
     setShowFaceLogin(true);
   };
 
   // 人脸登录成功处理
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleFaceLoginSuccess = (result: any) => {
     console.log('🎉 人脸登录成功:', result);
     setShowFaceLogin(false);
@@ -387,7 +464,7 @@ export default function Login() {
             switchTab({
               url: '/pages/index/index'
             });
-          }, 1000);
+          }, TIME_CONSTANTS.ONE_SECOND);
           return;
         }
 
@@ -399,10 +476,11 @@ export default function Login() {
       switchTab({
         url: '/pages/index/index'
       });
-    }, 2000); // 增加延迟时间到2秒，确保数据保存完成
+    }, TIME_CONSTANTS.TWO_SECONDS); // 增加延迟时间到2秒，确保数据保存完成
   };
 
   // 人脸登录失败处理
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleFaceLoginError = (error: string) => {
     console.error('人脸登录失败:', error);
     taroShowToast({
@@ -413,19 +491,56 @@ export default function Login() {
   };
 
   // 取消人脸登录
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleFaceLoginCancel = () => {
     setShowFaceLogin(false);
     setLoginMode('code');
   };
 
-  // 如果显示人脸登录，渲染人脸登录组件
+  // 如果显示人脸登录，渲染优化的人脸登录组件
   if (showFaceLogin) {
     return (
-      <FaceLogin
+      <FaceLoginOptimized
+        phone={form.username}
         autoStart={true}
-        onSuccess={handleFaceLoginSuccess}
-        onError={handleFaceLoginError}
-        onCancel={handleFaceLoginCancel}
+        onSuccess={(result) => {
+          console.log('🎉 人脸登录成功:', result);
+          setShowFaceLogin(false);
+          setFaceLoginSuccess(true);
+          
+          // 根据是否为新用户显示不同提示
+          const successMessage = result.user?.isNewUser || result.isNewUser
+            ? (result.faceRegistered ? '欢迎新用户！人脸注册并登录成功' : '欢迎新用户！登录成功')
+            : (result.faceRegistered ? '人脸注册并登录成功' : '人脸登录成功');
+          
+          taroShowToast({
+            title: successMessage,
+            icon: 'success',
+            duration: 3000
+          });
+          
+          // 跳转到主页
+          setTimeout(() => {
+            switchTab({
+              url: '/pages/index/index'
+            });
+          }, 2000);
+        }}
+        onError={(error) => {
+          console.error('❌ 人脸登录失败:', error);
+          setShowFaceLogin(false);
+          setLoginMode('code');
+          taroShowToast({
+            title: error || '人脸登录失败，请重试',
+            icon: 'error',
+            duration: 3000
+          });
+        }}
+        onCancel={() => {
+          console.log('👋 用户取消人脸登录');
+          setShowFaceLogin(false);
+          setLoginMode('code');
+        }}
       />
     );
   }
@@ -442,7 +557,7 @@ export default function Login() {
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           color: '#fff',
           padding: '12px 16px',
-          zIndex: '1000',
+          zIndex: Z_INDEX_CONSTANTS.MODAL.toString(),
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -612,6 +727,14 @@ export default function Login() {
                   }}
                 />
               </View>
+              <View className='input-tip' style={{
+                fontSize: '12px',
+                color: '#666',
+                marginTop: '6px',
+                paddingLeft: '48px'
+              }}>
+                首次登录将自动为您创建账户
+              </View>
             </View>
 
             {/* 验证码输入框 */}
@@ -684,11 +807,12 @@ export default function Login() {
             </View>
 
             {/* 安全验证模块 */}
-            <View className='security-verify-section' style={{ margin: '20px 0' }}>
-              <View className='verify-title' style={{ marginBottom: '12px' }}>
-                <Text className='verify-title-text' style={{ fontSize: '14px' }}>安全验证</Text>
-                <Text className='verify-desc' style={{ fontSize: '12px' }}>请拖动滑块完成验证</Text>
-              </View>
+            {process.env.NODE_ENV !== 'development' && (
+              <View className='security-verify-section' style={{ margin: '20px 0' }}>
+                <View className='verify-title' style={{ marginBottom: '12px' }}>
+                  <Text className='verify-title-text' style={{ fontSize: '14px' }}>安全验证</Text>
+                  <Text className='verify-desc' style={{ fontSize: '12px' }}>请拖动滑块完成验证</Text>
+                </View>
 
               <View className='slider-verify-container' style={{
                 margin: '12px 0',
@@ -702,18 +826,34 @@ export default function Login() {
                 />
               </View>
 
-              {/* 验证状态提示 */}
-              {verifyToken && (
-                <View className='verify-status' style={{ margin: '10px 0 0 0' }}>
-                  <Text className='verify-success-text' style={{ fontSize: '12px' }}>✓ 安全验证已通过</Text>
-                </View>
-              )}
-            </View>
+                {/* 验证状态提示 */}
+                {verifyToken && (
+                  <View className='verify-status' style={{ margin: '10px 0 0 0' }}>
+                    <Text className='verify-success-text' style={{ fontSize: '12px' }}>✓ 安全验证已通过</Text>
+                  </View>
+                )}
+              </View>
+            )}
+
+            {/* 开发环境提示 */}
+            {process.env.NODE_ENV === 'development' && (
+              <View className='dev-notice' style={{
+                margin: '20px 0',
+                padding: '12px',
+                backgroundColor: '#f0f8ff',
+                borderRadius: '8px',
+                borderLeft: '4px solid #1890ff'
+              }}>
+                <Text style={{ fontSize: '12px', color: '#1890ff' }}>
+                  🔧 开发环境：已跳过滑块验证，可直接登录
+                </Text>
+              </View>
+            )}
 
             <Button
-              className={`login-btn ${loading ? 'loading' : ''} ${!verifyToken ? 'disabled' : ''}`}
+              className={`login-btn ${loading ? 'loading' : ''} ${(!verifyToken && process.env.NODE_ENV !== 'development') ? 'disabled' : ''}`}
               onClick={handleLogin}
-              disabled={loading || !verifyToken}
+              disabled={loading || (!verifyToken && process.env.NODE_ENV !== 'development')}
               style={{
                 height: '48px',
                 fontSize: '16px',
@@ -721,7 +861,8 @@ export default function Login() {
                 marginTop: '8px'
               }}
             >
-              {loading ? '登录中...' : verifyToken ? '登录' : '请先完成验证'}
+              {loading ? '登录中...' : 
+               (verifyToken || process.env.NODE_ENV === 'development') ? '登录' : '请先完成验证'}
             </Button>
 
             {/* 重新验证按钮 */}
@@ -736,6 +877,57 @@ export default function Login() {
                 </Text>
               </View>
             )}
+          </View>
+        </View>
+
+        {/* 操作提示 */}
+        <View className='login-tips' style={{
+          marginTop: '24px',
+          padding: '16px',
+          background: 'rgba(24, 144, 255, 0.05)',
+          borderRadius: '12px',
+          border: '1px solid rgba(24, 144, 255, 0.1)'
+        }}>
+          <View className='tip-item' style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '8px'
+          }}>
+            <Text className='tip-icon' style={{
+              fontSize: '14px',
+              marginRight: '8px'
+            }}>📱</Text>
+            <Text className='tip-text' style={{
+              fontSize: '12px',
+              color: '#666'
+            }}>输入手机号获取验证码即可登录</Text>
+          </View>
+          <View className='tip-item' style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '8px'
+          }}>
+            <Text className='tip-icon' style={{
+              fontSize: '14px',
+              marginRight: '8px'
+            }}>🆕</Text>
+            <Text className='tip-text' style={{
+              fontSize: '12px',
+              color: '#666'
+            }}>新用户首次登录将自动注册</Text>
+          </View>
+          <View className='tip-item' style={{
+            display: 'flex',
+            alignItems: 'center'
+          }}>
+            <Text className='tip-icon' style={{
+              fontSize: '14px',
+              marginRight: '8px'
+            }}>👤</Text>
+            <Text className='tip-text' style={{
+              fontSize: '12px',
+              color: '#666'
+            }}>支持人脸识别快速登录</Text>
           </View>
         </View>
       </View>

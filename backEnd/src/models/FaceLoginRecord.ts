@@ -149,7 +149,7 @@ FaceLoginRecordSchema.index({ loginAt: 1 }); // 用于清理旧记录
 // 静态方法：获取登录历史
 FaceLoginRecordSchema.statics.getLoginHistory = async function(
   userId: string, 
-  limit: number = 50
+  limit = 50
 ): Promise<IFaceLoginRecord[]> {
   return this.find({
     userId: new mongoose.Types.ObjectId(userId)
@@ -162,7 +162,7 @@ FaceLoginRecordSchema.statics.getLoginHistory = async function(
 // 静态方法：获取失败统计
 FaceLoginRecordSchema.statics.getFailureStats = async function(
   userId: string, 
-  hours: number = 24
+  hours = 24
 ): Promise<any> {
   const startTime = new Date();
   startTime.setHours(startTime.getHours() - hours);
@@ -227,7 +227,7 @@ FaceLoginRecordSchema.statics.getFailureStats = async function(
 };
 
 // 静态方法：清理旧记录
-FaceLoginRecordSchema.statics.cleanupOldRecords = async function(daysToKeep: number = 90): Promise<number> {
+FaceLoginRecordSchema.statics.cleanupOldRecords = async function(daysToKeep = 90): Promise<number> {
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
   
@@ -241,7 +241,7 @@ FaceLoginRecordSchema.statics.cleanupOldRecords = async function(daysToKeep: num
 // 静态方法：获取安全报告
 FaceLoginRecordSchema.statics.getSecurityReport = async function(
   userId: string, 
-  days: number = 30
+  days = 30
 ): Promise<any> {
   const startTime = new Date();
   startTime.setDate(startTime.getDate() - days);

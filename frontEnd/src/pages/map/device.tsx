@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import Taro from '@tarojs/taro'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import './device.scss'
-import { showToast } from '../utils/toast'
+import { DISTANCE_CONSTANTS, TIME_CONSTANTS } from '../../utils/constants'
 
 interface DeviceProps {
   onBack?: () => void
@@ -51,7 +51,7 @@ export default function Device(props: DeviceProps) {
     let destroyed = false
 
     AMapLoader.load({
-      key: 'fe211b3e07c4e9b86b16adfd57925547',
+      key: process.env.TARO_APP_AMAP_API_KEY || 'fe211b3e07c4e9b86b16adfd57925547',
       version: '2.0',
       plugins: ['AMap.Geocoder', 'AMap.PlaceSearch', 'AMap.Geolocation']
     }).then((AMap) => {
@@ -71,7 +71,7 @@ export default function Device(props: DeviceProps) {
 
       // 初始化地理编码器
       geocoderRef.current = new AMap.Geocoder({
-        radius: 1000,
+        radius: DISTANCE_CONSTANTS.ONE_KM,
         extensions: 'all'
       })
 
@@ -234,13 +234,7 @@ export default function Device(props: DeviceProps) {
     showToast({ title: '正在获取位置...', icon: 'none' })
     
     // H5环境检测
-    console.log('[定位] H5环境定位开始...')
-    console.log('[定位] 当前URL:', window.location.href)
-    console.log('[定位] 是否HTTPS:', window.location.protocol === 'https:')
-    console.log('[定位] User Agent:', navigator.userAgent)
-    console.log('[定位] 网络状态:', navigator.onLine ? '在线' : '离线')
-    console.log('[定位] 平台:', navigator.platform)
-    console.log('[定位] 语言:', navigator.language)
+    // H5环境定位开始
     
     // H5环境特殊检查
     const h5EnvironmentCheck = () => {
@@ -267,7 +261,7 @@ export default function Device(props: DeviceProps) {
       // 检查是否在移动设备上
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
       if (!isMobile) {
-        console.log('[定位] 桌面环境，定位可能不准确')
+        // 桌面环境，定位可能不准确
       }
       
       if (issues.length > 0) {
@@ -280,23 +274,23 @@ export default function Device(props: DeviceProps) {
     }
     
     if (!h5EnvironmentCheck()) {
-      console.log('[定位] H5环境检测失败，尝试继续定位...')
+      // H5环境检测失败，尝试继续定位
     }
     
     // 检查权限状态
     if (navigator.permissions) {
       navigator.permissions.query({ name: 'geolocation' }).then((result) => {
-        console.log('[定位] H5权限状态:', result.state)
+        // H5权限状态检查
         if (result.state === 'denied') {
           showToast({ title: 'H5定位权限被拒绝，请在浏览器设置中允许', icon: 'none' })
           setIsGettingLocation(false)
           setDefaultLocation()
           return
         } else if (result.state === 'prompt') {
-          console.log('[定位] H5需要用户授权定位权限')
+          // H5需要用户授权定位权限
         }
       }).catch(() => {
-        console.log('[定位] H5无法查询权限状态')
+        // H5无法查询权限状态
       })
     }
 
@@ -307,7 +301,7 @@ export default function Device(props: DeviceProps) {
   // H5环境浏览器定位
   const tryH5BrowserLocation = () => {
     if (!navigator.geolocation) {
-      console.log('[定位] 浏览器不支持定位')
+      // 浏览器不支持定位
       showToast({ title: '浏览器不支持定位', icon: 'none' })
       setDefaultLocation()
       return
@@ -315,30 +309,29 @@ export default function Device(props: DeviceProps) {
 
     // 检查环境
     if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
-      console.log('[定位] 非HTTPS环境，定位可能失败')
+      // 非HTTPS环境，定位可能失败
       showToast({ title: '需要HTTPS环境才能定位', icon: 'none' })
     }
 
     const options = {
-      enableHighAccuracy: false, // 降低精度要求，提高成功率
-      timeout: 30000, // 30秒超时
-      maximumAge: 600000 // 10分钟内缓存的位置
+      enableHighAccuracy: process.env.TARO_APP_LOCATION_HIGH_ACCURACY === 'true' || false, // 降低精度要求，提高成功率
+      timeout: parseInt(process.env.TARO_APP_LOCATION_TIMEOUT || TIME_CONSTANTS.THIRTY_SECONDS.toString()), // 30秒超时
+      maximumAge: parseInt(process.env.TARO_APP_LOCATION_MAX_AGE || '600000') // 10分钟内缓存的位置
     }
 
-    console.log('[定位] 尝试浏览器原生定位...')
-    console.log('[定位] 定位选项:', options)
+    // 尝试浏览器原生定位
     
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setIsGettingLocation(false)
-        console.log('[定位] 浏览器定位成功:', position)
+        // 浏览器定位成功
         
         const { latitude, longitude, accuracy } = position.coords
-        console.log('[定位] 原始坐标:', { latitude, longitude, accuracy })
+        // 原始坐标获取成功
         
         // 检查坐标有效性
         if (latitude === 0 && longitude === 0) {
-          console.log('[定位] 坐标无效（0,0），可能是默认值')
+          // 坐标无效（0,0），可能是默认值
           showToast({ title: '获取到无效坐标，尝试其他方式', icon: 'none' })
           tryTaroLocation()
           return
@@ -372,18 +365,18 @@ export default function Device(props: DeviceProps) {
             errorDetail = '未知错误，请稍后重试'
         }
         
-        console.log('[定位] 错误详情:', errorDetail)
+        // 定位错误详情
         showToast({ title: errorMessage, icon: 'none' })
         
         // 显示详细错误信息
         setTimeout(() => {
-          showToast({ title: errorDetail, icon: 'none', duration: 3000 })
-        }, 1000)
+          showToast({ title: errorDetail, icon: 'none', duration: TIME_CONSTANTS.THREE_SECONDS })
+        }, TIME_CONSTANTS.ONE_SECOND)
         
         // H5环境浏览器定位失败，尝试Taro定位
         setTimeout(() => {
           tryTaroLocation()
-        }, 2000)
+        }, TIME_CONSTANTS.TWO_SECONDS)
       },
       options
     )
@@ -394,26 +387,26 @@ export default function Device(props: DeviceProps) {
     const getLocation = (...args: any[]) => (Taro as any).getLocation?.(...args)
     
     if (typeof getLocation !== 'function') {
-      console.log('[定位] Taro定位不可用')
+      // Taro定位不可用
       setDefaultLocation()
       return
     }
 
-    console.log('[定位] 尝试Taro定位...')
+    // 尝试Taro定位
     
     getLocation({
       type: 'gcj02',
       isHighAccuracy: false,
-      highAccuracyExpireTime: 20000,
+      highAccuracyExpireTime: TIME_CONSTANTS.TWENTY_SECONDS,
       success: (res: any) => {
         setIsGettingLocation(false)
-        console.log('[定位] Taro定位成功:', res)
+        // Taro定位成功
         
         if (res.longitude && res.latitude) {
           addRedMarker(res.longitude, res.latitude, '我的位置')
           showToast({ title: '定位成功', icon: 'success' })
         } else {
-          console.log('[定位] Taro定位数据异常')
+          // Taro定位数据异常
           setDefaultLocation()
         }
       },
@@ -429,22 +422,22 @@ export default function Device(props: DeviceProps) {
   const convertAndSetLocation = (lng: number, lat: number, title: string) => {
     // @ts-ignore
     if (window.AMap && window.AMap.convertFrom) {
-      console.log('[定位] 尝试坐标转换...')
+      // 尝试坐标转换
       // @ts-ignore
       window.AMap.convertFrom([lng, lat], 'gps', (status: string, result: any) => {
         if (status === 'complete' && result.locations && result.locations.length > 0) {
           const converted = result.locations[0]
-          console.log('[定位] 坐标转换成功:', converted)
+          // 坐标转换成功
           addRedMarker(converted.lng, converted.lat, title)
           showToast({ title: '定位成功', icon: 'success' })
         } else {
-          console.log('[定位] 坐标转换失败，使用原始坐标')
+          // 坐标转换失败，使用原始坐标
           addRedMarker(lng, lat, title)
           showToast({ title: '定位成功', icon: 'success' })
         }
       })
     } else {
-      console.log('[定位] 无转换功能，使用原始坐标')
+      // 无转换功能，使用原始坐标
       addRedMarker(lng, lat, title)
       showToast({ title: '定位成功', icon: 'success' })
     }
@@ -596,7 +589,7 @@ export default function Device(props: DeviceProps) {
           </Text>
           {props.stationInfo.distance && (
             <Text style={{ fontSize: '13px', color: '#4caf50', marginBottom: '4px' }}>
-              📏 距离: {(props.stationInfo.distance / 1000).toFixed(2)}km
+              📏 距离: {(props.stationInfo.distance / DISTANCE_CONSTANTS.ONE_KM).toFixed(2)}km
             </Text>
           )}
           {props.stationInfo.rating && (
@@ -656,4 +649,4 @@ export default function Device(props: DeviceProps) {
       </View>
     </View>
   )
-} 
+}

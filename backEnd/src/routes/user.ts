@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Response } from 'express';
 import { authenticate } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
 import User from '../models/User';

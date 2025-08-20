@@ -1,16 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, Canvas } from '@tarojs/components';
-import Taro from '@tarojs/taro';
 import {
   Button as NutButton,
   Progress,
   Card,
   Divider,
-  Tag,
   Toast,
   Dialog,
-  Loading,
-  Icon
+  Loading
 } from '@nutui/nutui-react-taro';
 import './index.scss';
 
@@ -253,12 +250,12 @@ const ChargingStatus: React.FC<ChargingStatusProps> = ({
   }, [data?.pileId, onNavigateToStation]);
 
   // 显示详情
-  const showDetails = useCallback(() => {
+  const handleShowDetails = useCallback(() => {
     setState(prev => ({ ...prev, showDetailsDialog: true }));
   }, []);
 
   // 显示图表
-  const showChart = useCallback((chartType: 'power' | 'energy' | 'cost') => {
+  const handleShowChart = useCallback((chartType: 'power' | 'energy' | 'cost') => {
     setState(prev => ({ 
       ...prev, 
       showChartDialog: true,
@@ -522,7 +519,7 @@ const ChargingStatus: React.FC<ChargingStatusProps> = ({
         <View className="detail-buttons">
           <NutButton
             type="default"
-            onClick={showDetails}
+            onClick={handleShowDetails}
             className="detail-btn"
           >
             📊 详细信息
@@ -532,7 +529,7 @@ const ChargingStatus: React.FC<ChargingStatusProps> = ({
             <>
               <NutButton
                 type="default"
-                onClick={() => showChart('power')}
+                onClick={() => handleShowChart('power')}
                 className="chart-btn"
               >
                 📈 功率图表
@@ -540,7 +537,7 @@ const ChargingStatus: React.FC<ChargingStatusProps> = ({
               
               <NutButton
                 type="default"
-                onClick={() => showChart('energy')}
+                onClick={() => handleShowChart('energy')}
                 className="chart-btn"
               >
                 📊 电量图表

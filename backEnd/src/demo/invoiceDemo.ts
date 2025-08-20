@@ -3,7 +3,7 @@
  * 演示发票管理系统的各项功能
  */
 
-import { InvoiceService } from '../services/InvoiceService';
+
 
 // 模拟环境变量
 process.env.API_BASE_URL = 'http://localhost:8080';
@@ -64,7 +64,7 @@ console.log('');
 
 // 7. API接口列表
 console.log('7. 可用的API接口:');
-const apiEndpoints = [
+const invoiceApiEndpoints = [
   'POST /api/invoices/apply - 创建发票申请',
   'GET  /api/invoices/list - 获取发票列表',
   'GET  /api/invoices/:id - 获取发票详情',
@@ -79,7 +79,7 @@ const apiEndpoints = [
   'POST /api/invoices/admin/cleanup - 清理过期发票'
 ];
 
-apiEndpoints.forEach(endpoint => {
+invoiceApiEndpoints.forEach(endpoint => {
   console.log(endpoint);
 });
 console.log('');
@@ -173,7 +173,7 @@ console.log('✓ 用户身份认证和授权');
 
 // 13. 错误处理
 console.log('\n13. 错误处理机制:');
-const errorScenarios = [
+const invoiceErrorScenarios = [
   '钱包不存在 - 返回钱包不存在错误',
   '交易记录无效 - 验证交易状态和类型',
   '重复开票 - 检查交易是否已开票',
@@ -183,7 +183,7 @@ const errorScenarios = [
   '邮件发送失败 - 重试机制和错误记录'
 ];
 
-errorScenarios.forEach((scenario, index) => {
+invoiceErrorScenarios.forEach((scenario, index) => {
   console.log(`${index + 1}. ${scenario}`);
 });
 

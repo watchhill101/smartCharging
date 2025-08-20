@@ -4,6 +4,7 @@ import {
   hideLoading as taroHideLoading,
   showModal as taroShowModal
 } from '@tarojs/taro'
+import { DISTANCE_CONSTANTS, TIME_CONSTANTS } from './constants'
 
 /**
  * 格式化时间
@@ -61,10 +62,10 @@ export const formatAmount = (amount: number, showSymbol = true): string => {
  * @param distance 距离（米）
  */
 export const formatDistance = (distance: number): string => {
-  if (distance < 1000) {
+  if (distance < DISTANCE_CONSTANTS.ONE_KM) {
     return `${Math.round(distance)}m`
   } else {
-    return `${(distance / 1000).toFixed(1)}km`
+    return `${(distance / DISTANCE_CONSTANTS.ONE_KM).toFixed(1)}km`
   }
 }
 
@@ -300,7 +301,7 @@ export interface GpsLocationResult {
  * 需要在调用前在 H5 环境设置 window._AMapSecurityConfig 和 AMapLoader Key（见 map/device.tsx 的示例）
  */
 export async function getCurrentGpsByAMap(options?: { timeoutMs?: number }): Promise<GpsLocationResult> {
-	const timeout = options?.timeoutMs ?? 20000
+	const timeout = options?.timeoutMs ?? TIME_CONSTANTS.TWENTY_SECONDS
 	// 确保 AMap 已加载
 	if (typeof window !== 'undefined' && (window as any).AMap) {
 		try {

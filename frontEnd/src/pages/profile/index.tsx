@@ -9,7 +9,8 @@ import VerificationHistory from '../../components/VerificationHistory';
 import FaceVerification from '../../components/FaceVerification';
 import request from '../../utils/request';
 import { STORAGE_KEYS } from '../../utils/constants';
-import './index.scss';
+import './index.scss'
+import { TIME_CONSTANTS } from '../../utils/constants';
 import { showToast } from '../../utils/toast'
 
 interface UserProfile {
@@ -98,19 +99,21 @@ export default function Profile() {
       }
 
       if (!token) {
-        console.log('❌ 未找到用户token，使用默认信息');
-        // 使用模拟数据而不是直接跳转登录
-        setUserProfile({
-          id: 'demo_user',
-          phone: '71178870',
-          nickName: '充电用户',
-          balance: 0.00,
-          verificationLevel: 'basic',
-          vehicles: [],
-          chargingCount: 0,
-          points: 0
-        });
+        console.log('❌ 未找到用户token，跳转到登录页');
         setIsLoading(false);
+        
+        // 跳转到登录页面
+        try {
+          if (typeof Taro.reLaunch === 'function') {
+            Taro.reLaunch({
+              url: '/pages/login/login'
+            });
+          } else if (typeof window !== 'undefined' && window.location) {
+            window.location.hash = '/pages/login/login';
+          }
+        } catch (error) {
+          console.error('❌ 跳转登录页失败:', error);
+        }
         return;
       }
 
@@ -187,7 +190,7 @@ export default function Profile() {
           showToast({
             title: '人脸验证成功，验证级别已提升',
             icon: 'success',
-            duration: 3000
+            duration: TIME_CONSTANTS.THREE_SECONDS
           });
         }
       }

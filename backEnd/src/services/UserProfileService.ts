@@ -296,20 +296,22 @@ export class UserProfileService {
 
     try {
       // 验证文件类型
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      const allowedTypes = (process.env.AVATAR_ALLOWED_TYPES || 'image/jpeg,image/jpg,image/png,image/gif').split(',');
       if (!allowedTypes.includes(file.mimetype)) {
         return { success: false, message: '只支持 JPG、PNG、GIF 格式的图片' };
       }
 
-      // 验证文件大小（5MB）
-      if (file.buffer.length > 5 * 1024 * 1024) {
-        return { success: false, message: '图片大小不能超过5MB' };
+      // 验证文件大小
+      const maxSize = parseInt(process.env.AVATAR_MAX_SIZE || '5242880'); // 默认5MB
+      if (file.buffer.length > maxSize) {
+        const maxSizeMB = Math.round(maxSize / (1024 * 1024));
+        return { success: false, message: `图片大小不能超过${maxSizeMB}MB` };
       }
 
       // 生成文件名
       const fileExt = path.extname(file.originalname) || '.jpg';
       const fileName = `avatar_${userId}_${Date.now()}${fileExt}`;
-      const uploadDir = path.join(process.cwd(), 'uploads', 'avatars');
+      const uploadDir = path.join(process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads'), 'avatars');
       const filePath = path.join(uploadDir, fileName);
 
       // 确保目录存在
@@ -321,7 +323,8 @@ export class UserProfileService {
       fs.writeFileSync(filePath, file.buffer);
 
       // 生成访问URL
-      const avatarUrl = `/api/uploads/avatars/${fileName}`;
+      const baseUrl = process.env.AVATAR_BASE_URL || '/api/uploads';
+      const avatarUrl = `${baseUrl}/avatars/${fileName}`;
 
       // 更新用户头像
       const result = await this.updateUserProfile({
@@ -626,7 +629,7 @@ export class UserProfileService {
   /**
    * 搜索用户
    */
-  static async searchUsers(query: string, page: number = 1, limit: number = 20): Promise<{
+  static async searchUsers(query: string, page = 1, limit = 20): Promise<{
     users: UserProfile[];
     pagination: {
       page: number;
@@ -785,7 +788,7 @@ export class UserProfileService {
       }
 
       // 验证当前密码
-      const bcrypt = require('bcrypt');
+      import bcrypt from 'bcrypt';
       const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
       if (!isCurrentPasswordValid) {
         return { success: false, message: '当前密码不正确' };

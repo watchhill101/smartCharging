@@ -3,7 +3,6 @@ import { useEffect, useState, useRef } from 'react'
 import Taro from '@tarojs/taro'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import './CitySelector.scss'
-import { showToast } from '../utils/toast'
 
 interface CitySelectorProps {
   currentCity: string
@@ -292,4 +291,4 @@ export default function CitySelector({ currentCity, onCityChange, onClose }: Cit
       </View>
     </View>
   )
-} 
+}

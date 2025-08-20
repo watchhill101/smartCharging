@@ -79,7 +79,7 @@ export const sliderVerifyRateLimit = () => {
     // 跳过成功的请求（只对失败的请求计数）
     skipSuccessfulRequests: true,
     // 自定义跳过逻辑
-    skip: (req: Request) => {
+    skip: (_req: Request) => {
       // 如果配置禁用限流，则跳过
       return !config.enabled;
     }
@@ -221,11 +221,22 @@ export const sliderVerifySecurityCheck = async (req: Request, res: Response, nex
       /scraper/i,
       /curl/i,
       /wget/i,
-      /python/i,
+      /^python/i, // 只匹配以python开头的，避免误判PowerShell
       /java/i
     ];
 
-    const isSuspiciousUA = suspiciousPatterns.some(pattern => pattern.test(userAgent));
+    // 白名单User-Agent（不进行可疑检查）
+    const whitelistPatterns = [
+      /WindowsPowerShell/i,
+      /Mozilla/i,
+      /Chrome/i,
+      /Safari/i,
+      /Firefox/i,
+      /Edge/i
+    ];
+
+    const isWhitelisted = whitelistPatterns.some(pattern => pattern.test(userAgent));
+    const isSuspiciousUA = !isWhitelisted && suspiciousPatterns.some(pattern => pattern.test(userAgent));
     if (isSuspiciousUA) {
       console.warn(`🚫 滑块验证检测到可疑User-Agent: ${userAgent}`);
       
@@ -250,6 +261,12 @@ export const sliderVerifySecurityCheck = async (req: Request, res: Response, nex
     next();
   } catch (error) {
     console.error('滑块验证安全检查失败:', error);
+    console.error('错误详情:', {
+      message: error.message,
+      stack: error.stack,
+      ip,
+      userAgent
+    });
     // 安全检查失败时不阻止请求，但记录错误
     next();
   }
@@ -304,7 +321,7 @@ async function recordSliderVerifyStats(
 /**
  * 获取滑块验证统计信息
  */
-export async function getSliderVerifyStats(days: number = 7): Promise<{
+export async function getSliderVerifyStats(days = 7): Promise<{
   totalRequests: number;
   successfulRequests: number;
   failedRequests: number;

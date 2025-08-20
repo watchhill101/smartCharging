@@ -1,0 +1,341 @@
+// 懒加载组件样式
+.lazy-load {
+  position: relative;
+  overflow: hidden;
+  
+  &.lazy-loading {
+    .lazy-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100px;
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      
+      &::before {
+        content: '';
+        width: 20px;
+        height: 20px;
+        border: 2px solid #e0e0e0;
+        border-top: 2px solid #007aff;
+        border-radius: 50%;
+        animation: lazy-spin 1s linear infinite;
+      }
+    }
+  }
+  
+  &.lazy-loaded {
+    .lazy-placeholder {
+      display: none;
+    }
+  }
+  
+  &.lazy-error {
+    .lazy-placeholder {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+  }
+}
+
+// 懒加载图片样式
+.lazy-image-container {
+  position: relative;
+  display: inline-block;
+  
+  .lazy-image {
+    width: 100%;
+    height: auto;
+    transition: opacity 0.3s ease-in-out;
+    
+    &.loading {
+      opacity: 0;
+    }
+    
+    &.loaded {
+      opacity: 1;
+    }
+    
+    &.error {
+      display: none;
+    }
+  }
+}
+
+// 图片占位符样式
+.lazy-image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  
+  .placeholder-content {
+    text-align: center;
+    color: #999;
+    
+    .placeholder-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      opacity: 0.6;
+    }
+    
+    .placeholder-text {
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
+}
+
+// 图片错误状态样式
+.lazy-image-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  background-color: #ffebee;
+  border-radius: 8px;
+  border: 1px solid #ffcdd2;
+  
+  .error-content {
+    text-align: center;
+    color: #c62828;
+    
+    .error-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      opacity: 0.8;
+    }
+    
+    .error-text {
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
+}
+
+// 组件加载状态样式
+.component-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  color: #6c757d;
+  font-size: 16px;
+  
+  &::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+    border: 3px solid #e9ecef;
+    border-top: 3px solid #007aff;
+    border-radius: 50%;
+    animation: lazy-spin 1s linear infinite;
+  }
+}
+
+// 组件错误状态样式
+.component-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  background-color: #fff5f5;
+  border-radius: 12px;
+  color: #e53e3e;
+  font-size: 16px;
+  border: 1px solid #fed7d7;
+  
+  &::before {
+    content: '⚠️';
+    margin-right: 8px;
+    font-size: 20px;
+  }
+}
+
+// 懒加载列表样式
+.lazy-list {
+  position: relative;
+  
+  .lazy-list-content {
+    position: relative;
+  }
+  
+  .lazy-list-item {
+    position: absolute;
+    left: 0;
+    right: 0;
+    transition: transform 0.2s ease-out;
+    
+    &:hover {
+      transform: translateY(var(--translate-y, 0)) scale(1.02);
+    }
+  }
+}
+
+// 骨架屏动画
+@keyframes lazy-skeleton {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+// 旋转动画
+@keyframes lazy-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// 淡入动画
+@keyframes lazy-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 骨架屏样式
+.lazy-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: lazy-skeleton 1.5s infinite;
+  border-radius: 4px;
+  
+  &.skeleton-text {
+    height: 16px;
+    margin-bottom: 8px;
+    
+    &:last-child {
+      margin-bottom: 0;
+      width: 60%;
+    }
+  }
+  
+  &.skeleton-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  
+  &.skeleton-image {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+  }
+  
+  &.skeleton-button {
+    width: 100px;
+    height: 36px;
+    border-radius: 18px;
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .lazy-image-placeholder,
+  .lazy-image-error {
+    min-height: 100px;
+    
+    .placeholder-content,
+    .error-content {
+      .placeholder-icon,
+      .error-icon {
+        font-size: 24px;
+      }
+      
+      .placeholder-text,
+      .error-text {
+        font-size: 12px;
+      }
+    }
+  }
+  
+  .component-loading,
+  .component-error {
+    min-height: 150px;
+    font-size: 14px;
+    
+    &::before {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+    }
+  }
+}
+
+// 深色模式支持
+@media (prefers-color-scheme: dark) {
+  .lazy-load {
+    &.lazy-loading {
+      .lazy-placeholder {
+        background-color: #2d2d2d;
+        
+        &::before {
+          border-color: #404040;
+          border-top-color: #007aff;
+        }
+      }
+    }
+    
+    &.lazy-error {
+      .lazy-placeholder {
+        background-color: #3d1a1a;
+        color: #ff6b6b;
+      }
+    }
+  }
+  
+  .lazy-image-placeholder {
+    background: linear-gradient(135deg, #2d2d2d 0%, #404040 100%);
+    border-color: #555;
+    
+    .placeholder-content {
+      color: #aaa;
+    }
+  }
+  
+  .lazy-image-error {
+    background-color: #3d1a1a;
+    border-color: #5d2d2d;
+    
+    .error-content {
+      color: #ff6b6b;
+    }
+  }
+  
+  .component-loading {
+    background-color: #2d2d2d;
+    color: #aaa;
+    
+    &::before {
+      border-color: #404040;
+      border-top-color: #007aff;
+    }
+  }
+  
+  .component-error {
+    background-color: #3d1a1a;
+    color: #ff6b6b;
+    border-color: #5d2d2d;
+  }
+  
+  .lazy-skeleton {
+    background: linear-gradient(90deg, #2d2d2d 25%, #404040 50%, #2d2d2d 75%);
+  }
+}

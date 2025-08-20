@@ -172,9 +172,9 @@ router.get('/faq/:id', [
 });
 
 /**
- * 标记FAQ为有帮助
+ * FAQ点赞/踩
  */
-router.post('/faq/:id/helpful', [
+router.post('/faq/:id/helpful', authMiddleware, [
   param('id').isMongoId().withMessage('无效的FAQ ID')
 ], handleValidationErrors, async (req, res) => {
   try {

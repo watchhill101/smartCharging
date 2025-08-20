@@ -3,6 +3,7 @@ import Order, { IOrder } from '../models/Order';
 import User from '../models/User';
 import ChargingSession from '../models/ChargingSession';
 import mongoose from 'mongoose';
+import { logger } from '../utils/logger';
 
 export interface CreatePaymentOrderParams {
   userId: string;
@@ -115,7 +116,7 @@ export class PaymentService {
       };
 
     } catch (error) {
-      console.error('创建支付宝订单失败:', error);
+      logger.error('Create Alipay order failed', { userId, amount, type, error: error.message }, error.stack);
       return {
         success: false,
         orderId: '',
@@ -210,7 +211,7 @@ export class PaymentService {
       
       return result;
     } catch (error) {
-      console.error('余额支付失败:', error);
+      logger.error('Balance payment failed', { userId, amount, type, error: error.message }, error.stack);
       return {
         success: false,
         orderId: '',
@@ -231,20 +232,20 @@ export class PaymentService {
       // 验证签名
       const signVerified = alipaySdk.checkNotifySign(params);
       if (!signVerified) {
-        console.error('支付宝回调签名验证失败:', out_trade_no);
+        logger.error('Alipay callback signature verification failed', { out_trade_no });
         return false;
       }
 
       // 查找订单
       const order = await Order.findOne({ orderId: out_trade_no });
       if (!order) {
-        console.error('订单不存在:', out_trade_no);
+        logger.error('Order not found in callback', { out_trade_no });
         return true; // 返回true避免支付宝重复通知
       }
 
       // 验证金额
       if (parseFloat(total_amount) !== order.amount) {
-        console.error('支付金额不匹配:', {
+        logger.error('Payment amount mismatch', {
           orderId: out_trade_no,
           expected: order.amount,
           received: total_amount
@@ -261,7 +262,7 @@ export class PaymentService {
             // 再次检查订单状态（防止并发）
             const latestOrder = await Order.findOne({ orderId: out_trade_no }).session(session);
             if (!latestOrder || latestOrder.status === 'paid') {
-              console.log(`订单${out_trade_no}已处理，跳过重复处理`);
+              logger.info('Order already processed, skipping duplicate processing', { out_trade_no });
               return;
             }
 
@@ -293,9 +294,12 @@ export class PaymentService {
                 { new: true, session }
               );
 
-              console.log(
-                `钱包充值成功: 用户${updatedUser?.nickName} 充值¥${latestOrder.amount}, 当前余额¥${updatedUser?.balance}`
-              );
+              logger.info('Wallet recharge successful', {
+                userId: latestOrder.userId,
+                nickName: updatedUser?.nickName,
+                amount: latestOrder.amount,
+                currentBalance: updatedUser?.balance
+              });
             } else if (latestOrder.type === 'charging') {
               // 充电支付
               await ChargingSession.findByIdAndUpdate(
@@ -304,15 +308,16 @@ export class PaymentService {
                 { session }
               );
 
-              console.log(
-                `充电支付成功: 订单${out_trade_no} 金额¥${total_amount}`
-              );
+              logger.info('Charging payment successful', {
+                orderId: out_trade_no,
+                amount: total_amount
+              });
             }
           });
 
           return true;
         } catch (error) {
-          console.error(`支付回调处理失败: 订单${out_trade_no}`, error);
+          logger.error('Payment callback processing failed', { out_trade_no, error: error.message }, error.stack);
           return false;
         } finally {
           await session.endSession();
@@ -321,7 +326,7 @@ export class PaymentService {
 
       return true;
     } catch (error) {
-      console.error('支付回调处理错误:', error);
+      logger.error('Payment callback processing error', { out_trade_no, error: error.message }, error.stack);
       return false;
     }
   }
@@ -339,7 +344,7 @@ export class PaymentService {
 
       return result;
     } catch (error) {
-      console.error('查询支付宝订单状态失败:', error);
+      logger.error('Query Alipay order status failed', { orderId, error: error.message }, error.stack);
       throw error;
     }
   }
@@ -383,7 +388,7 @@ export class PaymentService {
         message: '订单取消成功'
       };
     } catch (error) {
-      console.error('取消订单失败:', error);
+      logger.error('Cancel order failed', { orderId, userId, error: error.message }, error.stack);
       return {
         success: false,
         orderId,

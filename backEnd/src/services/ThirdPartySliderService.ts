@@ -307,10 +307,10 @@ export class ThirdPartySliderServiceFactory {
    */
   static createGeetestService(apiKey: string, apiUrl?: string): ThirdPartySliderService {
     return this.getInstance('geetest', {
-      apiUrl: apiUrl || 'https://api.geetest.com',
+      apiUrl: apiUrl || process.env.GEETEST_API_URL || 'https://api.geetest.com',
       apiKey,
-      timeout: 5000,
-      retries: 3
+      timeout: parseInt(process.env.GEETEST_TIMEOUT || '5000'),
+      retries: parseInt(process.env.GEETEST_RETRIES || '3')
     });
   }
 
@@ -319,10 +319,10 @@ export class ThirdPartySliderServiceFactory {
    */
   static createTencentService(apiKey: string, apiUrl?: string): ThirdPartySliderService {
     return this.getInstance('tencent', {
-      apiUrl: apiUrl || 'https://captcha.tencentcloudapi.com',
+      apiUrl: apiUrl || process.env.TENCENT_CAPTCHA_API_URL || 'https://captcha.tencentcloudapi.com',
       apiKey,
-      timeout: 8000,
-      retries: 2
+      timeout: parseInt(process.env.TENCENT_CAPTCHA_TIMEOUT || '8000'),
+      retries: parseInt(process.env.TENCENT_CAPTCHA_RETRIES || '2')
     });
   }
 

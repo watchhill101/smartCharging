@@ -1,0 +1,53 @@
+{
+  "summary": {
+    "total_tests": 7,
+    "passed_tests": 7,
+    "failed_tests": 0,
+    "success_rate": 100.0,
+    "timestamp": "2025-08-20T20:48:30.894519"
+  },
+  "results": [
+    {
+      "test_name": "连接配置测试",
+      "success": true,
+      "details": "配置参数验证通过",
+      "timestamp": "2025-08-20T20:48:29.244612"
+    },
+    {
+      "test_name": "连接池测试",
+      "success": true,
+      "details": "连接池功能正常",
+      "timestamp": "2025-08-20T20:48:29.246508"
+    },
+    {
+      "test_name": "消息队列测试",
+      "success": true,
+      "details": "消息队列功能正常",
+      "timestamp": "2025-08-20T20:48:29.246773"
+    },
+    {
+      "test_name": "WebSocket优化器测试",
+      "success": true,
+      "details": "优化器功能正常",
+      "timestamp": "2025-08-20T20:48:29.299684"
+    },
+    {
+      "test_name": "性能模拟测试",
+      "success": true,
+      "details": "处理 100 消息用时 1.56s，吞吐量 64.1 msg/s",
+      "timestamp": "2025-08-20T20:48:30.860795"
+    },
+    {
+      "test_name": "错误场景测试",
+      "success": true,
+      "details": "错误处理正常",
+      "timestamp": "2025-08-20T20:48:30.877352"
+    },
+    {
+      "test_name": "连接生命周期测试",
+      "success": true,
+      "details": "连接生命周期管理正常",
+      "timestamp": "2025-08-20T20:48:30.892091"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "summary": {
+    "total_tests": 9,
+    "passed_tests": 3,
+    "failed_tests": 6,
+    "success_rate": 33.33333333333333,
+    "timestamp": "2025-08-20T20:46:32.429035"
+  },
+  "results": [
+    {
+      "test_name": "连接配置测试",
+      "success": false,
+      "details": "配置测试失败: No module named 'fastapi'",
+      "timestamp": "2025-08-20T20:46:16.519763"
+    },
+    {
+      "test_name": "连接状态测试",
+      "success": false,
+      "details": "状态测试失败: No module named 'fastapi'",
+      "timestamp": "2025-08-20T20:46:16.520706"
+    },
+    {
+      "test_name": "消息优先级测试",
+      "success": false,
+      "details": "优先级测试失败: No module named 'fastapi'",
+      "timestamp": "2025-08-20T20:46:16.521506"
+    },
+    {
+      "test_name": "增强连接管理器测试",
+      "success": false,
+      "details": "管理器测试失败: No module named 'fastapi'",
+      "timestamp": "2025-08-20T20:46:16.525432"
+    },
+    {
+      "test_name": "WebSocket优化器测试",
+      "success": false,
+      "details": "优化器测试失败: No module named 'fastapi'",
+      "timestamp": "2025-08-20T20:46:16.526318"
+    },
+    {
+      "test_name": "模拟连接测试",
+      "success": true,
+      "details": "成功创建和测试 3 个模拟连接",
+      "timestamp": "2025-08-20T20:46:16.854179"
+    },
+    {
+      "test_name": "消息过滤测试",
+      "success": false,
+      "details": "消息过滤测试失败: No module named 'fastapi'",
+      "timestamp": "2025-08-20T20:46:16.858242"
+    },
+    {
+      "test_name": "性能指标测试",
+      "success": true,
+      "details": "处理 1000 个操作用时 15.56s，速率 64.3 ops/s",
+      "timestamp": "2025-08-20T20:46:32.420628"
+    },
+    {
+      "test_name": "错误处理测试",
+      "success": true,
+      "details": "正确处理连接断开错误: WebSocket连接已断开",
+      "timestamp": "2025-08-20T20:46:32.421808"
+    }
+  ]
+}

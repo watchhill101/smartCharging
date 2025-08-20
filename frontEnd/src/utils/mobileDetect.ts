@@ -248,8 +248,7 @@ export class MobileDetect {
     const deviceInfo = this.getDeviceInfo()
     const features = this.checkFeatureSupport()
 
-    console.log('📱 设备信息:', deviceInfo)
-    console.log('🔧 功能支持:', features)
+    // 设备信息检测完成
 
     // 设置viewport
     this.setupMobileViewport()
@@ -312,7 +311,7 @@ export class MobileDetect {
         await navigator.share(shareData)
         return true
       } catch (error) {
-        console.log('分享取消或失败:', error)
+        // 分享取消或失败
         return false
       }
     }

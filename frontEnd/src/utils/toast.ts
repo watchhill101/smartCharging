@@ -20,12 +20,12 @@ export const showToast = (options: ToastOptions | string) => {
       Taro.showToast(opts)
     } else {
       // 降级处理
-      console.log(`Toast: ${opts.title}`)
+      // Toast显示
     }
   } catch (error) {
     console.warn('Toast显示失败:', error)
     const title = typeof options === 'string' ? options : options.title
-    console.log(`Toast: ${title}`)
+    // Toast显示
   }
 }
 

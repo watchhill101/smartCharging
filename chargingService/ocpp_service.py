@@ -24,6 +24,7 @@ from models import (
     ResetRequest, ResetResponse,
     UnlockConnectorRequest, UnlockConnectorResponse
 )
+from ocpp_error_handler import error_handler, message_validator, OCPPErrorType
 
 logger = logging.getLogger(__name__)
 
@@ -77,25 +78,90 @@ class OCPPService:
             message_type = message[0]
             message_id = message[1]
             
+            # 验证消息ID
+            if not isinstance(message_id, str) or not message_id.strip():
+                logger.error(f"无效的消息ID: {message_id}")
+                return self.create_call_error(
+                    str(message_id) if message_id else "unknown",
+                    "FormatViolation",
+                    "Invalid message ID"
+                )
+            
+            # 验证消息类型
+            if not isinstance(message_type, int) or message_type not in [2, 3, 4]:
+                logger.error(f"无效的消息类型: {message_type}")
+                return self.create_call_error(message_id, "MessageTypeNotSupported", "Invalid message type")
+            
             if message_type == 2:  # CALL
+                if len(message) != 4:
+                    logger.error(f"CALL消息格式错误: {message}")
+                    return self.create_call_error(message_id, "FormatViolation", "Invalid CALL message format")
+                
                 action = message[2]
-                payload = message[3] if len(message) > 3 else {}
+                payload = message[3]
+                
+                # 验证action
+                if not isinstance(action, str) or not action.strip():
+                    logger.error(f"无效的action: {action}")
+                    return self.create_call_error(message_id, "FormatViolation", "Invalid action")
+                
+                # 验证payload
+                if not isinstance(payload, dict):
+                    logger.error(f"无效的payload: {payload}")
+                    return self.create_call_error(message_id, "FormatViolation", "Invalid payload format")
+                
                 return await self.handle_call(pile_id, message_id, action, payload)
                 
             elif message_type == 3:  # CALLRESULT
-                payload = message[2] if len(message) > 2 else {}
+                if len(message) != 3:
+                    logger.error(f"CALLRESULT消息格式错误: {message}")
+                    return None
+                
+                payload = message[2]
+                if not isinstance(payload, dict):
+                    logger.error(f"无效的CALLRESULT payload: {payload}")
+                    return None
+                
                 return await self.handle_call_result(pile_id, message_id, payload)
                 
             elif message_type == 4:  # CALLERROR
-                error_code = message[2] if len(message) > 2 else "GenericError"
-                error_description = message[3] if len(message) > 3 else ""
-                error_details = message[4] if len(message) > 4 else {}
+                if len(message) != 5:
+                    logger.error(f"CALLERROR消息格式错误: {message}")
+                    return None
+                
+                error_code = message[2]
+                error_description = message[3]
+                error_details = message[4]
+                
+                # 验证错误信息格式
+                if not isinstance(error_code, str):
+                    logger.error(f"无效的error_code: {error_code}")
+                    return None
+                
+                if not isinstance(error_description, str):
+                    logger.error(f"无效的error_description: {error_description}")
+                    return None
+                
+                if not isinstance(error_details, dict):
+                    logger.error(f"无效的error_details: {error_details}")
+                    return None
+                
                 return await self.handle_call_error(pile_id, message_id, error_code, error_description, error_details)
                 
-            else:
-                logger.error(f"未知的消息类型: {message_type}")
-                return self.create_call_error(message_id, "MessageTypeNotSupported", "Unknown message type")
-                
+        except KeyError as e:
+            logger.error(f"消息字段缺失: {e}")
+            return self.create_call_error(
+                message[1] if len(message) > 1 else "unknown",
+                "FormatViolation",
+                f"Missing required field: {str(e)}"
+            )
+        except TypeError as e:
+            logger.error(f"消息类型错误: {e}")
+            return self.create_call_error(
+                message[1] if len(message) > 1 else "unknown",
+                "TypeConstraintViolation",
+                f"Type error: {str(e)}"
+            )
         except Exception as e:
             logger.error(f"处理OCPP消息失败: {e}")
             return self.create_call_error(
@@ -293,98 +359,189 @@ class OCPPService:
     
     async def remote_start_transaction(self, pile_id: str, id_tag: str, connector_id: int = 1) -> Dict:
         """远程启动充电"""
-        message_id = str(uuid.uuid4())
+        async def _execute_remote_start():
+            # 验证输入参数
+            payload = {
+                "connectorId": connector_id,
+                "idTag": id_tag
+            }
+            
+            if not message_validator.validate_message("RemoteStartTransaction", payload):
+                raise ValueError(f"无效的RemoteStartTransaction参数: {payload}")
+            
+            message_id = str(uuid.uuid4())
+            message = self.create_call(message_id, "RemoteStartTransaction", payload)
+            
+            # 记录待处理请求
+            self.pending_requests[message_id] = {
+                "action": "RemoteStartTransaction",
+                "pile_id": pile_id,
+                "timestamp": datetime.now()
+            }
+            
+            # 发送消息到充电桩
+            from main import manager
+            await manager.send_message(pile_id, message)
+            
+            # 等待响应（简化处理，实际应该有超时机制）
+            await asyncio.sleep(1)
+            
+            return {
+                "status": "success",
+                "message_id": message_id,
+                "action": "RemoteStartTransaction"
+            }
         
-        payload = {
-            "connectorId": connector_id,
-            "idTag": id_tag
-        }
-        
-        message = self.create_call(message_id, "RemoteStartTransaction", payload)
-        
-        # 记录待处理请求
-        self.pending_requests[message_id] = {
-            "action": "RemoteStartTransaction",
-            "pile_id": pile_id,
-            "timestamp": datetime.now()
-        }
-        
-        # 发送消息到充电桩
-        from main import manager
-        await manager.send_message(pile_id, message)
-        
-        # 等待响应（简化处理，实际应该有超时机制）
-        await asyncio.sleep(1)
-        
-        return {"status": "Accepted"}  # 简化返回
+        try:
+            return await error_handler.execute_with_retry(
+                "RemoteStartTransaction",
+                pile_id,
+                _execute_remote_start
+            )
+        except Exception as e:
+            logger.error(f"远程启动充电最终失败: {pile_id}, 错误: {e}")
+            return {
+                "status": "error",
+                "error": str(e),
+                "action": "RemoteStartTransaction"
+            }
     
     async def remote_stop_transaction(self, pile_id: str, transaction_id: int) -> Dict:
         """远程停止充电"""
-        message_id = str(uuid.uuid4())
+        async def _execute_remote_stop():
+            # 验证输入参数
+            payload = {
+                "transactionId": transaction_id
+            }
+            
+            if not message_validator.validate_message("RemoteStopTransaction", payload):
+                raise ValueError(f"无效的RemoteStopTransaction参数: {payload}")
+            
+            message_id = str(uuid.uuid4())
+            message = self.create_call(message_id, "RemoteStopTransaction", payload)
+            
+            self.pending_requests[message_id] = {
+                "action": "RemoteStopTransaction",
+                "pile_id": pile_id,
+                "timestamp": datetime.now()
+            }
+            
+            from main import manager
+            await manager.send_message(pile_id, message)
+            
+            await asyncio.sleep(1)
+            
+            return {
+                "status": "success",
+                "message_id": message_id,
+                "action": "RemoteStopTransaction"
+            }
         
-        payload = {
-            "transactionId": transaction_id
-        }
-        
-        message = self.create_call(message_id, "RemoteStopTransaction", payload)
-        
-        # 记录待处理请求
-        self.pending_requests[message_id] = {
-            "action": "RemoteStopTransaction",
-            "pile_id": pile_id,
-            "timestamp": datetime.now()
-        }
-        
-        # 发送消息到充电桩
-        from main import manager
-        await manager.send_message(pile_id, message)
-        
-        await asyncio.sleep(1)
-        return {"status": "Accepted"}
+        try:
+            return await error_handler.execute_with_retry(
+                "RemoteStopTransaction",
+                pile_id,
+                _execute_remote_stop
+            )
+        except Exception as e:
+            logger.error(f"远程停止充电最终失败: {pile_id}, 错误: {e}")
+            return {
+                "status": "error",
+                "error": str(e),
+                "action": "RemoteStopTransaction"
+            }
     
     async def reset_pile(self, pile_id: str, reset_type: str = "Soft") -> Dict:
         """重置充电桩"""
-        message_id = str(uuid.uuid4())
+        async def _execute_reset():
+            # 验证输入参数
+            payload = {
+                "type": reset_type
+            }
+            
+            if not message_validator.validate_message("Reset", payload):
+                raise ValueError(f"无效的Reset参数: {payload}")
+            
+            message_id = str(uuid.uuid4())
+            message = self.create_call(message_id, "Reset", payload)
+            
+            self.pending_requests[message_id] = {
+                "action": "Reset",
+                "pile_id": pile_id,
+                "timestamp": datetime.now()
+            }
+            
+            from main import manager
+            await manager.send_message(pile_id, message)
+            
+            await asyncio.sleep(1)
+            
+            return {
+                "status": "success",
+                "message_id": message_id,
+                "action": "Reset",
+                "reset_type": reset_type
+            }
         
-        payload = {
-            "type": reset_type
-        }
-        
-        message = self.create_call(message_id, "Reset", payload)
-        
-        self.pending_requests[message_id] = {
-            "action": "Reset",
-            "pile_id": pile_id,
-            "timestamp": datetime.now()
-        }
-        
-        from main import manager
-        await manager.send_message(pile_id, message)
-        
-        await asyncio.sleep(1)
-        return {"status": "Accepted"}
+        try:
+            return await error_handler.execute_with_retry(
+                "Reset",
+                pile_id,
+                _execute_reset
+            )
+        except Exception as e:
+            logger.error(f"重置充电桩最终失败: {pile_id}, 错误: {e}")
+            return {
+                "status": "error",
+                "error": str(e),
+                "action": "Reset"
+            }
     
     async def unlock_connector(self, pile_id: str, connector_id: int) -> Dict:
         """解锁充电枪"""
-        message_id = str(uuid.uuid4())
+        async def _execute_unlock():
+            # 验证输入参数
+            payload = {
+                "connectorId": connector_id
+            }
+            
+            if not message_validator.validate_message("UnlockConnector", payload):
+                raise ValueError(f"无效的UnlockConnector参数: {payload}")
+            
+            message_id = str(uuid.uuid4())
+            message = self.create_call(message_id, "UnlockConnector", payload)
+            
+            self.pending_requests[message_id] = {
+                "action": "UnlockConnector",
+                "pile_id": pile_id,
+                "timestamp": datetime.now()
+            }
+            
+            from main import manager
+            await manager.send_message(pile_id, message)
+            
+            await asyncio.sleep(1)
+            
+            return {
+                "status": "success",
+                "message_id": message_id,
+                "action": "UnlockConnector",
+                "connector_id": connector_id
+            }
         
-        payload = {
-            "connectorId": connector_id
-        }
-        
-        message = self.create_call(message_id, "UnlockConnector", payload)
-        
-        self.pending_requests[message_id] = {
-            "action": "UnlockConnector",
-            "pile_id": pile_id,
-            "timestamp": datetime.now()
-        }
-        
-        from main import manager
-        await manager.send_message(pile_id, message)
-        
-        await asyncio.sleep(1)
-        return {"status": "Accepted"}
+        try:
+            return await error_handler.execute_with_retry(
+                "UnlockConnector",
+                pile_id,
+                _execute_unlock
+            )
+        except Exception as e:
+            logger.error(f"解锁充电枪最终失败: {pile_id}, 错误: {e}")
+            return {
+                "status": "error",
+                "error": str(e),
+                "action": "UnlockConnector"
+            }
     
     # 响应处理器
     

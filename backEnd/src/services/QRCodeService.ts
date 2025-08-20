@@ -80,7 +80,10 @@ export class QRCodeService {
 
   constructor(redis: RedisService) {
     this.redis = redis;
-    this.secretKey = process.env.QR_SECRET_KEY || 'default-qr-secret-key';
+    this.secretKey = process.env.QR_SECRET_KEY;
+    if (!this.secretKey) {
+      throw new Error('QR_SECRET_KEY environment variable is required');
+    }
   }
 
   /**

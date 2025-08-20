@@ -233,7 +233,7 @@ export class FAQService {
   /**
    * 获取热门FAQ
    */
-  async getPopularFAQs(limit: number = 10): Promise<IFAQ[]> {
+  async getPopularFAQs(limit = 10): Promise<IFAQ[]> {
     try {
       const cacheKey = `faq:popular:${limit}`;
       const cached = await this.redisService.get(cacheKey);
@@ -314,7 +314,7 @@ export class FAQService {
   /**
    * 获取相关FAQ推荐
    */
-  async getRelatedFAQs(id: string, limit: number = 5): Promise<IFAQ[]> {
+  async getRelatedFAQs(id: string, limit = 5): Promise<IFAQ[]> {
     try {
       const faq = await FAQ.findById(id);
       if (!faq) return [];

@@ -4,7 +4,8 @@ import Taro from '@tarojs/taro'
 import request from '../../utils/request'
 import { webSocketClient } from '../../services/WebSocketClient'
 import './index.scss'
-import { showToast } from '../utils/toast'
+import { showToast } from '../../utils/toast'
+import { TIME_CONSTANTS } from '../../utils/constants'
 
 interface NotificationItem {
   id: string
@@ -66,7 +67,7 @@ const NotificationsPage = () => {
   }, [activeTab])
 
   const handleRealtimeNotification = (notification: any) => {
-    console.log('收到实时通知:', notification)
+    // 收到实时通知
     
     // 添加到通知列表顶部
     setNotifications(prev => [notification, ...prev])
@@ -80,7 +81,7 @@ const NotificationsPage = () => {
     showToast({
       title: notification.title,
       icon: 'none',
-      duration: 2000
+      duration: TIME_CONSTANTS.TWO_SECONDS
     })
   }
 
@@ -283,12 +284,12 @@ const NotificationsPage = () => {
     const now = new Date()
     const diff = now.getTime() - time.getTime()
     
-    if (diff < 60 * 1000) {
+    if (diff < TIME_CONSTANTS.ONE_MINUTE) {
       return '刚刚'
-    } else if (diff < 60 * 60 * 1000) {
-      return `${Math.floor(diff / (60 * 1000))}分钟前`
-    } else if (diff < 24 * 60 * 60 * 1000) {
-      return `${Math.floor(diff / (60 * 60 * 1000))}小时前`
+    } else if (diff < TIME_CONSTANTS.ONE_HOUR) {
+      return `${Math.floor(diff / TIME_CONSTANTS.ONE_MINUTE)}分钟前`
+    } else if (diff < TIME_CONSTANTS.ONE_DAY) {
+      return `${Math.floor(diff / TIME_CONSTANTS.ONE_HOUR)}小时前`
     } else {
       return `${time.getMonth() + 1}月${time.getDate()}日`
     }

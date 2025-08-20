@@ -4,7 +4,7 @@
  */
 
 import { PaymentService } from '../services/PaymentService';
-import { alipaySdk, generateOrderNo, validateOrderNo, parseOrderNo } from '../config/alipay';
+import { generateOrderNo, validateOrderNo, parseOrderNo } from '../config/alipay';
 
 // 模拟环境变量
 process.env.API_BASE_URL = 'http://localhost:8080';

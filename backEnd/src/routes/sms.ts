@@ -1,8 +1,6 @@
 import express from 'express';
-import { body, query, param, validationResult } from 'express-validator';
+import { body, query, validationResult } from 'express-validator';
 import { authenticate as authMiddleware } from '../middleware/auth';
-import { SmsService } from '../services/SmsService';
-import { SmsNotificationService } from '../services/SmsNotificationService';
 
 const router = express.Router();
 
@@ -27,7 +25,7 @@ router.post('/send-verification-code', [
   body('type').optional().isIn(['login', 'register', 'reset_password']).withMessage('验证码类型无效')
 ], handleValidationErrors, async (req: express.Request, res: express.Response) => {
   try {
-    const { phoneNumber, type = 'login' } = req.body;
+    const { phoneNumber } = req.body;
     
     // 生成6位验证码
     const code = Math.floor(100000 + Math.random() * 900000).toString();

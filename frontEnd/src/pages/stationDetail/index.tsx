@@ -5,6 +5,7 @@ import { Toast } from '@nutui/nutui-react-taro';
 import StationDetail, { StationDetailData, ChargingPile } from '../../components/StationDetail';
 import { LocationInfo } from '../../services/AmapService';
 import './index.scss';
+import { TIME_CONSTANTS } from '../../utils/constants';
 
 const StationDetailPage: React.FC = () => {
   const router = useRouter();
@@ -167,7 +168,7 @@ const StationDetailPage: React.FC = () => {
       
       try {
         // 模拟API调用延迟
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, TIME_CONSTANTS.ONE_SECOND));
         
         // 这里应该调用实际的API
         // const response = await stationService.getStationDetail(stationId);
@@ -179,7 +180,7 @@ const StationDetailPage: React.FC = () => {
         Toast.show({
           content: '加载充电站信息失败',
           type: 'error',
-          duration: 2000
+          duration: TIME_CONSTANTS.TWO_SECONDS
         });
       } finally {
         setLoading(false);
@@ -230,7 +231,7 @@ const StationDetailPage: React.FC = () => {
       Toast.show({
         content: '打开导航失败',
         type: 'error',
-        duration: 2000
+        duration: TIME_CONSTANTS.TWO_SECONDS
       });
     });
   };

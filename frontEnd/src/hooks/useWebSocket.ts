@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import Taro from '@tarojs/taro'
 import { TaroSafe } from '../utils/taroSafe'
 import { showToast } from '../utils/toast'
+import { STORAGE_KEYS, TIME_CONSTANTS, WEBSOCKET_CONSTANTS } from '../utils/constants'
 
 export interface WebSocketMessage {
   type: string
@@ -51,9 +52,9 @@ export const useWebSocket = (options: UseWebSocketOptions): UseWebSocketReturn =
     onMessage,
     onError,
     onClose,
-    reconnectInterval = 3000,
+    reconnectInterval = TIME_CONSTANTS.THREE_SECONDS,
     maxReconnectAttempts = 5,
-    heartbeatInterval = 30000
+    heartbeatInterval = TIME_CONSTANTS.THIRTY_SECONDS
   } = options
 
   const [isConnected, setIsConnected] = useState(false)
@@ -196,7 +197,7 @@ export const useWebSocket = (options: UseWebSocketOptions): UseWebSocketReturn =
     
     if (socketRef.current) {
       socketRef.current.close({
-        code: 1000,
+        code: WEBSOCKET_CONSTANTS.NORMAL_CLOSURE,
         reason: '手动关闭'
       })
       socketRef.current = null
@@ -212,7 +213,7 @@ export const useWebSocket = (options: UseWebSocketOptions): UseWebSocketReturn =
     disconnect()
     setTimeout(() => {
       connect()
-    }, 1000)
+    }, TIME_CONSTANTS.ONE_SECOND)
   }, [disconnect, connect])
 
   const sendMessage = useCallback((message: any) => {
@@ -301,7 +302,7 @@ export const useNotificationWebSocket = () => {
         showToast({
           title: notification.title,
           icon: 'none',
-          duration: 2000
+          duration: TIME_CONSTANTS.TWO_SECONDS
         })
         break
 

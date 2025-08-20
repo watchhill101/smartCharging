@@ -4,7 +4,7 @@ import { QRCodeService } from '../services/QRCodeService';
 import { RedisService } from '../services/RedisService';
 import { authenticate as authMiddleware } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
-import { body, param, query } from 'express-validator';
+import { body, param } from 'express-validator';
 
 const router = Router();
 const redisService = new RedisService();

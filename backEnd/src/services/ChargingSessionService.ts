@@ -457,7 +457,7 @@ export class ChargingSessionService {
   /**
    * 获取用户通知历史
    */
-  public async getUserNotifications(userId: string, limit: number = 50): Promise<ChargingNotification[]> {
+  public async getUserNotifications(userId: string, limit = 50): Promise<ChargingNotification[]> {
     const notificationIds = await this.redis.lrange(`notifications:${userId}`, 0, limit - 1);
     const notifications: ChargingNotification[] = [];
 
@@ -474,7 +474,7 @@ export class ChargingSessionService {
   /**
    * 获取会话异常历史
    */
-  public async getSessionAnomalies(sessionId: string, limit: number = 20): Promise<SessionAnomalyDetection[]> {
+  public async getSessionAnomalies(sessionId: string, limit = 20): Promise<SessionAnomalyDetection[]> {
     const anomalyData = await this.redis.lrange(`anomalies:${sessionId}`, 0, limit - 1);
     return anomalyData.map(data => JSON.parse(data));
   }
@@ -516,7 +516,7 @@ export class ChargingSessionService {
   /**
    * 获取用户订单历史
    */
-  public async getUserOrders(userId: string, page: number = 1, limit: number = 20) {
+  public async getUserOrders(userId: string, page = 1, limit = 20) {
     const orderIds = await this.redis.smembers(`user:${userId}:orders`);
     const orders: ChargingOrder[] = [];
 
@@ -550,7 +550,7 @@ export class ChargingSessionService {
    */
   public async cleanupExpiredData() {
     // 清理过期的异常检测间隔
-    for (const [sessionId, interval] of this.anomalyDetectionIntervals) {
+    for (const [sessionId] of this.anomalyDetectionIntervals) {
       const session = await this.chargingService.getChargingStatus(sessionId, '');
       if (!session || ['completed', 'faulted'].includes(session.status)) {
         this.stopAnomalyDetection(sessionId);

@@ -1,8 +1,10 @@
-import { View, Text, ScrollView, Button } from '@tarojs/components'
+import { View, Text, ScrollView } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import './index.scss'
-import { showToast } from '../utils/toast'
+import { TIME_CONSTANTS } from '../../utils/constants'
+import { TaroHelper } from '../../utils/taroHelpers'
+// import { showToast } from '../../utils/toast'
 
 interface FAQItem {
   id: number
@@ -112,21 +114,12 @@ const HelpCenter = () => {
 
   const handlePhoneCall = () => {
     try {
-      Taro.makePhoneCall({
-        phoneNumber: contactInfo.phone,
-        fail: () => {
-          showToast({
-            title: `请拨打客服电话：${contactInfo.phone}`,
-            icon: 'none',
-            duration: 3000
-          })
-        }
-      })
+      TaroHelper.makePhoneCall(contactInfo.phone)
     } catch (error) {
-      showToast({
+      TaroHelper.showToast({
         title: `客服电话：${contactInfo.phone}`,
         icon: 'none',
-        duration: 3000
+        duration: TIME_CONSTANTS.THREE_SECONDS
       })
     }
   }

@@ -1,5 +1,6 @@
 import ChargingStation, { IChargingStation, IChargingPile } from '../models/ChargingStation';
 import { RedisService } from './RedisService';
+import { logger } from '../utils/logger';
 
 export interface StationSearchFilters {
   city?: string;
@@ -141,7 +142,7 @@ export class ChargingStationService {
       return station;
 
     } catch (error: any) {
-      console.error('❌ 创建充电站失败:', error);
+      logger.error('Create charging station failed', { stationData: stationData.name, error: error.message }, error.stack);
       throw new Error(`创建充电站失败: ${error.message}`);
     }
   }
@@ -193,7 +194,7 @@ export class ChargingStationService {
       return station;
 
     } catch (error: any) {
-      console.error('❌ 更新充电站失败:', error);
+      logger.error('Update charging station failed', { stationId, error: error.message }, error.stack);
       throw new Error(`更新充电站失败: ${error.message}`);
     }
   }
@@ -221,7 +222,7 @@ export class ChargingStationService {
       console.log('✅ 充电站删除成功:', stationId);
 
     } catch (error: any) {
-      console.error('❌ 删除充电站失败:', error);
+      logger.error('Delete charging station failed', { stationId, error: error.message }, error.stack);
       throw new Error(`删除充电站失败: ${error.message}`);
     }
   }
@@ -253,7 +254,7 @@ export class ChargingStationService {
       return station;
 
     } catch (error: any) {
-      console.error('❌ 获取充电站详情失败:', error);
+      logger.error('Get charging station details failed', { stationId, error: error.message }, error.stack);
       throw new Error(`获取充电站详情失败: ${error.message}`);
     }
   }
@@ -264,7 +265,7 @@ export class ChargingStationService {
   async findNearbyStations(
     latitude: number,
     longitude: number,
-    radius: number = 5000,
+    radius = 5000,
     filters: StationSearchFilters = {},
     options: StationSearchOptions = {}
   ): Promise<{ stations: IChargingStation[]; total: number; page: number; totalPages: number }> {
@@ -317,7 +318,7 @@ export class ChargingStationService {
       };
 
     } catch (error: any) {
-      console.error('❌ 搜索附近充电站失败:', error);
+      logger.error('Find nearby charging stations failed', { latitude, longitude, radius, error: error.message }, error.stack);
       throw new Error(`搜索附近充电站失败: ${error.message}`);
     }
   }
@@ -328,7 +329,7 @@ export class ChargingStationService {
   async searchStations(
     keyword: string,
     location?: { latitude: number; longitude: number },
-    radius: number = 10000,
+    radius = 10000,
     filters: StationSearchFilters = {},
     options: StationSearchOptions = {}
   ): Promise<{ stations: IChargingStation[]; total: number; page: number; totalPages: number }> {
@@ -392,7 +393,7 @@ export class ChargingStationService {
       };
 
     } catch (error: any) {
-      console.error('❌ 搜索充电站失败:', error);
+      logger.error('Search charging stations failed', { keyword, error: error.message }, error.stack);
       throw new Error(`搜索充电站失败: ${error.message}`);
     }
   }
@@ -431,7 +432,7 @@ export class ChargingStationService {
       };
 
     } catch (error: any) {
-      console.error('❌ 获取运营商充电站失败:', error);
+      logger.error('Get stations by operator failed', { operatorName, error: error.message }, error.stack);
       throw new Error(`获取运营商充电站失败: ${error.message}`);
     }
   }
@@ -456,7 +457,7 @@ export class ChargingStationService {
       console.log('✅ 充电桩状态更新成功');
 
     } catch (error: any) {
-      console.error('❌ 更新充电桩状态失败:', error);
+      logger.error('Update pile status failed', { stationId, pileId, status, error: error.message }, error.stack);
       throw new Error(`更新充电桩状态失败: ${error.message}`);
     }
   }
@@ -481,7 +482,7 @@ export class ChargingStationService {
       console.log('✅ 批量更新充电桩状态成功');
 
     } catch (error: any) {
-      console.error('❌ 批量更新充电桩状态失败:', error);
+      logger.error('Batch update pile statuses failed', { updatesCount: updates.length, error: error.message }, error.stack);
       throw new Error(`批量更新充电桩状态失败: ${error.message}`);
     }
   }
@@ -502,7 +503,7 @@ export class ChargingStationService {
       return result;
 
     } catch (error: any) {
-      console.error('❌ 数据同步失败:', error);
+      logger.error('Sync from external API failed', { dataCount: apiData.length, error: error.message }, error.stack);
       throw new Error(`数据同步失败: ${error.message}`);
     }
   }
@@ -551,7 +552,7 @@ export class ChargingStationService {
       return result;
 
     } catch (error: any) {
-      console.error('❌ 获取统计信息失败:', error);
+      logger.error('Get statistics failed', { filters, error: error.message }, error.stack);
       throw new Error(`获取统计信息失败: ${error.message}`);
     }
   }

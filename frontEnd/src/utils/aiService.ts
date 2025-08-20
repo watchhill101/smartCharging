@@ -89,7 +89,7 @@ export class AIService {
         ? imageBase64.split('base64,')[1] 
         : imageBase64;
 
-      console.log('正在调用GLM API分析图片...');
+      // 调用GLM API分析图片
       
       // 准备请求头 - 按照智谱AI文档格式
       const headers = {
@@ -119,7 +119,7 @@ export class AIService {
         ]
       };
 
-      console.log('GLM API请求参数配置完成');
+      // GLM API请求参数配置完成
       
       // 发送请求
       const response = await fetch(`${this.glmBaseURL}/chat/completions`, {
@@ -129,7 +129,7 @@ export class AIService {
       });
 
       // 记录响应状态
-      console.log(`GLM API响应状态: ${response.status} ${response.statusText}`);
+      // GLM API响应处理
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -139,7 +139,7 @@ export class AIService {
 
       // 获取完整响应并记录
       const responseText = await response.text();
-      console.log('GLM API原始响应:', responseText);
+      // 处理GLM API响应
       
       // 解析JSON
       let data;
@@ -150,7 +150,7 @@ export class AIService {
         throw new Error('GLM响应不是有效的JSON格式');
       }
       
-      console.log('GLM API响应数据结构:', JSON.stringify(data, null, 2));
+      // 解析GLM API响应数据
       
       // 从响应中提取内容 - 智谱AI的返回格式可能与OpenAI不同
       let content = '';

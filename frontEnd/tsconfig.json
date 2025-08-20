@@ -22,7 +22,8 @@
       "node_modules/@tarojs/taro/types"
     ],
     "types": [
-      "@tarojs/taro"
+      "@tarojs/taro",
+      "jest"
     ],
     "paths": {
       "@/*": [

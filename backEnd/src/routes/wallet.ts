@@ -1,5 +1,4 @@
 import express, { Request, Response } from 'express'
-import Wallet from '../models/Wallet'
 import { authenticate } from '../middleware/auth'
 import { body, query, validationResult } from 'express-validator'
 import { WalletService } from '../services/WalletService'

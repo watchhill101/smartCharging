@@ -10,17 +10,14 @@ const router = express.Router();
 // 依赖注入 - 在实际应用中应该通过DI容器管理
 let chargingService: ChargingService;
 let webSocketService: WebSocketService;
-let redisService: RedisService;
 
 // 初始化服务（在app.ts中调用）
 export const initializeChargingRoutes = (
   charging: ChargingService,
-  ws: WebSocketService,
-  redis: RedisService
+  ws: WebSocketService
 ) => {
   chargingService = charging;
   webSocketService = ws;
-  redisService = redis;
 };
 
 /**

@@ -47,14 +47,38 @@ export default function SliderVerify({
     })
   }, [])
 
-  // 生成随机拼图位置
-  const generatePuzzlePosition = useCallback(() => {
+  const [sessionId, setSessionId] = useState<string | null>(null)
+
+  // 生成滑块挑战
+  const generateSliderChallenge = useCallback(async () => {
+    try {
+      console.log('🎲 请求滑块挑战...')
+      const response = await post('/auth/slider-challenge', { width })
+      
+      if (response.success && response.data) {
+        setPuzzleOffset(response.data.puzzleOffset)
+        setSessionId(response.data.sessionId)
+        console.log(`🎯 获取滑块挑战: offset=${response.data.puzzleOffset.toFixed(1)}px, sessionId=${response.data.sessionId}`)
+        return response.data.puzzleOffset
+      } else {
+        // 回退到本地生成
+        return generatePuzzlePositionLocal()
+      }
+    } catch (error) {
+      console.warn('⚠️ 滑块挑战请求失败，使用本地生成:', error)
+      return generatePuzzlePositionLocal()
+    }
+  }, [width])
+
+  // 本地生成随机拼图位置（回退方案）
+  const generatePuzzlePositionLocal = useCallback(() => {
     const effectiveWidth = width - 40 // 减去滑块宽度
     const minOffset = effectiveWidth * 0.3 // 30%位置开始
     const maxOffset = effectiveWidth * 0.8 // 80%位置结束
     const offset = Math.random() * (maxOffset - minOffset) + minOffset
     setPuzzleOffset(offset)
-    console.log(`🎯 生成拼图位置: ${offset.toFixed(1)}px, 有效宽度: ${effectiveWidth}px`)
+    setSessionId(null) // 本地生成时清空sessionId
+    console.log(`🎯 本地生成拼图位置: ${offset.toFixed(1)}px, 有效宽度: ${effectiveWidth}px`)
     return offset
   }, [width])
 
@@ -65,10 +89,10 @@ export default function SliderVerify({
     setSlideDistance(0)
     setVerifyPath([])
     trackRef.current = []
-    generatePuzzlePosition()
+    await generateSliderChallenge()
     // 获取容器位置信息
     await getContainerRect()
-  }, [generatePuzzlePosition, getContainerRect])
+  }, [generateSliderChallenge, getContainerRect])
 
   // 开始拖拽
   const handleTouchStart = useCallback(async (e: any) => {
@@ -155,13 +179,14 @@ export default function SliderVerify({
 
     try {
       // 发送验证请求到后端
-      const response = await post('/v1_0/auth/api/auth/slider-verify', {
+      const response = await post('/auth/slider-verify', {
         slideDistance,
         puzzleOffset,
         accuracy,
         duration,
         verifyPath,
-        trackData: trackRef.current
+        trackData: trackRef.current,
+        sessionId // 包含会话ID
       })
 
       console.log('🔍 滑块验证响应:', response)

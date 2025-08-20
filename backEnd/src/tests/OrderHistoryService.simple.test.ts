@@ -25,7 +25,7 @@ jest.mock('../services/RedisService', () => ({
 
 import { OrderHistoryService } from '../services/OrderHistoryService';
 
-const MockedOrder = require('../models/Order');
+import MockedOrder from '../models/Order';
 
 describe('OrderHistoryService', () => {
   beforeEach(() => {

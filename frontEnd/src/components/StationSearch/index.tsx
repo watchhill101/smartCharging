@@ -232,7 +232,7 @@ const StationSearch: React.FC<StationSearchProps> = ({
 
     searchTimeoutRef.current = setTimeout(() => {
       performSearch({ keyword });
-    }, 500);
+    }, parseInt(process.env.TARO_APP_SEARCH_DEBOUNCE_DELAY || '500'));
   }, [performSearch]);
 
   // 搜索确认

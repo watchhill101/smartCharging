@@ -9,6 +9,8 @@ dotenv.config({ path: envPath });
 // 必需的环境变量
 const requiredEnvVars = [
   "JWT_SECRET",
+  "JWT_REFRESH_SECRET",
+  "QR_SECRET_KEY",
   "MONGODB_URI",
   "REDIS_URL",
   "API_BASE_URL",
@@ -19,10 +21,54 @@ const requiredEnvVars = [
 const optionalEnvVars = {
   NODE_ENV: "development",
   PORT: "8080",
+  LOG_LEVEL: "info",
+  RATE_LIMIT_WINDOW_MS: "900000",
+  RATE_LIMIT_MAX_REQUESTS: "100",
+  SESSION_SECRET: "your-session-secret",
+  BCRYPT_SALT_ROUNDS: "12",
   JWT_EXPIRES_IN: "7d",
+  JWT_REFRESH_EXPIRES_IN: "7d",
+  JWT_ACCESS_TOKEN_EXPIRE: "15m",
+  JWT_REFRESH_TOKEN_EXPIRE: "7d",
   ALIPAY_APP_ID: "",
   ALIPAY_PRIVATE_KEY: "",
   ALIPAY_PUBLIC_KEY: "",
+  ALIPAY_SANDBOX_APP_ID: "",
+  ALIPAY_SANDBOX_PRIVATE_KEY: "",
+  ALIPAY_SANDBOX_PUBLIC_KEY: "",
+  ALIPAY_GATEWAY: "",
+  ALIPAY_SANDBOX_GATEWAY: "",
+  ALIPAY_SIGN_TYPE: "RSA2",
+  ALIPAY_CHARSET: "utf-8",
+  ALIPAY_VERSION: "1.0",
+  ALIPAY_FORMAT: "json",
+  ALIPAY_TIMEOUT: "30000",
+  SMS_ACCESS_KEY_ID: "",
+  SMS_ACCESS_KEY_SECRET: "",
+  FACE_RECOGNITION_API_URL: "",
+  FACE_RECOGNITION_API_KEY: "",
+  ALLOWED_ORIGINS: "",
+  CORS_METHODS: "GET,POST",
+  CORS_CREDENTIALS: "true",
+  WEBSOCKET_PING_TIMEOUT: "60000",
+  WEBSOCKET_PING_INTERVAL: "25000",
+  WEBSOCKET_HEARTBEAT_INTERVAL: "30000",
+  SLIDER_USE_THIRD_PARTY: "false",
+  SLIDER_THIRD_PARTY_PROVIDER: "generic",
+  SLIDER_VERIFY_API_URL: "",
+  SLIDER_VERIFY_API_KEY: "",
+  SLIDER_CHALLENGE_EXPIRE_TIME: "300",
+  SLIDER_MAX_ATTEMPTS: "3",
+  SLIDER_ACCURACY_THRESHOLD: "15",
+  SLIDER_MIN_DURATION: "300",
+  SLIDER_MAX_DURATION: "15000",
+  SLIDER_MIN_TRACK_POINTS: "5",
+  GEETEST_API_URL: "",
+  GEETEST_TIMEOUT: "5000",
+  GEETEST_RETRIES: "3",
+  TENCENT_CAPTCHA_API_URL: "",
+  TENCENT_CAPTCHA_TIMEOUT: "8000",
+  TENCENT_CAPTCHA_RETRIES: "2",
 };
 
 // 验证配置
@@ -39,6 +85,14 @@ export const validateConfig = (): { isValid: boolean; errors: string[] } => {
   // 验证特定格式
   if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
     errors.push("JWT_SECRET 长度应至少为32个字符");
+  }
+
+  if (process.env.JWT_REFRESH_SECRET && process.env.JWT_REFRESH_SECRET.length < 32) {
+    errors.push("JWT_REFRESH_SECRET 长度应至少为32个字符");
+  }
+
+  if (process.env.QR_SECRET_KEY && process.env.QR_SECRET_KEY.length < 16) {
+    errors.push("QR_SECRET_KEY 长度应至少为16个字符");
   }
 
   if (

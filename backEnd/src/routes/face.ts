@@ -1,22 +1,19 @@
 import express, { Request, Response } from 'express';
 import multer from 'multer';
 import { asyncHandler } from '../middleware/errorHandler';
-import { FaceRecognitionService } from '../services/FaceRecognitionService';
-import FaceProfile from '../models/FaceProfile';
-import FaceLoginRecord from '../models/FaceLoginRecord';
-import {
-  authenticateToken,
-  userRateLimit,
-  requireOwnership,
-  logApiAccess
-} from '../middleware/auth';
+import FaceRecognitionService from '../services/FaceRecognitionService';
+import UserAuthService from '../services/UserAuthService';
+import { authenticate, logApiAccess } from '../middleware/auth';
+import { uploadRateLimit } from '../middleware/rateLimiter';
+import { logger } from '../utils/logger';
 
 const router = express.Router();
 
 // 人脸识别服务实例
 const faceRecognitionService = new FaceRecognitionService();
+const userAuthService = new UserAuthService();
 
-// 配置multer用于处理人脸图片上传
+// 配置multer用于处理文件上传
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
@@ -24,369 +21,283 @@ const upload = multer({
     files: 1
   },
   fileFilter: (req, file, cb) => {
+    // 验证文件类型
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
-      cb(new Error('只允许上传图片文件'));
+      cb(new Error('只支持图片文件'));
     }
   }
 });
 
-// 人脸检测
-router.post('/detect',
-  upload.single('image'),
-  authenticateToken,
+// 人脸登录
+router.post('/login',
+  upload.single('faceImage'),
   logApiAccess,
-  userRateLimit(10, 60000), // 每分钟最多10次检测
+  uploadRateLimit,
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('🔍 收到人脸检测请求');
+    const { phone } = req.body;
+    const faceImage = req.file;
 
-    if (!req.file) {
+    // 严格验证手机号格式
+    if (!phone || typeof phone !== 'string') {
       return res.status(400).json({
         success: false,
-        message: '请上传人脸图片'
+        message: '手机号不能为空'
+      });
+    }
+
+    const phoneRegex = /^1[3-9]\d{9}$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({
+        success: false,
+        message: '手机号格式不正确'
+      });
+    }
+
+    if (!faceImage || !faceImage.buffer) {
+      return res.status(400).json({
+        success: false,
+        message: '人脸图片不能为空'
+      });
+    }
+
+    // 验证图片大小和格式
+    if (faceImage.size > 5 * 1024 * 1024) {
+      return res.status(400).json({
+        success: false,
+        message: '图片大小不能超过5MB'
+      });
+    }
+
+    if (!faceImage.mimetype.startsWith('image/')) {
+      return res.status(400).json({
+        success: false,
+        message: '只支持图片格式文件'
       });
     }
 
     try {
-      const result = await faceRecognitionService.detectFace(req.file.buffer);
-
-      res.json({
-        success: result.success,
-        message: result.message,
-        data: result.data
+      // 记录人脸登录尝试
+      logger.info('人脸登录尝试', {
+        phone,
+        ip: req.ip,
+        userAgent: req.get('User-Agent'),
+        imageSize: faceImage.size,
+        timestamp: new Date().toISOString()
       });
 
-    } catch (error) {
-      console.error('❌ 人脸检测失败:', error);
-      res.status(500).json({
-        success: false,
-        message: '人脸检测服务暂时不可用'
-      });
-    }
-  })
-);
+      // 首先检查用户是否存在
+      const User = (await import('../models/User')).default;
+      let user = await User.findOne({ phone });
+      let needsRegistration = false;
 
-// 活体检测
-router.post('/liveness',
-  upload.single('image'),
-  authenticateToken,
-  logApiAccess,
-  userRateLimit(5, 60000), // 每分钟最多5次活体检测
-  asyncHandler(async (req: Request, res: Response) => {
-    console.log('👁️ 收到活体检测请求');
-
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: '请上传人脸图片'
-      });
-    }
-
-    const { actions } = req.body;
-    const actionList = actions ? JSON.parse(actions) : undefined;
-
-    try {
-      const result = await faceRecognitionService.detectLiveness(req.file.buffer, actionList);
-
-      res.json({
-        success: result.success,
-        message: result.message,
-        data: result.data
-      });
-
-    } catch (error) {
-      console.error('❌ 活体检测失败:', error);
-      res.status(500).json({
-        success: false,
-        message: '活体检测服务暂时不可用'
-      });
-    }
-  })
-);
-
-// 注册人脸档案
-router.post('/register',
-  upload.single('image'),
-  authenticateToken,
-  logApiAccess,
-  userRateLimit(3, 60000), // 每分钟最多3次注册
-  asyncHandler(async (req: Request, res: Response) => {
-    console.log('📝 收到人脸注册请求');
-    const userId = req.user!.userId;
-
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: '请上传人脸图片'
-      });
-    }
-
-    try {
-      // 检查用户人脸档案数量限制
-      const isLimitReached = await FaceProfile.checkProfileLimit(userId, 3);
-      if (isLimitReached) {
-        return res.status(400).json({
-          success: false,
-          message: '人脸档案数量已达上限（最多3个）'
+      if (!user) {
+        // 用户不存在，需要先注册
+        user = new User({
+          phone,
+          nickName: `用户${phone.slice(-4)}`,
+          balance: 0,
+          verificationLevel: 'basic',
+          faceEnabled: false,
+          status: 'active',
+          loginAttempts: 0,
+          createdAt: new Date(),
+          updatedAt: new Date()
         });
+        await user.save();
+        needsRegistration = true;
+        logger.info('人脸登录：自动创建新用户', { phone, userId: user._id });
       }
 
-      // 检测人脸
-      const detectionResult = await faceRecognitionService.detectFace(req.file.buffer);
-      if (!detectionResult.success || !detectionResult.data?.faceDetected) {
-        return res.status(400).json({
-          success: false,
-          message: detectionResult.message || '未检测到人脸'
-        });
-      }
+      if (needsRegistration || !user.faceEnabled) {
+        // 需要注册人脸或用户尚未启用人脸认证
+        const faceRegisterResult = await faceRecognitionService.registerFace(user._id.toString(), faceImage.buffer);
+        
+        if (faceRegisterResult.success) {
+          // 启用人脸认证
+          user.faceEnabled = true;
+          user.verificationLevel = 'face_verified';
+          await user.save();
+          
+          logger.info('人脸注册成功', { 
+            phone, 
+            userId: user._id,
+            faceId: faceRegisterResult.data?.faceId 
+          });
 
-      const { features, confidence } = detectionResult.data;
-      if (!features || confidence < 0.7) {
-        return res.status(400).json({
-          success: false,
-          message: '人脸质量不佳，请重新拍摄'
-        });
-      }
+          // 生成登录token
+          const jwt = require('jsonwebtoken');
+          const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+          const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key';
+          
+          const tokens = {
+            token: jwt.sign(
+              { userId: user._id.toString(), phone: user.phone },
+              JWT_SECRET,
+              { expiresIn: '24h' }
+            ),
+            refreshToken: jwt.sign(
+              { userId: user._id.toString(), type: 'refresh' },
+              JWT_REFRESH_SECRET,
+              { expiresIn: '7d' }
+            )
+          };
 
-      // 检查是否已存在相似的人脸档案
-      const existingProfiles = await FaceProfile.getActiveProfiles(userId);
-      for (const profile of existingProfiles) {
-        const comparisonResult = await faceRecognitionService.compareFaces(
-          features.encoding,
-          profile.features.encoding
-        );
-
-        if (comparisonResult.success && comparisonResult.data?.similarity > 0.9) {
-          return res.status(400).json({
+          res.json({
+            success: true,
+            message: needsRegistration ? '欢迎新用户！人脸注册并登录成功' : '人脸注册并登录成功',
+            data: {
+              token: tokens.token,
+              refreshToken: tokens.refreshToken,
+              user: {
+                id: user._id.toString(),
+                phone: user.phone,
+                nickName: user.nickName,
+                balance: user.balance || 0,
+                verificationLevel: user.verificationLevel,
+                faceEnabled: user.faceEnabled,
+                hasPassword: !!user.password
+              },
+              isNewUser: needsRegistration,
+              faceRegistered: true
+            }
+          });
+        } else {
+          logger.warn('人脸注册失败', { 
+            phone, 
+            userId: user._id,
+            reason: faceRegisterResult.message 
+          });
+          res.status(400).json({
             success: false,
-            message: '检测到相似的人脸档案已存在'
+            message: faceRegisterResult.message || '人脸注册失败，请重试'
           });
         }
+      } else {
+        // 用户已有人脸认证，直接进行人脸登录
+        const loginResult = await userAuthService.login({
+          phone,
+          faceImage: faceImage.buffer,
+          deviceInfo: {
+            userAgent: req.get('User-Agent') || 'unknown',
+            platform: req.get('X-Platform') || 'web',
+            ip: req.ip || 'unknown'
+          }
+        });
+
+        if (loginResult.success) {
+          logger.info('人脸登录成功', { 
+            phone, 
+            userId: loginResult.data?.user.id,
+            ip: req.ip,
+            userAgent: req.get('User-Agent')
+          });
+          res.json(loginResult);
+        } else {
+          logger.warn('人脸登录失败', { 
+            phone, 
+            reason: loginResult.message,
+            ip: req.ip,
+            userAgent: req.get('User-Agent')
+          });
+          res.status(401).json(loginResult);
+        }
       }
 
-      // 创建人脸档案
-      const faceId = faceRecognitionService.generateFaceId();
-      const deviceInfo = {
-        userAgent: req.get('User-Agent') || 'unknown',
-        platform: req.get('X-Platform') || 'unknown',
-        ip: req.ip || req.socket.remoteAddress || 'unknown'
-      };
-
-      const faceProfile = new FaceProfile({
-        userId,
-        faceId,
-        features: {
-          encoding: features.encoding,
-          landmarks: features.landmarks,
-          confidence
-        },
-        deviceInfo,
-        isActive: true
-      });
-
-      await faceProfile.save();
-
-      console.log('✅ 人脸档案注册成功:', faceId);
-
-      res.json({
-        success: true,
-        message: '人脸档案注册成功',
-        data: {
-          faceId,
-          confidence,
-          profileCount: existingProfiles.length + 1
-        }
-      });
-
-    } catch (error) {
-      console.error('❌ 人脸注册失败:', error);
+    } catch (error: any) {
+      logger.error('人脸登录异常', { 
+        phone, 
+        error: error.message,
+        ip: req.ip,
+        userAgent: req.get('User-Agent')
+      }, error.stack);
       res.status(500).json({
         success: false,
-        message: '人脸注册过程中出现错误'
+        message: '人脸登录过程中出现错误，请稍后重试'
       });
     }
   })
 );
 
-// 人脸验证
-router.post('/verify',
-  upload.single('image'),
-  authenticateToken,
+// 人脸注册
+router.post('/register',
+  authenticate,
+  upload.single('faceImage'),
   logApiAccess,
-  userRateLimit(20, 60000), // 每分钟最多20次验证
+  uploadRateLimit,
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('🔐 收到人脸验证请求');
-    const userId = req.user!.userId;
+    const userId = req.user!._id.toString();
+    const faceImage = req.file;
 
-    if (!req.file) {
+    if (!faceImage) {
       return res.status(400).json({
         success: false,
-        message: '请上传人脸图片'
+        message: '人脸图片不能为空'
       });
     }
 
-    const startTime = Date.now();
-
     try {
-      // 检测人脸
-      const detectionResult = await faceRecognitionService.detectFace(req.file.buffer);
-      if (!detectionResult.success || !detectionResult.data?.faceDetected) {
-        await FaceLoginRecord.create({
-          userId,
-          faceId: 'unknown',
-          success: false,
-          confidence: 0,
-          loginAt: new Date(),
-          ipAddress: req.ip || 'unknown',
-          userAgent: req.get('User-Agent') || 'unknown',
-          deviceInfo: {
-            platform: req.get('X-Platform') || 'unknown',
-            browser: 'unknown',
-            version: 'unknown'
-          },
-          failureReason: 'face_not_detected',
-          processingTime: Date.now() - startTime
+      const registerResult = await faceRecognitionService.registerFace(userId, faceImage.buffer);
+
+      if (registerResult.success) {
+        // 更新用户的人脸认证状态
+        const User = (await import('../models/User')).default;
+        await User.findByIdAndUpdate(userId, {
+          faceAuthEnabled: true,
+          verificationLevel: Math.max(req.user!.verificationLevel || 1, 2)
         });
 
-        return res.status(400).json({
-          success: false,
-          message: detectionResult.message || '未检测到人脸'
-        });
+        logger.info('人脸注册成功', { userId, faceId: registerResult.data?.faceId });
+      } else {
+        logger.warn('人脸注册失败', { userId, reason: registerResult.message });
       }
 
-      const { features, confidence } = detectionResult.data;
-      if (!features || confidence < 0.6) {
-        await FaceLoginRecord.create({
-          userId,
-          faceId: 'unknown',
-          success: false,
-          confidence,
-          loginAt: new Date(),
-          ipAddress: req.ip || 'unknown',
-          userAgent: req.get('User-Agent') || 'unknown',
-          deviceInfo: {
-            platform: req.get('X-Platform') || 'unknown',
-            browser: 'unknown',
-            version: 'unknown'
-          },
-          failureReason: 'low_confidence',
-          processingTime: Date.now() - startTime
-        });
+      res.json(registerResult);
 
-        return res.status(400).json({
-          success: false,
-          message: '人脸质量不佳，请重新拍摄'
-        });
-      }
-
-      // 查找匹配的人脸档案
-      const faceProfiles = await FaceProfile.getActiveProfiles(userId);
-      if (faceProfiles.length === 0) {
-        await FaceLoginRecord.create({
-          userId,
-          faceId: 'unknown',
-          success: false,
-          confidence,
-          loginAt: new Date(),
-          ipAddress: req.ip || 'unknown',
-          userAgent: req.get('User-Agent') || 'unknown',
-          deviceInfo: {
-            platform: req.get('X-Platform') || 'unknown',
-            browser: 'unknown',
-            version: 'unknown'
-          },
-          failureReason: 'no_matching_profile',
-          processingTime: Date.now() - startTime
-        });
-
-        return res.status(400).json({
-          success: false,
-          message: '未找到人脸档案，请先注册'
-        });
-      }
-
-      let bestMatch: { profile: any; similarity: number } | null = null;
-
-      for (const profile of faceProfiles) {
-        const comparisonResult = await faceRecognitionService.compareFaces(
-          features.encoding,
-          profile.features.encoding
-        );
-
-        if (comparisonResult.success && comparisonResult.data?.isMatch) {
-          if (!bestMatch || comparisonResult.data.similarity > bestMatch.similarity) {
-            bestMatch = {
-              profile,
-              similarity: comparisonResult.data.similarity
-            };
-          }
-        }
-      }
-
-      if (!bestMatch) {
-        await FaceLoginRecord.create({
-          userId,
-          faceId: 'unknown',
-          success: false,
-          confidence,
-          loginAt: new Date(),
-          ipAddress: req.ip || 'unknown',
-          userAgent: req.get('User-Agent') || 'unknown',
-          deviceInfo: {
-            platform: req.get('X-Platform') || 'unknown',
-            browser: 'unknown',
-            version: 'unknown'
-          },
-          failureReason: 'no_matching_profile',
-          processingTime: Date.now() - startTime
-        });
-
-        return res.status(400).json({
-          success: false,
-          message: '人脸验证失败，未找到匹配的档案'
-        });
-      }
-
-      // 更新人脸档案使用记录
-      await bestMatch.profile.updateLastUsed();
-
-      // 记录成功的验证
-      await FaceLoginRecord.create({
-        userId,
-        faceId: bestMatch.profile.faceId,
-        success: true,
-        confidence,
-        loginAt: new Date(),
-        ipAddress: req.ip || 'unknown',
-        userAgent: req.get('User-Agent') || 'unknown',
-        deviceInfo: {
-          platform: req.get('X-Platform') || 'unknown',
-          browser: 'unknown',
-          version: 'unknown'
-        },
-        livenessScore: detectionResult.data.livenessScore,
-        processingTime: Date.now() - startTime
-      });
-
-      console.log('✅ 人脸验证成功:', bestMatch.profile.faceId);
-
-      res.json({
-        success: true,
-        message: '人脸验证成功',
-        data: {
-          faceId: bestMatch.profile.faceId,
-          similarity: bestMatch.similarity,
-          confidence,
-          processingTime: Date.now() - startTime
-        }
-      });
-
-    } catch (error) {
-      console.error('❌ 人脸验证失败:', error);
+    } catch (error: any) {
+      logger.error('人脸注册异常', { userId, error: error.message }, error.stack);
       res.status(500).json({
         success: false,
-        message: '人脸验证过程中出现错误'
+        message: '人脸注册过程中出现错误，请稍后重试'
+      });
+    }
+  })
+);
+
+// 人脸验证（不登录，只验证）
+router.post('/verify',
+  authenticate,
+  upload.single('faceImage'),
+  logApiAccess,
+  uploadRateLimit,
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!._id.toString();
+    const faceImage = req.file;
+
+    if (!faceImage) {
+      return res.status(400).json({
+        success: false,
+        message: '人脸图片不能为空'
+      });
+    }
+
+    try {
+      const verifyResult = await faceRecognitionService.verifyFace(userId, faceImage.buffer);
+
+      if (verifyResult.success) {
+        logger.info('人脸验证成功', { userId, faceId: verifyResult.data?.faceId });
+      } else {
+        logger.warn('人脸验证失败', { userId, reason: verifyResult.message });
+      }
+
+      res.json(verifyResult);
+
+    } catch (error: any) {
+      logger.error('人脸验证异常', { userId, error: error.message }, error.stack);
+      res.status(500).json({
+        success: false,
+        message: '人脸验证过程中出现错误，请稍后重试'
       });
     }
   })
@@ -394,42 +305,36 @@ router.post('/verify',
 
 // 获取用户人脸档案列表
 router.get('/profiles',
-  authenticateToken,
+  authenticate,
   logApiAccess,
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('📋 收到获取人脸档案列表请求');
-    const userId = req.user!.userId;
+    const userId = req.user!._id.toString();
 
     try {
-      const profiles = await FaceProfile.getActiveProfiles(userId);
+      const profilesResult = await faceRecognitionService.getUserFaceProfiles(userId);
 
-      const profileList = profiles.map(profile => ({
-        faceId: profile.faceId,
-        confidence: profile.features.confidence,
-        createdAt: profile.createdAt,
-        lastUsedAt: profile.lastUsedAt,
-        usageCount: profile.usageCount,
-        deviceInfo: {
-          platform: profile.deviceInfo.platform,
-          ip: profile.deviceInfo.ip
-        }
-      }));
+      if (profilesResult.success) {
+        res.json({
+          success: true,
+          message: '获取人脸档案成功',
+          data: {
+            profiles: profilesResult.data || [],
+            count: profilesResult.data?.length || 0,
+            maxProfiles: 3
+          }
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          message: '获取人脸档案失败'
+        });
+      }
 
-      res.json({
-        success: true,
-        message: '获取人脸档案列表成功',
-        data: {
-          profiles: profileList,
-          total: profileList.length,
-          maxProfiles: 3
-        }
-      });
-
-    } catch (error) {
-      console.error('❌ 获取人脸档案列表失败:', error);
+    } catch (error: any) {
+      logger.error('获取人脸档案异常', { userId, error: error.message }, error.stack);
       res.status(500).json({
         success: false,
-        message: '获取人脸档案列表失败'
+        message: '获取人脸档案过程中出现错误'
       });
     }
   })
@@ -437,157 +342,86 @@ router.get('/profiles',
 
 // 删除人脸档案
 router.delete('/profiles/:faceId',
-  authenticateToken,
+  authenticate,
   logApiAccess,
-  userRateLimit(5, 60000), // 每分钟最多5次删除
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('🗑️ 收到删除人脸档案请求');
-    const userId = req.user!.userId;
+    const userId = req.user!._id.toString();
     const { faceId } = req.params;
 
-    try {
-      const profile = await FaceProfile.findOne({
-        userId,
-        faceId,
-        isActive: true
+    if (!faceId) {
+      return res.status(400).json({
+        success: false,
+        message: '人脸档案ID不能为空'
       });
+    }
 
-      if (!profile) {
-        return res.status(404).json({
-          success: false,
-          message: '人脸档案不存在'
-        });
+    try {
+      const deleteResult = await faceRecognitionService.deleteFaceProfile(userId, faceId);
+
+      if (deleteResult.success) {
+        // 检查是否还有其他人脸档案
+        const profilesResult = await faceRecognitionService.getUserFaceProfiles(userId);
+        if (profilesResult.success && profilesResult.data?.length === 0) {
+          // 如果没有人脸档案了，关闭人脸认证
+          const User = (await import('../models/User')).default;
+          await User.findByIdAndUpdate(userId, {
+            faceAuthEnabled: false,
+            verificationLevel: 1
+          });
+        }
+
+        logger.info('人脸档案删除成功', { userId, faceId });
+      } else {
+        logger.warn('人脸档案删除失败', { userId, faceId, reason: deleteResult.message });
       }
 
-      await profile.deactivate();
+      res.json(deleteResult);
 
-      console.log('✅ 人脸档案删除成功:', faceId);
-
-      res.json({
-        success: true,
-        message: '人脸档案删除成功'
-      });
-
-    } catch (error) {
-      console.error('❌ 删除人脸档案失败:', error);
+    } catch (error: any) {
+      logger.error('删除人脸档案异常', { userId, faceId, error: error.message }, error.stack);
       res.status(500).json({
         success: false,
-        message: '删除人脸档案失败'
+        message: '删除人脸档案过程中出现错误'
       });
     }
   })
 );
 
-// 获取人脸登录历史
-router.get('/login-history',
-  authenticateToken,
-  logApiAccess,
-  requireOwnership('userId'),
-  asyncHandler(async (req: Request, res: Response) => {
-    console.log('📊 收到获取人脸登录历史请求');
-    const userId = req.user!.userId;
-    const limit = parseInt(req.query.limit as string) || 20;
-
-    try {
-      const history = await FaceLoginRecord.getLoginHistory(userId, limit);
-
-      res.json({
-        success: true,
-        message: '获取人脸登录历史成功',
-        data: {
-          history,
-          total: history.length
-        }
-      });
-
-    } catch (error) {
-      console.error('❌ 获取人脸登录历史失败:', error);
-      res.status(500).json({
-        success: false,
-        message: '获取人脸登录历史失败'
-      });
-    }
-  })
-);
-
-// 获取人脸验证统计
-router.get('/stats',
-  authenticateToken,
-  logApiAccess,
-  asyncHandler(async (req: Request, res: Response) => {
-    console.log('📈 收到获取人脸验证统计请求');
-    const userId = req.user!.userId;
-    const hours = parseInt(req.query.hours as string) || 24;
-
-    try {
-      const stats = await FaceLoginRecord.getFailureStats(userId, hours);
-      const securityReport = await FaceLoginRecord.getSecurityReport(userId, 7); // 7天安全报告
-
-      res.json({
-        success: true,
-        message: '获取人脸验证统计成功',
-        data: {
-          recentStats: stats,
-          securityReport,
-          timeRange: `${hours}小时`
-        }
-      });
-
-    } catch (error) {
-      console.error('❌ 获取人脸验证统计失败:', error);
-      res.status(500).json({
-        success: false,
-        message: '获取人脸验证统计失败'
-      });
-    }
-  })
-);
-
-// 获取服务配置
-router.get('/config',
-  logApiAccess,
-  asyncHandler(async (req: Request, res: Response) => {
-    console.log('⚙️ 收到获取服务配置请求');
-
-    try {
-      const config = faceRecognitionService.getConfiguration();
-
-      res.json({
-        success: true,
-        message: '获取服务配置成功',
-        data: config
-      });
-
-    } catch (error) {
-      console.error('❌ 获取服务配置失败:', error);
-      res.status(500).json({
-        success: false,
-        message: '获取服务配置失败'
-      });
-    }
-  })
-);
-
-// 健康检查
+// 人脸识别服务健康检查
 router.get('/health',
   logApiAccess,
   asyncHandler(async (req: Request, res: Response) => {
-    console.log('🏥 收到健康检查请求');
-
     try {
-      const health = await faceRecognitionService.healthCheck();
-
+      const healthResult = await faceRecognitionService.healthCheck();
       res.json({
         success: true,
-        message: '健康检查完成',
-        data: health
+        data: healthResult
       });
-
-    } catch (error) {
-      console.error('❌ 健康检查失败:', error);
+    } catch (error: any) {
       res.status(500).json({
         success: false,
-        message: '健康检查失败'
+        message: '人脸识别服务健康检查失败',
+        error: error.message
+      });
+    }
+  })
+);
+
+// 获取人脸识别配置
+router.get('/config',
+  logApiAccess,
+  asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const config = faceRecognitionService.getConfiguration();
+      res.json({
+        success: true,
+        data: config
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: '获取配置失败',
+        error: error.message
       });
     }
   })

@@ -3,7 +3,9 @@ import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { Button as NutButton, Toast } from '@nutui/nutui-react-taro';
 import QRScanner, { ScanResult } from '../../components/QRScanner';
-import './index.scss';
+import { TaroHelper } from '../../utils/taroHelpers';
+import './index.scss'
+import { TIME_CONSTANTS } from '../../utils/constants';
 
 interface ScanPageState {
   showScanner: boolean;
@@ -46,7 +48,7 @@ const ScanPage: React.FC = () => {
       Toast.show({
         content: `扫描到内容: ${result.result}`,
         type: 'success',
-        duration: 3000
+        duration: TIME_CONSTANTS.THREE_SECONDS
       });
     }
   }, []);
@@ -69,7 +71,7 @@ const ScanPage: React.FC = () => {
 
   // 处理充电桩扫描
   const handleChargingPileScanned = useCallback((pileCode: string) => {
-    Taro.showModal({
+    TaroHelper.showModal({
       title: '确认充电',
       content: `检测到充电桩编号: ${pileCode}，是否开始充电？`,
       confirmText: '开始充电',
@@ -84,7 +86,7 @@ const ScanPage: React.FC = () => {
             Toast.show({
               content: '跳转失败，请重试',
               type: 'error',
-              duration: 2000
+              duration: TIME_CONSTANTS.TWO_SECONDS
             });
           });
         }
@@ -94,7 +96,7 @@ const ScanPage: React.FC = () => {
 
   // 处理URL扫描
   const handleURLScanned = useCallback((url: string) => {
-    Taro.showModal({
+    TaroHelper.showModal({
       title: '打开链接',
       content: `检测到链接: ${url}，是否打开？`,
       confirmText: '打开',
@@ -128,7 +130,7 @@ const ScanPage: React.FC = () => {
 
   // 清空历史记录
   const handleClearHistory = useCallback(() => {
-    Taro.showModal({
+    TaroHelper.showModal({
       title: '清空历史',
       content: '确定要清空所有扫描历史记录吗？',
       confirmText: '清空',

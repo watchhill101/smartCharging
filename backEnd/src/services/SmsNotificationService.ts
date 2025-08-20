@@ -576,14 +576,14 @@ export class SmsNotificationService {
   /**
    * 获取消息历史
    */
-  getMessageHistory(limit: number = 100) {
+  getMessageHistory(limit = 100) {
     return this.smsService.getMessageHistory(limit);
   }
 
   /**
    * 清理历史记录
    */
-  cleanupHistory(daysToKeep: number = 30): number {
+  cleanupHistory(daysToKeep = 30): number {
     return this.smsService.cleanupHistory(daysToKeep);
   }
 }

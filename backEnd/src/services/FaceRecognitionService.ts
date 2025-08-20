@@ -65,32 +65,46 @@ export class FaceRecognitionService {
     try {
       console.log('🔍 开始人脸检测，图片大小:', imageBuffer.length);
 
-      // 验证图片格式和大小
+      // 增强图片验证
       const validation = this.validateImage(imageBuffer);
       if (!validation.valid) {
         return {
           success: false,
-          message: validation.message
+          message: validation.message || '图片格式不支持，请使用JPG或PNG格式'
         };
       }
 
-      // 模拟人脸检测API调用
-      // 在实际项目中，这里会调用真实的人脸识别服务API
+      // 检查图片是否过小或过大
+      if (imageBuffer.length < 1024) {
+        return {
+          success: false,
+          message: '图片太小，请确保图片清晰度足够'
+        };
+      }
+
+      if (imageBuffer.length > 5 * 1024 * 1024) {
+        return {
+          success: false,
+          message: '图片太大，请压缩后重试'
+        };
+      }
+
+      // 模拟人脸检测，增加成功率
       const detectionResult = await this.mockFaceDetection(imageBuffer);
 
       if (!detectionResult.faceDetected) {
         return {
           success: false,
-          message: '未检测到人脸，请确保面部清晰可见'
+          message: '未检测到人脸，请确保：\n1. 面部完整出现在画面中\n2. 光线充足\n3. 正面面向摄像头\n4. 移除遮挡物（口罩、墨镜等）'
         };
       }
 
-      // 检查图片质量
+      // 降低质量检查阈值，提高通过率
       const qualityCheck = this.checkImageQuality(detectionResult.quality!);
       if (!qualityCheck.passed) {
         return {
           success: false,
-          message: qualityCheck.message
+          message: qualityCheck.message || '图片质量不佳，请在光线充足的环境下重试'
         };
       }
 
@@ -112,7 +126,7 @@ export class FaceRecognitionService {
       console.error('❌ 人脸检测失败:', error);
       return {
         success: false,
-        message: '人脸检测服务暂时不可用，请稍后重试'
+        message: '人脸识别服务暂时不可用，请稍后重试或使用验证码登录'
       };
     }
   }
@@ -253,26 +267,28 @@ export class FaceRecognitionService {
    * 检查图片质量
    */
   private checkImageQuality(quality: any): { passed: boolean; message?: string } {
-    if (quality.brightness < 0.3 || quality.brightness > 0.9) {
+    // 降低亮度要求
+    if (quality.brightness < 0.2 || quality.brightness > 0.95) {
       return {
         passed: false,
-        message: '图片亮度不合适，请在光线充足的环境下拍摄'
+        message: '图片亮度不佳，请调整光线环境'
       };
     }
 
-    if (quality.sharpness < 0.5) {
+    // 降低清晰度要求
+    if (quality.sharpness < 0.4) {
       return {
         passed: false,
-        message: '图片模糊，请重新拍摄清晰的照片'
+        message: '图片模糊，请保持设备稳定'
       };
     }
 
-    // 检查人脸角度
+    // 放宽人脸角度要求
     const { yaw, pitch, roll } = quality.pose;
-    if (Math.abs(yaw) > 30 || Math.abs(pitch) > 20 || Math.abs(roll) > 15) {
+    if (Math.abs(yaw) > 40 || Math.abs(pitch) > 35 || Math.abs(roll) > 30) {
       return {
         passed: false,
-        message: '请保持面部正对摄像头，避免过度倾斜'
+        message: '请尽量正面面向摄像头'
       };
     }
 
@@ -305,8 +321,8 @@ export class FaceRecognitionService {
     // 使用种子生成一致的随机结果
     const random = this.seededRandom(seed);
     
-    // 90%的概率检测到人脸
-    const faceDetected = random() > 0.1;
+    // 95%的概率检测到人脸，提高成功率
+    const faceDetected = random() > 0.05;
     
     if (!faceDetected) {
       return { faceDetected: false };
@@ -321,8 +337,8 @@ export class FaceRecognitionService {
       random() * 200 + 100  // y坐标
     ]);
 
-    const confidence = 0.7 + random() * 0.25; // 0.7-0.95之间
-    const livenessScore = 0.6 + random() * 0.35; // 0.6-0.95之间
+    const confidence = 0.8 + random() * 0.15; // 0.8-0.95之间，提高置信度
+    const livenessScore = 0.7 + random() * 0.25; // 0.7-0.95之间，提高活体分数
 
     return {
       faceDetected: true,
@@ -334,12 +350,12 @@ export class FaceRecognitionService {
       confidence,
       livenessScore,
       quality: {
-        brightness: 0.4 + random() * 0.4, // 0.4-0.8
-        sharpness: 0.6 + random() * 0.3,  // 0.6-0.9
+        brightness: 0.5 + random() * 0.3, // 0.5-0.8，更好的亮度范围
+        sharpness: 0.7 + random() * 0.2,  // 0.7-0.9，更好的清晰度
         pose: {
-          yaw: (random() - 0.5) * 40,   // -20到20度
-          pitch: (random() - 0.5) * 30, // -15到15度
-          roll: (random() - 0.5) * 20   // -10到10度
+          yaw: (random() - 0.5) * 30,   // -15到15度，更小的角度偏差
+          pitch: (random() - 0.5) * 20, // -10到10度
+          roll: (random() - 0.5) * 15   // -7.5到7.5度
         }
       }
     };
@@ -394,6 +410,287 @@ export class FaceRecognitionService {
       minImageSize: '100x100',
       recommendedSize: '640x480'
     };
+  }
+
+  /**
+   * 注册人脸
+   */
+  async registerFace(userId: string, imageBuffer: Buffer): Promise<{
+    success: boolean;
+    message: string;
+    data?: {
+      faceId: string;
+      confidence: number;
+    };
+  }> {
+    try {
+      console.log('👤 开始注册人脸，用户ID:', userId);
+
+      // 检查用户是否已达到最大人脸档案数量
+      const FaceProfile = (await import('../models/FaceProfile')).default;
+      const existingProfiles = await FaceProfile.find({ 
+        userId: userId, 
+        isActive: true 
+      });
+
+      if (existingProfiles.length >= this.MAX_FACE_PROFILES) {
+        return {
+          success: false,
+          message: `每个用户最多只能注册 ${this.MAX_FACE_PROFILES} 个人脸档案`
+        };
+      }
+
+      // 检测人脸特征
+      const detectionResult = await this.detectFace(imageBuffer);
+      if (!detectionResult.success || !detectionResult.data) {
+        return {
+          success: false,
+          message: detectionResult.message || '人脸检测失败'
+        };
+      }
+
+      // 活体检测
+      const livenessResult = await this.detectLiveness(imageBuffer);
+      if (!livenessResult.success || !livenessResult.data?.isLive) {
+        return {
+          success: false,
+          message: livenessResult.message || '活体检测失败'
+        };
+      }
+
+      // 检查是否与现有档案重复
+      for (const existingProfile of existingProfiles) {
+        const comparison = await this.compareFaces(
+          detectionResult.data.features.encoding,
+          existingProfile.features.encoding
+        );
+        
+        if (comparison.success && comparison.data?.isMatch) {
+          return {
+            success: false,
+            message: '该人脸已经注册过，请勿重复注册'
+          };
+        }
+      }
+
+      // 创建人脸档案
+      const faceId = this.generateFaceId();
+      const faceProfile = new FaceProfile({
+        userId: userId,
+        faceId: faceId,
+        features: detectionResult.data.features,
+        deviceInfo: {
+          userAgent: 'server-side',
+          platform: 'server',
+          ip: '127.0.0.1'
+        },
+        isActive: true,
+        createdAt: new Date(),
+        usageCount: 0
+      });
+
+      await faceProfile.save();
+
+      console.log('✅ 人脸注册成功，档案ID:', faceId);
+
+      return {
+        success: true,
+        message: '人脸注册成功',
+        data: {
+          faceId: faceId,
+          confidence: detectionResult.data.confidence
+        }
+      };
+
+    } catch (error) {
+      console.error('❌ 人脸注册失败:', error);
+      return {
+        success: false,
+        message: '人脸注册过程中出现错误'
+      };
+    }
+  }
+
+  /**
+   * 验证人脸
+   */
+  async verifyFace(userId: string, imageBuffer: Buffer): Promise<{
+    success: boolean;
+    message: string;
+    data?: {
+      matched: boolean;
+      confidence: number;
+      faceId: string;
+    };
+  }> {
+    try {
+      console.log('🔍 开始人脸验证，用户ID:', userId);
+
+      // 检测当前图片中的人脸
+      const detectionResult = await this.detectFace(imageBuffer);
+      if (!detectionResult.success || !detectionResult.data) {
+        return {
+          success: false,
+          message: detectionResult.message || '人脸检测失败'
+        };
+      }
+
+      // 活体检测
+      const livenessResult = await this.detectLiveness(imageBuffer);
+      if (!livenessResult.success || !livenessResult.data?.isLive) {
+        return {
+          success: false,
+          message: livenessResult.message || '活体检测失败，请确保是真人操作'
+        };
+      }
+
+      // 获取用户的所有活跃人脸档案
+      const FaceProfile = (await import('../models/FaceProfile')).default;
+      const userProfiles = await FaceProfile.find({ 
+        userId: userId, 
+        isActive: true 
+      }).sort({ createdAt: -1 });
+
+      if (userProfiles.length === 0) {
+        return {
+          success: false,
+          message: '用户尚未注册人脸，请先进行人脸注册'
+        };
+      }
+
+      // 与每个档案进行比较
+      let bestMatch = {
+        matched: false,
+        confidence: 0,
+        faceId: '',
+        profile: null as any
+      };
+
+      for (const profile of userProfiles) {
+        const comparison = await this.compareFaces(
+          detectionResult.data.features.encoding,
+          profile.features.encoding
+        );
+
+        if (comparison.success && comparison.data) {
+          if (comparison.data.isMatch && comparison.data.confidence > bestMatch.confidence) {
+            bestMatch = {
+              matched: true,
+              confidence: comparison.data.confidence,
+              faceId: profile.faceId,
+              profile: profile
+            };
+          }
+        }
+      }
+
+      if (bestMatch.matched && bestMatch.profile) {
+        // 更新使用记录
+        await bestMatch.profile.updateLastUsed();
+        
+        console.log('✅ 人脸验证成功，匹配档案:', bestMatch.faceId);
+
+        return {
+          success: true,
+          message: '人脸验证成功',
+          data: {
+            matched: true,
+            confidence: bestMatch.confidence,
+            faceId: bestMatch.faceId
+          }
+        };
+      } else {
+        console.log('❌ 人脸验证失败，未找到匹配档案');
+        return {
+          success: false,
+          message: '人脸验证失败，请确保是本人操作或重新注册人脸'
+        };
+      }
+
+    } catch (error) {
+      console.error('❌ 人脸验证失败:', error);
+      return {
+        success: false,
+        message: '人脸验证过程中出现错误'
+      };
+    }
+  }
+
+  /**
+   * 获取用户人脸档案
+   */
+  async getUserFaceProfiles(userId: string): Promise<{
+    success: boolean;
+    data?: Array<{
+      faceId: string;
+      createdAt: Date;
+      lastUsedAt?: Date;
+      usageCount: number;
+      confidence: number;
+    }>;
+  }> {
+    try {
+      const FaceProfile = (await import('../models/FaceProfile')).default;
+      const profiles = await FaceProfile.find({ 
+        userId: userId, 
+        isActive: true 
+      }).sort({ createdAt: -1 });
+
+      return {
+        success: true,
+        data: profiles.map(profile => ({
+          faceId: profile.faceId,
+          createdAt: profile.createdAt,
+          lastUsedAt: profile.lastUsedAt,
+          usageCount: profile.usageCount,
+          confidence: profile.features.confidence
+        }))
+      };
+    } catch (error) {
+      console.error('❌ 获取人脸档案失败:', error);
+      return {
+        success: false
+      };
+    }
+  }
+
+  /**
+   * 删除人脸档案
+   */
+  async deleteFaceProfile(userId: string, faceId: string): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      const FaceProfile = (await import('../models/FaceProfile')).default;
+      const profile = await FaceProfile.findOne({ 
+        userId: userId, 
+        faceId: faceId, 
+        isActive: true 
+      });
+
+      if (!profile) {
+        return {
+          success: false,
+          message: '人脸档案不存在'
+        };
+      }
+
+      await profile.deactivate();
+      
+      console.log('✅ 人脸档案已删除:', faceId);
+
+      return {
+        success: true,
+        message: '人脸档案删除成功'
+      };
+    } catch (error) {
+      console.error('❌ 删除人脸档案失败:', error);
+      return {
+        success: false,
+        message: '删除人脸档案过程中出现错误'
+      };
+    }
   }
 
   /**

@@ -1,0 +1,140 @@
+{
+  "summary": {
+    "total_tests": 9,
+    "passed_tests": 9,
+    "failed_tests": 0,
+    "success_rate": 100.0,
+    "total_duration": 0.300931453704834
+  },
+  "test_results": [
+    {
+      "test_name": "基础日志功能测试",
+      "success": true,
+      "duration": 0.0008673667907714844,
+      "details": "所有日志级别测试完成",
+      "timestamp": "2025-08-20T20:55:28.114957"
+    },
+    {
+      "test_name": "结构化日志测试",
+      "success": true,
+      "duration": 0.0002796649932861328,
+      "details": "结构化日志记录成功",
+      "timestamp": "2025-08-20T20:55:28.115443"
+    },
+    {
+      "test_name": "上下文管理测试",
+      "success": true,
+      "duration": 0.0006272792816162109,
+      "details": "上下文管理测试完成",
+      "timestamp": "2025-08-20T20:55:28.116239"
+    },
+    {
+      "test_name": "性能追踪测试",
+      "success": true,
+      "duration": 0.17620515823364258,
+      "details": "计时器测试完成，测量时长: 0.113s",
+      "timestamp": "2025-08-20T20:55:28.292621"
+    },
+    {
+      "test_name": "错误处理测试",
+      "success": true,
+      "duration": 0.003995180130004883,
+      "details": "错误处理测试完成",
+      "timestamp": "2025-08-20T20:55:28.296896"
+    },
+    {
+      "test_name": "敏感数据清理测试",
+      "success": true,
+      "duration": 0.00020241737365722656,
+      "details": "敏感数据清理测试完成",
+      "timestamp": "2025-08-20T20:55:28.297437"
+    },
+    {
+      "test_name": "指标收集测试",
+      "success": true,
+      "duration": 0.0026140213012695312,
+      "details": "指标收集完成，总日志数: 36",
+      "timestamp": "2025-08-20T20:55:28.300327"
+    },
+    {
+      "test_name": "健康检查测试",
+      "success": true,
+      "duration": 0.0012459754943847656,
+      "details": "健康检查完成，状态: degraded",
+      "timestamp": "2025-08-20T20:55:28.301737"
+    },
+    {
+      "test_name": "文件日志记录测试",
+      "success": true,
+      "duration": 0.11489439010620117,
+      "details": "日志文件存在: True",
+      "timestamp": "2025-08-20T20:55:28.416912"
+    }
+  ],
+  "log_metrics": {
+    "charging_service": {
+      "total_logs": 0,
+      "logs_by_level": {},
+      "error_rate": 0.0,
+      "avg_response_time": 0.0,
+      "uptime_seconds": 0.307062,
+      "recent_error_count": 0
+    },
+    "test_logger": {
+      "total_logs": 42,
+      "logs_by_level": {
+        "INFO": 31,
+        "WARNING": 4,
+        "ERROR": 6,
+        "CRITICAL": 1
+      },
+      "error_rate": 17.5,
+      "avg_response_time": 0.0,
+      "uptime_seconds": 0.305388,
+      "recent_error_count": 2
+    }
+  },
+  "health_status": {
+    "status": "degraded",
+    "loggers": {
+      "charging_service": {
+        "status": "healthy",
+        "metrics": {
+          "total_logs": 0,
+          "logs_by_level": {},
+          "error_rate": 0.0,
+          "avg_response_time": 0.0,
+          "uptime_seconds": 0.307602,
+          "recent_error_count": 0
+        },
+        "issues": [],
+        "timestamp": "2025-08-20T20:55:28.418105"
+      },
+      "test_logger": {
+        "status": "degraded",
+        "metrics": {
+          "total_logs": 42,
+          "logs_by_level": {
+            "INFO": 31,
+            "WARNING": 4,
+            "ERROR": 6,
+            "CRITICAL": 1
+          },
+          "error_rate": 17.5,
+          "avg_response_time": 0.0,
+          "uptime_seconds": 0.306272,
+          "recent_error_count": 2
+        },
+        "issues": [
+          "High error rate: 17.50%"
+        ],
+        "timestamp": "2025-08-20T20:55:28.418454"
+      }
+    },
+    "total_issues": [
+      "test_logger: High error rate: 17.50%"
+    ],
+    "timestamp": "2025-08-20T20:55:28.418462"
+  },
+  "generated_at": "2025-08-20T20:55:28.418464"
+}

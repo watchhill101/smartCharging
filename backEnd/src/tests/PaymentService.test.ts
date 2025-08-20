@@ -199,7 +199,7 @@ describe('PaymentService', () => {
   });
 
   describe('processBalancePayment', () => {
-    let mockSession: any;
+    const mockSession: any;
 
     beforeEach(() => {
       mockSession = {
@@ -233,7 +233,7 @@ describe('PaymentService', () => {
         save: jest.fn().mockResolvedValue(true)
       };
 
-      mockSession.withTransaction.mockImplementation(async (callback: Function) => {
+      mockSession.withTransaction.mockImplementation(async (callback: () => Promise<any>) => {
         MockedChargingSession.findOne = jest.fn().mockResolvedValue(mockChargingSession);
         MockedUser.findById = jest.fn().mockResolvedValue(mockUser);
         MockedUser.findByIdAndUpdate = jest.fn().mockResolvedValue(mockUpdatedUser);
@@ -271,7 +271,7 @@ describe('PaymentService', () => {
         balance: 30
       };
 
-      mockSession.withTransaction.mockImplementation(async (callback: Function) => {
+      mockSession.withTransaction.mockImplementation(async (callback: () => Promise<any>) => {
         MockedChargingSession.findOne = jest.fn().mockResolvedValue(mockChargingSession);
         MockedUser.findById = jest.fn().mockResolvedValue(mockUser);
 
@@ -293,7 +293,7 @@ describe('PaymentService', () => {
     });
 
     it('should handle user not found', async () => {
-      mockSession.withTransaction.mockImplementation(async (callback: Function) => {
+      mockSession.withTransaction.mockImplementation(async (callback: () => Promise<any>) => {
         MockedUser.findById = jest.fn().mockResolvedValue(null);
 
         return await callback();
@@ -331,7 +331,7 @@ describe('PaymentService', () => {
         balance: 200
       };
 
-      let mockSession: any;
+      const mockSession: any;
       mockSession = {
         withTransaction: jest.fn(),
         endSession: jest.fn()
@@ -339,7 +339,7 @@ describe('PaymentService', () => {
 
       (mongoose.startSession as jest.Mock) = jest.fn().mockResolvedValue(mockSession);
 
-      mockSession.withTransaction.mockImplementation(async (callback: Function) => {
+      mockSession.withTransaction.mockImplementation(async (callback: () => Promise<any>) => {
         MockedOrder.findOne = jest.fn().mockResolvedValue(mockOrder);
         MockedOrder.findByIdAndUpdate = jest.fn().mockResolvedValue(true);
         MockedUser.findByIdAndUpdate = jest.fn().mockResolvedValue(mockUser);

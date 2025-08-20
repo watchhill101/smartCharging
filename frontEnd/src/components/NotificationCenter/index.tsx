@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import request from '../../utils/request'
 import './index.scss'
-import { showToast } from '../utils/toast'
+import { showToast } from '../../utils/toast'
 
 interface NotificationItem {
   id: string

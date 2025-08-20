@@ -1,4 +1,6 @@
 import Taro from '@tarojs/taro';
+import { TaroSafe } from '../utils/taroSafe'
+import { DISTANCE_CONSTANTS, TIME_CONSTANTS } from '../utils/constants'
 
 export interface LocationInfo {
   latitude: number;
@@ -86,12 +88,17 @@ export interface GeocodingResult {
 export class AmapService {
   private apiKey: string;
   private webApiKey: string;
-  private baseUrl = 'https://restapi.amap.com/v3';
+  private baseUrl: string;
   
   constructor() {
-    // 从环境变量或配置文件获取API密钥
-    this.apiKey = process.env.AMAP_API_KEY || 'your-amap-api-key';
-    this.webApiKey = process.env.AMAP_WEB_API_KEY || 'your-amap-web-api-key';
+    // 从环境变量获取API密钥，未配置时抛出错误
+    this.apiKey = process.env.TARO_APP_AMAP_API_KEY || (() => {
+      throw new Error('高德地图API密钥未配置，请设置环境变量 TARO_APP_AMAP_API_KEY');
+    })();
+    this.webApiKey = process.env.TARO_APP_AMAP_WEB_API_KEY || (() => {
+      throw new Error('高德地图Web API密钥未配置，请设置环境变量 TARO_APP_AMAP_WEB_API_KEY');
+    })();
+    this.baseUrl = process.env.TARO_APP_AMAP_BASE_URL || 'https://restapi.amap.com/v3';
   }
 
   /**
@@ -105,7 +112,7 @@ export class AmapService {
         type: 'gcj02', // 高德地图坐标系
         altitude: true,
         isHighAccuracy: true,
-        highAccuracyExpireTime: 10000
+        highAccuracyExpireTime: TIME_CONSTANTS.TEN_SECONDS
       });
 
       const location: LocationInfo = {
@@ -160,7 +167,7 @@ export class AmapService {
         key: this.webApiKey,
         location: `${longitude},${latitude}`,
         poitype: '',
-        radius: 1000,
+        radius: DISTANCE_CONSTANTS.ONE_KM,
         extensions: 'base',
         batch: false,
         roadlevel: 0
@@ -274,7 +281,7 @@ export class AmapService {
 
       if (location) {
         params.location = `${location.longitude},${location.latitude}`;
-        params.radius = options?.radius || 5000;
+        params.radius = options?.radius || DISTANCE_CONSTANTS.FIVE_KM;
         params.sortrule = 'distance';
       }
 
@@ -337,7 +344,7 @@ export class AmapService {
       const params: any = {
         key: this.webApiKey,
         location: `${location.longitude},${location.latitude}`,
-        radius: options?.radius || 3000,
+        radius: options?.radius || DISTANCE_CONSTANTS.THREE_KM,
         page: options?.page || 1,
         offset: options?.pageSize || 20,
         extensions: 'base',
@@ -467,12 +474,12 @@ export class AmapService {
    * 格式化距离显示
    */
   formatDistance(distance: number): string {
-    if (distance < 1000) {
+    if (distance < DISTANCE_CONSTANTS.ONE_KM) {
       return `${distance}m`;
-    } else if (distance < 10000) {
-      return `${(distance / 1000).toFixed(1)}km`;
+    } else if (distance < DISTANCE_CONSTANTS.TEN_KM) {
+      return `${(distance / DISTANCE_CONSTANTS.ONE_KM).toFixed(1)}km`;
     } else {
-      return `${Math.round(distance / 1000)}km`;
+      return `${Math.round(distance / DISTANCE_CONSTANTS.ONE_KM)}km`;
     }
   }
 

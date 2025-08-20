@@ -1,14 +1,32 @@
 import type { UserConfigExport } from "@tarojs/cli"
+import { performanceConfig } from './performance'
 
 export default {
-  mini: {},
+  mini: {
+    // 小程序性能优化
+    optimizeMainPackage: {
+      enable: true
+    },
+    // 启用分包预下载
+    preloadRule: {
+      'pages/charging': {
+        network: 'all',
+        packages: ['charging-subpackage']
+      }
+    }
+  },
   h5: {
     // 暂时禁用 legacy 模式以避免 Babel 兼容性问题
     legacy: false,
+    // 合并性能优化配置
+    ...performanceConfig.h5,
     vite: {
+      ...performanceConfig.h5?.vite,
       build: {
+        ...performanceConfig.h5?.vite?.build,
         rollupOptions: {
-          // 不要将 @amap/amap-jsapi-loader 作为外部依赖
+          ...performanceConfig.h5?.vite?.build?.rollupOptions,
+          // 保持原有的外部依赖处理逻辑
           external: (id: string) => {
             // 排除 @amap/amap-jsapi-loader，确保它被打包进来
             if (id.includes('@amap/amap-jsapi-loader')) {
@@ -20,8 +38,12 @@ export default {
         }
       },
       optimizeDeps: {
+        ...performanceConfig.h5?.vite?.optimizeDeps,
         // 预构建 @amap/amap-jsapi-loader
-        include: ['@amap/amap-jsapi-loader']
+        include: [
+          '@amap/amap-jsapi-loader',
+          ...(performanceConfig.h5?.vite?.optimizeDeps?.include || [])
+        ]
       }
     },
     /**

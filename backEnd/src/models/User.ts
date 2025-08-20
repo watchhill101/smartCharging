@@ -391,8 +391,10 @@ const UserSchema = new Schema<IUser>({
 // 创建索引
 UserSchema.index({ phone: 1 });
 UserSchema.index({ email: 1 }, { sparse: true });
-UserSchema.index({ isDeleted: 1 });
-UserSchema.index({ createdAt: 1 });
+UserSchema.index({ isDeleted: 1, createdAt: -1 });
+UserSchema.index({ verificationLevel: 1, isDeleted: 1 });
+UserSchema.index({ faceEnabled: 1, isDeleted: 1 });
+UserSchema.index({ createdAt: -1 }); // 用于统计和管理
 
 // 查询中间件：默认过滤已删除的用户
 UserSchema.pre(/^find/, function(this: any) {

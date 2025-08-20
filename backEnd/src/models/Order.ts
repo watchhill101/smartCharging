@@ -78,11 +78,14 @@ const OrderSchema = new Schema<IOrder>({
 // 索引
 OrderSchema.index({ orderId: 1 });
 OrderSchema.index({ userId: 1, createdAt: -1 });
-OrderSchema.index({ status: 1 });
-OrderSchema.index({ type: 1 });
-OrderSchema.index({ paymentMethod: 1 });
-OrderSchema.index({ thirdPartyOrderId: 1 });
-OrderSchema.index({ sessionId: 1 });
+OrderSchema.index({ userId: 1, status: 1 });
+OrderSchema.index({ userId: 1, type: 1 });
+OrderSchema.index({ status: 1, createdAt: -1 });
+OrderSchema.index({ type: 1, status: 1 });
+OrderSchema.index({ paymentMethod: 1, status: 1 });
+OrderSchema.index({ thirdPartyOrderId: 1 }, { sparse: true });
+OrderSchema.index({ sessionId: 1 }, { sparse: true });
+OrderSchema.index({ createdAt: -1 }); // 用于统计和清理
 
 // 实例方法
 OrderSchema.methods.markAsPaid = function(thirdPartyOrderId?: string) {
@@ -122,8 +125,8 @@ OrderSchema.statics.findByUser = function(
   userId: string, 
   type?: string, 
   status?: string,
-  limit: number = 20,
-  skip: number = 0
+  limit = 20,
+  skip = 0
 ) {
   const query: any = { userId };
   if (type) query.type = type;
@@ -163,7 +166,7 @@ OrderSchema.statics.getOrderStats = function(userId: string, startDate?: Date, e
   ]);
 };
 
-OrderSchema.statics.findPendingOrders = function(olderThanMinutes: number = 30) {
+OrderSchema.statics.findPendingOrders = function(olderThanMinutes = 30) {
   const cutoffTime = new Date(Date.now() - olderThanMinutes * 60 * 1000);
   return this.find({
     status: 'pending',
