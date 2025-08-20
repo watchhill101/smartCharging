@@ -1,5 +1,5 @@
 import { View, Text, Button, ScrollView, Input } from '@tarojs/components';
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import Taro, { useLoad, getStorageSync as taroGetStorageSync } from '@tarojs/taro';
 import request from '../../utils/request';
 import { STORAGE_KEYS } from '../../utils/constants';
