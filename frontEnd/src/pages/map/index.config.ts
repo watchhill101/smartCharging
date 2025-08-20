@@ -1,9 +1,11 @@
-export default definePageConfig({
-  // H5页面标题
+export default {
   navigationBarTitleText: '充电地图',
-  // H5页面背景色
+  navigationBarBackgroundColor: '#ffffff',
+  navigationBarTextStyle: 'black',
   backgroundColor: '#f5f5f5',
-  // H5页面配置
   enablePullDownRefresh: false,
-  onReachBottomDistance: 50
-})
+  // H5 specific configurations
+  h5: {
+    enablePullToRefresh: false
+  }
+}

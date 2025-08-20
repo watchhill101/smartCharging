@@ -2,6 +2,7 @@ import { View, Text } from '@tarojs/components'
 import { useEffect, useState, useRef } from 'react'
 import Taro from '@tarojs/taro'
 import AMapLoader from '@amap/amap-jsapi-loader'
+import { hotCities, cityCategories, searchCities } from '../../utils/cityData'
 import './CitySelector.scss'
 
 interface CitySelectorProps {
@@ -26,39 +27,33 @@ export default function CitySelector({ currentCity, onCityChange, onClose }: Cit
     province: string
     district: string
     address: string
+    coordinates?: [number, number] // 添加坐标信息
   } | null>(null)
   const geocoderRef = useRef<any>(null)
 
-  // 热门城市数据
-  const hotCities = [
-    '北京市', '上海市', '南京市', '苏州市',
-    '杭州市', '郑州市', '武汉市', '长沙市',
-    '广州市', '深圳市', '重庆市', '成都市'
-  ]
-
   // 城市分类数据（按拼音首字母）
-  const cityCategories = {
-    'A': ['安庆市', '安阳市', '鞍山市', '安康市'],
-    'B': ['北京市', '保定市', '包头市', '蚌埠市', '本溪市'],
-    'C': ['成都市', '重庆市', '长沙市', '常州市', '承德市'],
-    'D': ['大连市', '东莞市', '大同市', '丹东市'],
-    'E': ['鄂尔多斯市'],
-    'F': ['福州市', '佛山市', '抚顺市'],
-    'G': ['广州市', '贵阳市', '桂林市', '赣州市'],
-    'H': ['杭州市', '哈尔滨市', '合肥市', '海口市', '邯郸市'],
-    'J': ['济南市', '金华市', '嘉兴市', '江门市'],
-    'K': ['昆明市', '开封市'],
-    'L': ['兰州市', '洛阳市', '连云港市', '廊坊市'],
-    'M': ['绵阳市', '马鞍山市'],
-    'N': ['南京市', '宁波市', '南昌市', '南宁市'],
-    'Q': ['青岛市', '泉州市', '秦皇岛市'],
-    'S': ['上海市', '深圳市', '苏州市', '沈阳市', '石家庄市'],
-    'T': ['天津市', '太原市', '唐山市', '台州市'],
-    'W': ['武汉市', '无锡市', '温州市', '威海市'],
-    'X': ['西安市', '厦门市', '徐州市', '襄阳市'],
-    'Y': ['银川市', '烟台市', '扬州市', '盐城市'],
-    'Z': ['郑州市', '珠海市', '中山市', '淄博市']
-  }
+  // const cityCategories = {
+  //   'A': ['安庆市', '安阳市', '鞍山市', '安康市'],
+  //   'B': ['北京市', '保定市', '包头市', '蚌埠市', '本溪市'],
+  //   'C': ['成都市', '重庆市', '长沙市', '常州市', '承德市'],
+  //   'D': ['大连市', '东莞市', '大同市', '丹东市'],
+  //   'E': ['鄂尔多斯市'],
+  //   'F': ['福州市', '佛山市', '抚顺市'],
+  //   'G': ['广州市', '贵阳市', '桂林市', '赣州市'],
+  //   'H': ['杭州市', '哈尔滨市', '合肥市', '海口市', '邯郸市'],
+  //   'J': ['济南市', '金华市', '嘉兴市', '江门市'],
+  //   'K': ['昆明市', '开封市'],
+  //   'L': ['兰州市', '洛阳市', '连云港市', '廊坊市'],
+  //   'M': ['绵阳市', '马鞍山市'],
+  //   'N': ['南京市', '宁波市', '南昌市', '南宁市'],
+  //   'Q': ['青岛市', '泉州市', '秦皇岛市'],
+  //   'S': ['上海市', '深圳市', '苏州市', '沈阳市', '石家庄市'],
+  //   'T': ['天津市', '太原市', '唐山市', '台州市'],
+  //   'W': ['武汉市', '无锡市', '温州市', '威海市'],
+  //   'X': ['西安市', '厦门市', '徐州市', '襄阳市'],
+  //   'Y': ['银川市', '烟台市', '扬州市', '盐城市'],
+  //   'Z': ['郑州市', '珠海市', '中山市', '淄博市']
+  // }
 
   // 初始化高德地图API
   useEffect(() => {
@@ -125,7 +120,8 @@ export default function CitySelector({ currentCity, onCityChange, onClose }: Cit
                 city: addressComponent.city || addressComponent.province || '未知城市',
                 province: addressComponent.province || '未知省份',
                 district: addressComponent.district || '未知区域',
-                address: regeocode.formattedAddress
+                address: regeocode.formattedAddress,
+                coordinates: [longitude, latitude] as [number, number] // 保存坐标信息
               }
               
               setLocationInfo(cityInfo)
@@ -134,6 +130,28 @@ export default function CitySelector({ currentCity, onCityChange, onClose }: Cit
               // 自动选择定位到的城市
               if (cityInfo.city && cityInfo.city !== '未知城市') {
                 onCityChange(cityInfo.city)
+                
+                // 保存定位信息到存储，供地图页面使用
+                try {
+                  const locationData = {
+                    lng: longitude,
+                    lat: latitude,
+                    city: cityInfo.city,
+                    address: cityInfo.address,
+                    province: cityInfo.province,
+                    district: cityInfo.district
+                  }
+                  
+                  if (typeof Taro.setStorageSync === 'function') {
+                    Taro.setStorageSync('current_location', locationData)
+                    console.log('定位信息已保存到Taro存储:', locationData)
+                  } else {
+                    localStorage.setItem('current_location', JSON.stringify(locationData))
+                    console.log('定位信息已保存到localStorage:', locationData)
+                  }
+                } catch (storageError) {
+                  console.error('保存定位信息失败:', storageError)
+                }
               }
             } else {
               showToast({ title: '获取城市信息失败', icon: 'none' })
@@ -176,10 +194,12 @@ export default function CitySelector({ currentCity, onCityChange, onClose }: Cit
     if (!searchText.trim()) return cityCategories
     
     const filtered: Partial<typeof cityCategories> = {}
+    const searchResults = searchCities(searchText)
+    
+    // 根据搜索结果重新组织分类
     Object.keys(cityCategories).forEach(letter => {
       const cities = cityCategories[letter as keyof typeof cityCategories].filter(city =>
-        city.toLowerCase().includes(searchText.toLowerCase()) ||
-        city.includes(searchText)
+        searchResults.includes(city)
       )
       if (cities.length > 0) {
         filtered[letter as keyof typeof cityCategories] = cities
@@ -233,6 +253,51 @@ export default function CitySelector({ currentCity, onCityChange, onClose }: Cit
           <View className='location-info'>
             <Text className='location-city'>{locationInfo.city}</Text>
             <Text className='location-address'>{locationInfo.address}</Text>
+            {locationInfo.coordinates && (
+              <View className='location-coordinates'>
+                <Text className='coordinates-text'>
+                  坐标: {locationInfo.coordinates[0].toFixed(6)}, {locationInfo.coordinates[1].toFixed(6)}
+                </Text>
+                <View 
+                  className='view-map-btn'
+                  onClick={() => {
+                    // 跳转到地图页面查看当前位置
+                    try {
+                      const mapData = {
+                        lng: locationInfo.coordinates![0],
+                        lat: locationInfo.coordinates![1]
+                      }
+                      const locationData = {
+                        name: locationInfo.city,
+                        address: locationInfo.address,
+                        distance: 0,
+                        rating: 0
+                      }
+                      
+                      if (typeof Taro.setStorageSync === 'function') {
+                        Taro.setStorageSync('map_target_coord', mapData)
+                        Taro.setStorageSync('map_target_station', locationData)
+                        console.log('地图数据已保存到Taro存储')
+                      } else {
+                        localStorage.setItem('map_target_coord', JSON.stringify(mapData))
+                        localStorage.setItem('map_target_station', JSON.stringify(locationData))
+                        console.log('地图数据已保存到localStorage')
+                      }
+                      
+                      if (typeof Taro.navigateTo === 'function') {
+                        Taro.navigateTo({ url: '/pages/map/index' })
+                      } else {
+                        window.location.hash = '#/pages/map/index'
+                      }
+                    } catch (error) {
+                      console.error('跳转到地图失败:', error)
+                    }
+                  }}
+                >
+                  <Text className='map-btn-text'>查看地图</Text>
+                </View>
+              </View>
+            )}
           </View>
         )}
 
@@ -272,7 +337,7 @@ export default function CitySelector({ currentCity, onCityChange, onClose }: Cit
                     <Text className='group-letter'>{letter}</Text>
                   </View>
                   <View className='group-cities'>
-                    {cities.map((city) => (
+                    {(cities || []).map((city) => (
                       <View
                         key={city}
                         className={`city-item ${city === currentCity ? 'active' : ''}`}

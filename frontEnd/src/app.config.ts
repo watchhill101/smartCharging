@@ -9,7 +9,14 @@ export default {
     'pages/aiserver/index',  // 新增 Ai客服 页面
     'pages/scan/index',
     'pages/payment-success/index',  // 支付成功页面
-    'pages/payment-failure/index'   // 支付失败页面
+    'pages/payment-failure/index',   // 支付失败页面
+    'pages/charging/start/index',
+    'pages/profile/coupons',
+    'pages/orders/index',
+    'pages/vehicles/index',
+    'pages/wallet/index',
+    'pages/under-development/index',
+    'pages/test-jump/index'
   ],
   window: {
     backgroundTextStyle: "light",

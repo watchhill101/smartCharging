@@ -9,7 +9,9 @@
     "build": "tsc",
     "test": "jest",
     "lint": "eslint src --ext .ts",
-    "lint:fix": "eslint src --ext .ts --fix"
+    "lint:fix": "eslint src --ext .ts --fix",
+    "generate-orders": "ts-node src/scripts/generateTestOrders.ts",
+    "generate-coupons": "ts-node src/scripts/generateTestCoupons.ts"
   },
   "dependencies": {
     "@types/multer": "^2.0.0",

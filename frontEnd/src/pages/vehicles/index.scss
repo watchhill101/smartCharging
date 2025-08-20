@@ -1,0 +1,714 @@
+@import '../../styles/variables.scss';
+
+.vehicles-page {
+  min-height: 100vh;
+  background-color: $background-color;
+}
+
+/* 头部导航 */
+.vehicles-header {
+  background: $primary-gradient;
+  color: white;
+  position: relative;
+  padding: calc(var(--status-bar-height, 0px) + 15px) 15px 15px;
+}
+
+.back-button {
+  position: absolute;
+  top: calc(var(--status-bar-height, 0px) + 10px);
+  left: 15px;
+  background: $white-transparent-20;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 600;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &::after {
+    border: none;
+  }
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding-top: 10px;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+}
+
+.header-controls {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.control-icon {
+  font-size: 14px;
+  color: white;
+  opacity: 0.8;
+}
+
+/* 内容区域 */
+.vehicles-content {
+  flex: 1;
+  height: calc(100vh - 120px);
+  padding: 20px;
+}
+
+/* 加载状态 */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.loading-text {
+  color: $text-tertiary;
+  font-size: 16px;
+}
+
+/* 空状态 */
+.empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  background: $surface-color;
+  border-radius: 20px;
+  padding: 40px;
+  margin-top: 50px;
+}
+
+.empty-illustration {
+  position: relative;
+  margin-bottom: 30px;
+  width: 200px;
+  height: 120px;
+}
+
+.car-icon {
+  font-size: 60px;
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  opacity: 0.7;
+}
+
+.clouds {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.cloud {
+  position: absolute;
+  font-size: 20px;
+  opacity: 0.6;
+  
+  &.cloud-1 {
+    left: 20px;
+    top: 10px;
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  &.cloud-2 {
+    right: 30px;
+    top: 5px;
+    animation: float 3s ease-in-out infinite 1.5s;
+  }
+}
+
+.trees {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+.tree {
+  position: absolute;
+  font-size: 25px;
+  bottom: 0;
+  opacity: 0.5;
+  
+  &:first-child {
+    left: 10px;
+  }
+  
+  &:last-child {
+    right: 15px;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.empty-title {
+  font-size: 16px;
+  color: #999;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.add-vehicle-btn {
+  background: $primary-color;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 15px 30px;
+  font-size: 16px;
+  font-weight: 600;
+  min-width: 140px;
+  
+  &::after {
+    border: none;
+  }
+}
+
+/* 车辆列表 */
+.vehicles-list {
+  background: $surface-color;
+  border-radius: 15px;
+  padding: 20px;
+}
+
+.vehicles-header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid $border-color;
+}
+
+.vehicles-count {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.add-more-btn {
+  background: $primary-color;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  padding: 8px 15px;
+  font-size: 13px;
+  
+  &::after {
+    border: none;
+  }
+}
+
+.vehicle-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid $background-color;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.vehicle-icon {
+  font-size: 30px;
+  margin-right: 15px;
+}
+
+.vehicle-info {
+  flex: 1;
+}
+
+.vehicle-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: $text-primary;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.vehicle-plate {
+  font-size: 14px;
+  color: $text-secondary;
+  background: $border-color;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+
+.vehicle-usage {
+  font-size: 12px;
+  color: $primary-color;
+  background: $primary-transparent-10;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+
+.vehicle-battery {
+  font-size: 12px;
+  color: $text-tertiary;
+  display: block;
+}
+
+/* 车辆操作按钮组 */
+.vehicle-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.edit-btn {
+  background: linear-gradient(135deg, $info-color 0%, #0056b3 100%);
+  color: white;
+  padding-top: 10px;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  height: 36px;
+  min-width: 60px;
+
+  align-items: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+  
+  &::after {
+    border: none;
+  }
+  
+  &:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+  }
+}
+
+.delete-btn {
+  background: linear-gradient(135deg, $error-color 0%, #c82333 100%);
+  color: white;
+  padding-top: 10px;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  height: 36px;
+  min-width: 60px;
+  align-items: center;
+
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+  
+  &::after {
+    border: none;
+  }
+  
+  &:hover {
+    background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+  }
+}
+
+/* 添加表单 */
+.add-form {
+  background: $surface-color;
+  border-radius: 15px;
+  padding: 25px;
+}
+
+.form-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: $text-primary;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* 表单区域 */
+.form-section {
+  margin-bottom: 25px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.title-indicator {
+  width: 4px;
+  height: 16px;
+  background: $primary-color;
+  border-radius: 2px;
+  margin-right: 8px;
+}
+
+.section-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.section-hint {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+/* 车牌号输入 - 6个方框样式 */
+.license-plate-input {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.province-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 15px;
+  background: #4CAF50;
+  color: white;
+  border-radius: 8px;
+  min-width: 60px;
+  
+  &.disabled {
+    background: #ccc;
+    opacity: 0.6;
+  }
+}
+
+.province-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.picker-arrow {
+  font-size: 12px;
+  color: white;
+  margin-left: 5px;
+}
+
+.plate-digits-container {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.plate-digit {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  background: #fafafa;
+  box-sizing: border-box;
+  
+  &:focus {
+    border-color: #4CAF50;
+    background: white;
+  }
+  
+  &.separator-left {
+    margin-right: 8px;
+  }
+  
+  &.separator-right {
+    margin-left: 8px;
+  }
+}
+
+.new-energy-option {
+  margin-left: auto;
+}
+
+.new-energy-toggle {
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &.active {
+    background: #4CAF50;
+    color: white;
+  }
+}
+
+.new-energy-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4CAF50;
+  
+  .active & {
+    color: white;
+  }
+}
+
+/* 车辆用途选择网格 */
+.usage-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.usage-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 15px;
+  border: 2px solid #f0f0f0;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: #4CAF50;
+    transform: translateY(-2px);
+  }
+  
+  &.selected {
+    border-color: #4CAF50;
+    background: rgba(76, 175, 80, 0.05);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+  }
+}
+
+.usage-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.usage-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+/* VIN码输入 */
+.vin-input-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.vin-input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background: #fafafa;
+}
+
+.manual-vin-option {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.manual-vin-text {
+  font-size: 12px;
+  color: #666;
+}
+
+.help-icon {
+  font-size: 14px;
+  color: #999;
+  background: #f0f0f0;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 品牌选择器 */
+.brand-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.brand-text {
+  font-size: 16px;
+  color: #333;
+  
+  &.placeholder {
+    color: #999;
+  }
+}
+
+/* 型号输入 */
+.model-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background: #fafafa;
+}
+
+/* 电池容量输入 */
+.battery-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background: #fafafa;
+}
+
+
+
+/* 注意事项 */
+.notice {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.notice-text {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* 编辑提示 */
+.edit-note {
+  font-size: 12px;
+  color: #999;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* 底部按钮组 */
+.form-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 0 4px;
+}
+
+.cancel-btn {
+  flex: 1;
+  background: #f8f9fa;
+  color: #666;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  
+  &::after {
+    border: none;
+  }
+  
+  &:hover {
+    background: #e9ecef;
+    border-color: #dee2e6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* 下一步按钮 */
+.next-step-btn {
+  flex: 1;
+  background: linear-gradient(135deg, #37C960 0%, #2db350 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(55, 201, 96, 0.3);
+  
+  &::after {
+    border: none;
+  }
+  
+  &:hover {
+    background: linear-gradient(135deg, #2db350 0%, #24a044 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(55, 201, 96, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 16px rgba(55, 201, 96, 0.3);
+  }
+  
+  &.button-loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+} 

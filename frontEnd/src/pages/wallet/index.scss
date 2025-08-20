@@ -1,0 +1,617 @@
+.wallet-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+/* 头部导航 */
+.wallet-header {
+  background: #e8f5e8;
+  padding-top: calc(var(--status-bar-height, 0px) + 10px);
+  padding-bottom: 20px;
+  color: #333;
+  box-shadow: none;
+  position: relative;
+}
+
+.back-button {
+  position: absolute;
+  top: calc(var(--status-bar-height, 0px) + 10px);
+  left: 15px;
+  background: transparent;
+  color: #333;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  
+  &::after {
+    border: none;
+  }
+  
+  &:active {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding-top: 10px;
+}
+
+.header-controls {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.control-icon {
+  width: 24px;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #333;
+  font-weight: 500;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+/* 内容区域 */
+.wallet-content {
+  height: calc(100vh - 80px);
+  padding: 0px 0px 24px;
+  margin-top: -30px;
+  position: relative;
+  z-index: 1;
+}
+
+/* 充电防护通知 */
+.wallet-page .protection-alert {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin: 20px 20px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.alert-icon {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.alert-text {
+  font-size: 14px;
+  color: #333;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.wallet-page .claim-button {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  color: white;
+  border: none;
+  width: 100px;
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: none;
+  transition: all 0.3s ease;
+  
+  &::after {
+    border: none;
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.close-button {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 16px;
+  color: #999;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* 账户余额区域 */
+.wallet-page .balance-section {
+  background: #37C960;
+  border-radius: 16px;
+  padding: 24px;
+  margin: 20px 20px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(55, 201, 96, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.balance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  z-index: 1;
+  position: relative;
+}
+
+.balance-info {
+  flex: 1;
+}
+
+.account-protection {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 6px 12px;
+  border-radius: 20px;
+  z-index: 1;
+  position: relative;
+}
+
+.protection-icon {
+  font-size: 16px;
+  margin-right: 6px;
+}
+
+.protection-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+
+
+.balance-label {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 8px;
+  display: block;
+  font-weight: 500;
+}
+
+.wallet-page .balance-amount {
+  font-size: 42px;
+  font-weight: 800;
+  color: white;
+  display: block;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.wallet-stats {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1;
+  position: relative;
+}
+
+.stat-item {
+  text-align: center;
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.wallet-page .stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  display: block;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.wallet-page .stat-label {
+  font-size: 13px;
+  color: white;
+  font-weight: 500;
+}
+
+/* 电子充电卡 */
+.wallet-page .charging-card-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 20px 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  gap: 12px;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  }
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 16px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.card-highlight {
+  color: #37C960;
+  font-weight: 600;
+}
+
+.card-separator {
+  color: #999;
+  font-weight: 400;
+  margin: 0 2px;
+}
+
+.card-subtitle {
+  color: #666;
+  font-weight: 400;
+}
+
+
+
+.card-title {
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.wallet-page .buy-card-button {
+  background: #37C960;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: none;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  min-width: 100px;
+  max-width: 50px;
+  
+  &::after {
+    border: none;
+  }
+  
+  &:active {
+    transform: scale(0.98);
+    background: #2db350;
+  }
+}
+
+/* 热门推荐 */
+.wallet-page .hot-recommendations {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin: 20px 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.recommendation-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+}
+
+.wallet-page .card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  
+  &.coupon-icon {
+    background: #ff9800;
+    color: white;
+  }
+  
+  &.battery-icon {
+    background: #37C960;
+    color: white;
+  }
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.card-subtitle {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.3;
+}
+
+.battery-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wallet-page .battery-outline {
+  width: 24px;
+  height: 32px;
+  border: 2px solid white;
+  border-radius: 4px;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -4px;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 8px;
+    background: white;
+    border-radius: 0 2px 2px 0;
+  }
+}
+
+.wallet-page .battery-lightning {
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.points-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.points-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-right: 12px;
+}
+
+.points-subtitle {
+  font-size: 14px;
+  color: #7f8c8d;
+  flex: 1;
+  font-weight: 500;
+}
+
+.more-link {
+  font-size: 14px;
+  color: #4CAF50;
+  cursor: pointer;
+  font-weight: 600;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: #45a049;
+  }
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  padding: 18px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  }
+}
+
+.task-icon {
+  font-size: 28px;
+  margin-right: 16px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.task-content {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.task-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .wallet-content {
+    padding: 12px 16px 20px;
+  }
+  
+  .wallet-page .balance-amount {
+    font-size: 36px;
+  }
+  
+  .wallet-page .balance-section {
+    padding: 20px;
+    margin: 16px 0;
+    box-shadow: 0 4px 20px rgba(55, 201, 96, 0.2);
+  }
+  
+  .recommendation-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+  
+  .card-content {
+    width: 100%;
+  }
+  
+  .wallet-page .charging-card-section {
+    padding: 16px 20px;
+    margin: 20px 0;
+  }
+  
+  .wallet-page .hot-recommendations {
+    padding: 20px;
+    margin: 20px 0;
+  }
+}
+
+/* 微交互动画 */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wallet-page .protection-alert,
+.wallet-page .balance-section,
+.wallet-page .charging-card-section,
+.wallet-page .hot-recommendations {
+  animation: slideInUp 0.6s ease-out;
+}
+
+.wallet-page .balance-section {
+  animation-delay: 0.1s;
+}
+
+.wallet-page .charging-card-section {
+  animation-delay: 0.2s;
+}
+
+.wallet-page .hot-recommendations {
+  animation-delay: 0.3s;
+}
+
+/* 滚动条样式 */
+.wallet-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.wallet-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.wallet-content::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.3);
+  border-radius: 2px;
+}
+
+.wallet-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.5);
+} 
