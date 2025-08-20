@@ -474,7 +474,40 @@ export default function Index() {
 
 			{/* AI客服浮动按钮 */}
 			<View className='ai-customer-service'>
-				<View className='ai-button'>
+				<View 
+					className='ai-button'
+					onClick={() => {
+						console.log('点击AI客服按钮，准备跳转到AI客服页面')
+						
+						try {
+							// 优先使用Taro导航
+							if (typeof Taro.navigateTo === 'function') {
+								Taro.navigateTo({
+									url: '/pages/aiserver/index',
+									success: () => {
+										console.log('跳转到AI客服页面成功')
+									},
+									fail: (error) => {
+										console.error('Taro跳转失败:', error)
+										// 如果Taro跳转失败，使用浏览器导航
+										window.location.hash = '#/pages/aiserver/index'
+									}
+								})
+							} else {
+								// Taro不可用，直接使用浏览器导航
+								window.location.hash = '#/pages/aiserver/index'
+							}
+						} catch (error) {
+							console.error('跳转到AI客服页面失败:', error)
+							// 最后的备选方案
+							try {
+								window.location.hash = '#/pages/aiserver/index'
+							} catch (fallbackError) {
+								console.error('备选方案也失败了:', fallbackError)
+							}
+						}
+					}}
+				>
 					<View className='ai-icon'>
 						<Text className='ai-text'>Ai</Text>
 					</View>
