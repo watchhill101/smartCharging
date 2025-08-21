@@ -17,9 +17,19 @@ import { loginRateLimit, verifyCodeRateLimit, apiRateLimit } from '../middleware
 
 const router = express.Router();
 
-// JWT配置
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key';
+// JWT配置 - 生产环境必须设置强密钥
+let JWT_SECRET = process.env.JWT_SECRET;
+let JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+
+if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('JWT密钥未配置，生产环境必须设置JWT_SECRET和JWT_REFRESH_SECRET');
+  }
+  // 开发环境生成固定临时密钥，确保整个应用周期中一致
+  JWT_SECRET = JWT_SECRET || 'dev-secret-key-jwt-primary-temp';
+  JWT_REFRESH_SECRET = JWT_REFRESH_SECRET || 'dev-secret-key-jwt-refresh-temp';
+  console.warn('⚠️ 开发环境警告：使用临时JWT密钥，生产环境必须配置环境变量');
+}
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
 

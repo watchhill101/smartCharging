@@ -149,11 +149,18 @@ if (isH5 || isBrowser) {
   if (!Taro.request) {
     Taro.request = async (options: any) => {
       try {
-        const response = await fetch(options.url, {
-          method: options.method || 'GET',
-          headers: options.header,
-          body: options.data ? JSON.stringify(options.data) : undefined
-        })
+        const method = options.method || 'GET'
+        const fetchOptions: any = {
+          method: method,
+          headers: options.header
+        }
+        
+        // 只有在非GET/HEAD方法时才添加body
+        if (method !== 'GET' && method !== 'HEAD' && options.data) {
+          fetchOptions.body = JSON.stringify(options.data)
+        }
+        
+        const response = await fetch(options.url, fetchOptions)
         
         const data = await response.json()
         

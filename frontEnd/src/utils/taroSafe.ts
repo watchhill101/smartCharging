@@ -16,7 +16,7 @@ export const TaroSafe = {
         return value ? JSON.parse(value) : ''
       }
       if (typeof Taro.getStorageSync === 'function') {
-        return TaroSafe.getStorageSync(key)
+        return Taro.getStorageSync(key)
       }
       return ''
     } catch (error) {
@@ -32,7 +32,7 @@ export const TaroSafe = {
         return
       }
       if (typeof Taro.setStorageSync === 'function') {
-        TaroSafe.setStorageSync(key, data)
+        Taro.setStorageSync(key, data)
         return
       }
       localStorage.setItem(key, JSON.stringify(data))
@@ -48,7 +48,7 @@ export const TaroSafe = {
         return
       }
       if (typeof Taro.removeStorageSync === 'function') {
-        TaroSafe.removeStorageSync(key)
+        Taro.removeStorageSync(key)
         return
       }
       localStorage.removeItem(key)

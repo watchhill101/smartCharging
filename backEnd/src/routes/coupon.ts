@@ -226,8 +226,14 @@ router.post('/admin/create', authMiddleware, [
   body('maxDiscount').optional().isFloat({ min: 0 })
 ], handleValidationErrors, async (req, res) => {
   try {
-    // 这里应该检查管理员权限
-    const createdBy = req.user?.id || 'admin';
+    // 检查管理员权限
+    if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: '权限不足，仅管理员可以创建优惠券'
+      });
+    }
+    const createdBy = req.user.id;
     
     const couponData = {
       ...req.body,

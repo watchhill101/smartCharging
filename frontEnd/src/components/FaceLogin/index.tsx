@@ -198,7 +198,13 @@ export default function FaceLogin({
       // 准备FormData
       const formData = new FormData()
       formData.append('faceImage', imageBlob, 'face.jpg')
-      formData.append('phone', '13800138000') // 这里应该从登录表单获取
+      // 从存储中获取当前用户手机号，或从props传入
+      const userInfo = Taro.getStorageSync('user_info')
+      const phone = userInfo?.phone || '未知'
+      if (!userInfo?.phone) {
+        throw new Error('无法获取用户手机号，请重新登录')
+      }
+      formData.append('phone', phone)
 
       // 调用人脸登录API
       const response = await post('/face/login', formData, {

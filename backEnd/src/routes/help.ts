@@ -400,8 +400,14 @@ router.post('/admin/faq', authMiddleware, [
   body('priority').optional().isInt({ min: 0, max: 100 })
 ], handleValidationErrors, async (req, res) => {
   try {
-    // 这里应该检查管理员权限
-    const createdBy = req.user?.id || 'admin';
+    // 检查管理员权限
+    if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: '权限不足，仅管理员可以创建FAQ'
+      });
+    }
+    const createdBy = req.user.id;
     
     const { question, answer, category, tags, priority } = req.body;
     

@@ -19,9 +19,18 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
       throw new AppError('Access token is required', 401, 'TOKEN_REQUIRED');
     }
 
-    const jwtSecret = process.env.JWT_SECRET;
+    // 使用全局临时密钥，确保与路由保持一致
+    let jwtSecret = process.env.JWT_SECRET;
     if (!jwtSecret) {
-      throw new AppError('JWT secret not configured', 500, 'JWT_SECRET_MISSING');
+      if (process.env.NODE_ENV === 'production') {
+        throw new AppError('JWT secret not configured', 500, 'JWT_SECRET_MISSING');
+      }
+      // 开发环境使用固定临时密钥
+      jwtSecret = 'dev-secret-key-jwt-primary-temp';
+      if (!process.env.JWT_SECRET_WARNED) {
+        console.warn('⚠️ 认证中间件：使用临时JWT密钥');
+        process.env.JWT_SECRET_WARNED = 'true';
+      }
     }
 
     // 验证JWT

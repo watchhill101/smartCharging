@@ -441,6 +441,36 @@ export class PerformanceMonitor {
   }
 
   /**
+   * 开始监控（公共方法）
+   */
+  startMonitoring(): void {
+    if (!this.isMonitoring) {
+      this.initializeMonitoring();
+    }
+  }
+
+  /**
+   * 暂停监控
+   */
+  pauseMonitoring(): void {
+    this.isMonitoring = false;
+    if (this.reportTimer) {
+      clearInterval(this.reportTimer);
+      this.reportTimer = null;
+    }
+  }
+
+  /**
+   * 恢复监控
+   */
+  resumeMonitoring(): void {
+    if (!this.isMonitoring) {
+      this.isMonitoring = true;
+      this.setupPeriodicReporting();
+    }
+  }
+
+  /**
    * 停止监控
    */
   stopMonitoring(): void {

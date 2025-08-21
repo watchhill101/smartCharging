@@ -40,10 +40,23 @@ class Settings(BaseSettings):
     MAX_CHARGING_POWER: float = 350.0   # 最大充电功率 kW
     MIN_CHARGING_POWER: float = 3.3     # 最小充电功率 kW
     
-    # 安全配置
-    SECRET_KEY: str = "your-secret-key-here"
+    # 安全配置 - 生产环境必须设置强密钥
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 1440  # 24小时
+    
+    def __post_init__(self):
+        """验证安全配置"""
+        if not self.SECRET_KEY:
+            if os.getenv("ENV") == "production":
+                raise ValueError("生产环境必须设置 SECRET_KEY 环境变量")
+            else:
+                import secrets
+                self.SECRET_KEY = secrets.token_urlsafe(32)
+                print("⚠️ 开发环境警告：使用临时生成的密钥，生产环境请设置 SECRET_KEY")
+        
+        if len(self.SECRET_KEY) < 32:
+            raise ValueError("SECRET_KEY 长度至少32个字符")
     
     # 日志配置
     LOG_LEVEL: str = "INFO"

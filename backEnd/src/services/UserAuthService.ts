@@ -397,9 +397,24 @@ export default class UserAuthService {
         }
       }
 
-      // 加密新密码
+      // 加密新密码 - 使用更强的salt rounds
       if (newPassword) {
-        user.password = await bcrypt.hash(newPassword, 10);
+        // 验证密码强度
+        if (newPassword.length < 8) {
+          return {
+            success: false,
+            message: '密码长度至少8位'
+          };
+        }
+        
+        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(newPassword)) {
+          return {
+            success: false,
+            message: '密码必须包含大小写字母、数字和特殊字符'
+          };
+        }
+        
+        user.password = await bcrypt.hash(newPassword, 12); // 使用12 rounds更安全
         user.updatedAt = new Date();
         await user.save();
       }

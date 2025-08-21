@@ -581,9 +581,24 @@ class OCPPService:
     
     async def authorize_user(self, id_tag: str) -> bool:
         """验证用户授权"""
+        if not id_tag or len(id_tag.strip()) == 0:
+            logger.warning("空的用户标识")
+            return False
+        
+        # 基本格式验证
+        if len(id_tag) > 20:  # OCPP 1.6 规范限制
+            logger.warning(f"用户标识过长: {id_tag}")
+            return False
+        
         # 这里应该连接到用户管理系统验证
-        # 简化处理，假设所有用户都有效
-        return True
+        # TODO: 实现真实的用户验证逻辑
+        try:
+            # 可以调用后端用户服务验证
+            # 暂时实现基本验证
+            return id_tag.startswith(("user_", "card_", "rfid_"))
+        except Exception as e:
+            logger.error(f"用户授权验证失败: {e}")
+            return False
     
     async def generate_transaction_id(self) -> int:
         """生成交易ID"""

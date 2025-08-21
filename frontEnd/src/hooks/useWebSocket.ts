@@ -111,7 +111,10 @@ export const useWebSocket = (options: UseWebSocketOptions): UseWebSocketReturn =
       // 获取认证token
       const token = TaroSafe.getStorageSync('user_token')
       if (!token) {
-        throw new Error('未找到认证token')
+        // 如果没有token，可能用户还未登录，暂时不建立连接
+        console.log('WebSocket: 用户未登录，跳过连接')
+        setIsConnecting(false)
+        return
       }
 
       // 构建WebSocket URL

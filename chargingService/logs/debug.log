@@ -25,3 +25,13 @@
 {"timestamp": "2025-08-21T09:38:47.332248", "level": "INFO", "level_no": 20, "message": "OCPP充电服务启动完成", "logger_name": "charging_service_main", "module": "main", "line_no": 773}
 {"timestamp": "2025-08-21T10:02:15.848548", "level": "INFO", "level_no": 20, "message": "OCPP充电服务关闭中...", "logger_name": "charging_service_main", "module": "main", "line_no": 779}
 {"timestamp": "2025-08-21T10:02:15.853573", "level": "INFO", "level_no": 20, "message": "OCPP充电服务已关闭", "logger_name": "charging_service_main", "module": "main", "line_no": 789}
+{"timestamp": "2025-08-21T10:37:36.601573", "level": "INFO", "level_no": 20, "message": "使用增强连接管理器", "logger_name": "charging_service_main", "module": "main", "line_no": 91}
+{"timestamp": "2025-08-21T10:37:36.647459", "level": "INFO", "level_no": 20, "message": "使用增强连接管理器", "logger_name": "charging_service_main", "module": "main", "line_no": 91}
+{"timestamp": "2025-08-21T10:37:36.657430", "level": "INFO", "level_no": 20, "message": "OCPP充电服务启动中...", "logger_name": "charging_service_main", "module": "main", "line_no": 763}
+{"timestamp": "2025-08-21T10:37:36.658427", "level": "INFO", "level_no": 20, "message": "OCPP充电服务启动完成", "logger_name": "charging_service_main", "module": "main", "line_no": 773}
+{"timestamp": "2025-08-21T10:38:02.226718", "level": "INFO", "level_no": 20, "message": "OCPP充电服务关闭中...", "logger_name": "charging_service_main", "module": "main", "line_no": 779}
+{"timestamp": "2025-08-21T10:38:02.227714", "level": "INFO", "level_no": 20, "message": "OCPP充电服务已关闭", "logger_name": "charging_service_main", "module": "main", "line_no": 789}
+{"timestamp": "2025-08-21T10:38:13.898332", "level": "INFO", "level_no": 20, "message": "使用增强连接管理器", "logger_name": "charging_service_main", "module": "main", "line_no": 91}
+{"timestamp": "2025-08-21T10:38:13.936778", "level": "INFO", "level_no": 20, "message": "使用增强连接管理器", "logger_name": "charging_service_main", "module": "main", "line_no": 91}
+{"timestamp": "2025-08-21T10:38:13.945958", "level": "INFO", "level_no": 20, "message": "OCPP充电服务启动中...", "logger_name": "charging_service_main", "module": "main", "line_no": 763}
+{"timestamp": "2025-08-21T10:38:13.946955", "level": "INFO", "level_no": 20, "message": "OCPP充电服务启动完成", "logger_name": "charging_service_main", "module": "main", "line_no": 773}

@@ -370,6 +370,20 @@ async def get_pile_status(pile_id: str):
 async def start_charging(request: StartChargingRequest):
     """开始充电"""
     try:
+        # 输入验证
+        if not request.pile_id or not request.pile_id.strip():
+            raise HTTPException(status_code=400, detail="充电桩ID不能为空")
+        
+        if not request.id_tag or not request.id_tag.strip():
+            raise HTTPException(status_code=400, detail="用户标识不能为空")
+        
+        if request.connector_id < 1:
+            raise HTTPException(status_code=400, detail="连接器ID无效")
+        
+        # 用户授权验证
+        if not await ocpp_service.authorize_user(request.id_tag):
+            raise HTTPException(status_code=403, detail="用户未授权")
+        
         # 检查充电桩是否可用
         pile = await pile_manager.get_pile(request.pile_id)
         if not pile:

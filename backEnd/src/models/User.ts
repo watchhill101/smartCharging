@@ -186,7 +186,17 @@ const VehicleSchema = new Schema<IVehicle>({
     required: true,
     trim: true,
     uppercase: true,
-    match: /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-Z0-9]{4}[A-Z0-9挂学警港澳]{1}$/
+    match: /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-Z0-9]{4}[A-Z0-9挂学警港澳]{1}$/,
+    // 确保车牌号在单个用户内唯一，但不设置全局唯一索引
+    validate: {
+      validator: function(this: any, value: string) {
+        if (!this.parent) return true; // 如果没有父文档，跳过验证
+        const vehicles = this.parent().vehicles || [];
+        const duplicates = vehicles.filter((v: any) => v.licensePlate === value && v._id.toString() !== this._id.toString());
+        return duplicates.length === 0;
+      },
+      message: '车牌号在您的车辆中已存在'
+    }
   },
   batteryCapacity: {
     type: Number,

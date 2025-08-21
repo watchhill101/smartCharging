@@ -16,3 +16,13 @@
 {"timestamp":"2025-08-21T01:00:45.764Z","level":"WARN","message":"⚠️ Database connection pool disconnected"}
 {"timestamp":"2025-08-21T01:40:55.812Z","level":"WARN","message":"Rate limit exceeded","meta":{"key":"verify_code:17631591114","count":2,"maxRequests":1,"ip":"::1","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1","path":"/send-verify-code"}}
 {"timestamp":"2025-08-21T02:02:04.590Z","level":"WARN","message":"⚠️ Database connection pool disconnected"}
+{"timestamp":"2025-08-21T02:38:54.279Z","level":"WARN","message":"⚠️ Index key specs conflict for User, attempting to recreate:","meta":{"phone":1}}
+{"timestamp":"2025-08-21T02:38:54.322Z","level":"WARN","message":"⚠️ Index key specs conflict for User, attempting to recreate:","meta":{"email":1}}
+{"timestamp":"2025-08-21T02:38:54.517Z","level":"WARN","message":"⚠️ Index key specs conflict for Order, attempting to recreate:","meta":{"thirdPartyOrderId":1}}
+{"timestamp":"2025-08-21T02:38:54.536Z","level":"WARN","message":"⚠️ Index key specs conflict for Wallet, attempting to recreate:","meta":{"transactions.id":1}}
+{"timestamp":"2025-08-21T02:38:54.542Z","level":"WARN","message":"⚠️ Index key specs conflict for Wallet, attempting to recreate:","meta":{"transactions.orderId":1}}
+{"timestamp":"2025-08-21T02:38:54.557Z","level":"WARN","message":"⚠️ Index key specs conflict for Wallet, attempting to recreate:","meta":{"invoices.id":1}}
+{"timestamp":"2025-08-21T02:38:54.563Z","level":"WARN","message":"⚠️ Index key specs conflict for Wallet, attempting to recreate:","meta":{"invoices.invoiceNumber":1}}
+{"timestamp":"2025-08-21T02:38:54.593Z","level":"WARN","message":"⚠️ Index key specs conflict for Notification, attempting to recreate:","meta":{"scheduledAt":1}}
+{"timestamp":"2025-08-21T02:38:54.599Z","level":"WARN","message":"⚠️ Index key specs conflict for Notification, attempting to recreate:","meta":{"expiresAt":1}}
+{"timestamp":"2025-08-21T02:52:11.216Z","level":"WARN","message":"⚠️ Database connection pool disconnected"}

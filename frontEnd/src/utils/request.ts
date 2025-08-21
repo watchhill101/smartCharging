@@ -268,11 +268,16 @@ const retryRequest = async (
       response = await Taro.request(processedOptions);
     } else if (isH5 || isBrowser) {
       // H5环境下使用fetch
+      const method = processedOptions.method || 'GET';
       const fetchOptions: RequestInit = {
-        method: processedOptions.method || 'GET',
+        method: method,
         headers: processedOptions.header,
-        body: processedOptions.data ? JSON.stringify(processedOptions.data) : undefined,
       };
+      
+      // 只有在非GET/HEAD方法时才添加body
+      if (method !== 'GET' && method !== 'HEAD' && processedOptions.data) {
+        fetchOptions.body = JSON.stringify(processedOptions.data);
+      }
       
       const fetchResponse = await fetch(processedOptions.url, fetchOptions);
       const data = await fetchResponse.json();

@@ -92,11 +92,18 @@ const createSafeWrapper = () => {
             case 'request':
               if (isH5 || isBrowser) {
                 const options = args[0]
-                return fetch(options.url, {
-                  method: options.method || 'GET',
-                  headers: options.header,
-                  body: options.data ? JSON.stringify(options.data) : undefined
-                }).then(response => response.json()).then(data => ({
+                const method = options.method || 'GET'
+                const fetchOptions: any = {
+                  method: method,
+                  headers: options.header
+                }
+                
+                // 只有在非GET/HEAD方法时才添加body
+                if (method !== 'GET' && method !== 'HEAD' && options.data) {
+                  fetchOptions.body = JSON.stringify(options.data)
+                }
+                
+                return fetch(options.url, fetchOptions).then(response => response.json()).then(data => ({
                   statusCode: 200,
                   data: data
                 }))
