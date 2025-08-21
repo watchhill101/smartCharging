@@ -121,6 +121,11 @@ app.get('/health', async (req, res) => {
 });
 
 // API路由
+// 兼容前端v1_0路径格式的路由
+app.use('/v1_0/auth/api/auth', authRoutes);
+app.use('/v1_0/auth/api/users', userRoutes);
+
+// 标准API路由
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/stations', stationRoutes);

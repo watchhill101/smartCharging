@@ -27,6 +27,14 @@ export default {
           pathRewrite: {
             '^/api': '/api'
           }
+        },
+        "/v1_0/": {  // 添加新的代理规则
+          target: 'http://localhost:8080',  // 后端实际端口8080
+          changeOrigin: true,
+          secure: false,
+          pathRewrite: {
+            '^/v1_0': '/v1_0'
+          }
         }
       }
     }
