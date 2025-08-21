@@ -2,13 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { AppError } from './errorHandler';
 import User from '../models/User';
-import { RedisService } from '../services/RedisService';
+import { getRedisClient } from '../config/redis';
 
 // 扩展Request接口
 
 
-// Redis实例
-const redis = new RedisService();
+// 获取Redis客户端
+const getRedis = () => getRedisClient();
 
 // JWT认证中间件
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
@@ -29,6 +29,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     
     // 检查token是否在黑名单中
     const tokenId = generateTokenId(decoded);
+    const redis = getRedis();
     const isBlacklisted = await redis.exists(`blacklist:token:${tokenId}`);
     if (isBlacklisted) {
       throw new AppError('Token has been revoked', 401, 'TOKEN_REVOKED');

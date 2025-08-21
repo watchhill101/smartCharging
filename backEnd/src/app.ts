@@ -118,8 +118,26 @@ const corsOrigins = process.env.CORS_ORIGINS
         'https://localhost:8000', // 添加HTTPS支持
         'https://127.0.0.1:8000',
         'https://localhost:8001',
-        'https://127.0.0.1:8001'
+        'https://127.0.0.1:8001',
+        'http://127.0.0.1:5500'  // VSCode Live Server
       ];
+
+// 开发环境下的动态CORS检查函数
+const isDevelopmentOriginAllowed = (origin: string): boolean => {
+  if (process.env.NODE_ENV !== 'development') return false;
+  
+  // 允许localhost和127.0.0.1的所有端口
+  if (/^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin)) {
+    return true;
+  }
+  
+  // 允许局域网IP地址的8000端口（前端开发服务器）
+  if (/^https?:\/\/192\.168\.\d{1,3}\.\d{1,3}:8000$/.test(origin)) {
+    return true;
+  }
+  
+  return false;
+};
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -131,8 +149,14 @@ app.use(cors({
       return callback(null, true);
     }
     
-    // 生产环境严格检查，开发环境宽松处理
+    // 开发环境下检查动态允许的origin
+    if (isDevelopmentOriginAllowed(origin)) {
+      return callback(null, true);
+    }
+    
+    // 生产环境严格检查，开发环境记录警告但仍允许
     if (process.env.NODE_ENV === 'production') {
+      logger.error(`CORS: Origin ${origin} not allowed in production`);
       return callback(new Error('Not allowed by CORS'), false);
     } else {
       logger.warn(`CORS: Origin ${origin} not in whitelist, but allowing in development`);

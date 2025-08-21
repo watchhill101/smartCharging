@@ -1,0 +1,18 @@
+{"timestamp":"2025-08-21T00:52:33.112Z","level":"WARN","message":"CORS: Origin https://192.168.181.1:8000 not in whitelist, but allowing in development"}
+{"timestamp":"2025-08-21T00:52:33.115Z","level":"WARN","message":"CORS: Origin https://192.168.181.1:8000 not in whitelist, but allowing in development"}
+{"timestamp":"2025-08-21T00:52:44.287Z","level":"WARN","message":"CORS: Origin https://192.168.181.1:8000 not in whitelist, but allowing in development"}
+{"timestamp":"2025-08-21T00:52:44.289Z","level":"WARN","message":"CORS: Origin https://192.168.181.1:8000 not in whitelist, but allowing in development"}
+{"timestamp":"2025-08-21T00:53:55.719Z","level":"WARN","message":"CORS: Origin https://192.168.181.1:8000 not in whitelist, but allowing in development"}
+{"timestamp":"2025-08-21T00:53:55.722Z","level":"WARN","message":"CORS: Origin https://192.168.181.1:8000 not in whitelist, but allowing in development"}
+{"timestamp":"2025-08-21T00:54:20.961Z","level":"WARN","message":"CORS: Origin https://192.168.181.1:8000 not in whitelist, but allowing in development"}
+{"timestamp":"2025-08-21T00:54:20.963Z","level":"WARN","message":"CORS: Origin https://192.168.181.1:8000 not in whitelist, but allowing in development"}
+{"timestamp":"2025-08-21T00:55:19.355Z","level":"WARN","message":"CORS: Origin https://192.168.181.1:8000 not in whitelist, but allowing in development"}
+{"timestamp":"2025-08-21T00:55:19.358Z","level":"WARN","message":"CORS: Origin https://192.168.181.1:8000 not in whitelist, but allowing in development"}
+{"timestamp":"2025-08-21T00:55:27.605Z","level":"WARN","message":"CORS: Origin https://192.168.181.1:8000 not in whitelist, but allowing in development"}
+{"timestamp":"2025-08-21T00:55:27.607Z","level":"WARN","message":"CORS: Origin https://192.168.181.1:8000 not in whitelist, but allowing in development"}
+{"timestamp":"2025-08-21T00:55:29.329Z","level":"WARN","message":"CORS: Origin https://192.168.181.1:8000 not in whitelist, but allowing in development"}
+{"timestamp":"2025-08-21T00:55:30.753Z","level":"WARN","message":"CORS: Origin https://192.168.181.1:8000 not in whitelist, but allowing in development"}
+{"timestamp":"2025-08-21T00:59:20.777Z","level":"WARN","message":"⚠️ Database connection pool disconnected"}
+{"timestamp":"2025-08-21T01:00:45.764Z","level":"WARN","message":"⚠️ Database connection pool disconnected"}
+{"timestamp":"2025-08-21T01:40:55.812Z","level":"WARN","message":"Rate limit exceeded","meta":{"key":"verify_code:17631591114","count":2,"maxRequests":1,"ip":"::1","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1","path":"/send-verify-code"}}
+{"timestamp":"2025-08-21T02:02:04.590Z","level":"WARN","message":"⚠️ Database connection pool disconnected"}

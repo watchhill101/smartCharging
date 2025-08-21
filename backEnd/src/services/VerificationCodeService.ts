@@ -5,6 +5,9 @@ export interface SendCodeResult {
   success: boolean;
   message: string;
   remaining?: number; // 剩余可发送次数
+  code?: string; // 开发环境返回验证码
+  hint?: string; // 开发环境提示信息
+  debug?: boolean; // 开发环境标志
 }
 
 export interface VerifyCodeResult {

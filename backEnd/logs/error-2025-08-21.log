@@ -1,0 +1,13 @@
+{"timestamp":"2025-08-21T00:51:05.033Z","level":"ERROR","message":"❌ Failed to setup slow query monitoring:","meta":{"ok":0,"code":14,"codeName":"TypeMismatch"}}
+{"timestamp":"2025-08-21T01:00:13.644Z","level":"ERROR","message":"❌ Failed to setup slow query monitoring:","meta":{"ok":0,"code":14,"codeName":"TypeMismatch"}}
+{"timestamp":"2025-08-21T01:00:52.488Z","level":"ERROR","message":"❌ Failed to setup slow query monitoring:","meta":{"ok":0,"code":14,"codeName":"TypeMismatch"}}
+{"timestamp":"2025-08-21T01:07:14.752Z","level":"ERROR","message":"❌ Failed to setup slow query monitoring:","meta":{"ok":0,"code":14,"codeName":"TypeMismatch"}}
+{"timestamp":"2025-08-21T01:07:26.602Z","level":"ERROR","message":"❌ Failed to setup slow query monitoring:","meta":{"ok":0,"code":14,"codeName":"TypeMismatch"}}
+{"timestamp":"2025-08-21T01:07:35.102Z","level":"ERROR","message":"❌ Failed to setup slow query monitoring:","meta":{"ok":0,"code":14,"codeName":"TypeMismatch"}}
+{"timestamp":"2025-08-21T01:07:45.396Z","level":"ERROR","message":"❌ Failed to setup slow query monitoring:","meta":{"ok":0,"code":14,"codeName":"TypeMismatch"}}
+{"timestamp":"2025-08-21T01:07:52.826Z","level":"ERROR","message":"❌ Failed to setup slow query monitoring:","meta":{"ok":0,"code":14,"codeName":"TypeMismatch"}}
+{"timestamp":"2025-08-21T01:08:00.372Z","level":"ERROR","message":"❌ Failed to setup slow query monitoring:","meta":{"ok":0,"code":14,"codeName":"TypeMismatch"}}
+{"timestamp":"2025-08-21T01:08:15.812Z","level":"ERROR","message":"❌ Failed to setup slow query monitoring:","meta":{"ok":0,"code":14,"codeName":"TypeMismatch"}}
+{"timestamp":"2025-08-21T01:08:25.743Z","level":"ERROR","message":"❌ Failed to setup slow query monitoring:","meta":{"ok":0,"code":14,"codeName":"TypeMismatch"}}
+{"timestamp":"2025-08-21T01:14:47.445Z","level":"ERROR","message":"Uncaught Exception:","meta":{"code":"EADDRINUSE","errno":-4091,"syscall":"listen","address":"::","port":8080}}
+{"timestamp":"2025-08-21T01:40:55.815Z","level":"ERROR","message":"Request error occurred","meta":{"message":"验证码发送过于频繁，请稍后重试","statusCode":429,"errorCode":"RATE_LIMIT_EXCEEDED","url":"/api/auth/send-verify-code","method":"POST","ip":"::1","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1","requestId":"unknown"},"stack":"Error: 验证码发送过于频繁，请稍后重试\n    at D:\\hao-warehouse\\smartCharging\\backEnd\\src\\middleware\\rateLimiter.ts:53:17\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}

@@ -221,8 +221,8 @@ export const slowQueryConfig = {
   monitoring: {
     enabled: true,
     logSlowQueries: true,
-    profileLevel: 2, // 记录所有慢操作
-    sampleRate: 1.0  // 100%采样
+    profileLevel: 1, // 仅记录慢操作（兼容性更好）
+    sampleRate: 0.1  // 10%采样（减少性能影响）
   },
 
   // 报警配置
@@ -437,6 +437,23 @@ export class DatabaseOptimizationManager {
   }
 
   /**
+   * 版本比较函数
+   */
+  private compareVersions(version1: string, version2: string): number {
+    const v1parts = version1.split('.').map(Number);
+    const v2parts = version2.split('.').map(Number);
+    
+    for (let i = 0; i < Math.max(v1parts.length, v2parts.length); i++) {
+      const v1part = v1parts[i] || 0;
+      const v2part = v2parts[i] || 0;
+      
+      if (v1part > v2part) return 1;
+      if (v1part < v2part) return -1;
+    }
+    return 0;
+  }
+
+  /**
    * 设置慢查询监控
    */
   private async setupSlowQueryMonitoring(): Promise<void> {
@@ -447,12 +464,19 @@ export class DatabaseOptimizationManager {
     logger.info('🐌 Setting up slow query monitoring...');
 
     try {
-      // 设置慢查询日志级别
-      await mongoose.connection.db.admin().command({
+      // 设置慢查询日志级别 - 使用兼容性更好的配置
+      const profileCommand = {
         profile: slowQueryConfig.monitoring.profileLevel,
-        slowms: Math.min(...Object.values(slowQueryConfig.threshold)),
-        sampleRate: slowQueryConfig.monitoring.sampleRate
-      });
+        slowms: Math.min(...Object.values(slowQueryConfig.threshold))
+      };
+      
+      // 只在MongoDB 4.4+版本中添加sampleRate
+      const mongoVersion = mongoose.connection.db.serverConfig?.s?.serverDescription?.version;
+      if (mongoVersion && this.compareVersions(mongoVersion, '4.4.0') >= 0) {
+        (profileCommand as any).sampleRate = slowQueryConfig.monitoring.sampleRate;
+      }
+      
+      await mongoose.connection.db.admin().command(profileCommand);
 
       // 监听慢查询事件
       mongoose.connection.on('commandStarted', (event) => {
@@ -470,6 +494,26 @@ export class DatabaseOptimizationManager {
       logger.info('✅ Slow query monitoring enabled');
     } catch (error) {
       logger.error('❌ Failed to setup slow query monitoring:', error);
+      
+      // 如果是版本兼容性问题，尝试降级配置
+      if (error.codeName === 'TypeMismatch' || error.code === 14) {
+        logger.warn('尝试使用兼容模式启用慢查询监控...');
+        try {
+          // 使用最基本的profile配置
+          await mongoose.connection.db.admin().command({
+            profile: 1, // 仅记录慢操作
+            slowms: 1000 // 1秒阈值
+          });
+          
+          logger.info('✅ Slow query monitoring enabled (compatibility mode)');
+        } catch (fallbackError) {
+          logger.warn('无法启用慢查询监控，将跳过此功能', { error: fallbackError.message });
+          // 不抛出错误，让应用继续运行
+        }
+      } else {
+        logger.warn('慢查询监控设置失败，将跳过此功能', { error: error.message });
+        // 不抛出错误，让应用继续运行
+      }
     }
   }
 

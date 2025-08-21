@@ -6,45 +6,59 @@ export class RedisService {
   private static instance: RedisService;
 
   constructor() {
-    const redisUrl = process.env.REDIS_URL;
-    if (!redisUrl) {
-      throw new Error('REDIS_URL environment variable is required');
-    }
+    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
     
     this.client = new Redis(redisUrl, {
-      retryDelayOnFailover: parseInt(process.env.REDIS_RETRY_DELAY_ON_FAILOVER || '100'),
-      enableReadyCheck: process.env.REDIS_ENABLE_READY_CHECK !== 'false',
-      maxRetriesPerRequest: process.env.REDIS_MAX_RETRIES_PER_REQUEST ? parseInt(process.env.REDIS_MAX_RETRIES_PER_REQUEST) : null,
-      lazyConnect: process.env.REDIS_LAZY_CONNECT !== 'false',
+      // 连接配置
       connectTimeout: parseInt(process.env.REDIS_CONNECT_TIMEOUT || '10000'),
       commandTimeout: parseInt(process.env.REDIS_COMMAND_TIMEOUT || '5000'),
-      // 连接池配置
+      lazyConnect: process.env.REDIS_LAZY_CONNECT !== 'false',
+      
+      // 重连配置
+      retryDelayOnFailover: parseInt(process.env.REDIS_RETRY_DELAY_ON_FAILOVER || '100'),
+      retryDelayOnClusterDown: parseInt(process.env.REDIS_RETRY_DELAY_ON_CLUSTER_DOWN || '300'),
+      maxRetriesPerRequest: parseInt(process.env.REDIS_MAX_RETRIES_PER_REQUEST || '3'),
+      
+      // 离线队列 - 解决连接不稳定问题
+      enableOfflineQueue: process.env.REDIS_ENABLE_OFFLINE_QUEUE !== 'false', // 默认启用离线队列
+      
+      // 健康检查和连接池
+      enableReadyCheck: process.env.REDIS_ENABLE_READY_CHECK !== 'false',
       family: parseInt(process.env.REDIS_FAMILY || '4'),
       keepAlive: process.env.REDIS_KEEP_ALIVE !== 'false',
-      // 重连配置
-      retryDelayOnClusterDown: parseInt(process.env.REDIS_RETRY_DELAY_ON_CLUSTER_DOWN || '300'),
-      enableOfflineQueue: process.env.REDIS_ENABLE_OFFLINE_QUEUE === 'true'
+      enableAutoPipelining: true,
+      
+      // 重连策略
+      reconnectOnError: (err) => {
+        const targetError = 'READONLY';
+        return err.message.includes(targetError);
+      }
     });
 
     // 连接事件监听
     this.client.on('connect', () => {
-      console.log('✅ Redis连接成功');
+      logger.info('✅ Redis连接成功');
     });
 
     this.client.on('ready', () => {
-      console.log('🚀 Redis准备就绪');
+      logger.info('🚀 Redis准备就绪');
     });
 
     this.client.on('error', (error) => {
-      logger.error('Redis connection error', { error: error.message }, error.stack);
+      logger.error('Redis connection error', { error: error.message });
+      // 不要抛出错误，让重连机制处理
     });
 
     this.client.on('close', () => {
-      console.log('🔌 Redis连接关闭');
+      logger.warn('🔌 Redis连接关闭');
     });
 
-    this.client.on('reconnecting', () => {
-      console.log('🔄 Redis重新连接中...');
+    this.client.on('reconnecting', (delay) => {
+      logger.info(`🔄 Redis重新连接中... (${delay}ms后重试)`);
+    });
+
+    this.client.on('end', () => {
+      logger.warn('Redis连接结束');
     });
   }
 
@@ -56,6 +70,32 @@ export class RedisService {
       RedisService.instance = new RedisService();
     }
     return RedisService.instance;
+  }
+
+  /**
+   * 检查Redis连接状态
+   */
+  async ping(): Promise<string> {
+    try {
+      return await this.client.ping();
+    } catch (error) {
+      logger.error('Redis ping failed', { error: error.message });
+      throw error;
+    }
+  }
+
+  /**
+   * 获取Redis连接状态
+   */
+  getConnectionStatus(): string {
+    return this.client.status;
+  }
+
+  /**
+   * 检查Redis是否可用
+   */
+  isConnected(): boolean {
+    return this.client.status === 'ready';
   }
 
   /**
@@ -77,7 +117,12 @@ export class RedisService {
     try {
       return await this.client.setex(key, seconds, value);
     } catch (error) {
-      logger.error('Redis SETEX operation failed', { key, seconds, error: error.message }, error.stack);
+      logger.error('Redis SETEX operation failed', { key, seconds, error: error.message });
+      // 如果Redis不可用，返回null而不是抛出错误，让应用继续运行
+      if (error.message.includes("Stream isn't writeable")) {
+        logger.warn('Redis连接不可用，SETEX操作跳过', { key });
+        return null;
+      }
       throw error;
     }
   }
@@ -161,7 +206,12 @@ export class RedisService {
     try {
       return await this.client.decr(key);
     } catch (error) {
-      logger.error('Redis DECR operation failed', { key, error: error.message }, error.stack);
+      logger.error('Redis DECR operation failed', { key, error: error.message });
+      // 如果Redis不可用，返回0而不是抛出错误
+      if (error.message.includes("Stream isn't writeable")) {
+        logger.warn('Redis连接不可用，DECR操作返回默认值', { key });
+        return 0;
+      }
       throw error;
     }
   }
@@ -305,7 +355,12 @@ export class RedisService {
     try {
       return await this.client.sismember(key, member);
     } catch (error) {
-      logger.error('Redis SISMEMBER operation failed', { key, error: error.message }, error.stack);
+      logger.error('Redis SISMEMBER operation failed', { key, error: error.message });
+      // 如果Redis不可用，返回0（不存在）而不是抛出错误
+      if (error.message.includes("Stream isn't writeable")) {
+        logger.warn('Redis连接不可用，SISMEMBER操作返回默认值', { key });
+        return 0;
+      }
       throw error;
     }
   }

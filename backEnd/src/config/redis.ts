@@ -1,37 +1,15 @@
-import { createClient, RedisClientType } from 'redis';
+import { RedisService } from '../services/RedisService';
 import { logger } from '../utils/logger';
 
-let redisClient: RedisClientType;
+let redisService: RedisService;
 
 export const connectRedis = async (): Promise<void> => {
   try {
-    const redisURL = process.env.REDIS_URL || 'redis://localhost:6379';
+    redisService = new RedisService();
     
-    redisClient = createClient({
-      url: redisURL,
-      socket: {
-        connectTimeout: 5000,
-      },
-    });
-
-    // 错误处理
-    redisClient.on('error', (error) => {
-      logger.error('Redis connection error', { error: error.message }, error.stack);
-    });
-
-    redisClient.on('connect', () => {
-      // Redis连接成功
-    });
-
-    redisClient.on('reconnecting', () => {
-      // Redis重连中
-    });
-
-    redisClient.on('ready', () => {
-      // Redis准备就绪
-    });
-
-    await redisClient.connect();
+    // 测试连接
+    await redisService.ping();
+    logger.info('✅ Redis连接成功');
     
   } catch (error) {
     const err = error as Error;
@@ -40,18 +18,18 @@ export const connectRedis = async (): Promise<void> => {
   }
 };
 
-export const getRedisClient = (): RedisClientType => {
-  if (!redisClient) {
+export const getRedisClient = (): RedisService => {
+  if (!redisService) {
     throw new Error('Redis client not initialized. Call connectRedis() first.');
   }
-  return redisClient;
+  return redisService;
 };
 
 export const disconnectRedis = async (): Promise<void> => {
   try {
-    if (redisClient) {
-      await redisClient.quit();
-      // Redis断开连接成功
+    if (redisService) {
+      await redisService.disconnect();
+      logger.info('✅ Redis断开连接成功');
     }
   } catch (error) {
     const err = error as Error;
@@ -68,7 +46,7 @@ export const cacheUtils = {
     const serializedValue = JSON.stringify(value);
     
     if (ttl) {
-      await client.setEx(key, ttl, serializedValue);
+      await client.setex(key, ttl, serializedValue);
     } else {
       await client.set(key, serializedValue);
     }
